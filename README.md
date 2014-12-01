@@ -18,7 +18,7 @@ Download/install/update FusionCatcher
 
 Use this one-line command:
 
-        wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download
+    wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download
 
 Citing
 ------
