@@ -13,6 +13,7 @@ The aims of FusionCatcher are:
  * very easy to use (i.e. no a priori knowledge of bioinformatic databases and bioinformatics is needed in order to run FusionCatcher BUT Linux/Unix knowledge is needed; it allows a very high level of control for expert users),
  * to be as automatic as possible (i.e. the FusionCatcher will choose automatically the best parameters in order to find candidate somatic fusion genes, e.g. finding automatically the adapters, quality trimming of reads, building the exon-exon junctions automatically based on the length of the reads given as input, etc. while giving also full control to expert users) while providing the best possible detection rate for finding somatic fusion genes (with a very low rate of false positives but a very good precision).
 
+
 Download/install/update FusionCatcher
 -------------------------------------
 
@@ -20,6 +21,11 @@ Use this one-line command:
 
     wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download
 
+
+Manual
+------
+A detailed manual is found [here](http://code.google.com/p/fusioncatcher/wiki/Manual).
+
 Citing
 ------
-D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi, S. Virtanen, O. Kilkku, FusionCatcher – a tool for finding somatic fusion genes in paired-end RNA-sequencing data, bioRxiv, Nov. 2014, DOI:10.1101/011650
+D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi, S. Virtanen, O. Kilkku, FusionCatcher – a tool for finding somatic fusion genes in paired-end RNA-sequencing data, bioRxiv, Nov. 2014, [DOI:10.1101/011650](http://dx.doi.org/10.1101/011650)
