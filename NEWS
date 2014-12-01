@@ -1,0 +1,151 @@
+FusionCatcher: Somatic gene fusion finder in paired-end RNA-seq data produced
+on Illumina sequencing platforms (i.e. Solexa and HiSeq).
+
+Version Release History
+=======================
+
+Version 0.99.3e beta - November 14, 2014
+  * fixed bug regarding memory allocation for BOWTIE2 aligner
+  * fixed bug regarding detection of Python version
+  * fixed bug regarding conversion to GRCh37/hg19 coordinates
+  * fixed bug where too many preliminary candidate fusions (due to usage of lower
+    thresholds than the default ones) would lead to no fusions been found
+  * fixed several minor bugs
+  * updated manual
+
+Version 0.99.3d beta - November 4, 2014
+  * added support for BOWTIE2 aligner http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
+  * sensitivity and precision improved slightly (due to addition of fourth read aligner, that is BOWTIE2, in addition to BOWTIE, BLAT, and STAR)
+  * added automatic conversion of fusion genes coordinates to GRCh37/hg19 (only for human genome)
+  * added support for producing SAM files for found fusion genes which may be used for visualization purposes
+  * added support for FASTQ files containing reads of different sizes
+  * improved validation of input FASTQ files
+  * fixed bug where different environment settings affected the sorting of reads
+  * fixed bug regarding several public annotation databases, where several very well known somatic fusion transcripts (e.g. GOPC-ROS1, FIP1L1-PDGFRA, etc.) are annotated as belonging to only one gene (instead of two genes as expected)
+  * fixed bug regarding PSL visualization using BLAT aligner
+  * fixed bug where read-only input files would produce a crash
+  * fixed bug regarding conflits in PYTHONPATH due to OpenPYXL
+  * fixed several minor bugs
+  * updated manual
+
+Version 0.99.3c beta - October 9, 2014
+  * added support for STAR aligner http://code.google.com/p/rna-star/ (STAR is used only and only for splitting reads while mapping)
+  * added support for latest version of Ensembl database http://www.ensembl.org (that is version 77)
+  * added support for latest version GRCh38/hg38 of human genome from Ensembl, RefSeq, and UCSC databases
+  * added suport for database of gene fusions found in TCGA database http://cancergenome.nih.gov/
+  * added suport for database of candidate gene fusions found in healthy human RNA-seq samples from Illumina BodyMap2 http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/
+  * added support for Duplicated Genes Database (DGD) http://dgd.genouest.org/
+  * added support for SeqTK tools http://github.com/ndaniel/seqtk/
+  * added support for COSMIC database version 70 http://cancer.sanger.ac.uk/cancergenome/projects/cosmic/
+  * sensitivity and precision improved slightly (due to addition of third read aligner, that is STAR, in addition to BOWTIE and BLAT)
+  * added prediction of fusion protein sequences of candidate fusion genes
+  * slight speed improvements (due to usage of SeqTK tools)
+  * slightly reduced disk space requirements for temporary files
+  * fixed bug regarding blat_parallel.py script (in case of very few unmapped input reads and very large number of threads/CPUs)
+  * fixed bug regarding effect prediction of candidate fusion genes
+  * fixed several minor bugs
+
+Version 0.99.3b beta - June 27, 2014
+  * added effect prediction of fusion gene (e.g. in-frame, out-of-frame, etc.)
+  * fixed a bug due to Bowtie and BLAT limitation of building indexes for reference sequences with size over 2^32
+  * fixed bug regarding the hard links created on different devices
+  * fixed several minor bugs
+
+Version 0.99.3a beta - April 15, 2014
+  * added support for latest version of Ensembl database http://www.ensembl.org (that is version 75)
+  * added support IMGT/HLA Database http://www.ebi.ac.uk/ipd/imgt/hla/ for filtering purposes (optional)
+  * added as known false-positive fusion genes, the fusion genes found in Illumina Body Map RNA-seq dataset
+  * fixed several minor bugs
+
+Version 0.99.2 beta - February 5, 2014
+  * added full virus/bacteria/phages names when reporting the reads mapping on them for filtering purposes
+  * added option to save as FASTQ file, for later use, the unmapped reads (i.e. reads which do not map on genome, transcriptome, viruses, phages, and bacteria)
+  * added option to save as SAM file, for later use, the reads mapping on genomes of viruses/bacteria/phages (from the NCBI database)
+  * added support for UCSC database
+  * added support for RefSeq NCBI database
+  * added support for C19MC miRNA cluster
+  * added batch mode (i.e. fusioncatcher-batch.py)
+  * slightly reduced the disk space requirements for the temporary files
+  * improved error reporting when analyzing broken FASTQ files
+  * fixed several minor bugs
+
+Version 0.99.1 beta - December 4, 2013
+  * added support for the latest version of Ensembl database http://www.ensembl.org (that is version 74)
+  * all viruses/bacteria/phages found to have reads mapping on their genomes will be listed together with the corresponding reads counts
+  * speed improvements when using BLAT aligner
+  * added support for filtering out the reads which map on Phage phiX174 genome (it is used in Illumina NGS)
+  * fixed several minor bugs
+
+Version 0.99 beta - September 5, 2013
+  * added support for the latest version of Ensembl database http://www.ensembl.org (that is version 73)
+  * added support for the latest version of CGP database
+  * filtering out the reads which map on genomes of viruses/bacteria/phages (from NCBI database)
+  * added support for NCBI database
+  * added support for sorting in parallel
+  * fixed several minor bugs
+
+Version 0.98 beta - June 26, 2013
+  * added support for the latest version of Ensembl database http://www.ensembl.org (that is version 72)
+  * added support for Velvet v1.2.10
+  * reads containing short tandem repeats are filtered out
+  * improved support for mouse and rat organisms
+  * poly ends of reads are trimmed
+  * fixed several minor bugs
+
+Version 0.97 beta - April 9, 2013
+  * reads are trimmed automatically to 60 bp instead of 50 bp long as previously was done when
+    using the BOWTIE aligner
+  * added suport for the latest version of TICdb database <http://www.unav.es/genetica/TICdb/>
+  * added support for Cancer Genome Project (CGP) translocations database
+    <http://www.sanger.ac.uk/genetics/CGP/Census/>
+  * more labels added for labeling the fusion genes
+  * increased sensitivity for finding fusions genes (e.g. filtering out partially overlapping genes on the same strand)
+  * fixed several minor bugs
+
+Version 0.96 beta - March 7, 2013
+  * fusion genes which are readthroughs are considered for analysis by default
+    now (it can still be skipped if necessary); previously it was necessary to
+    specify it clearly in order for FusionCatcher to search also for
+    readthroughs too!
+  * sensitivity of finding fusion genes has been increased by decreasing the default anchor length
+  * BLAT aligner is used be default now (it can be disabled if necessary)
+  * speed improvements when using BLAT aligner
+  * added support for COSMIC database <http://cancer.sanger.ac.uk/cancergenome/projects/cosmic/>
+  * added support for TICdb database <http://www.unav.es/genetica/TIC2/>
+  * added support for ChimerDB 2.0 database <http://ercsb.ewha.ac.kr/FusionGene/index.jsp> (literature-based annotation)
+  * added support for ConjoinG database <http://metasystems.riken.jp/conjoing/>
+  * known fusion genes are labeled in the final list of candidate fusion genes
+  * fixed several minor bugs
+
+Version 0.95 beta - January 25, 2013
+  * *NOTE*: it needs a newer `build data` gotten with 'fusioncatcher-build' version 95
+  * improved the detection rate for finding fusion genes (genes and their
+    corresponding pseudogenes are filtered out from the preliminary list of
+    candidate fusions genes)
+  * fixed bug regarding the *`FusionCatcher`* crashing when no fusion genes
+    were found
+  * Ensembl version 70 supported
+  * fixed several other minor bugs
+
+Version 0.94 beta - December 21, 2012
+  * NOTE: it needs a newer built data gotten with 'fusioncatcher-build'
+    version 94 (in case that one already has an older built data obtained with
+    version 93 then one easily may upgrade it by running upgrade93to94.py in
+    the old built data path)
+  * added support for SRA toolkit version 2.2.2a
+  * added support for Bowtie 0.12.9
+  * added support for de novo assembling the support reads using Velvet
+  * improved the detection rate for finding fusion genes
+  * candidate fusion genes are filtered out early if they contain a gene and its corresponding pseudogene
+  * fixed bug regarding the automatic removal of adapters in case that no adapters were found
+  * improved the support for BLAT aligner when BLAT is used for finding candidate fusion genes
+  * supporting reads are also provided now in case that BLAT is used for finding fusion genes
+  * Ensembl version 69 supported
+  * fixed several other bugs
+
+Version 0.93 beta - December 18, 2011
+  * First public release of FusionCatcher.
+  * Includes the two core tools: the builder 'fusioncatcher-build',
+    the fusion genes finder 'fusioncatcher'
+  * FASTQ/SRA inputs supported
+  * added support for Ensembl database version 69
