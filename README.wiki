@@ -1609,7 +1609,7 @@ FusionCatcher is using by default three aligners for mapping the reads. The alig
 = 11 - Citing !FusionCatcher =
 If you use `FusionCatcher`, please cite:
 
-D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi, S. Virtanen, O. Kilkku, *!FusionCatcher – a tool for finding somatic fusion genes in paired-end RNA-sequencing data*, bioRxiv, 2014, [http://biorxiv.org/content/early/2014/11/19/011650 DOI:10.1101/011650]
+D. Nicorici, M. Satalan, S. Virtanen, O. Kilkku, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi, *!FusionCatcher – a tool for finding fusion genes in paired-end RNA-sequencing data*, March 2014 (submitted).
 
 = 12 - Reporting Bugs =
 

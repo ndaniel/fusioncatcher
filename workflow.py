@@ -255,7 +255,7 @@ job.add('-alh',kind='parameter')
 job.add('>','list_files.txt',kind='output')
 job.run()
 
-# step 2 (fake step)
+# step 2 (mock step)
 if job.run():
     # step 3
     job.add('cp',kind='program')
@@ -319,6 +319,7 @@ import shutil
 import math
 import errno
 import subprocess
+import tempfile
 
 #import multiprocessing
 
@@ -379,7 +380,7 @@ class pipeline:
     """
     Pipeline class
     """
-    __version__ = '0.97.8 beta'
+    __version__ = '0.97.9 beta'
     __author__  = 'Daniel Nicorici'
     __copyright__ = "Copyright 2009-2014, Daniel Nicorici"
     __credits__ = ["Henrikki Almusa"]
@@ -924,7 +925,7 @@ class pipeline:
                             self.write('+-->EXECUTING...')
                             proc = os.system(' '.join(cmd_line))
                         else:
-                            self.write('+-->FAKE EXECUTION (code executed outside of workflow)...')
+                            self.write('+-->MOCK EXECUTION (code executed outside of workflow)...')
                         if proc:
                             temp = "\n\nERROR: Execution failed at step %d while executing:\n----------------\n   %s\n----------------\n" % (self.task_count,' \\\n   '.join(cmd_line),)
                             self.write(temp, stderr = True)
@@ -941,13 +942,31 @@ class pipeline:
                                             pass
                                         self.write(temp, stderr = True)
                             else:
-                                pass
-                                #temp = "\n\n Executing again the command in order to capture the STDERR...\n\n"
-                                #self.write(temp, stderr = True)
-                                ## no redirection was found so then try to execute again the command and capture the STDERR
+                                #pass
+                                temp = "\n\nExecuting again the command in order to capture the STDERR...\n\n"
+                                self.write(temp, stderr = True)
+                                # no redirection was found so then try to execute again the command and capture the STDERR
                                 #p = subprocess.Popen(cmd_line, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, shell = False)
                                 #if p.returncode != 0:
                                 #    self.write(p.communicate()[0].splitlines(), stderr = True)
+                                temp = []
+                                temp_file = self.__give_me_temp_filename()
+                                procx = os.system(' '.join(cmd_line+['2>',temp_file]))
+                                if procx:
+                                    if os.path.isfile(temp_file):
+                                        # read error message
+                                        try:
+                                            temp = file(temp_file,'r').readlines()
+                                        except:
+                                            pass
+                                        if temp:
+                                            temp.append("")
+                                            temp.append("")
+                                        self.write(temp, stderr = True)
+                                        os.remove(temp_file)
+                                else:
+                                    temp = "\n\nWARNING: First execution ended with error but second execution did not! Therefore cannot capture the STDERR!\n\n"
+                                    self.write(temp, stderr = True)
                             self.exit_flag = False
                             sys.exit(1)
                         elif self.hash_library and self.hash_library != 'no': # DON'T EXECUTE IT
@@ -1528,7 +1547,7 @@ class pipeline:
         In case this IF has not been executed in a previous workflow run then
         FALSE is returned. In case this IF has been executed in a previous
         workflow run then the previous IF result is returned (that is TRUE or
-        FALSE). This is executed as a fake step in the workflow.
+        FALSE). This is executed as a mock step in the workflow.
 
         It returns:
 
@@ -1745,6 +1764,17 @@ class pipeline:
                             continue
                         total_size = total_size + t
         return total_size
+
+    ###
+    ### temporary file
+    ###
+    def __give_me_temp_filename(self, tmp_dir = None):
+        if tmp_dir:
+            if not (os.path.isdir(tmp_dir) or os.path.islink(tmp_dir)):
+                os.makedirs(tmp_dir)
+        (ft,ft_name) = tempfile.mkstemp(dir = tmp_dir)
+        os.close(ft)
+        return ft_name
 
 
 ###

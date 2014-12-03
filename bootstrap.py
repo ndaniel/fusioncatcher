@@ -843,13 +843,13 @@ if __name__ == '__main__':
                   "<http://code.google.com/p/fusioncatcher/>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 0.18 beta"
+    version = "%prog 0.19 beta"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
                                    version = version)
 
-    parser.add_option("-d","--instal-dir",
+    parser.add_option("-d","--install-dir",
                       action = "store",
                       type = "string",
                       dest = "installation_directory",
@@ -1039,7 +1039,7 @@ if __name__ == '__main__':
 
     if options.prefix_directory:
         options.installation_directory = expand(options.prefix_directory,'fusioncatcher')
-        PATHS(installdir = options.installation_directory)
+        PATHS(exe=PYTHON_EXE, installdir = options.installation_directory)
 
 
     ############################################################################
@@ -1092,7 +1092,7 @@ if __name__ == '__main__':
         FUSIONCATCHER_PATH = options.installation_directory
     else:
         p = expand(raw_input("  Type new path:"))
-        PATHS(installdir = p)
+        PATHS(exe = PYTHON_EXE, installdir = p)
 
     ############################################################################
     # FusionCatcher
@@ -1216,7 +1216,7 @@ if __name__ == '__main__':
                  exe = "bowtie2",
                  param = "--version",
                  web = "<http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>",
-                 versions = ('2.2.2','2.2.3','2.2.4'),
+                 versions = ('2.2.4',),
                  force = options.force_yes,
                  url = BOWTIE2_URL,
                  path = BOWTIE2_PATH,
@@ -1260,7 +1260,7 @@ if __name__ == '__main__':
         ############################################################################
         # LiftOver
         ############################################################################
-        r = tool(name = "LiftOver (Batch Coordinate Conversion )",
+        r = tool(name = "LiftOver (Batch Coordinate Conversion)",
                  exe = "liftOver",
                  param = "",
                  web = "<https://genome.ucsc.edu/cgi-bin/hgLiftOver>",
@@ -1338,7 +1338,7 @@ if __name__ == '__main__':
                  param = "--version",
                  web = "<http://code.google.com/p/rna-star/>",
                  versions = ('STAR_2.4.0g1',),
-                 version_word = '',
+                 version_word = 'STAR_',
                  force = options.force_yes,
                  url = STAR_URL,
                  path = STAR_PATH,

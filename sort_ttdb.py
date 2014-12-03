@@ -210,7 +210,7 @@ def sort_columns(input_filename = '-',
         fid.close()
         os.remove(fon)
 
-    locale.setlocale(locale.LC_ALL, '')
+    #locale.setlocale(locale.LC_ALL, '')
 
 
 
