@@ -4,6 +4,15 @@ on Illumina sequencing platforms (i.e. Solexa and HiSeq).
 Version Release History
 =======================
 
+
+Version 0.99.3f beta - ..., 2015
+  * added support for fusion genes from paper: C. Klijn, A comprehensive
+    transcriptional portrait of human cancer cell lines, Nature Biotechnology,
+    Dec. 2014, doi:10.1038/nbt.3080
+  * added support for Ensembl version 78
+  * fixed several minor bugs
+  * updated manual
+
 Version 0.99.3e beta - November 14, 2014
   * fixed bug regarding memory allocation for BOWTIE2 aligner
   * fixed bug regarding detection of Python version
