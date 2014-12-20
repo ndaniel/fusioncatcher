@@ -1,0 +1,1685 @@
+#summary Manual
+
+<wiki:toc max_depth="2" />
+
+----
+
+= 1 - INTRODUCTION =
+
+*!FusionCatcher* searchers for *somatic* novel/known *fusion genes*, *translocations* and/or *chimeras* in RNA-seq data (*paired-end* reads FASTQ files produced by Illumina next-generation sequencing platforms like Illumina Solexa/`HiSeq`/`NextSeq`/`MiSeq`) from _diseased_ samples.
+
+The aims of *`FusionCatcher`* are:
+  * very good detection rate for finding candidate *somatic fusion genes* (see [http://en.wikipedia.org/wiki/Mutation#Somatic_mutations somatic mutations]; using a matched *normal* sample is optional; several databases of known fusion genes found in healthy samples are used as a list of known false positives; biological knowledge is used, like for example gene fusion between a gene and its pseudogene is filtered out),
+  * very good RT-PCR validation rate of found candidate somatic fusion genes (this is very important for us),
+  * very easy to use (i.e. no _a priori_ knowledge of bioinformatic databases and bioinformatics is needed in order to run *`FusionCatcher`* BUT Linux/Unix knowledge is needed; it allows a very high level of control for expert users),
+  * to be as automatic as possible (i.e. the *`FusionCatcher`* will choose automatically the best parameters in order to find candidate somatic fusion genes, e.g. finding automatically the adapters, quality trimming of reads, building the exon-exon junctions automatically based on the length of the reads given as input, etc. while giving also full control to expert users) while providing the best possible detection rate for finding somatic fusion genes (with a very low rate of false positives but a very good sensitivity).
+
+
+*!FusionCatcher* has been used for finding novel and known fusion genes in the following articles:
+  * S. Kangaspeska, S. Hultsch, H. Edgren, D. Nicorici, A. Murumägi, O.P. Kallioniemi, *Reanalysis of RNA-sequencing data reveals several additional fusion genes with multiple isoforms*, PLOS One, Oct. 2012. http://dx.plos.org/10.1371/journal.pone.0048745
+  * H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, *Identification of fusion genes in breast cancer by paired-end RNA-sequencing*, Genome Biology, Vol. 12, Jan. 2011. http://genomebiology.com/2011/12/1/R6
+  * JN. Honeyman, EP. Simon, N. Robine, R. Chiaroni-Clarke, DG. Darcy, I. Isabel, P. Lim, CE. Gleason, JM. Murphy, BR. Rosenberg, L. Teegan, CN. Takacs, S. Botero, R. Belote, S. Germer, A-K. Emde, V. Vacic, U. Bhanot, MP. !LaQuaglia, and S.M. Simon, *Detection of a Recurrent DNAJB1-PRKACA Chimeric Transcript in Fibrolamellar Hepatocellular Carcinoma*, Science 343 (6174), Feb. 2014, pp. 1010-1014, DOI:10.1126/science.1249484, http://www.sciencemag.org/content/343/6174/1010.abstract
+  * T. Pietsch, I. Wohlers, T. Goschzik, V. Dreschmann, D. Denkhaus, E. Dorner, S. Rahmann, L. Klein-Hitpass, *Supratentorial ependymomas of childhood carry C11orf95–RELA fusions leading to pathological activation of the NF-kB signaling pathway*, Acta Neuropathologica 127(4), Apr. 2014, pp. 609-611. DOI:10.1007/s00401-014-1264-4, http://link.springer.com/article/10.1007%2Fs00401-014-1264-4
+  * M. Jimbo, K.E. Knudsen, J.R. Brody, *Fusing Transcriptomics to Progressive Prostate Cancer*, The American Journal of Pathology, 2014, http://dx.doi.org/10.1016/j.ajpath.2014.08.001
+  * Y.P. Yu, Y. Ding, Z. Chen, S. Liu, A. Michalopoulos, R. Chen, Z. Gulzar, B. Yang, K.M. Cieply, A. Luvison, B.G. Ren, J.D. Brooks, D. Jarrard, J.B. Nelson. G.K. Michalopoulos, G.C. Tseng, J.H. Luo, *Novel fusion transcripts associate with progressive prostate cancer*,  The American Journal of Pathology, 2014, http://dx.doi.org/10.1016/j.ajpath.2014.06.025
+  * T. Meissner, K.M. Fisch, L. Gioia, *!OncoRep: An n-of-1 reporting tool to support genome-guided treatment for breast cancer patients using RNA-sequencing*, bioRxiv, Sept. 2014, http://dx.doi.org/10.1101/008748
+  * I. Panagopoulos, L. Gorunova, B. Davidson, Sverre Heim, Novel TNS3-MAP3K3 and ZFPM2-ELF5 fusion genes identified by RNA sequencing in multicystic mesothelioma with t(7;17)(p12;q23) and t(8;11)(q23;p13), Cancer Letters, Dec. 2014, http://dx.doi.org/10.1016/j.canlet.2014.12.002
+
+*!FusionCatcher* supports:
+  * as input FASTQ and/or SRA file types,
+  * four different methods (using Bowtie aligner and optionally BLAT, STAR, BOWTIE2 aligners) for finding new fusion genes,
+  * several eukaryotic organisms (which are in [http://www.ensembl.org/index.html Ensembl database]), like for example, human, rat, mouse, dog, etc.
+----
+
+= 2 - HARDWARE REQUIREMENTS =
+
+For running *!FusionCatcher* it is needed a computer with:
+  * 64-bit `*NIX` environment
+  * minimum 24 GB of RAM (in many cases it might work even with 16GB of RAM for small FASTQ files)
+  * 1 CPU (minimum)
+  * ~700 GB temporary disk space (needed just for temporary files)
+
+----
+
+= 3 - DEPENDENCIES =
+
+== 3.1 - Required dependencies ==
+  * *Linux/Unix* 64-bit (e.g. Ubuntu version 12.04 or newer)
+  * *Python* version 2.7.3 (>=2.6.0 and < 3.0 are probably fine but have not been fully tested)
+  * *`BioPython`* version 1.63 (>=1.50 is probably fine but has not been fully tested)
+  * *Bowtie* 64-bit version 1.1.1 (version 1.1.0 is fine too) http://bowtie-bio.sourceforge.net/index.shtml
+  * *SeqTK* version 1.0-r68e-dirty  http://github.com/ndaniel/seqtk
+  * organism specific  data from [http://www.ensembl.org Ensembl] database version 77 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed)
+  * *STAR* version 2.4.0f http://code.google.com/p/rna-star/ . Executables are available at http://github.com/alexdobin/STAR/releases
+  * *BOWTIE2* version 2.2.4 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
+
+== 3.2 - Optional dependencies ==
+
+=== 3.2.1 - Strongly recommended ===
+These are expected by default to be installed but their use can be disabled by using the command line option '--skip-blat'.
+  * *BLAT* version 0.35 http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *!FusionCatcher* (hint: if you are a non-profit organization you should be fine).
+  * *faToTwoBit* http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *!FusionCatcher* and *`fusioncatcher-build`* if one plans to use BLAT as a second (optional) alternative method for finding fusion genes! (required also by option `--blat-visualization`)
+
+=== 3.2.2 - Nice to have ===
+   * *Velvet* (de novo assembler) version 1.2.10 http://www.ebi.ac.uk/~zerbino/velvet/ . This is needed if one plans to do _de novo_ assembly of the reads which support the candidate fusion genes. (required by option `--assembly` of *!FusionCatcher*)
+   * *fastq-dump* version 2.3.5 from NCBI SRA Toolkit http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software . This is needed by *!FusionCatcher* if one plans to use as input SRA files.
+   * Python library *openpyxl* version 1.5.6 http://pypi.python.org/pypi/openpyxl (other versions might work but have not been tested). It is needed by *`fusioncatcher-build`* for parsing the [http://metasystems.riken.jp/conjoing/ ConjoinG] database.
+   * Python library *xlrd* version 0.6.1 http://pypi.python.org/pypi/xlrd (other versions might work but have not been tested). It is needed by *`fusioncatcher-build`* for parsing the [http://ercsb.ewha.ac.kr/FusionGene/ ChimerDB] database.
+   * *coreutils* version 8.22  http://ftp.gnu.org/gnu/coreutils for a newer version of SORT command which allows the use of several CPUs in parallel, that is '--parallel'  command line options (other older versions might also support this!).
+   * *pigz* version 2.3.1 http://zlib.net/pigz/ for using GZIP on several CPUs in parallel (other older versions might support this).
+   * *SAMTools* version 1.19 http://www.htslib.org/
+   * *Picard tools* version 1.119 http://broadinstitute.github.io/picard/
+
+== 3.3 - Genomic Databases ==
+These are used (downloaded and parsed) automatically by *!FusionCatcher*:
+  * *ENSEMBL* database http://www.ensembl.org/ (required)
+  * *UCSC* database http://hgdownload.cse.ucsc.edu/downloads.html#human (required)
+  * *!RefSeq* database (thru *UCSC* database) (required)
+  * *Viruses/bacteria/phages* genomes database (from the NCBI database) ftp://ftp.ncbi.nlm.nih.gov/genomes/Viruses/ (required)
+  * *COSMIC* database http://cancer.sanger.ac.uk/cancergenome/projects/cosmic/ (optional)
+  * *TICdb* database http://www.unav.es/genetica/TICdb/ (optional)
+  * *ChimerDB 2.0* database (literature-based annotation) http://ercsb.ewha.ac.kr/FusionGene/ (optional)
+  * *Cancer Genome Project* *(CGP)* translocations database http://www.sanger.ac.uk/genetics/CGP/Census/ (optional)
+  * *ConjoinG* database http://metasystems.riken.jp/conjoing/ (optional)
+  * *CACG* conjoined genes database http://cgc.kribb.re.kr/map/ (optional)
+  * *IMGT/HLA* database http://www.ebi.ac.uk/ipd/imgt/hla/ (optional)
+  * *DGD* database http://dgd.genouest.org/ (optional)
+  * *Illumina !BodyMap2 RNA-seq* database http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/
+
+*NOTE*:
+  * *ENSEMBL* database is used for finding novel/known fusions genes
+  * *COSMIC*, *TICdb*, *ChimerDB*, *Cancer Genome Project*, *ConjoinG*, and manual curated fusion gene database are indexed and used further for annotating/labeling the found fusion genes for an easier visualization of *novel* genes (i.e. not published yet) found by *!FusionCatcher*. For more information how this is used see [Manual#6.2_-_Output_data Tables 1,2,3].
+  * *!FusionCatcher* can work just fine and is able to find fusion genes without any of the optional dependencies/tools/programs!
+  * if *BLAT* is not installed please use option '--skip-blat' in order to let know *!FusionCatcher* that it should not use it!
+  * if *STAR* is not installed please use option '--skip-star' in order to let know *!FusionCatcher* that it should not use it!
+  * if *BOWTIE2* is not installed please use option '--skip-bowtie2' in order to let know *!FusionCatcher* that it should not use it!
+
+----
+
+= 4 - EXAMPLES =
+
+== 4.1 - Automatic installation ==
+
+This is an example of automatic installation of *!FusionCatcher* (and it is installed here "~/fusioncatcher" if these are run in your home directory) and the required databases and indexes (which are downloaded instead of being built locally):
+{{{
+wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download
+}}}
+where:
+  * `wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py` downloads from internet the `bootstrap.py` which is the installation script (it is recommended to use the `boostrap.py` from `ttp://sourceforge.net/projects/fusioncatcher/files/bootstrap.py` because it is more up to date)
+  * `python bootstrap.py` runs using `python` the installation script `bootstrap.py` (here one may replace `python` with its own custom installation of python, like for example `/some/other/custom/python`)
+  * `--download` forces the installation script `bootstrap.py` to download and install automatically also the databases needed by *!FusionCatcher* (if this is not used the databases needed by *!FusionCatcher* will not be installed and the user will have to build/install them manually later)
+
+In case that there are several Python versions installed already then it is possible to point which one to use for installation and running *!FusionCatcher*, as following (no required databases and indexes are installed automatically in this example):
+{{{
+wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py
+/some/other/python bootstrap.py
+}}}
+
+In case that one wants to install *`FusionCatcher`* here *`/some/directory/fusioncatcher/`*, then this shall be run (no required databases and indexes are installed automatically in this example):
+{{{
+wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py
+/your/favourite/python bootstrap.py --prefix=/some/directory/
+}}}
+
+In case that one wants to install *`FusionCatcher`* and download the databases directly and build locally the indexes, then this shall be run:
+{{{
+wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --build
+}}}
+
+This is an example of automatic installation of *!FusionCatcher* and the required databases and indexes (which are downloaded instead of being built locally) while all the questions asked by the installation script are answered automatically with YES (WARNING: this might overwrite files/directories):
+{{{
+wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download -y
+}}}
+
+In case that one has the admin/root rights then it is possible to install *!FusionCatcher* as following (no required databases and indexes are installed automatically in this example):
+{{{
+wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py
+sudo python bootstrap.py
+}}}
+
+In case that you do not know which one to use from these examples, please use the first one!
+Also, for more info about what options offered by `bootstrap.py`, please run
+{{{
+bootstrap.py --help
+}}}
+
+Please, do not forget to build/download the organism data after this is done running (please notice the last lines displayed by `bootstrap.py` after it finished running and execute the commands suggested there, e.g. use `download.sh`)!
+
+
+== 4.2 - Manual installation ==
+
+This is an example (or one of the many ways) for installing *!FusionCatcher* on a *Ubuntu Linux 12.04/14.04 64-bit system* and the *!FusionCatcher* and its dependencies are installed in *`/apps`*.
+  * check that Python 2.6.X or 2.7.X is installed and working properly! If not then install it together with its development environment and other (probably) needed dependencies (required):
+{{{
+sudo apt-get install build-essential
+sudo apt-get install python-dev
+}}}
+  and for [http://www.redhat.com RedHat]/[http://www.centos.org CentOS] this would be required
+{{{
+sudo yum groupinstall "Development Tools"
+sudo yum install gcc
+sudo yum install ncurses-devel
+sudo yum install python-devel
+sudo yum install zlib-devel
+}}}
+  and for [http://www.opensuse.org OpenSUSE] this would be required
+{{{
+sudo zypper in --type pattern Basis-Devel
+sudo zypper in gcc
+sudo zypper in ncurses-devel
+sudo zypper in python-devel
+sudo zypper in zlib-devel
+}}}
+  * installing *`BioPython`* (required):
+{{{
+sudo apt-get install python-numpy
+sudo apt-get install python-biopython
+}}}
+  * installing Python module *`xlrd`* (optional):
+{{{
+sudo apt-get install python-xlrd
+}}}
+  * installing Python module *`openpyxl`* (optional):
+{{{
+sudo apt-get install python-openpyxl
+}}}
+  * create the needed directories:
+{{{
+mkdir -p /apps/fusioncatcher/tools
+mkdir -p /apps/fusioncatcher/data
+}}}
+  * installing *Bowtie* 64-bit version 1.1.1 (required)
+{{{
+cd /apps/fusioncatcher/tools
+wget http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.1/bowtie-1.1.1-linux-x86_64.zip
+unzip bowtie-1.1.1-linux-x86_64.zip
+ln -s bowtie-1.1.1 bowtie
+}}}
+  * installing *Bowtie2* 64-bit version 2.2.4 (required)
+{{{
+cd /apps/fusioncatcher/tools
+wget http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.4/bowtie2-2.2.4-linux-x86_64.zip
+unzip bowtie2-2.2.4-linux-x86_64.zip
+ln -s bowtie2-2.2.4-linux-x86_64 bowtie2
+}}}
+  * installing *BLAT* version 0.35 (optional but *strongly* recommended; if *BLAT* is not installed please use option '--skip-blat' in order to let know *!FusionCatcher* that it should not use it)
+{{{
+cd /apps/fusioncatcher/tools
+mkdir blat_v0.35
+cd blat_v0.35
+wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/blat/blat
+chmod +x blat
+wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/faToTwoBit
+chmod +x faToTwoBit
+wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/liftOver
+chmod +x liftOver
+cd ..
+ln -s blat_v0.35 blat
+}}}
+  * installing *fastq-dump* version 2.3.5 from *NCBI SRA Toolkit* version 2.3.5 (optional but it is required in case that one wants to test the installation using the example given below)
+{{{
+cd /apps/fusioncatcher/tools
+wget http://ftp-private.ncbi.nlm.nih.gov/sra/sdk/2.3.5/sratoolkit.2.3.5-centos_linux64.tar.gz
+tar zxvf sratoolkit.2.3.5-centos_linux64.tar.gz
+ln -s sratoolkit.2.3.5-centos_linux64 sratoolkit
+}}}
+  * installing *SeqTK* version 1.0-r68e (please note that this is a different development branch than the official development) (required)
+{{{
+cd /apps/fusioncatcher/tools
+wget http://github.com/ndaniel/seqtk/archive/1.0-r68e.tar.gz -O 1.0-r68e.tar.gz
+tar zxvf 1.0-r68e.tar.gz
+cd seqtk-1.0-r68e
+make
+cd ..
+ln -s seqtk-1.0-r68e seqtk
+}}}
+  * installing *STAR* version 2.4.0f (required)
+{{{
+cd /apps/fusioncatcher/tools
+wget http://github.com/alexdobin/STAR/archive/STAR_2.4.0f1.tar.gz -O STAR_2.4.0f1.tar.gz
+tar zxvf STAR_2.4.0f1.tar.gz
+cd STAR-STAR_2.4.0f1
+cd source
+rm -f STAR
+cp ../bin/Linux_x86_64_static/STAR .
+}}}
+  Try to run this command (if it fails please ignore the error messages and continue further; continue further either way):
+{{{
+make
+}}}
+  and continue with:
+{{{
+cd ..
+ln -s STAR-STAR_2.4.0f1 star
+}}}
+  * installing *Velvet* version 1.2.10 (optional)
+{{{
+cd /apps/fusioncatcher/tools
+wget http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz
+tar zxvf velvet_1.2.10.tgz
+cd velvet_1.2.10
+make
+cd ..
+ln -s velvet_1.2.10 velvet
+}}}
+  Note: Velvet depends on zlib-dev which may be installed like this
+{{{
+sudo apt-get install zlib-dev
+}}}
+  * installing *coreutils* version 8.22 for a newer version of *sort* command which allows use of several CPUs in parallel, that is the use of `--parallel` command line option (optional)
+{{{
+cd /apps/fusioncatcher/tools
+wget http://ftp.gnu.org/gnu/coreutils/coreutils-8.22.tar.xz
+tar --xz -xvf coreutils-8.22.tar.xz
+cd coreutils-8.22
+./configure
+make
+cd ..
+ln -s coreutils-8.22 coreutils
+}}}
+  * installing *pigz* version 1.2.10 (optional)
+{{{
+cd /apps/fusioncatcher/tools
+wget http://zlib.net/pigz/pigz-2.3.1.tar.gz
+tar zxvf pigz-2.3.1.tar.gz
+cd pigz-2.3.1
+make
+cd ..
+ln -s pigz-2.3.1 pigz
+}}}
+  * installing *SAMTools* version 1.19 (optional)
+{{{
+cd /apps/fusioncatcher/tools
+wget http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2
+tar jxvf samtools-0.1.19.tar.bz2
+cd samtools-0.1.19
+make
+cd ..
+ln -s samtools-0.1.19 samtools
+}}}
+  * installing *Picard tools* version 1.119 (optional)
+{{{
+cd /apps/fusioncatcher/tools
+wget http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip
+unzip picard-tools-1.119.zip
+ln -s picard-tools-1.119 picard
+}}}
+  * installing *!FusionCatcher* version 0.99.3e (required)
+{{{
+cd /apps/fusioncatcher
+wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.3e.zip
+unzip fusioncatcher_v0.99.3e.zip
+mv fusioncatcher_v0.99.3e bin
+}}}
+  * specify the paths to the above tools such that *!FusionCatcher* can find them. There are two choices:
+    # Edit the *!FusionCatcher* configuration file *`configuration.cfg`* (type: *`nano /apps/fusioncatcher/bin/configuration.cfg`* at command line) and make sure that the *!FusionCatcher*'s configuration file *'configuration.cfg'* looks like this:
+{{{
+[paths]
+python = /usr/bin/
+data = /apps/fusioncatcher/data/current/
+scripts = /apps/fusioncatcher/bin/
+bowtie = /apps/fusioncatcher/tools/bowtie/
+blat = /apps/fusioncatcher/tools/blat/
+bowtie2 = /apps/fusioncatcher/tools/bowtie2/
+star = /apps/fusioncatcher/tools/star/
+seqtk = /apps/fusioncatcher/tools/seqtk/
+velvet = /apps/fusioncatcher/tools/velvet/
+fatotwobit = /apps/fusioncatcher/tools/blat/
+liftover = /apps/fusioncatcher/tools/blat/
+sra = /apps/fusioncatcher/tools/sratoolkit/bin/
+numpy = /apps/fusioncatcher/tools/numpy/
+biopython = /apps/fusioncatcher/tools/biopython/
+xlrd = /apps/fusioncatcher/tools/xlrd/
+openpyxl = /apps/fusioncatcher/tools/openpyxl
+lzop = /apps/fusioncatcher/tools/lzop/src/
+coreutils = /apps/fusioncatcher/tools/coreutils/src
+pigz = /apps/fusioncatcher/tools/pigz/
+samtools = /apps/fusioncatcher/tools/samtools/
+picard = /apps/fusioncatcher/tools/picard/
+}}}
+    # Add the paths for the needed tools to the `PATH` variable by editing, for example, the *`.bashrc`* file (type: *`nano ~/.bashrc`* at command line) and add the following lines at the end:
+{{{
+export PATH=/apps/fusioncatcher/bin:$PATH
+export PATH=/apps/fusioncatcher/tools/bowtie:$PATH
+export PATH=/apps/fusioncatcher/tools/bowtie2:$PATH
+export PATH=/apps/fusioncatcher/tools/blat:$PATH
+export PATH=/apps/fusioncatcher/tools/star:$PATH
+export PATH=/apps/fusioncatcher/tools/liftover:$PATH
+export PATH=/apps/fusioncatcher/tools/seqtk:$PATH
+export PATH=/apps/fusioncatcher/tools/sratoolkit/bin:$PATH
+export PATH=/apps/fusioncatcher/tools/velvet/:$PATH
+export PATH=/apps/fusioncatcher/tools/fatotwobit/:$PATH
+export PATH=/apps/fusioncatcher/tools/lzop/src/:$PATH
+export PATH=/apps/fusioncatcher/tools/coreutils/src/:$PATH
+export PATH=/apps/fusioncatcher/tools/pigz/:$PATH
+export PATH=/apps/fusioncatcher/tools/samtools/:$PATH
+export PATH=/apps/fusioncatcher/tools/picard/:$PATH
+}}}
+    # if a different version of Python is used/needed by *!FusionCatcher* than the standard *`/usr/bin/env python`* then also please make sure that that specific version of Python is added to the *`PATH`* variable by editing, for example, the *`.bashrc`* file (type: *`nano ~/.bashrc`* at command line) or add the following lines at the end:
+{{{
+export PATH=/some/other/version/of/python:$PATH
+}}}
+    # in some cases it might not be enough to change the Python's path in *`.bashrc`* file, like for example the case when *!FusionCatcher* is run on a server which defaults to another Python than one used to install *!FusionCatcher*. In this case it is required that one changes all the [http://en.wikipedia.org/wiki/Shebang_(Unix) shebangs] of the all Python scripts which belong to *!FusionCatcher*. In case that one uses the Python which has the following Python executable path *`/some/other/python`* than this can be done like this (it changes in place *`/usr/bin/env python`* into *`/some/other/python`* in all `/apps/fusioncatcher/bin/*.py`):
+{{{
+sed -i 's/\/usr\/bin\/env\ python/\/some\/other\/python/g' /apps/fusioncatcher/bin/*.py
+}}}
+  * download/build the human build data from Ensembl database and other databases and build the necessary indexes and files (the latest version of Ensembl data is version 77 as October 2014 when this section was updated last time). There are two alternative ways to get the human *build data*. The recommended way is to use `fusioncatcher-build`.
+    # Using direct download
+{{{
+mkdir -p /apps/fusioncatcher/data
+cd /apps/fusioncatcher/data
+wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v77d.tar.gz.aa
+wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v77d.tar.gz.ab
+wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v77d.tar.gz.ac
+wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v77d.tar.gz.ad
+cat ensembl_v77d.tar.gz.* | tar xz
+ln -s ensembl_v77d current
+}}}
+    # Using `fusioncatcher-build` -- It will takes several hours (e.g. 5-10 hours) and it depends highly on the bandwidth of your internet connection. One may find out what Ensembl database version is available at [www.ensembl.org] and what version has been downloaded by looking to the last three lines printed on the screen by *`fusioncatcher-build`*.
+{{{
+mkdir -p /apps/fusioncatcher/data/ensembl_v77
+cd /apps/fusioncatcher/data/ensembl_v77
+/apps/fusioncatcher/bin/fusioncatcher-build -g homo_sapiens -o .
+cd ..
+ln -s ensembl_v77 current
+}}}
+
+== 4.3 - Semi-automatic installation ==
+
+This is an example of semi-automatic installation of *!FusionCatcher* (and it is installed here: "/some/server/apps/fusioncatcher"). This may be used when *!FusionCatcher* should be installed on a computer without internet connection. Shortly, in this case all the sofware dependencies and indexes of databases need to be downloaded separately on another computer which has internet connection and from there they should be copied/moved to the computer without internet connection. Here are the steps for achieving these:
+
+  * on computer A (which has internet connection):
+    # create locally a folder named, for example, `fuscat`
+{{{
+mkdir fuscat
+cd fuscat
+}}}
+    # download the `bootstrap.py` of *!FusionCatcher*
+{{{
+wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py
+}}}
+    # find out the dependencies needed to be downloaded (their URLs will be shown and the user needs to download them manually using wget or its favourite browser) into folder `fuscat`
+{{{
+python bootstrap.py --list-dependencies
+}}}
+    # copy/move (manually) the folder `fuscat` and all its content to computer B (which does not have internet connection) where one intends to install *!FusionCatcher*
+  * on the computer B (which does not have internet connection), where one intends to install *!FusionCatcher*:
+    # go to the folder `fuscat`
+{{{
+cd fuscat
+}}}
+    # start the installing process of *!FusionCatcher* using `bootstrap.py` (if one wishes to use another version of Python, like for example having the path `/some/other/python` then below please replace `python` with `/some/other/python`)
+{{{
+python bootstrap.py --local .
+}}}
+    # follow the instructions given by `bootstrap.py`
+
+
+Please, do not forget to build/download the organism data after this is done running (please notice the last lines displayed by `bootstrap.py` after it finished running and execute the commands suggested there, e.g. use `mega.sh`)!
+
+For more information regarding the installation settings and possibilities, run:
+{{{
+python bootstrap.py --help
+}}}
+
+== 4.4 - Testing installation ==
+
+In order to test that *!FusionCatcher* has been installed correctly and it is working correctly the following steps are needed (it requires the SRA toolkit to be installed):
+  * download the publicly available RNA-seq data for BT-474 tumor breast cell line published in article *H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011.* http://genomebiology.com/2011/12/1/R6/
+{{{
+mkdir -p ~/bt474
+cd ~/bt474
+wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
+}}}
+  * run *!FusionCatcher* (it takes around ~1.5 hours)
+    # if BLAT has been installed then run:
+{{{
+/apps/fusioncatcher/bin/fusioncatcher \
+-d /apps/fusioncatcher/data/current/ \
+-i ~/bt474/ \
+-o ~/bt474_fusions/
+}}}
+    # if BLAT has *NOT* been installed then run:
+{{{
+/apps/fusioncatcher/bin/fusioncatcher \
+-d /apps/fusioncatcher/data/current/ \
+-i ~/bt474/ \
+-o ~/bt474_fusions/ \
+--skip-blat
+}}}
+
+  * if the run was successful then there should be at least these (non-empty) files:
+{{{
+~/bt474_fusions/final-list_candidate_fusion_genes.txt
+~/bt474_fusions/preliminary-list_candidate_fusion_genes.txt
+~/bt474_fusions/supporting-reads_gene-fusions_BOWTIE.zip
+~/bt474_fusions/info.txt
+~/bt474_fusions/fusioncatcher.log
+}}}
+and the file
+{{{
+~/bt474_fusions/final-list_candidate_fusion_genes.txt
+}}}
+should contain more than one line (the first line is the header).
+
+== 4.5 - Breast cancer cell line ==
+
+This is an example of finding fusion genes in the BT474 cell line using the public available RNA-seq data (from SRA archive):
+  * download the publicly available RNA-seq data for BT-474 tumor breast cell line published in article *H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011.* http://genomebiology.com/2011/12/1/R6/
+{{{
+mkdir -p ~/bt474
+cd ~/bt474
+wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
+wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064439/SRR064439.sra
+}}}
+  * run *!FusionCatcher* (it takes around ~2.5 hours)
+{{{
+/apps/fusioncatcher/bin/fusioncatcher \
+-d /apps/fusioncatcher/data/current/ \
+-i ~/bt474/ \
+-o ~/bt474_fusions/
+}}}
+  * if the run was successful then there should be the (non-empty) files (for more information see [Manual#6.2_-_Output_data here]):
+{{{
+~/bt474_fusions/final-list_candidate_fusion_genes.txt
+~/bt474_fusions/preliminary-list_candidate_fusion_genes.txt
+~/bt474_fusions/supporting-reads_gene-fusions_BOWTIE.zip
+~/bt474_fusions/supporting-reads_gene-fusions_BLAT.zip
+~/bt474_fusions/supporting-reads_gene-fusions_STAR.zip
+~/bt474_fusions/supporting-reads_gene-fusions_BOWTIE2.zip
+~/bt474_fusions/info.txt
+~/bt474_fusions/fusioncatcher.log
+}}}
+and the file
+{{{
+~/bt474_fusions/final-list_candidate_fusion_genes.txt
+}}}
+should look like [fusionsBT474 this] and almost all of them have been published here:
+  * S. Kangaspeska, S. Hultsch, H. Edgren, D. Nicorici, A. Murumägi, O.P. Kallioniemi, Reanalysis of RNA-sequencing data reveals several additional fusion genes with multiple isoforms, PLOS One, Oct. 2012. http://dx.plos.org/10.1371/journal.pone.0048745
+  * H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011. http://genomebiology.com/2011/12/1/R6
+
+== 4.6 - Batch mode ==
+
+This is an example of finding fusion genes in the [http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/ Illumina Body Map 2.0] RNA-seq data which consists of 16 RNA samples from 16 different organs from healthy persons. For doing this the batch mode is used (where the input is [http://sourceforge.net/projects/fusioncatcher/files/examples/illumina-bodymap2.txt this file]), as shown here:
+{{{
+mkdir -p ~/bodymap
+cd ~/bodymap
+wget http://sourceforge.net/projects/fusioncatcher/files/examples/illumina-bodymap2.txt
+fusioncatcher-batch.py -i illumina-bodymap2.txt -o results
+}}}
+The input file for `fusioncatcher-batch.py` is a text tab-separated file with two columns and 16 lines (one line for each organ from Illumina Body Map 2.0). The first column contains the URLs for the input FASTQ files and the second column (which is optional) contains the name of the organ (which will be used to create a output directory later where the results will be). Therefore, *!FusionCatcher* will be run automatically 16 times by the `fusioncatcher-batch.py`.
+
+The fusion genes found in Illumina Body Map 2.0 could be used later, for example, as a list of known false positives when looking for fusion genes in diseased/tumor samples.
+
+== 4.7 - Matched normal sample ==
+
+In case that there is available RNA-seq data from a tumor sample and its match normal sample then the somatic mode of *`FusionCatcher`* may be used.  By default *`FusionCatcher`* is using a background list of fusion genes which have been found previously in normal healthy samples (e.g. Illumina !BodyMap2 , etc.).
+
+For example, lets assume that (i) the BT-474 is the rumor sample from here, and (ii) the matched normal samples if the healthy breast sample from here.  In this case, in order to find the somatic fusion genes in the BT-474 (that are the fusion genes which are found in BT-474 and are not found in the healthy sample) *`FusionCatcher`* should be run as follows:
+
+{{{
+mkdir -p ~/bt474
+cd ~/bt474
+wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
+wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064439/SRR064439.sra
+
+
+mkdir -p ~/healthy
+cd ~/healthy
+wget http://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064437/SRR064437.sra
+
+cd ~
+
+fusioncatcher.py
+--input ~/bt474/
+--normal ~/healthy
+--output ~/results/
+}}}
+
+The somatic fusion genes for BT-474 will be found in `~/results/bt474/final-list_candidate_fusion_genes.txt` file. The fusion genes which marked as *matched-normal* (see column 3 and for more see [Manual#6.2_-_Output_data Table 2]) in BT-474 (that is `~/results/bt474/final-list_candidate_fusion_genes.txt` file) have been found also in the healthy sample also and most likely they are not somatic.
+
+In case that there are several tumor samples and their matched healthy samples then batch mode of *`FusionCatcher`* may be used, as follows:
+{{{
+fusioncatcher-batch.py
+--input /some/path/tumor-file.txt
+--normal /some/path/healthy-file.txt
+--output /some/path/results/
+}}}
+where:
+   * `/some/path/tumor-file.txt` is a text file containing on each line a path to FASTQ files belonging to the tumor cells (an example is [http://sourceforge.net/projects/fusioncatcher/files/examples/edgren.txt here]),
+   * `/some/path/healthy-file.txt` is a text file containing on each line a path to FASTQ files belonging to the healthy cells (an example is [http://sourceforge.net/projects/fusioncatcher/files/examples/illumina-bodymap2.txt here]),
+   * `/some/path/results` is the output directory where the results are placed.
+
+== 4.8 - Edgren RNA-seq dataset ==
+
+This is an example of finding fusion genes in the Edgren RNA-seq data (from SRA archive):
+  * H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, *Identification of fusion genes in breast cancer by paired-end RNA-sequencing*, Genome Biology, Vol. 12, Jan. 2011. http://genomebiology.com/2011/12/1/R6
+  * S. Kangaspeska, S. Hultsch, H. Edgren, D. Nicorici, A. Murumägi, O.P. Kallioniemi, *Reanalysis of RNA-sequencing data reveals several additional fusion genes with multiple isoforms*, PLOS One, Oct. 2012. http://dx.plos.org/10.1371/journal.pone.0048745
+{{{
+fusioncatcher-batch.py -i http://sourceforge.net/projects/fusioncatcher/files/examples/edgren.txt -o results/
+}}}
+NOTE: *DO NOT POOL* the samples from all these cell lines. *DO NOT* give at once all these SRA/FASTQ files as input to !FusionCatcher! Run !FusionCatcher separately for each cell line! It is ok the pool together the samples from the same cell line together (but still do not concatenate yourself the FASTQ files and let !FusionCatcher do it for you)!
+
+----
+
+= 5 - INSTALLATION =
+
+== 5.1 - Getting executables ==
+
+For a fully automatic installation (including the required indexes of databases) run:
+{{{
+wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py && python bootstrap.py --download
+}}}
+
+In case of a manual installation, first please check that (i) the required dependencies are installed, and (ii) download the source files of *`FusionCatcher`*, like for example:
+{{{
+wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.3e.zip
+unzip fusioncatcher_v0.99.3e.zip
+}}}
+
+For an example of:
+   * fully automatic installation see [Manual#4.1_-_Automatic_installation here],
+   * manual installation see [Manual#4.2_-_Manual_installation here], and
+   * semi-automatic installation see  [Manual#4.2_-_Manual_installation here].
+
+== 5.2 - Organism's build data ==
+
+First, it is needed to download data or build the necessary files/indexes for running the *!FusionCatcher*. This process should be done once for every single organism or every time when the [http://www.ensembl.org Ensembl] database is updated.
+
+
+=== 5.2.1 - Direct download of human build data ===
+
+Here, in this example, the necessary data is downloaded and necessary files/indexes for the *human genome* are downloaded in the directory *`/some/human/data/ensembl_v77/`* which will be used later.
+
+{{{
+mkdir -p /some/human/data/
+cd /some/human/data/
+wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v77d.tar.gz.aa
+wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v77d.tar.gz.ab
+wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v77d.tar.gz.ac
+wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v77d.tar.gz.ad
+cat ensembl_v77d.tar.gz.* | tar xz
+ln -s ensembl_v77d current
+}}}
+
+If this works then it is not necessary to start building yourself the build data as shown below (which is *only* needed in case that the direct download for some reason does not work or one wishes to use the build data of another organism which is not available for download).
+
+=== 5.2.2 - Building yourself the organism's build data ===
+
+Here, in this example, the necessary data is downloaded and necessary files/indexes are built for the *human genome* in the directory *`/some/human/data/directory/`* which will be used later.
+{{{
+fusioncatcher-build -g homo_sapiens -o /some/human/data/directory/
+}}}
+This takes around 5-10 hours (downloading, building indexes/databases, etc.).
+
+In case that one wants to use a Ensembl server which is situated geographically closer, then one has:
+  * Ensembl server in Europe (used by default):
+{{{
+fusioncatcher-build -g homo_sapiens -o /some/human/data/directory/
+}}}
+  * Ensembl server in East US:
+{{{
+fusioncatcher-build -g homo_sapiens -o /some/human/data/directory/ --web=useast.ensembl.org
+}}}
+  * Ensembl server in West US:
+{{{
+fusioncatcher-build -g homo_sapiens -o /some/human/data/directory/ --web=uswest.ensembl.org
+}}}
+  * Ensembl server in Asia:
+{{{
+fusioncatcher-build -g homo_sapiens -o /some/human/data/directory/ --web=asia.ensembl.org
+}}}
+
+
+In case, that it is not possible to use `fusioncatcher-build` for vary reasons (e.g. access to Ensembl website is very slow) then one may directly download the latest *human build data* (generated by `fusioncatcher-build` using Ensembl database version 77) necessary for running `fusioncatcher` from [http://sourceforge.net/projects/fusioncatcher/files/data/ here] (all files are needed and the total size is ~17 GB).
+
+For rat genome, one has
+{{{
+fusioncatcher-build -g rattus_norvegicus -o /some/rat/data/directory/
+}}}
+or alternatively it can be downloaded from [http://fusioncatcher.blogsite.org/rattus_norvegicus_v77.tar.gz here].
+
+For mouse genome, one has
+{{{
+fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
+}}}
+or alternatively it can be downloaded from [http://fusioncatcher.blogsite.org/mus_musculus_v77.tar.gz here].
+
+*NOTE*: *!FusionCatcher* version 0.99.3e needs a newer *build data* than the previous version (that is 0.99.3d) of 'fusioncatcher-build'.
+----
+
+= 6 - USAGE =
+
+Searching for fusion genes in a human organism, one has:
+{{{
+fusioncatcher \
+-d /some/human/data/directory/ \
+-i /some/input/directory/containing/fastq/files/ \
+-o /some/output/directory/
+}}}
+where:
+  * *`/some/human/data/directory/`* - contains the data and files generated by *`fusioncatcher-build`* (see [Manual#5.2_-_Organism's_build_data Get data] section)
+  * *`/some/input/directory/containing/fastq/files/`* - contains the input FASTQ (or SRA if NCBI SRA toolkit is installed) files (and not any other type of files which are not do not contain sequecing data, e.g. readme.txt)
+  * *`/some/output/directory/`* - contains output files (for more information see [Manual#6.2_-_Output_data here]):
+    * *`final-list_candidate_fusion_genes.txt`*
+    * *`preliminary-list_candidate_fusion_genes.txt`*
+    * *`supporting-reads_gene-fusions_BOWTIE.zip`*
+    * *`supporting-reads_gene-fusions_BLAT.zip`*
+    * *`supporting-reads_gene-fusions_STAR.zip`*
+    * *`supporting-reads_gene-fusions_BOWTIE2.zip`*
+    * *`info.txt`*
+    * *`fusioncatcher.log`*
+
+Searching for fusion genes in a rat organism, one has:
+{{{
+fusioncatcher \
+-d /some/rat/data/directory/ \
+-i /some/input/directory/containing/fastq/files/ \
+-o /some/output/directory/
+}}}
+
+Searching for fusion genes in a mouse organism, one has:
+{{{
+fusioncatcher \
+-d /some/mouse/data/directory/ \
+-i /some/input/directory/containing/fastq/files/ \
+-o /some/output/directory/
+}}}
+
+
+
+== 6.1 - Input data ==
+
+The input data shall be:
+  * a directory containing the input FASTQ/SRA files, or
+  * several files separated by comma, e.g. `file01.fq,file02.fq` (there should be no blank before and after the comma!).
+
+All types of raw FASTQ files produced by the Illumina Solexa and Illumina !HiSeq platforms containing *paired-end* reads may be given as input. The FASTQ files shall:
+  * come from an *RNA* sequencing experiment (i.e. the transcriptome/RNA is sequenced), and
+  * contain *paired-end* reads, and
+  * paired FASTQ files should be synchronized (i.e. reads which for a pair should be on the same line number if both FASTQ files).
+
+It is *highly recommended* that:
+  * the input FASTQ files contain the *raw* reads generated by the Illumina sequencers *without any additional trimming* (i.e. all reads from all files shall have the same length), and
+  * every single input FASTQ file contains reads from only and only *one* sample/replicate (i.e. *do not concatenate* in one big FASTQ file several other FASTQ files; just give the input all FASTQ files and FusionCatcher will do the concatenation).
+
+*!FusionCatcher* will automatically pre-process the input reads, as follows:
+  * trimming 3' end of the reads based on quality scores (default Q5),
+  * removing automatically the adapter from the reads (it predicts the adapter sequence based on the reads which form a pair and also overlap and the non-overlapping parts are the predicted adapters),
+  * trimming the poly A/C/G/T tails,
+  * removing the reads which contain short tandem repeats (see: M. Gymrek, et al. lobSTR: A short tandem repeat profiler for personal genomes, Genome Res. 2012 Jun;22(6):1154-62, here http://genome.cshlp.org/content/22/6/1154.abstract ,
+  * removing the reads which are marked as bad by Illumina sequencer,
+  * removing the reads which are too short after the trimming,
+  * removing the reads which map on ribosomal RNA,
+  * removing the reads which map on genomes of bacteria/phages/viruses (from: ftp://ftp.ncbi.nlm.nih.gov/genomes/Viruses/ ).
+
+
+The SRA files are accepted as input as long as the NCBI SRA toolkit (see dependencies section) is installed and available.
+
+The following files are accepted/used as input:
+  * `*.fq.zip`
+  * `*.fq.gz`
+  * `*.fq.bz2`
+  * `*.fastq.zip`
+  * `*.fastq.gz`
+  * `*.fastq.bz2`
+  * `*.txt.zip`
+  * `*.txt.gz`
+  * `*.txt.bz2`
+  * `*.fq`
+  * `*.fastq`
+  * `*.txt`
+  * `*.sra`
+and the `zip` and `gz` archives should contain only one file.
+
+*!FusionCatcher* also starting with version 0.99.2 accepts as input also URLs (it shall start with ftp:// or http://), like for example
+{{{
+fusioncatcher -i ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR030/ERR030872/ERR030872_1.fastq.gz,ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR030/ERR030872/ERR030872_2.fastq.gz -o thyroid
+}}}
+
+The FASTQ input files should be the ones generated by the Illumina platform without any kind of additional processing/filtering/trimming. *!FusionCatcher* is doing its own filtering (automatically identifies and trims the adapters, trimming if needed, quality filtering of reads, removal of rRNA reads, etc.).
+
+*!FusionCatcher* is using the file names of the input files in order to figure out which files are paired (which contains ´R1´ reads and which contains the corresponding ´R2´ reads). For this *!FusionCatcher* is ordering alphabetically the file names (found in a input directory) and it considers that the first two form a pair, the next two are forming a pair and so on. Shortly, here the first two files, the next two files and so on should be synchronized. For example, considering the following input files:
+{{{
+L002_R1.fastq.gz
+L002_R2.fastq.gz
+L003_R1.fastq.gz
+L003_R2.fastq.gz
+}}}
+*!FusionCatcher* would automatically figure out correctly that the first two files form a pair and the next two would form another pair.
+
+There are cases when ordering alphabetically the input file names would make *!FusionCatcher* to pair wrongly the input files (i.e. the input FASTQ files are not synchronized). In this kind of cases, renaming the input files such that they fit this rule helps. For example, considering the following input files (where the file containing ´R1´ reads is split into two files and the file containing ´R2´ reads is split into another two files):
+{{{
+L002_R1_01.fastq.gz
+L002_R1_02.fastq.gz
+L002_R2_01.fastq.gz
+L002_R2_02.fastq.gz
+}}}
+*!FusionCatcher* would automatically figure out *wrongly* that the first two files form a pair and the next two would form another pair. In this case, renaming the files like this
+{{{
+mv L002_R1_01.fastq.gz 01_L002_R1_01.fastq.gz
+mv L002_R1_02.fastq.gz 03_L002_R1_02.fastq.gz
+mv L002_R2_01.fastq.gz 02_L002_R2_01.fastq.gz
+mv L002_R2_02.fastq.gz 04_L002_R2_02.fastq.gz
+}}}
+would give this alphabetically order list:
+{{{
+01_L002_R1_01.fastq.gz
+02_L002_R2_01.fastq.gz
+03_L002_R1_02.fastq.gz
+04_L002_R2_02.fastq.gz
+}}}
+and with this input files *!FusionCatcher* would work correctly. Another way, around this would be to give the input files separated by comma (in the correct order and no blanks before and after the comma), like this
+{{{
+fusioncatcher -i L002_R1_01.fastq.gz,L002_R2_01.fastq.gz,L002_R1_02.fastq.gz,L002_R2_02.fastq.gz
+}}}
+
+For example, this is a valid input:
+{{{
+01_L002_R1_01.fastq.gz
+02_L002_R2_01.fastq.gz
+03_L002_R1_02.fastq.gz
+04_L002_R2_02.fastq.gz
+05_L002_R1_03.fastq.gz
+06_L002_R2_03.fastq.gz
+07_L002_R1_04.fastq.gz
+08_L002_R2_04.fastq.gz
+09_L002_R1_05.fastq.gz
+10_L002_R2_05.fastq.gz
+11_L002_R1_06.fastq.gz
+12_L002_R2_06.fastq.gz
+}}}
+
+For example, this is *NOT* a valid input:
+{{{
+10_L002_R2_05.fastq.gz
+11_L002_R1_06.fastq.gz
+12_L002_R2_06.fastq.gz
+1_L002_R1_01.fastq.gz
+2_L002_R2_01.fastq.gz
+3_L002_R1_02.fastq.gz
+4_L002_R2_02.fastq.gz
+5_L002_R1_03.fastq.gz
+6_L002_R2_03.fastq.gz
+7_L002_R1_04.fastq.gz
+8_L002_R2_04.fastq.gz
+9_L002_R1_05.fastq.gz
+}}}
+
+
+*NOTE:*
+  * In case that a directory is given as input, one shall make sure that the input directory does not contain files which do not contain reads sequences (e.g. readme.txt, info.txt, etc.)!
+  * Please, let *!FusionCatcher* _do_ the the concatenation of several FASTQ files (i.e. just put all the FASTQ files into one folder and give that folder as input to *!FusionCatcher*) and do NOT do concatenate the FASTQ files yourself (e.g. using `cat`). This is because most likely different FASTQ files might have:
+    * different adapter sequences (*!FusionCatcher* is expecting that there are only one type of adapter, exactly like it comes directly from the Illumina sequencers),
+    * different fragment sizes, and
+    * different read lengths.
+  * *DO NOT POOL* samples from different cell lines or from different patients! Run !FusionCatcher separately with one sample at the time! It is ok the pool together the samples, which come from the (i) same cell line, or (ii) from the same patient (but still do not concatenate yourself the FASTQ files and let !FusionCatcher do it for you)!
+
+== 6.2 - Output data ==
+
+*!FusionCatcher* produces a list of candidate fusion genes using the given input data. It is recommended that this list of candidate of fusion genes is further validated in the wet-lab using for example PCR/FISH experiments.
+
+The output files are:
+  * *`final-list_candidate_fusion_genes.txt`* - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3c the coordinates of fusion genes are given here for human genome using *only* assembly *hg38/GRCh38*; See [Manual#6.2_-_Output_data Table 1] for columns' descriptions;
+  * *`final-list_candidate_fusion_genes.GRCh37.txt`* - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3d the coordinates of fusion genes are given here for human genome using assembly *hg19/GRCh37*; See [Manual#6.2_-_Output_data Table 1] for columns' descriptions;
+  * *`preliminary-list_candidate_fusion_genes.txt`* - preliminary list of candidates fusion genes which is used further to find the final list of candidate fusion genes (it contains the candidate fusion genes without their junction sequence and point); See [Manual#6.2_-_Output_data Table 2] for columns' descriptions;
+  * *`supporting-reads_gene-fusions_BOWTIE.zip`* - sequences of short reads supporting the newly found candidate fusion genes found using only and exclusively the Bowtie aligner;
+  * *`supporting-reads_gene-fusions_BLAT.zip`* - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and Blat aligners;
+  * *`supporting-reads_gene-fusions_STAR.zip`* - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and STAR aligners;
+  * *`supporting-reads_gene-fusions_BOWTIE2.zip`* - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and Bowtie2 aligners;
+  * *`info.txt`* - information regarding genome version, Ensembl database version, versions of tools used, read counts, etc.;
+  * *`fusioncatcher.log`* -  log of the entire run (e.g. all commands/programs which have been run, command line arguments used, running time for each command, etc.).
+
+!FusionCatcher reports:
+  * up to four times exactly the same candidate fusion gene, which has exactly the same fusion points/junction (i.e. !FusionCatcher will output separately the fusions found for each of its four aligners/methods such that it is easy to see what method was used to find a fusion gene)
+  * [http://www.ncbi.nlm.nih.gov/pubmed/23340173 reciprocal fusion genes] if they are found (e.g. geneA-geneB and also geneB-geneA)
+  * every alternative splicing event found for each fusion gene (i.e. alternative fusion isoforms of the same fusion gene)
+
+*Table 1* - The description of columns of file *`final-list_candidate-fusion-genes.txt`*
+|| *Column* || *Description* ||
+|| *Gene_1_symbol(5end_fusion_partner)* || Gene symbol of the 5' end fusion partner ||
+|| *Gene_2_symbol_2(3end_fusion_partner)* || Gene symbol of the 3' end fusion partner ||
+|| *Gene_1_id(5end_fusion_partner)* || Ensembl gene id of the 5' end fusion partner ||
+|| *Gene_2_id(3end_fusion_partner)* || Ensembl gene id of the 3' end fusion partner ||
+|| *Exon_1_id(5end_fusion_partner)* || Ensembl exon id of the 5' end fusion exon-exon junction ||
+|| *Exon_2_id(3end_fusion_partner)* || Ensembl exon id of the 3' end fusion exon-exon junction ||
+|| *Fusion_point_for_gene_1(5end_fusion_partner)* || Chromosomal position of the 5' end of fusion junction (chromosome:position:strand) ||
+|| *Fusion_point_for_gene_2(3end_fusion_partner)* || Chromosomal position of the 3' end of fusion junction (chromosome:position:strand) ||
+|| *Spanning_pairs* || Count of pair-end reads supporting the fusion ||
+|| *Spanning_unique_reads* || Count of unique reads (i.e. unique mapping positions) mapping on the fusion junction. Shortly, here are counted all the reads which map on fusion junction minus the PCR duplicated reads. ||
+|| *Longest_anchor_found* || Longest anchor (hangover) found among the unique reads mapping on the fusion junction ||
+|| *Fusion_finding_method* || Aligning method used for mapping the reads and finding the fusion genes. Here are two methods used which are: (i) *BOWTIE* = only Bowtie aligner is used for mapping the reads on the genome and exon-exon fusion junctions, (ii) *BOWTIE+BLAT* = Bowtie aligner is used for mapping reads on the genome and BLAT is used for mapping reads for finding the fusion junction,  (iii) *BOWTIE+STAR* = Bowtie aligner is used for mapping reads on the genome and STAR is used for mapping reads for finding the fusion junction, and (iv) *BOWTIE+BOWTIE2* = Bowtie aligner is used for mapping reads on the genome and Bowtie2 is used for mapping reads for finding the fusion junction. ||
+|| *Fusion_sequence* || The inferred fusion junction (the asterisk sign marks the junction point) ||
+|| *Fusion_description* || Type of the fusion gene (see the Table 3) ||
+|| *Counts_of_common_mapping_reads* || Count of reads mapping simultaneously on both genes which form the fusion gene. This is an indication how similar are the DNA/RNA sequences of the genes forming the fusion gene (i.e. what is their homology because highly homologous genes tend to appear show as candidate fusion genes). In case of completely different sequences of the genes involved in forming a fusion gene then here it is expected to have the value zero. ||
+|| *Predicted_effect* || Predicted effect of the candidate fusion gene using the annotation from Ensembl database. This is shown in format *effect_gene_1*/*effect_gene_2*, where the possible values for effect_gene_1 or effect_gene_2 are: *intergenic*, *intronic*, *exonic(no-known-CDS)*, *UTR*, *CDS(not-reliable-start-or-end)*, *CDS(truncated)*, or *CDS(complete)*. In case that the fusion junction for both genes is within their CDS (coding sequence) then only the values *in-frame* or *out-of-frame* will be shown. ||
+|| *Predicted_fused_transcripts* || All possible known fused transcripts in format ENSEMBL-TRANSCRIPT-1:POSITION-1/ENSEMBLE-TRANSCRIPT-B:POSITION-2, where are fused the sequence 1:POSITION-1 of transcript ENSEMBL-TRANSCRIPT-1 with sequence POSITION-2:END of transcript ENSEMBL-TRANSCRIPT-2 ||
+|| *Predicted_fused_proteins* || Predicted amino acid sequences of all possible fused proteins ||
+
+*Table 2* - The description of columns of file *`preliminary-list_candidate-fusion-genes.txt`*
+|| *Column* || *Description* ||
+|| *Fusion_gene_1* || Ensembl gene id of the 5' end fusion partner ||
+|| *Fusion_gene_2* || Ensembl gene id of the 3' end fusion partner ||
+|| *Count_paired-end_reads* || Count of pair-end reads supporting the fusion ||
+|| *Fusion_gene_symbol_1* || Gene symbol of the 5' end fusion partner ||
+|| *Fusion_gene_symbol_2* || Gene symbol of the 3' end fusion partner ||
+|| *Fusion_description* || Type of the fusion gene (see the Table 3) ||
+|| *Analysis_status* || If a fusion gene is considered a false positive is labeled as *skipped* and it is not used further to find its junction sequence and point. If a fusion gene is considered that it might be a real fusion gene then it is labeled as *further_analysis* and *!FusionCatcher* will try to finds its junction sequence and junction point||
+|| *Counts_of_common_mapping_reads* || Count of reads mapping simultaneously on both genes which form the fusion gene. This is an indication how similar are the DNA/RNA sequences of the genes forming the fusion gene (i.e. what is their homology because highly homologous genes tend to appear show as candidate fusion genes). In case of completely different sequences of the genes involved in forming a fusion gene then here it is expected to have the value zero. ||
+
+
+*Table 3* - The labels used to mark fusion genes (i.e. column `Fusion_description` from Tables 1 and 2) in files *`final-list_candidate-fusion-genes.txt` * and *`preliminary-list_candidate-fusion-genes.txt`*
+|| *Fusion_description* || *Description* ||
+|| *antisense* || one or both genes is a gene coding for [http://en.wikipedia.org/wiki/Antisense_RNA antisense RNA]||
+|| *banned* || fusion gene is on a list of known false positive fusion genes. These were found with very strong supporting data in healthy samples.<font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *bodymap2* || fusion gene is on a list of known false positive fusion genes. It has been found in healthy human samples collected from 16 organs from  [http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/ Illumina !BodyMap2 RNA-seq database] <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *chimerdb2* || known fusion gene from the [http://ercsb.ewha.ac.kr/FusionGene/ ChimerDB] database (please use ChimerDB2 database for more information regarding the fusion gene) ||
+|| *conjoing* || known conjoined genes (that is fusion genes found in samples from healthy patients) from the [http://metasystems.riken.jp/conjoing/ ConjoinG] database (please use ConjoinG database for more information regarding the fusion gene). <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive in case that one looks for fusion genes specific to a disease._ </font> ||
+|| *cosmic* || known fusion gene from the [http://cancer.sanger.ac.uk/cancergenome/projects/cosmic/ COSMIC] database (please use COSMIC database for more information regarding the fusion gene) ||
+|| *cacg* || known conjoined genes (that is fusion genes found in samples from healthy patients) from the [http://cgc.kribb.re.kr/map/ CACG] database (please see CACG database for more information). <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive in case that one looks for fusion genes specific to a disease._ </font>||
+|| *cgp* || known fusion gene from the [http://www.sanger.ac.uk/genetics/CGP/Census/ CGP] database (please use CGP database for more information regarding the fusion gene) ||
+|| *cta_gene* || one gene or both genes is CTA gene (that is that the gene name starts with *CTA-*). <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *ctb_gene* || one gene or both genes is CTB gene (that is that the gene name starts with *CTB-*). <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *ctc_gene* || one gene or both genes is CTC gene (that is that the gene name starts with *CTC-*). <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *ctd_gene* || one gene or both genes is CTD gene (that is that the gene name starts with *CTD-*). <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *distance1000bp* || both genes are on the same strand and they are less than 1 000 bp apart. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *distance10kbp* || both genes are on the same strand and they are less than 10 000 bp apart. <font color="red">_A candidate fusion gene having this label has a higher probability than expected of being a false positive._</font>||
+|| *distance100kbp* || both genes are on the same strand and they are less than 100 000 bp apart. <font color="red">_A candidate fusion gene having this label has a higher probability than expected of being a false positive._</font>||
+|| *duplicates* || both genes involved in the fusion gene are [http://en.wikipedia.org/wiki/Paralog#Paralogy paralog] for each other. For more see [http://dgd.genouest.org/ Duplicated Genes Database (DGD) database] . <font color="red">_A candidate fusion gene having this label has a higher probability than expected of being a false positive._</font>||
+|| *ensembl_fully_overlapping* || the genes forming the fusion gene are fully overlapping according to Ensembl database. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._ </font> ||
+|| *ucsc_fully_overlapping* || the genes forming the fusion gene are fully overlapping according to UCSC database. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._ </font> ||
+|| *refseq_fully_overlapping* || the genes forming the fusion gene are fully overlapping according to !RefSeq NCBI database. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._ </font> ||
+|| *healthy* || fusion gene has been seen in a healthy sample. These have been found in healthy samples but the support for them is less strong (i.e. paired reads were found to map on both genes but no fusion junction was found) than in the case of *banned* label.<font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive in case that one looks for fusion genes specific to a disease._</font> ||
+|| *known_fusion* || known fusion gene which has been previously published (i.e. it is not a novel fusion gene). It has been found in Google. Please use Google for more information regarding the fusion gene! ||
+|| *matched-normal* || candidate fusion gene (which is supported by paired reads mapping on both genes and also by reads mapping on the junction point) was found also in the matched normal sample given as input to the command line option '--normal' ||
+|| *partial-matched-normal* || candidate fusion gene (which is supported by paired reads mapping on both genes *but* _no_ reads were found which map on the junction point) was found also in the matched normal sample given as input to the command line option '--normal'. This is much weaker than *matched-normal*. ||
+|| *lincrna* || one or both genes is a [http://en.wikipedia.org/wiki/Long_non-coding_RNA lincRNA] ||
+|| *metazoa* || one or both genes is a metazoa_srp gene [http://www.genecards.org/index.php?path=/Search/keyword/metazoa_srp Metazia_srp] ||
+|| *mirna* || one or both genes is a [http://en.wikipedia.org/wiki/MicroRNA miRNA] ||
+|| *mt* || one or both genes are situated on [http://en.wikipedia.org/wiki/Mitochondrion mitochondrion]. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *no_protein_product* || one or both genes have no known protein product ||
+|| *oncogene* || one gene or both genes are a known [http://en.wikipedia.org/wiki/Oncogene oncogene] ||
+|| *pair_pseudo_genes* || one gene is the other's [http://en.wikipedia.org/wiki/Pseudogene pseudogene]. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *paralogs* || both genes involved in the fusion gene are  [http://en.wikipedia.org/wiki/Paralog#Paralogy paralog] for each other (most likely this is a false positive fusion gene). <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *ensembl_partially_overlapping* || the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the Ensembl database. ||
+|| *ucsc_partially_overlapping* || the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the UCSC database. ||
+|| *refseq_partially_overlapping* || the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the !RefSeq NCBI. ||
+|| *pseudogene* || one or both of the genes is a [http://en.wikipedia.org/wiki/Pseudogene pseudogene] ||
+|| *readthrough* || the fusion gene is a readthrough event (that is both genes forming the fusion are on the same strand and there is no known gene situated in between); Please notice, that many of readthrough fusion genes might be false positive fusion genes due to errors in Ensembl database annotation (for example, one gene is annotated in Ensembl database as two separate genes). <font color="red">_A candidate fusion gene having this label has a high probability of being a false positive._</font> ||
+|| *ribosomal_protein* || one or both gene is a gene encoding for [http://en.wikipedia.org/wiki/Ribosomal_protein ribosomal protein] ||
+|| *rp11_gene* || one gene or both genes is RP11 gene (that is that the gene name starts with *RP11-*). <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *rp_gene* || one gene or both genes is RP?? gene (that is that the gene name starts with *RP??-*) where ? is a digit. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *rrna* || one or both genes is a [http://en.wikipedia.org/wiki/Ribosomal_RNA rRNA].  <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font>||
+|| *ensembl_same_strand_overlapping* || the genes forming the fusion gene are fully/partially overlapping and are both on the same strand according to Ensembl database. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive (this is most likely and alternative splicing event)._ </font> ||
+|| *ucsc_same_strand_overlapping* || the genes forming the fusion gene are fully/partially overlapping and are both on the same strand according to UCSC database. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive (this is most likely and alternative splicing event)._ </font> ||
+|| *refseq_same_strand_overlapping* || the genes forming the fusion gene are fully/partially overlapping and are both on the same strand according to !RefSeq NCBI database. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive (this is most likely and alternative splicing event)._ </font> ||
+|| *short_distance* || both genes are on the same strand and they are less than X bp apart, where X is set using the option '--dist-fusion' and by default it is 200 000 bp. <font color="red">_A candidate fusion gene having this label has a higher probability than expected of being a false positive._</font> ||
+|| *similar_reads* || both genes have the same reads which map simultaneously on both of them (this is an indicator of how similar are the sequences of both genes; ideally this should be zero or as close to zero as possible for a real fusion). <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *similar_symbols* || both genes have the same or very similar gene names (for example: RP11ADF.1 and RP11ADF.2). <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *snorna* || one or both genes is a [http://en.wikipedia.org/wiki/Small_nucleolar_RNA snoRNA] ||
+|| *snrna* || one or both genes is a [http://en.wikipedia.org/wiki/Small_nuclear_RNA snRNA] ||
+|| *tcga* || known fusion gene from the [https://tcga-data.nci.nih.gov/tcga/ TCGA] database (please use Google for more information regarding the fusion gene) ||
+|| *ticdb* || known fusion gene from the [http://www.unav.es/genetica/TICdb/ TICdb] database (please use TICdb database for more information regarding the fusion gene) ||
+|| *trna* || one or both genes is a [http://en.wikipedia.org/wiki/Transfer_RNA tRNA] ||
+|| *yrna* || one or both genes is a [http://en.wikipedia.org/wiki/Y_RNA Y RNA] ||
+
+
+== 6.3 - Visualization ==
+*!FusionCatcher* outputs also the zipped FASTA files containing the reads which support the found candidate fusions genes. The files are:
+  * *`supporting-reads_gene-fusions_BOWTIE.zip`*,
+  * *`supporting-reads_gene-fusions_BLAT.zip`*,
+  * *`supporting-reads_gene-fusions_STAR.zip`*, and
+  *`supporting-reads_gene-fusions_BOWTIE2.zip`*.
+
+The reads which support the:
+  * junction of the candidate fusion have their name ending with *`_supports_fusion_junction`*, and
+  * candidate fusion (i.e. one reads map on one gene and the paired-read maps on the other fusion gene) have their name ending with *`_supports_fusion_pair`*.
+
+These supporting reads (given as FASTA and FASTQ files) may be used for further visualization purposes. For example, one may use these supporting reads and align them himself/herself using his/her favourite:
+  * aligner (e.g. Bowtie/Bowtie2/TopHat/STAR/GSNAP/etc.),
+  * version/assembly of genome,
+  * mapping format output (e.g. SAM/BAM), and
+  * NGS visualizer (e.g. [http://www.broadinstitute.org/igv/ IGV]/[http://genome.ucsc.edu/ UCSC Genome Browser]/etc.)
+
+=== 6.3.1 - UCSC Genome Browser ===
+For example, the sequences of supporting reads for a given candidate fusion gene may be visualized using [http://genome.ucsc.edu/ UCSC Genome Browser] by aligning them using the [http://genome.ucsc.edu/ UCSC Genome Browser]'s  BLAT aligner (i.e. copy and paste the reads here: [http://genome.ucsc.edu/cgi-bin/hgBlat?command=start BLAT tool of UCSC Genome Browser] --> click the button *Submit* --> navigate into the [http://genome.ucsc.edu/ UCSC Genome Browser] to the genes that form the fusion genes). Also zooming out several times gives better view here.
+
+=== 6.3.2 - PSL format ===
+If one uses the `--blat-visualization` command line option of the *!FusionCatcher* then the BLAT alignment of the supporting reads will be done automatically by the *!FusionCatcher* and the results are saved as [http://genome.ucsc.edu/FAQ/FAQformat.html#format2 PSL] files with names that are ending with *`_reads.psl`* in the:
+  * *`supporting-reads_gene-fusions_BOWTIE.zip`*,
+  * *`supporting-reads_gene-fusions_BLAT.zip`*,
+  * *`supporting-reads_gene-fusions_STAR.zip`*, and
+  * *`supporting-reads_gene-fusions_BOWTIE2.zip`*.
+The files with names ending in *`_reads.psl`* may be used further for visualization of the candidate fusion genes using [http://genome.ucsc.edu/ UCSC Genome Browser], [http://www.broadinstitute.org/igv/ IGV (Integrative Genome Viewer)] or any other viewer/browser which supports the [http://genome.ucsc.edu/FAQ/FAQformat.html#format2 PSL] format.
+
+=== 6.3.3 - SAM format ===
+
+==== 6.3.3.1 - Automatic method ====
+If one uses the `--visualization-sam` command line option of the *!FusionCatcher* then the BOWTIE2 alignment of the supporting reads will be done automatically by the *!FusionCatcher* and the results are saved as [http://samtools.github.io/hts-specs/SAMv1.pdf SAM] files with names that are ending with *`_reads.sam`* in the:
+  * *`supporting-reads_gene-fusions_BOWTIE.zip`*,
+  * *`supporting-reads_gene-fusions_BLAT.zip`*,
+  * *`supporting-reads_gene-fusions_STAR.zip`*, and
+  * *`supporting-reads_gene-fusions_BOWTIE2.zip`*.
+The files with names ending in *`_reads.sam`* (please note, that they still needed to be converted to BAM, coordiante sorted and indexed first) may be used further for visualization of the candidate fusion genes using [http://genome.ucsc.edu/ UCSC Genome Browser], [http://www.broadinstitute.org/igv/ IGV (Integrative Genome Viewer)] or any other viewer/browser which supports the [http://samtools.github.io/hts-specs/SAMv1.pdf SAM] format.
+
+==== 6.3.3.2 - Manual method ====
+Here is an rough example of manually aligning the supporting reads (that is named as `supporting_reads.fq` in the below example; the FASTQ files needed here are the files ending in *`_reads.fq`* from the ZIP archives *`supporting-reads_gene-fusions_*.zip`* produced by *!FusionCatcher*) using different aligners.
+  * [http://bowtie-bio.sourceforge.net/bowtie2/index.shtml Bowtie2] aligner (where *`your_choice_of_genome_bowtie2_index`* may be for human, for example [ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19.zip this])
+   * alignment done ignoring the paired-end information (i.e. like single reads):
+{{{
+bowtie2 \
+--local \
+-k 10 \
+-x your_choice_of_genome_bowtie2_index \
+-U supporting_reads.fq \
+-S fusion_genes.sam
+
+samtools view -bS fusion_genes.sam | samtools sort - fusion_genes.sorted
+
+samtools index fusion_genes.sorted.bam
+}}}
+   * alignment done taking into account the paired-end information:
+{{{
+cat supporting_reads.fq | \
+paste - - - - - - - - | \
+awk '{print $1"\n"$2"\n"$3"\n"$4 > "r1.fq"; print $5"\n"$6"\n"$7"\n"$8 > "r2.fq"}'
+
+bowtie2 \
+--local \
+-k 10 \
+-x your_choice_of_genome_bowtie2_index \
+-1 r1.fq \
+-2 r2.fq \
+-S fusion_genes.sam
+
+samtools view -bS fusion_genes.sam | samtools sort - fusion_genes.sorted
+
+samtools index fusion_genes.sorted.bam
+}}}
+  * [http://code.google.com/p/rna-star/ STAR] aligner (where *`your_choice_of_genome_star_index`* should be built according to the [http://github.com/alexdobin/STAR/tree/master/doc STAR Manual])
+   * alignment done ignoring the paired-end information (i.e. like single reads):
+{{{
+STAR \
+--genomeDir your_choice_of_genome_star_index \
+--alignSJoverhangMin 9 \
+--readFilesIn supporting_reads.fq \
+--outFileNamePrefix .
+
+samtools view -bS fusion_genes.sam | samtools sort - fusion_genes.sorted
+
+samtools index fusion_genes.sorted.bam
+}}}
+   * alignment done taking into account the paired-end information:
+{{{
+cat supporting_reads.fq | \
+paste - - - - - - - - | \
+awk '{print $1"\n"$2"\n"$3"\n"$4 > "r1.fq"; print $5"\n"$6"\n"$7"\n"$8 > "r2.fq"}'
+
+STAR \
+--genomeDir /your_choice_of_genome_star_index/ \
+--alignSJoverhangMin 9 \
+--readFilesIn r1.fq r2.fq\
+--outFileNamePrefix .
+
+samtools view -bS Aligned.out.sam | samtools sort - fusion_genes.sorted
+
+samtools index fusion_genes.sorted.bam
+}}}
+Further, the files `fusion_genes.sorted.bam` and `fusion_genes.sorted.bam.bai` may be used with your favourite NGS visualizer!
+
+== 6.4 - Examples ==
+
+=== 6.4.1 - Example 1 ===
+
+Here, is an example of how *!FusionCatcher* can be used to search for fusion genes in human RNA-seq sample where:
+  # any distance at chromosomal level between the candidate fusion genes is acceptable, *and*
+  # the candidate fusion genes are allowed to be readthroughs (i.e. the genes forming a fusion gene maybe adjacent on the chromosome)
+  # the candidate fusion genes are not allowed to be less the 1000 bp apart on the same strand
+  # use two methods to find the fusion genes (i.e. use BOWTIE, BLAT, STAR, and BOWTIE2 aligners for mapping the reads and this allows to find the fusion genes even in the case that the annotation from Ensembl database is not entirely correct, like for example find a fusion junction even if it is in the middle of a exon or intron)
+{{{
+fusioncatcher \
+-d /some/human/data/directory/ \
+-i /some/input/directory/containing/fastq/files/ \
+-o /some/output/directory/
+}}}
+
+=== 6.4.2 - Example 2 ===
+
+Here, is an example of how *!FusionCatcher* can be used to search for fusion genes in human RNA-seq sample where:
+  # any distance at chromosomal level between the candidate fusion genes is acceptable, *and*
+  # the candidate fusion genes are *not* allowed to be readthroughs (i.e. there is still at least one known gene situated one the same strand in between the genes which form the candidate fusion gene)
+  # the candidate fusion genes are not allowed to be less the 1000 bp apart on the same strand
+  # use only *one* method to find the fusion genes (i.e. use only BOWTIE aligner for mapping the reads and this allows to find the fusion genes only in the case that the annotation from Ensembl database is correct, like for example find a fusion junction only if it matches perfectly the known exon borders)
+{{{
+fusioncatcher \
+-d /some/human/data/directory/ \
+-i /some/input/directory/containing/fastq/files/ \
+-o /some/output/directory/ \
+--skip-readthroughs \
+--skip-blat
+}}}
+
+
+
+----
+
+= 7 - ALIGNERS =
+
+== 7.1 - Bowtie ==
+
+By default, *!FusionCatcher* its the Bowtie aligner for finding candidate fusion genes. This approach relies heavily on good is the annotation data for the given organism in the Ensembl database. If, for example, a gene is not annotated well and has several exons which are not annotated in the Ensembl database and if one of these exons is the one involved in the fusion point then this fusion gene will not be found by using only the Bowtie aligner. In order to find also the fusion genes where the the junction point is in the middle of exons or introns, `*FusionCatcher*` is using by default the BLAT, STAR, and BOWTIE2 aligners in addition to Bowtie aligner. The command line options '`--skip-blat`','`--skip-star`', or '`--skip-bowtie2`' should be used in order to specify what aligners should not be used.
+
+== 7.2 - Bowtie and Blat ==
+
+The use of Bowtie and Blat aligners is the *default* approach of *!FusionCatcher* for finding fusion genes.
+
+In order not to use this approach the command line option '`--skip-blat`' should be added, as following:
+
+{{{
+fusioncatcher \
+-d /some/human/data/directory/ \
+-i /some/input/directory/containing/fastq/files/ \
+-o /some/output/directory/ \
+--skip-blat
+}}}
+
+Please, read the license of Blat aligner before using this approach in order to see if you may use Blat! *!FusionCatcher* will use Blat aligner when using this approach!
+
+== 7.3 - Bowtie and STAR ==
+
+The use of Bowtie and STAR aligners is the *default* approach of *!FusionCatcher* for finding fusion genes.
+
+In order not to use this approach the command line option '`--skip-star`' should be added, as following:
+
+{{{
+fusioncatcher \
+-d /some/human/data/directory/ \
+-i /some/input/directory/containing/fastq/files/ \
+-o /some/output/directory/ \
+--skip-star
+}}}
+
+== 7.4 - Bowtie and Bowtie2 ==
+
+The use of Bowtie and Bowtie aligners is the *default* approach of *!FusionCatcher* for finding fusion genes.
+
+In order not to use this approach the command line option '`--skip-bowtie2`' should be added, as following:
+
+{{{
+fusioncatcher \
+-d /some/human/data/directory/ \
+-i /some/input/directory/containing/fastq/files/ \
+-o /some/output/directory/ \
+--skip-bowtie2
+}}}
+
+= 8 - GENE FUSION FINDER - fusioncatcher  =
+It searchers for fusion genes and/or translocations in RNA-seq data (paired-end reads FASTQ files produced by Illumina next-generation sequencing platforms like Illumina Solexa and Illumina `HiSeq`) in diseased samples.
+== 8.1 - Command line ==
+{{{
+fusioncatcher [options]
+}}}
+== 8.2 - Options ==
+{{{
+  -i INPUT_FILENAME, --input=INPUT_FILENAME
+                        The input file(s) or directory. The files should be in
+                        FASTQ or SRA format and may be or not compressed using
+                        gzip or zip. A list of files can be specified by given
+                        the filenames separated by comma. If a directory is
+                        given then it will analyze all the files found with
+                        the following extensions: .sra, .fastq, .fastq.zip,
+                        .fastq.gz, .fastq.bz2, .fq, .fq.zip, .fq.gz, .fq.bz2,
+                        .txt, .txt.zip, .txt.gz, .txt.bz2 .
+  -I NORMAL_MATCHED_FILENAME, --normal=NORMAL_MATCHED_FILENAME
+                        The input file(s) or directory containing the healthy
+                        normal-matched data. They should be given in the same
+                        format as for '--input'. In case that this option is
+                        used then the files/directory given to '--input' is
+                        considered to be from the sample of a patient with
+                        disease. This is optional.
+  -o OUTPUT_DIRECTORY, --output=OUTPUT_DIRECTORY
+                        The output directory where all the output files
+                        containing information about the found candidate
+                        fusiongenes are written. Default is 'none'.
+  -d DATA_DIRECTORY, --data=DATA_DIRECTORY
+                        The data directory where all the annotations files
+                        from Ensembl database are placed, e.g. 'data/'. This
+                        directory should be built using 'fusioncatcher-build'.
+                        If it is not used then it is read from configuration
+                        file specified with '--config' from 'data = ...' line.
+  -T TMP_DIRECTORY, --tmp=TMP_DIRECTORY
+                        The temporary directory where all the outputs files
+                        and directories will be written. Default is directory
+                        'tmp' in the output directory specified with '--
+                        output'.
+  -p PROCESSES, --threads=PROCESSES
+                        Number or processes to be used for running Bowtie,
+                        BLAT, STAR, BOWTIE2 and other tools/programs. By
+                        default the number of processes is chosen to be equal
+                        to the number of found CPUs. Default is '4'.
+  --config=CONFIGURATION_FILENAME
+                        Configuration file containing the paths to external
+                        tools (e.g. Bowtie, Blat, fastq-dump.) in case that
+                        they are not in PATH! Default is
+                        '/apps/fusioncatcher/bin/configuration.cfg'.
+  -z, --skip-update-check
+                        Skips the automatic routine that contacts the
+                        FusionCatcher server to check for a more recent
+                        version. Default is 'False'.
+
+  Trimming options:
+    -l TRIM_3END_KEEP, --5keep=TRIM_3END_KEEP
+                        All reads longer than '60' will be trimmed from their
+                        3-end such that to become exactly '60' bp long. Reads
+                        shorter than '60' will not be trimmed. The trimming
+                        priorities are '--5end','--3end','--5keep'. if several
+                        trimming options are used simultaneously. The trimming
+                        is done by default only to the reads used for BOWTIE
+                        aligner but not for BLAT/STAR/BOWTIE2 aligners. In
+                        order to apply the trimming also the reads used by
+                        BLAT/STAR/BOWTIE2 aligners option '--trim-psl' should
+                        be used! Default is '60'.
+    -5 TRIM_5END, --5end=TRIM_5END
+                        It trims all the reads from their 5-end with the given
+                        size. The trimming priorities are '--5end','--3end','
+                        --5keep'. if several trimming options are used
+                        simultaneously. The trimming is done by default only
+                        to the reads used for BOWTIE aligner but not for BLAT
+                        aligner. In order to apply the trimming also the reads
+                        used by BLAT/STAR/BOWTIE2 aligners option '--trim-psl'
+                        or '--trim-psl-5end' should be used! Default is '0'.
+    -3 TRIM_3END, --3end=TRIM_3END
+                        It trims all the reads from their 3-end with the given
+                        size. The trimming priorities are '--5end','--3end','
+                        --5keep'. if several trimming options are used
+                        simultaneously. The trimming is done by default only
+                        to the reads used for BOWTIE aligner but not for BLAT
+                        aligner. In order to apply the trimming also the reads
+                        used by BLAT/STAR/BOWTIE2 aligners option '--trim-psl'
+                        should be used! Default is '0'.
+    --trim-psl          If it is specified then also the reads given as input
+                        to BLAT/STAR/BOWTIE2 aligners are trimmed using the
+                        parameters given by command line arguments '--5keep',
+                        '--5end', and '--3end'. By default the trimming
+                        options '--5keep', '--5end', '--3end' are trimming the
+                        reads only for for the BOWTIE method but not when
+                        BLAT/STAR/BOWTIE2 are used. Default is 'False'.
+    -x TRIM_PSL_3END_KEEP, --trim-psl-5keep=TRIM_PSL_3END_KEEP
+                        All reads given as input to BLAT/STAR/BOWTIE2 aligners
+                        and which are longer than '80' will be trimmed from
+                        their 3-end such that to become exactly '80' bp long.
+                        The reads given as input to Bowtie are not trimmed
+                        using this option. It should be set to 0 if no
+                        trimming should be done for BLAT/STAR/BOWTIE2. Default
+                        is '80'.
+    --trim-psl-5end     If it is specified then also the reads given as input
+                        to BLAT/STAR/BOWTIE2 aligners are trimmed using the
+                        parameters given by command line argument '--5end'. By
+                        default the trimming options '--5keep', '--5end', '--
+                        3end' are trimming the reads only for for the BOWTIE
+                        method but not when BLAT/STAR/BOWTIE2 are used.
+                        Default is 'False'.
+    -Q TRIM_QUALITY, --trim-quality=TRIM_QUALITY
+                        The input reads will be trimmed from their 3'end when
+                        the quality scores are below the given threshold, e.g.
+                        5 for Q5. Default is '5'.
+
+  Search fusion genes options:
+    -m MISMATCHES, --mismatches=MISMATCHES
+                        Maximum number of mismatches to be allowed for mapping
+                        reads using Bowtie aligner. Minimum accepted value is
+                        zero and maximum is 3. Default is '2'.
+    --mismatches-psl=MISMATCHES_PSL
+                        Maximum number of mismatches to be allowed for mapping
+                        reads using BLAT/STAR/BOWTIE2 aligner. Default is '2'.
+    -s SPANNING_PAIRS, --pairs-fusion=SPANNING_PAIRS
+                        The minimum number of paired-end reads which support a
+                        candidate fusion gene and which will be considered for
+                        further analysis.  It is given separated by commas for
+                        each of the aligners: BOWTIE,BLAT,STAR,BOWTIE2 (in
+                        this order). Default is '3,3,3,3'.
+    --top-pairs-fusion=SPANNING_PAIRS_COUNT
+                        If the '--pairs-fusion' selects more than N
+                        preliminary candidate fusion genes then only the first
+                        N will be considered for further analysis. N is set
+                        here. Default is '10000'.
+    -r SPANNING_READS, --reads-fusion=SPANNING_READS
+                        The minimum number of reads which support a candidate
+                        fusion gene that is the minimum number of reads which
+                        overlap over the fusion junction. It is given
+                        separated by commas for each of the aligners:
+                        BOWTIE,BLAT,STAR,BOWTIE2 (in this order). Default is
+                        '2,2,2,2'.
+    -a LENGTH_ANCHOR, --anchor-fusion=LENGTH_ANCHOR
+                        The minimum length which a read should overlap over
+                        (or anchor/overhang for) fusion junction of a
+                        candidate fusion gene in order to be considered for
+                        further analysis. Minimum accepted value is 10 and it
+                        should not exceed half of the length of the longest
+                        read from the input data. It is given separated by
+                        commas for each of the aligners:
+                        BOWTIE,BLAT,STAR,BOWTIE2 (in this order). Default is
+                        '17,17,17,23'.
+    -W LENGTH_ANCHOR2, --anchor-fusion2=LENGTH_ANCHOR2
+                        If the anchor/overhang which supports the fusion is
+                        longer (or equal) than this value than the required
+                        number of reads supporting the fusion is 1. It
+                        basically overrides '--reads-fusion*' for anchors
+                        longer (or equal) thanthe value specified here. It
+                        always should be larger than the value specified by
+                        '--reads-fusion*'. Default is '47'.
+    -b BIOTYPES, --filter-fusion=BIOTYPES
+                        Candidate gene fusions to be skipped from further
+                        analysis in case that one of partner gene or both
+                        genes (which form a fusion) are specified here. All
+                        possible values are: [7skrna, banned, bodymap2, cacg,
+                        chimerdb2, conjoing, ctc_gene, ctd_gene,
+                        distance1000bp, distance100kbp, distance10kbp,
+                        duplicates, ensembl_fully_overlapping,
+                        ensembl_partially_overlapping,
+                        ensembl_same_strand_overlapping, healthy, lincrna,
+                        metazoa, mirna, mt, pair_pseudo_genes, paralogs,
+                        pseudogene, readthrough, refseq_fully_overlapping,
+                        refseq_partially_overlapping,
+                        refseq_same_strand_overlapping, removed,
+                        ribosomal_protein, rp11_gene, rp_gene, rrna,
+                        short_distance, similar_reads, similar_symbols,
+                        snorna, snrna, tcga, trna, ucsc_fully_overlapping,
+                        ucsc_partially_overlapping,
+                        ucsc_same_strand_overlapping, yrna]. 'short_distance'
+                        is used for labeling the candidate fusion genes which
+                        do meet the criteria specified with '--min-dist-
+                        fusion'. Several can be chosen but in this case they
+                        should comma separated. Default is '7skrna,banned,body
+                        map2,conjoing,ctc_gene,ctd_gene,distance1000bp,ensembl
+                        _fully_overlapping,ensembl_same_strand_overlapping,hea
+                        lthy,metazoa,mirna,mt,pair_pseudo_genes,paralogs,refse
+                        q_fully_overlapping,refseq_same_strand_overlapping,rem
+                        oved,rp11_gene,rp_gene,rrna,similar_reads,similar_symb
+                        ols,snorna,snrna,trna,ucsc_fully_overlapping,ucsc_same
+                        _strand_overlapping,yrna'.
+    -B BIOTYPES_MORE, --filter-fusion-add=BIOTYPES_MORE
+                        Any label of fusion genes specified here will be
+                        appended to the list given to '--filter-fusion'. This
+                        is just an easy way to add more to '--filter-fusion'.
+                        For more read the description of '--filter-fusion'.
+                        Default is 'none'.
+    -D MIN_DIST, --dist-fusion=MIN_DIST
+                        The candidate fusion genes where the distance between
+                        the genes is below this threshold will be marked using
+                        the label 'custom_distance' Default is '200000'.
+    -A, --all-reads-fusion
+                        If it is specified then all reads (reads which form a
+                        pair and single reads which do not have a mate read
+                        because their mate has been removed due to different
+                        reasons, like for example low quality), will be used
+                        for finding the fusion point, which is the exon-exon
+                        junction. If not specified then only reads which form
+                        a pair will be used for finding the exon-exon junction
+                        (one read maps on one of the transcripts of the gene
+                        involved in the fusion and its mate will map on the
+                        exon-exon junction). Default is 'False'.
+    -H HOMOLOG, --homolog-fusion=HOMOLOG
+                        The minimum number of reads (as percentage [0..1])
+                        which map simultaneously onto two genes in order to be
+                        considered homologous. If set to 0 then no homology
+                        analysis is done. This information can be used for
+                        filtering out candidate fusion genes which are
+                        homologous. Default is '1.25e-05'.
+    --visualization-psl
+                        If it is set then the pipeline will use the BLAT
+                        aligner for aligning the reads which support the newly
+                        found candidate fusion genes.  Please, note that BLAT
+                        license does not allow BLAT to be used for commercial
+                        activities.  Fore more information regarding BLAT
+                        please see its license:
+                        <http://users.soe.ucsc.edu/~kent/src/>.  Also please,
+                        note that this option is not actively supported
+                        anymore and in the future will be deprecated.  If one
+                        still wants to use it, then one should run this
+                        'faToTwoBit genome.fa genome.2bit -noMask') in
+                        'fusioncatcher/data/current/'.  Instead it is
+                        recommended to use '--visualization-sam'. Default is
+                        'False'.
+    --visualization-sam
+                        If it is set then the pipeline will use the BOWTIE2
+                        aligner for aligning the reads which support the newly
+                        found candidate fusion genes. Default is 'False'.
+    -M, --assembly      If used then the reads found to support the newly
+                        found candidate fusion genes are assembled using
+                        VELVET <http://www.ebi.ac.uk/~zerbino/velvet/>.
+                        Default is 'False'.
+
+  Reads filtering/processing options:
+    --skip-filter-mt    If specified then it skips filtering out the reads
+                        which map on the mitochondrion. Default is 'False'.
+    --skip-filter-phix174
+                        If specified then it skips filtering out the reads
+                        which map on the 'Enterobacteria phage phiX174'
+                        genome. Default is 'False'.
+    --skip-filter-hla   If specified then it filters out the reads which map
+                        on the HLA (histocompatibility) genes. Default is
+                        'False'.
+    --skip-filter-vir   If specified then it skips filtering out the reads
+                        which map on known genomes of viruses. Default is
+                        'False'.
+    --skip-filter-str   If specified then it skips filtering out the reads
+                        which contain STR (short tandem repeats). Default is
+                        'False'.
+    --skip-filter-ambigous
+                        If specified then it skips filtering out the reads
+                        which maps ambigously (i.e. same read map
+                        simultaneously on two locuses on genome/transcriptome
+                        within 0-3 mismatches. Default is 'False'.
+    --skip-filter-adapter
+                        If specified then it skips filtering out the reads
+                        which contains the adapters. Default is 'False'.
+    --skip-filter-psl   If it is set then the pipeline will not prefilter the
+                        short reads which will be used for doing
+                        BLAT/STAR/BOWTIE2 alignment. By default, the short
+                        reads are prefiltered before being aligned using
+                        BLAT/STAR/BOWTIE2 in order to speed up the
+                        BLAT/STAR/BOWTIE2alignment which is time and
+                        computationally demanding. The disadvantage of doing
+                        prefiltering is that the sensitivity of
+                        BLAT/STAR/BOWTIE2 alignment is somewhat lowered.
+                        Default is 'False'.
+    --skip-interleave   If specified then it skips interleaving the short
+                        reads from the input FASTQ files. The program tries
+                        automatically to pair the forward and reverse short
+                        reads based on file names. In case that the pair is
+                        done wronlgy then this argument should be used to
+                        remedy the problem. Default is 'False'.
+    --skip-known-fusions
+                        If it is set then the pipeline will not use its own
+                        database and COSMIC database of already known fusion
+                        genes! Here skipping means that the known fusion genes
+                        will treated as any other candidate fusion genes and
+                        if there is enough evidence will be shown in the final
+                        list of found fusion genes. By default, the known
+                        fusion genes are treated preferentially and are pushed
+                        directly to the very final step of finding the
+                        junction point. Default is 'False'.
+    --skip-readthroughs
+                        If it is set then the pipeline will not seach for
+                        candidate fusion genes which are readthroughs! By
+                        default the candidate fusion genes which are
+                        readthroughs are analysed also but in many cases they
+                        are just annotation errors in the Ensembl database and
+                        not real fusion genes. Default is 'False'.
+    --skip-banned-fusions
+                        If it is set then the list of known banned fusion
+                        genes (which are found in healthy samples) is not
+                        used. Default is 'False'.
+    -V, --keep-viruses-alignments
+                        If it is set then the SAM alignments files of reads
+                        mapping on viruses genomes are saved in the output
+                        directory for later inspection by the user. Default is
+                        'False'.
+    -U, --keep-unmapped-reads
+                        If it is set then the FASTQ files, containing the
+                        unmapped reads (i.e. reads which do not map on genome
+                        and transcriptome), are saved in the output directory
+                        for later inspection by the user. Default is 'False'.
+    --skip-compress-ids
+                        If it is set then the reads ids will not be compressed
+                        (i.d. renamed) using lossy compression and the
+                        original reads ids will be kept thru the whole run of
+                        FusionCatcher. Be default the reads ids will be
+                        compressed using lossy compression. Default is
+                        'False'.
+    --skip-automatic-scaling
+                        If it is set then the thresholds for anchor length,
+                        spanning reads, and spanning pairs will not be
+                        adjusted automatically according to the input reads.
+                        Default is 'False'.
+
+  Usages of aligners:
+    --skip-blat         If it is set then the pipeline will NOT use the BLAT
+                        aligner and all options and methods which make use of
+                        BLAT will be disabled. BLAT aligner is used by
+                        default. Please, note that BLAT license does not allow
+                        BLAT to be used for commercial activities. Fore more
+                        information regarding BLAT please see its license:
+                        <http://users.soe.ucsc.edu/~kent/src/>. Default is
+                        'False'.
+    --skip-star         If it is set then the pipeline will NOT use the STAR
+                        aligner and all options and methods which make use of
+                        STAR will be disabled. STAR aligner is used by
+                        default. Default is 'False'.
+    --skip-bowtie2      If it is set then the pipeline will NOT use the
+                        BOWTIE2 aligner and all options and methods which make
+                        use of BOWTIE2 will be disabled. BOWTIE2 aligner is
+                        used by default. Default is 'False'.
+    --aligners=ALIGNERS
+                        The aligners to be used on Bowtie aligner. By default
+                        always BOWTIE aligner is used and it cannot be
+                        disabled. The choices are: ['blat','star','bowtie2'].
+                        Any combination of these is accepted if the aligners
+                        names are comma separated. For example, if one wants
+                        to used all three aligners then 'blat,star,bowtie2'
+                        should be given. The command line options '--skip-
+                        blat', '--skip-star', and '--skip-bowtie2' have
+                        priority over this option. Default is
+                        'blat,star,bowtie2'.
+    --limit-bowtie=LIMIT_BOWTIE
+                        The maximum limit of the genome's size which BOWTIE
+                        aligner is able to handle.  If the genome is larger
+                        than this limit then it will be split automatically in
+                        smaller pieces such that the aligner can handle them
+                        without an error. Default is '4294867296'.
+    --limit-bowtie2=LIMIT_BOWTIE2
+                        The maximum limit of the genome's size which BOWTIE2
+                        aligner is able to handle.  If the genome is larger
+                        than this limit then it will be split automatically in
+                        smaller pieces such that the aligner can handle them
+                        without an error. Default is '300000000'.
+    --limit-blat=LIMIT_BLAT
+                        The maximum limit of the genome's size which BLAT
+                        aligner is able to handle.  If the genome is larger
+                        than this limit then it will be split automatically in
+                        smaller pieces such that the aligner can handle them
+                        without an error. Default is '3221225472'.
+    --limit-star=LIMIT_STAR
+                        The maximum limit of the genome's size which STAR
+                        aligner is able to handle.  If the genome is larger
+                        than this limir then it will be split automatically in
+                        smaller pieces such that the aligner can handle them
+                        without an error. Default is '3221225472'.
+    --skip-conversion-grch37
+                        If it is set then the fusion coordinates for human
+                        genome version GRCh38 (which is default) will NOT be
+                        reported also using version GRCh37. Default is
+                        'False'.
+
+  Search sensitivity of fusions:
+    --sensitive         This will increase the sensitivity of finding fusion
+                        genes at the expense of finding slightly more false
+                        positives. Default is 'False'.
+    --mildly-sensitive  This will increase the sensitivity of finding fusion
+                        genes at the expense of finding slightly more false
+                        positives. Default is 'False'.
+    --highly-sensitive  This will increase the sensitivity of finding fusion
+                        genes at the expense of finding slightly more false
+                        positives. Default is 'False'.
+    --paranoid-sensitive
+                        This will increase the sensitivity of finding fusion
+                        genes at maximum at the expense of very high rate of
+                        false positives. It is not recommended to be used for
+                        finding novel fusion genes. It may be used in cases
+                        when one searches for already known fusion genes which
+                        were missed in previous runs with default sensitivity.
+                        Default is 'False'.
+
+  Custom labels for fusions and filtering of fusions:
+    --label-title=LABEL_TITLE
+                        The label title(s) which will be used to mark the
+                        candidate fusion genes given as input to '--label-
+                        file'. If several are given then they should be comma
+                        separated. If '--label-title' is used then also
+                        '--label-file' should be specified.
+    --label-file=LABEL_FILE
+                        File(s) containing pairs of Ensembl gene ids
+                        (separated by tab, i.e. first two columns) candidate
+                        fusion genes given as input to '--label-file'. If
+                        several are given then they should be comma separated.
+                        If '--label-file' is used then also '--label-title'
+                        should be specified.
+    --label-threshold=LABEL_THRESHOLD
+                        The thresholds which might be given as an optional
+                        column 3 in '--label-file'. All the pairs given in
+                        '--label-file' which have the number of column number
+                        3 strictly less than this given threshold will be
+                        ignored/skipped. If several are given then they should
+                        be comma separated.
+
+  Debug Options:
+    --start=START_STEP  It starts executing the workflow from the given step
+                        number. This can be used when the pipeline has
+                        crashed/stopped and one wants to re-run it from from
+                        the step where it stopped without re-running from the
+                        beginning the entire pipeline. 0 is for restarting
+                        automatically and 1 is the first step. Default is '0'.
+    --hash=HASH         Hash to be used for computing checksum. The choices
+                        are ['no','crc32','md5','adler32','sha512','sha256'].
+                        If it is set up to 'no' then no checksum is used and
+                        the entire pipeline is executed as a normal shell
+                        script. For more information see 'hash_library' in
+                        'workflow.py'. Default is 'no'.
+    --keep              Preserve intermediate files produced during the run.
+                        By default, they are deleted upon exit. Default value
+                        is 'False'.
+    --checksums=CHECKSUMS_FILENAME
+                        The name of the checksums file. Default value is
+                        'checksums.txt'.
+
+
+}}}
+----
+
+= 9 - DATA BUILDER - fusioncatcher-build =
+It downloads the necessary data for a given organism from the Ensembl database and it builds the necessary files/indexes which are needed to running *!FusionCatcher*.
+== 9.1 - Command line ==
+{{{
+fusioncatcher-build [options]
+}}}
+== 9.2 - Options ==
+{{{
+  -o OUTPUT_DIRECTORY, --output=OUTPUT_DIRECTORY
+                        The output directory where all the outputs files  and
+                        directories will be written.
+  -c CONFIGURATION_FILENAME, --config=CONFIGURATION_FILENAME
+                        Configuration file containing the paths to external
+                        tools (e.g. Bowtie, etc.) in case that they are not in
+                        PATH! Default is
+                        '/apps/fusioncatcher/bin/configuration.cfg'.
+  -g ORGANISM, --organism=ORGANISM
+                        Organism for which the data is downloaded from Ensembl
+                        database and built, for example: 'homo_sapiens',
+                        'mus_musculus', 'rattus_norvegicus',
+                        'canis_familiaris', etc. Default is 'homo_sapiens'.
+  -w WEB_ENSEMBL, --web=WEB_ENSEMBL
+                        Ensembl database web site from where the data is
+                        downloaded.  e.g. 'www.ensembl.org',
+                        'uswest.ensembl.org', 'useast.ensembl.org',
+                        'asia.ensembl.org', etc. Default is 'www.ensembl.org'.
+  -e FTP_ENSEMBL, --ftp-ensembl=FTP_ENSEMBL
+                        Ensembl database FTP site from where the data is
+                        downloaded. Default is 'ftp.ensembl.org'.
+  --ftp-ensembl-path=FTP_ENSEMBL_PATH
+                        The path for Ensembl database FTP site from where the
+                        data is downloaded.
+  -x FTP_UCSC, --ftp-ucsc=FTP_UCSC
+                        UCSC database FTP site from where the data is
+                        downloaded. Default is 'hgdownload.cse.ucsc.edu'.
+  -n FTP_NCBI, --ftp-ncbi=FTP_NCBI
+                        NCBI database FTP site from where the data is
+                        downloaded. Default is 'ftp.ncbi.nlm.nih.gov'.
+  --skip-blat           If it is set then the pipeline will NOT use the BLAT
+                        aligner and all options and methods which make use of
+                        BLAT will be disabled. BLAT aligner is used by
+                        default. Please, note that BLAT license does not allow
+                        BLAT to be used for commercial activities. Fore more
+                        information regarding BLAT please see its license:
+                        <http://users.soe.ucsc.edu/~kent/src/>. Default is
+                        'False'.
+  --skip-database=SKIP_DATABASE
+                        If it is set then the pipeline will skip the specified
+                        database(s). The choices are ['cosmic','conjoing','chi
+                        merdb2','ticdb','cgp','cacg','hla']. If several
+                        databases should be skipped, then their names shall be
+                        separated by comma. Default is ''.
+  -s START_STEP, --start=START_STEP
+                        It starts executing the workflow from the given step
+                        number. This can be used when the pipeline has
+                        crashed/stopped and one wants to re-run it from from
+                        the step where it stopped without re-running from the
+                        beginning the entire pipeline. 0 is for restarting
+                        automatically and 1 is the first step. This is
+                        intended to be used for debugging. Default is '0'.
+                        script. For more information see 'hash_library' in
+                        'workflow.py'. This is intended to be used for
+                        debugging. Default is 'no'.
+  -k, --keep            Preserve intermediate files produced during the run.
+                        By default, they are NOT deleted upon exit. This is
+                        intended to be used for debugging. Default value is
+                        'False'.
+  -u CHECKSUMS_FILENAME, --checksums=CHECKSUMS_FILENAME
+                        The name of the checksums file. This is intended to be
+                        used for debugging. Default value is 'checksums.txt'.
+
+
+}}}
+
+----
+= 10 - Methods =
+
+The main goal of FusionCatcher is to find *somatic* (and/or pathogenic) fusion genes in RNA-seq data.
+
+FusionCatcher is doing its own quality filtering/trimming of reads. This is needed because most a very important factor for finding fusion genes in RNA-seq experiment is the length of RNA fragments.  *Ideally* the RNA fragment size for finding fusion genes should be over 300 bp.  Most of the RNA-seq experiments are designed for doing differentially expression analyses and not for finding fusion genes and therefore the RNA fragment size many times is less than 300bp and the trimming and quality filtering should be done in such a way that it does not decrease even more the RNA fragment size.
+
+FusionCatcher is able to finding fusion genes even in cases where the fusion junction is within known exon or within known intron (for example in the middle of an intron) due to the use of BLAT aligner. The minimum condition for FusionCatcher to find a fusion gene is that both genes involved in the fusion are annotated in Ensembl database (even if their gene structure is "wrong").
+
+FusionCatcher is spending most of computational analysis on the most promising fusion genes candidate and tries as early as possible to filter out the candidate fusion genes which do not look promising, like for example:
+  * candidate fusion gene is composed of a gene and its pseudogene, or
+  * candidate fusion gene is composed of a gene and its paralog gene, or
+  * candidate fusion gene is composed of a gene and a miRNA gene (but a gene which contains miRNA genes are not skipped), or
+  * candidate fusion gene is composed of two genes which have a very sequence similarity (i.e. FusionCatcher is computing its homology score), or
+  * candidate fusion gene is known to be found in samples from healthy persons (using the 16 organs RNA-seq data from the Illumina !BodyMap2), or
+  * candidate fusion gene is in one of the known databases of fusion genes found in healthy persons, i.e. ChimerDB2, CACG, and ConjoinG.
+
+FusionCatcher is using by default three aligners for mapping the reads. The aligners are Bowtie, BLAT, and STAR. STAR is used here only and only for "splitting" the reads while aligning them.
+
+----
+= 11 - Citing !FusionCatcher =
+If you use `FusionCatcher`, please cite:
+
+D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi, S. Virtanen, O. Kilkku, *!FusionCatcher – a tool for finding somatic fusion genes in paired-end RNA-sequencing data*, bioRxiv, Nov. 2014, [http://biorxiv.org/content/early/2014/11/19/011650 DOI:10.1101/011650]
+
+= 12 - Reporting Bugs =
+
+Please, when reporting bugs include also the following files:
+  * "fusioncatcher.log" (this contains just a list of the commands executed by *`FusionCatcher`*), and
+  * "info.txt" (this contains info: regarding the version of *`FusionCatcher`* and tools used, statistics about input FASTQ files, counts of found reads, etc.)
+which were generated by *`FusionCatcher`* during the run.
+
+*NOTE*: Giving only step number where the error has appeared is not enough because the step numbers depend on the input type (e.g. raw FASTQ file, ZIP compressed FASTQ file, SRA file, etc.) and command line options used to run *`FusionCatcher`* (e.g. some command line option skip some steps). The step numbers are used by *`FusionCatcher`* for being able to re-start from the last step which was executed successfully last time in case that last time the run ended prematurely due to reasons which didn't depend on *`FusionCatcher`* (e.g. server crashed).
+
+----
+= 12 - NOTES =
+  * *`fusioncatcher-build`* takes several hours to run and it depends on the local internet connection speed. It needs to be run only once!
+  * *!FusionCatcher* can be run many times using the same data produced by the *`fusioncatcher-build`*;
+  * Ensembl version 77 was found to work fine with *!FusionCatcher* (October 2014);
+  * *!FusionCatcher* and *`fusioncatcher-build`* restart automatically from the point where have been interrupted at the previous run.
+  * the candidate fusion genes which are readthroughs have a much higher rate of being false positives than the candidate fusion genes which are not readthroughs mostly because of inaccurate annotations in Ensembl database (for example one gene is annotated in the database as two separate genes)
+  * *!FusionCatcher* by default is focusing on finding fusion genes specific to diseased/tumor/cancer samples. That means that *!FusionCatcher* will skip the fusion genes which are already known to exist in healthy samples. If one still wants to find novel fusion genes in healthy samples then `--skip-banned-fusions` command line options should be used.
+  * *!FusionCatcher* by default is trimming all the reads to 60 bp long even in cases when the reads are 100 bp long or longer. It has been found in practice that trimming reads to 60 bp works the best in most of the cases because most of the RNA-seq datasets have the library size too short (i.e. library size is not optimized for finding fusion genes which is the case when majority of the reads forming a pair are overlapping; most of the cases the library size is optimized for finding differentially expressed genes). If one *really wants* to experiment with different trimming sizes then one should make *_really_* sure (and have no single doubt) that the fragment size is at least twice longer than the length of one trimmed read (for example, if the reads are 100 bp long then the mean of fragment sizes should be larger than 250 bp long and the peak for library size should be over 350 bp). Here are some hints (in this order) for using different trimming sizes (use option `--5keep`) for reads (the lists of newly found candidate fusion genes can be compared for different trimming sizes):
+    # *`--5keep 60`* all reads are trimmed from their 3-end in such way that all are 60 bp long (this is the default and can be skipped)
+    # *`--5keep 70`* all reads are trimmed from their 3-end in such way that all are 70 bp long (re-run `fusioncatcher`)
+    # *`--5keep 80`* all reads are trimmed from their 3-end in such way that all are 80 bp long (re-run `fusioncatcher`)
+    # *`--5keep 0`* no reads are trimmed (re-run `fusioncatcher`)
+  * *!FusionCatcher* is able to find fusion genes *also* without using BLAT aligner (but most likely it will find less of them)!
+  * In case when reads are 125bp long please use --trim-psl-5keep=105 --mismatches-psl=3
+  * In case when reads are 150bp long please use --trim-psl-5keep=130 --mismatches-psl=3
+  * In case when reads are 200bp long please use --trim-psl-5keep=180 --mismatches-psl=4
+  * In case when reads are 250bp long please use --trim-psl-5keep=230 --mismatches-psl=5
