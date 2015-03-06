@@ -152,7 +152,7 @@ if __name__=='__main__':
     exon_dict=dict()
     gc.disable()
     for record in Bio.SeqIO.parse(handle, "fasta"):
-        exon_dict[record.id.split(';')[0].upper()]=record.seq.tostring().upper()
+        exon_dict[record.id.split(';')[0].upper()]=str(record.seq).upper()
     gc.enable()
     handle.close()
 

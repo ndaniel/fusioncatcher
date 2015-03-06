@@ -103,7 +103,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 0.99.3f beta"
+    version = "%prog 0.99.4a beta"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -125,7 +125,7 @@ if __name__ == '__main__':
                       action = "store",
                       type = "string",
                       dest = "configuration_filename",
-                      default = os.path.join(pipeline_path,"..","etc","configuration.cfg"),
+                      default = os.path.join(pipeline_path,"..","etc","configuration.cfg") + "," + os.path.join(pipeline_path,"configuration.cfg"),
                       help = "Configuration file containing the paths to external "+
                              "tools (e.g. Bowtie, etc.) in case that they are not "+
                              "in PATH! "+
@@ -305,7 +305,11 @@ if __name__ == '__main__':
     #
     # Reading the configuration file: "configuration.cfg"
     #
-    confs = configuration.manage(options.configuration_filename)
+    config_files = [el for el in options.configuration_filename.split(",") if el and (os.path.isfile(el) or os.path.islink(el))]
+    configfile = ''
+    if config_files:
+        configfile = config_files[0] # first one has priority
+    confs = configuration.manage(configfile)
     # check if version of fusioncatcher.py matches the configuration.cfg file
     p = confs.get("FUSIONCATCHER",None)
     if p:

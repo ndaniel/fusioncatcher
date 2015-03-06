@@ -49,8 +49,10 @@ import string
 import math
 import itertools
 
-def generate_id(t, no12 = False):
+def generate_id(t, lowercase = False, no12 = False):
     digits = string.digits + string.ascii_uppercase
+    if lowercase:
+        digits = digits + string.ascii_lowercase
     l = len(digits)
     r = int(math.ceil(math.log(float(t+10)/float(2),l)))
     if no12:
@@ -70,7 +72,7 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = """It compresses using lossy compression the ids of all reads from a input FASTQ file (using the read index/count). The compressed reads ids have all the ids in alphabetically order."""
-    version = "%prog 0.10 beta"
+    version = "%prog 0.11 beta"
 
     parser = optparse.OptionParser(usage=usage,description=description,version=version)
 
@@ -97,6 +99,12 @@ if __name__ == '__main__':
                       dest = "no12",
                       default = False,
                       help="""If this is set than no /1 and /2 will be added to the compressed reads ids.""")
+
+    parser.add_option("--lowercase",
+                      action = "store_true",
+                      dest = "lowercase",
+                      default = False,
+                      help="""If this is set then also lowercase charcaters will be used for read ids in FASTQ files.""")
 
     (options,args) = parser.parse_args()
 
@@ -148,7 +156,7 @@ if __name__ == '__main__':
             print >>sys.stderr,"Error: '--count-reads' option is needed to be specified!"
             sys.exit(1)
     i = 0
-    ids = generate_id(n)
+    ids = generate_id(n, lowercase = options.lowercase)
     sb = 10**8
     while True:
         gc.disable()

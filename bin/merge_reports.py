@@ -148,6 +148,13 @@ if __name__ == '__main__':
                       dest="input_bowtie2_filename",
                       help="""The report with candidate fusion genes found using the BOWTIE2 aligner.""")
 
+    parser.add_option("--input_bwa",
+                      action="store",
+                      type="string",
+                      dest="input_bwa_filename",
+                      help="""The report with candidate fusion genes found using the BWA aligner.""")
+
+
     parser.add_option("--input_candidate_fusion_genes",
                       action = "store",
                       type = "string",
@@ -203,6 +210,20 @@ if __name__ == '__main__':
                       dest="supporting_pairs_bowtie2",
                       default=2,
                       help="""The minimum number of supporting pairs (found using BOWTIE2 aligner) necessary for considering valid a candidate fusion gene. Default is '%default'.""")
+
+    parser.add_option("--supporting_reads_bwa",
+                      action="store",
+                      type="int",
+                      dest="supporting_reads_bwa",
+                      default=2,
+                      help="""The minimum number of supporting reads (found using BOWTIE2 aligner) necessary for considering valid a candidate fusion gene. Default is '%default'.""")
+
+    parser.add_option("--supporting_pairs_bwa",
+                      action="store",
+                      type="int",
+                      dest="supporting_pairs_bwa",
+                      default=2,
+                      help="""The minimum number of supporting pairs (found using BWA aligner) necessary for considering valid a candidate fusion gene. Default is '%default'.""")
 
 
     parser.add_option("--anchor2",
@@ -272,6 +293,9 @@ if __name__ == '__main__':
 
     if options.input_bowtie2_filename:
         process_psl(bowtie, options.input_bowtie2_filename, tag="BOWTIE+BOWTIE2", threshold = options.supporting_reads_bowtie2, tpairs = options.supporting_pairs_bowtie2, anchor2=options.anchor2)
+
+    if options.input_bwa_filename:
+        process_psl(bowtie, options.input_bwa_filename, tag="BOWTIE+BWA", threshold = options.supporting_reads_bwa, tpairs = options.supporting_pairs_bwa, anchor2=options.anchor2)
 
 
     # add an extra column to the report with the labels of the fusion genes

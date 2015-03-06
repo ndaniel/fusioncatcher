@@ -54,7 +54,7 @@ if __name__=='__main__':
 
     usage="%prog [options]"
     description="""It takes a FASTQ file and padds its reads which are shorter than a given size with a given nucleotide."""
-    version="%prog 0.11 beta              Author: Daniel Nicorici, E-mail: Daniel.Nicorici@gmail.com"
+    version="%prog 0.12 beta              Author: Daniel Nicorici, E-mail: Daniel.Nicorici@gmail.com"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -84,7 +84,7 @@ if __name__=='__main__':
                       type="int",
                       dest="size",
                       default = 0,
-                      help="""If if this is larger than zero then all the short reads strictly shorter than this threshold will be padded. Default is '%default'.""")
+                      help="""If if this is larger than zero then all the short reads strictly shorter than this threshold will be padded. Reads longer than the threshold will be trimmed from 3 end. Default is '%default'.""")
 
 
     (options,args) = parser.parse_args()
@@ -141,6 +141,9 @@ if __name__=='__main__':
                     if m < n:
                         d = data[j][:-1] + pad
                         data[j] = d[:n]+'\n'
+                        next = True
+                    elif m > n:
+                        data[j] = data[j][:n]+'\n'
                         next = True
                 elif x == 2:
                     data[j] = "+\n"

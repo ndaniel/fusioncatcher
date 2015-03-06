@@ -58,7 +58,7 @@ import ftplib
 ################################################################################
 ################################################################################
 
-def PATHS(exe = None, prefix = None, installdir = None):
+def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     global PYTHON_EXE
     global FUSIONCATCHER_PREFIX
     global FUSIONCATCHER_PATH
@@ -133,8 +133,8 @@ def PATHS(exe = None, prefix = None, installdir = None):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
 
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.3f.zip'
-    FUSIONCATCHER_VERSION = "0.99.3f beta"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4a.zip'
+    FUSIONCATCHER_VERSION = "0.99.4a beta"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -166,7 +166,10 @@ def PATHS(exe = None, prefix = None, installdir = None):
     BLAT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/blat/blat'
     # STAR
     STAR_PATH = os.path.join(FUSIONCATCHER_TOOLS,'star')
-    STAR_URL = 'http://github.com/alexdobin/STAR/archive/STAR_2.4.0h.tar.gz'
+    STAR_URL = 'http://github.com/alexdobin/STAR/archive/STAR_2.4.0h1.tar.gz'
+   # BWA
+    BWA_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bwa')
+    BWA_URL = 'http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2'
     # faToTwoBit
     FATOTWOBIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'fatotwobit')
     FATOTWOBIT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/faToTwoBit'
@@ -177,7 +180,7 @@ def PATHS(exe = None, prefix = None, installdir = None):
     VELVET_PATH = os.path.join(FUSIONCATCHER_TOOLS,'velvet')
     VELVET_URL = 'http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz'
     # ENSEMBL version
-    ENSEMBL_VERSION = ensembl_version()
+    ENSEMBL_VERSION = ensembl_version(internet = internet)
     # LZO
     LZO_PATH = os.path.join(FUSIONCATCHER_TOOLS,'lzo')
     LZO_URL = 'http://www.oberhumer.com/opensource/lzo/download/lzo-2.08.tar.gz'
@@ -223,37 +226,38 @@ def expand(*p):
 #############################################
 # get ensembl version
 #############################################
-def ensembl_version():
-    print "Checking latest version of Ensembl database that is available..."
-    list_files = []
+def ensembl_version(internet = True):
     last_version = "unknown"
-    try:
-        ftp = ftplib.FTP("ftp.ensembl.org",timeout=10)
-        if ftp:
-            ftp.login()
-            ftp.cwd("pub")
-            list_files = [int(el.lstrip('release').lstrip('-')) for el in ftp.nlst() if el.lower().startswith('release-') and el.lstrip('release').lstrip('-').isdigit()]
-    except:
-        pass
-
-    if list_files:
-        last_version = "v"+str(max(list_files))
-    else:
-        # try again!
+    if internet:
+        print "Checking latest version of Ensembl database that is available..."
+        list_files = []
         try:
-            import subprocess
-            p = subprocess.Popen("wget -nv ftp://ftp.ensembl.org/pub/ -O -", stdout=subprocess.PIPE, stderr=None, shell=True)
-            result = p.communicate()[0].split()
-            result = [el.split('>release-')[1].split('<')[0] for el in result if el.lower().find('>release-')!=-1]
-            result = [int(el) for el in result]
-            if result:
-                last_version = "v"+str(max(result))
+            ftp = ftplib.FTP("ftp.ensembl.org",timeout=10)
+            if ftp:
+                ftp.login()
+                ftp.cwd("pub")
+                list_files = [int(el.lstrip('release').lstrip('-')) for el in ftp.nlst() if el.lower().startswith('release-') and el.lstrip('release').lstrip('-').isdigit()]
         except:
             pass
-    if last_version == 'unknown':
-        print "   * Not found! (WARNING: Is the internet connection working?)"
-    else:
-        print "   * Version %s found!" % (last_version,)
+
+        if list_files:
+            last_version = "v"+str(max(list_files))
+        else:
+            # try again!
+            try:
+                import subprocess
+                p = subprocess.Popen("wget -nv ftp://ftp.ensembl.org/pub/ -O -", stdout=subprocess.PIPE, stderr=None, shell=True)
+                result = p.communicate()[0].split()
+                result = [el.split('>release-')[1].split('<')[0] for el in result if el.lower().find('>release-')!=-1]
+                result = [int(el) for el in result]
+                if result:
+                    last_version = "v"+str(max(result))
+            except:
+                pass
+        if last_version == 'unknown':
+            print "   * Not found! (WARNING: Is the internet connection working?)"
+        else:
+            print "   * Version %s found!" % (last_version,)
     return last_version
 
 
@@ -361,12 +365,14 @@ def test_tool(name = "",
     if verbose:
         print "Checking if '%s' is installed..." % (name,)
 
-    p = which(exe)
+    p = which(exe, cwd = False)
     if p and versions:
-        p = os.path.dirname(expand(p))
+        #p = os.path.dirname(expand(p))
+        p = expand(p)
         if verbose:
             print "  * Found at '%s'!" % (p,)
-        flag,r = cmd([[[exe,param],False]], exit = False, verbose = False)
+            print "  * Test running:  '%s %s'" % (p,param)
+        flag,r = cmd([[[p,param],False]], exit = False, verbose = False)
         r = [line for line in r if line.lower().find(version_word.lower()) != -1]
         f = False
         v = None
@@ -402,7 +408,7 @@ def give_me_temp_filename(tmp_dir = None):
 #############################################
 # simulates which
 #############################################
-def which(program):
+def which(program, cwd = True):
     """
     Simulates which from Linux
     """
@@ -411,7 +417,8 @@ def which(program):
             return program
     else:
         paths = os.environ["PATH"].split(os.pathsep)
-        paths.append(os.getcwd())
+        if cwd:
+            paths.append(os.getcwd())
         for path in paths:
             if path:
                 p = os.path.join(path.strip('"'),program)
@@ -435,7 +442,7 @@ def cmd(cmds = [],
     for c in cmds:
         if not c:
             continue
-        c0 = [el for el in c[0] if el]
+        c0 = [el for el in c[0] if el and el.strip()]
         c1 = c[1]
         if verbose:
             print "    # " + ' '.join(c0)
@@ -448,13 +455,26 @@ def cmd(cmds = [],
             if exit:
                 sys.exit(1)
         else:
-            p = subprocess.Popen(c0, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, shell = c1)
-            r = p.communicate()[0].splitlines()
-            if p.returncode != 0:
+            anerr = False
+            p = 0
+            try:
+                p = subprocess.Popen(c0, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, shell = c1)
+                r = p.communicate()[0].splitlines()
+            except:
+                anerr = True
+
+            if anerr:
+                if verbose:
+                    print >>sys.stderr,''
+                    print >>sys.stderr, "  * ERROR: Unable to execute: '%s' (shell = %s)!" % (' '.join(c0),str(c1))
+                if exit:
+                    sys.exit(1)
+                break
+            elif p and p.returncode != 0:
                 f = False
                 if verbose:
                     print >>sys.stderr,''
-                    print >>sys.stderr, "  * ERROR: Unable to execute: '%s'!" % (' '.join(c0),)
+                    print >>sys.stderr, "  * ERROR: Unable to execute: '%s' (shell = %s)!" % (' '.join(c0),str(c1))
                     for line in r:
                         print >>sys.stderr, line
                 if exit:
@@ -843,7 +863,11 @@ if __name__ == '__main__':
 
 
     # initializing the PATHS
-    PATHS()
+    internet = True
+    test = [el for el in sys.argv if el in ('-l','--local','-f','--local-fusioncatcher')]
+    if test:
+        internet = False
+    PATHS(internet = internet)
 
     #command line parsing
 
@@ -852,7 +876,7 @@ if __name__ == '__main__':
                   "<http://code.google.com/p/fusioncatcher/>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 0.20 beta"
+    version = "%prog 0.21 beta"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -917,7 +941,7 @@ if __name__ == '__main__':
                       action = "store_true",
                       default = False,
                       dest = "download",
-                      help = """It downloads from <https://sourceforge.net/projects/fusioncatcher/files/> the build files for human organism, which are needed to run FusionCatcher. Default value is '%default'.""")
+                      help = """It downloads from <http://sourceforge.net/projects/fusioncatcher/files/> the build files for human organism, which are needed to run FusionCatcher. Default value is '%default'.""")
 
     parser.add_option("-x","--extra",
                       action = "store_true",
@@ -945,28 +969,29 @@ if __name__ == '__main__':
 ################################################################################
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "ensembl_v77d"
+    v = "ensembl_v78"
     ############################################################################
     # List all dependencies
     ############################################################################
     if options.list_dependencies:
         print "FusionCatcher [REQUIRED]: ",FUSIONCATCHER_URL
-        print "NumPy: [REQUIRED but strongly recommended to be installed by root]",NUMPY_URL
-        print "BioPython: [REQUIRED but strongly recommended to be installed by root]",BIOPYTHON_URL
+        print "NumPy [REQUIRED but strongly recommended to be installed by root]: ",NUMPY_URL
+        print "BioPython [REQUIRED but strongly recommended to be installed by root]: ",BIOPYTHON_URL
         print "Python module XLRD [OPTIONAL; needed only one plans to build database indexes from scratch instead of downloading them]: ",XLRD_URL
         print "Python module OpenPyXL [OPTIONAL; needed only one plans to build database indexes from scratch instead of downloading them]: ",OPENPYXL_URL
         print "Python SETUPTOOLS [OPTIONAL; needed to install XLRD and/or OpenPyXL]: ",SETUPTOOLS_URL
-        print "Bowtie: [REQUIRED]",BOWTIE_URL
-        print "Bowtie2: [REQUIRED]",BOWTIE2_URL
-        print "Blat: [REQUIRED]",BLAT_URL
-        print "LiftOver: [REQUIRED]",LIFTOVER_URL
+        print "Bowtie: [REQUIRED]: ",BOWTIE_URL
+        print "Bowtie2: [REQUIRED]: ",BOWTIE2_URL
+        print "Blat [REQUIRED]: ",BLAT_URL
+        print "LiftOver [REQUIRED]: ",LIFTOVER_URL
         print "FaToTwoBit (from Blat toolbox) [REQUIRED]: ",FATOTWOBIT_URL
         print "SAMTools [REQUIRED]: ",SAMTOOLS_URL
         print "SRAToolKit (from NCBI) [REQUIRED]: ",SRATOOLKIT_URL
         print "STAR [REQUIRED]: ",STAR_URL
+        print "BWA [REQUIRED]: ",BWA_URL
         print "SeqTK [REQUIRED]: ",SEQTK_URL
-        print "Velvet (de novo assembler): [OPTIONAL]",VELVET_URL
-        print "Picard (Java-based SAM tools): [OPTIONAL]",PICARD_URL
+        print "Velvet (de novo assembler) [OPTIONAL]: ",VELVET_URL
+        print "Picard (Java-based SAM tools) [OPTIONAL]: ",PICARD_URL
         print "Pre-built database indexes for human [REQUIRED unless one wants to build them from scratch]:"
         print "  * http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.aa" % (v,)
         print "  * http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ab" % (v,)
@@ -974,6 +999,11 @@ if __name__ == '__main__':
         print "  * http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ad" % (v,)
 
         sys.exit(0)
+
+    ############################################################################
+    # Current working directory
+    ############################################################################
+    print "Current working directory: '%s'" % (os.getcwd(),)
 
     ############################################################################
     # Absolute path to the Python executable
@@ -1057,26 +1087,36 @@ if __name__ == '__main__':
     if options.local:
         if os.path.isdir(options.local):
             # modify all URLS
-            FUSIONCATCHER_URL = os.path.join(options.local, os.path.basename(FUSIONCATCHER_URL))
-            NUMPY_URL = os.path.join(options.local, os.path.basename(NUMPY_URL))
-            BIOPYTHON_URL = os.path.join(options.local, os.path.basename(BIOPYTHON_URL))
-            XLRD_URL = os.path.join(options.local, os.path.basename(XLRD_URL))
-            OPENPYXL_URL = os.path.join(options.local, os.path.basename(OPENPYXL_URL))
-            SETUPTOOLS_URL = os.path.join(options.local, os.path.basename(SETUPTOOLS_URL))
-            SAMTOOLS_URL = os.path.join(options.local, os.path.basename(SAMTOOLS_URL))
-            BOWTIE_URL = os.path.join(options.local, os.path.basename(BOWTIE_URL))
-            BOWTIE2_URL = os.path.join(options.local, os.path.basename(BOWTIE2_URL))
-            BLAT_URL = os.path.join(options.local, os.path.basename(BLAT_URL))
-            LIFTOVER_URL = os.path.join(options.local, os.path.basename(LIFTOVER_URL))
-            FATOTWOBIT_URL = os.path.join(options.local, os.path.basename(FATOTWOBIT_URL))
-            SRATOOLKIT_URL = os.path.join(options.local, os.path.basename(SRATOOLKIT_URL))
-            STAR_URL = os.path.join(options.local, os.path.basename(STAR_URL))
-            SEQTK_URL = os.path.join(options.local, os.path.basename(SEQTK_URL))
-            VELVET_URL = os.path.join(options.local, os.path.basename(VELVET_URL))
-            PICARD_URL = os.path.join(options.local, os.path.basename(PICARD_URL))
+            ol = expand(options.local)
+            FUSIONCATCHER_URL = os.path.join(ol, os.path.basename(FUSIONCATCHER_URL))
+            NUMPY_URL = os.path.join(ol, os.path.basename(NUMPY_URL))
+            BIOPYTHON_URL = os.path.join(ol, os.path.basename(BIOPYTHON_URL))
+            XLRD_URL = os.path.join(ol, os.path.basename(XLRD_URL))
+            OPENPYXL_URL = os.path.join(ol, os.path.basename(OPENPYXL_URL))
+            SETUPTOOLS_URL = os.path.join(ol, os.path.basename(SETUPTOOLS_URL))
+            SAMTOOLS_URL = os.path.join(ol, os.path.basename(SAMTOOLS_URL))
+            BOWTIE_URL = os.path.join(ol, os.path.basename(BOWTIE_URL))
+            BOWTIE2_URL = os.path.join(ol, os.path.basename(BOWTIE2_URL))
+            BLAT_URL = os.path.join(ol, os.path.basename(BLAT_URL))
+            LIFTOVER_URL = os.path.join(ol, os.path.basename(LIFTOVER_URL))
+            FATOTWOBIT_URL = os.path.join(ol, os.path.basename(FATOTWOBIT_URL))
+            SRATOOLKIT_URL = os.path.join(ol, os.path.basename(SRATOOLKIT_URL))
+            STAR_URL = os.path.join(ol, os.path.basename(STAR_URL))
+            BWA_URL = os.path.join(ol, os.path.basename(BWA_URL))
+            SEQTK_URL = os.path.join(ol, os.path.basename(SEQTK_URL))
+            VELVET_URL = os.path.join(ol, os.path.basename(VELVET_URL))
+            PICARD_URL = os.path.join(ol, os.path.basename(PICARD_URL))
+            # remove options.local from the PATH variable in order tooid conflicts
+            ps = []
+            for p in os.environ["PATH"].split(os.pathsep):
+                if expand(p) == ol:
+                    continue
+                else:
+                    ps.append(p)
+            os.environ["PATH"] = os.pathsep.join(ps)
         else:
             print >> sys.stderr,"ERROR: '%s' should be a directory!" % (options.local,)
-            sys.exit(0)
+            sys.exit(1)
     elif options.local_fusioncatcher:
         FUSIONCATCHER_URL = options.local_fusioncatcher
 
@@ -1113,7 +1153,7 @@ if __name__ == '__main__':
                  custom_install = ["#!/usr/bin/env bash",
                                    "rm -rf ../bin",
                                    "rm -rf ../etc",
-                                   "rm -rf ../reads",
+                                   "rm -rf ../test",
                                    "rm -rf ../doc",
                                    "rm -rf ../VERSION",
                                    "rm -rf ../README",
@@ -1123,7 +1163,7 @@ if __name__ == '__main__':
                                    "mkdir -p ../etc",
                                    "ln -s etc/configuration.cfg ../etc/configuration.cfg",
                                    "ln -s bin ../bin",
-                                   "ln -s reads ../reads",
+                                   "ln -s test ../test",
                                    "ln -s doc ../doc",
                                    "ln -s VERSION ../VERSION",
                                    "ln -s NEWS ../NEWS",
@@ -1279,7 +1319,7 @@ if __name__ == '__main__':
         r = tool(name = "LiftOver (Batch Coordinate Conversion)",
                  exe = "liftOver",
                  param = "",
-                 web = "<https://genome.ucsc.edu/cgi-bin/hgLiftOver>",
+                 web = "<http://genome.ucsc.edu/cgi-bin/hgLiftOver>",
                  versions = ('move annotations',),
                  version_word = 'liftOver',
                  force = options.force_yes,
@@ -1363,10 +1403,29 @@ if __name__ == '__main__':
         if r:
             STAR_PATH = r
 
+
         ############################################################################
         # EXTRA (SORT and LZOP)
         ############################################################################
         if options.extra:
+
+
+            ############################################################################
+            # BWA
+            ############################################################################
+            r = tool(name = "BWA (alignment tool)",
+                     exe = "bwa",
+                     param = "",
+                     web = "<http://bio-bwa.sourceforge.net/>",
+                     versions = ('0.7.10-r789',),
+                     version_word = 'Version',
+                     force = options.force_yes,
+                     url = BWA_URL,
+                     path = BWA_PATH,
+                     install = options.install_all or options.install_all_tools)
+            if r:
+                BWA_PATH = r
+
 
             ############################################################################
             # SAMTOOLS
@@ -1539,7 +1598,7 @@ if __name__ == '__main__':
     data.append("fatotwobit = %s\n"%(FATOTWOBIT_PATH,))
     data.append("samtools = %s\n"%(SAMTOOLS_PATH,))
     data.append("seqtk = %s\n"%(SEQTK_PATH,))
-    data.append("sratoolkit = %s\n"%(sra,))
+    data.append("sra = %s\n"%(sra,))
     data.append("numpy = %s\n"%(NUMPY_PATH,))
     data.append("biopython = %s\n"%(BIOPYTHON_PATH,))
     data.append("xlrd = %s\n"%(XLRD_PATH,))
@@ -1642,7 +1701,6 @@ if __name__ == '__main__':
         txt.append("#  ====>>> 4. Download manually the file '%s.tar.gz.ad' to here '%s' using your favourite Internet browser from here:" % (v,FUSIONCATCHER_DATA))
         txt.append("#  ====>>>            https://mega.co.nz/#!CdlggKqS!c8vkDFS-sNTsWBeqeq8sSWLoupr8-56xiBrNhJYkbeA")
         txt.append("cat %s.tar.gz.* | tar xz -C %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),FUSIONCATCHER_DATA.replace(" ","\\ ")))
-#        print "  wget  https://dl.dropboxusercontent.com/u/3870630/%s  --no-check-certificate  &&  tar  zxvf  %s -C %s" % (v,v,FUSIONCATCHER_DATA.replace(" ","\\ "))
         txt.append("rm -f %s.tar.gz.*" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
         for t in txt:
             print t

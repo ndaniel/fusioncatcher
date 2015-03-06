@@ -380,7 +380,7 @@ class pipeline:
     """
     Pipeline class
     """
-    __version__ = '0.97.9 beta'
+    __version__ = '0.98.1 beta'
     __author__  = 'Daniel Nicorici'
     __copyright__ = "Copyright 2009-2015, Daniel Nicorici"
     __credits__ = ["Henrikki Almusa"]
@@ -839,6 +839,7 @@ class pipeline:
 
         error_message - An additional error message to be displayed if the job/task
                         fails to run.
+
         It returns:
 
         True   - if the task has been executed succesfully
@@ -925,12 +926,19 @@ class pipeline:
                             self.write('+-->EXECUTING...')
                             proc = os.system(' '.join(cmd_line))
                         else:
-                            self.write('+-->MOCK EXECUTION (code executed outside of workflow)...')
+                            self.write('+-->MOCK EXECUTION (i.e. code executed outside of workflow)...')
                         if proc:
-                            temp = "\n\nERROR: Execution failed at step %d while executing:\n----------------\n   %s\n----------------\n" % (self.task_count,' \\\n   '.join(cmd_line),)
+                            temp = "\n\nERROR: Workflow execution failed at step %d while executing:\n----------------\n   %s\n----------------\n" % (self.task_count,' \\\n   '.join(cmd_line),)
                             self.write(temp, stderr = True)
                             if error_message:
                                 self.write(error_message, stderr = True)
+                            # print the input and output file sizes
+                            for elem in self.task:
+                                if element['command_line'] == 'yes' and ((elem['kind'] == 'path' and elem['io'] in ('input','output')) or elem['from_file'] == 'yes'):
+                                    ap = elem['value']
+                                    temp = "  * Size '%s' = %d bytes" % (ap,self.__path_size(ap))
+                                    self.write(temp, stderr = True)
+
                             # print the captured error message from '2>&1>' or '2>'
                             if hit_redirect:
                                 for il in captured_error_message:
@@ -943,7 +951,7 @@ class pipeline:
                                         self.write(temp, stderr = True)
                             else:
                                 #pass
-                                temp = "\n\nExecuting again the command in order to capture the STDERR...\n\n-------------------------------------------"
+                                temp = "\n\nExecuting second time the same step/command in order to capture error messages (i.e. STDERR)...\n\n-------------------------------------------"
                                 self.write(temp, stderr = True)
                                 # no redirection was found so then try to execute again the command and capture the STDERR
                                 #p = subprocess.Popen(cmd_line, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, shell = False)
@@ -1399,7 +1407,10 @@ class pipeline:
              fin,
              fout,
              temp_path = 'no',
-             kind = 'soft'):
+             kind = 'soft',
+             dest = None,
+             dest_list = None
+             ):
         """
         It creates a 1) soft link, 2) hard link, or 3) it copies the input file
         or path to the output. It also deletes the output file/path before
@@ -1416,6 +1427,12 @@ class pipeline:
                      'hard' will create a hard link from the input to the output,
                      'copy' will copy the input to the output,
                      'move' will move the input to the output.
+        dest         - destination variable where the VALUE is stored for later use,
+                       for example: job.dest.
+        dest_list    - destination variable which is a list and where the FOUT is
+                       appended for later use, for example: job.dest_list.
+
+
         It returns:
 
         True   - if the task has been executed succesfully
@@ -1425,6 +1442,17 @@ class pipeline:
         self.task_count = self.task_count + 1
         self.__show_step_header_start()
         executed = True
+
+        if dest is not None:
+            setattr(self, dest, fout)
+
+        if dest_list is not None:
+            if hasattr(self, dest_list):
+                gl = getattr(self, dest_list)
+                setattr(self, dest_list, gl + [fout])
+            else:
+                setattr(self, dest_list, [fout])
+
         if self.task_count >= self.start_step:
             if os.path.exists(fout) or os.path.islink(fout):
                 self.__delete_path(fout)

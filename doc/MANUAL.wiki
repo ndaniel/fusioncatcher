@@ -35,7 +35,7 @@ The aims of *`FusionCatcher`* are:
 
 For running *!FusionCatcher* it is needed a computer with:
   * 64-bit `*NIX` environment
-  * minimum 24 GB of RAM (in many cases it might work even with 16GB of RAM for small FASTQ files)
+  * minimum 24 GB of RAM (in many cases it might work even with 16GB of RAM for very small FASTQ files)
   * 1 CPU (minimum)
   * ~700 GB temporary disk space (needed just for temporary files)
 
@@ -50,7 +50,7 @@ For running *!FusionCatcher* it is needed a computer with:
   * *Bowtie* 64-bit version 1.1.1 (version 1.1.0 is fine too) http://bowtie-bio.sourceforge.net/index.shtml
   * *SeqTK* version 1.0-r68e-dirty  http://github.com/ndaniel/seqtk
   * organism specific  data from [http://www.ensembl.org Ensembl] database version 77 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed)
-  * *STAR* version 2.4.0f http://code.google.com/p/rna-star/ . Executables are available at http://github.com/alexdobin/STAR/releases
+  * *STAR* version 2.4.0h http://code.google.com/p/rna-star/ . Executables are available at http://github.com/alexdobin/STAR/releases
   * *BOWTIE2* version 2.2.4 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
 
 == 3.2 - Optional dependencies ==
@@ -233,12 +233,12 @@ make
 cd ..
 ln -s seqtk-1.0-r68e seqtk
 }}}
-  * installing *STAR* version 2.4.0f (required)
+  * installing *STAR* version 2.4.0h (required)
 {{{
 cd /apps/fusioncatcher/tools
-wget http://github.com/alexdobin/STAR/archive/STAR_2.4.0f1.tar.gz -O STAR_2.4.0f1.tar.gz
-tar zxvf STAR_2.4.0f1.tar.gz
-cd STAR-STAR_2.4.0f1
+wget http://github.com/alexdobin/STAR/archive/STAR_2.4.0h.tar.gz -O STAR_2.4.0h.tar.gz
+tar zxvf STAR_2.4.0h.tar.gz
+cd STAR-STAR_2.4.0h
 cd source
 rm -f STAR
 cp ../bin/Linux_x86_64_static/STAR .
@@ -250,7 +250,7 @@ make
   and continue with:
 {{{
 cd ..
-ln -s STAR-STAR_2.4.0f1 star
+ln -s STAR-STAR_2.4.0h star
 }}}
   * installing *Velvet* version 1.2.10 (optional)
 {{{
@@ -398,24 +398,24 @@ cd fuscat
 {{{
 wget http://sourceforge.net/projects/fusioncatcher/files/bootstrap.py
 }}}
-    # find out the dependencies needed to be downloaded (their URLs will be shown and the user needs to download them manually using wget or its favourite browser) into folder `fuscat`
+    # find out the dependencies needed to be downloaded and download them manually into folder `fuscat` (their URLs will be shown and the user needs to download them manually using wget or its favourite browser)
 {{{
 python bootstrap.py --list-dependencies
+...
 }}}
     # copy/move (manually) the folder `fuscat` and all its content to computer B (which does not have internet connection) where one intends to install *!FusionCatcher*
   * on the computer B (which does not have internet connection), where one intends to install *!FusionCatcher*:
-    # go to the folder `fuscat`
+    # go to the folder `fuscat` and make sure that the downloaded files do *not* have their permissions set as executables (this might confuse bootstrap.py)
 {{{
 cd fuscat
+chmod -x *
 }}}
     # start the installing process of *!FusionCatcher* using `bootstrap.py` (if one wishes to use another version of Python, like for example having the path `/some/other/python` then below please replace `python` with `/some/other/python`)
 {{{
 python bootstrap.py --local .
 }}}
-    # follow the instructions given by `bootstrap.py`
-
-
-Please, do not forget to build/download the organism data after this is done running (please notice the last lines displayed by `bootstrap.py` after it finished running and execute the commands suggested there, e.g. use `mega.sh`)!
+    # for installing the pre-built index files for human, please run (or take a look for instructions to) `mega.sh` (it should be in `bin` directory where FusionCatcher has been installed)
+    # for installing the pre-built index files for other organisms than human please, use `fusioncatcher-build` according tot the manual
 
 For more information regarding the installation settings and possibilities, run:
 {{{
@@ -423,6 +423,31 @@ python bootstrap.py --help
 }}}
 
 == 4.4 - Testing installation ==
+
+=== 4.4.1 - Synthetic dataset ===
+
+Here are the steps for testing the installation of *!FusionCatcher*.
+
+{{{
+mkdir ~/test
+cd ~/test
+
+wget http://sourceforge.net/projects/fusioncatcher/files/test/reads_1.fq.gz
+wget http://sourceforge.net/projects/fusioncatcher/files/test/reads_2.fq.gz
+
+cd ..
+
+/apps/fusioncatcher/bin/fusioncatcher \
+-d /apps/fusioncatcher/data/current/ \
+--input ~/test/ \
+--output ~/test-results/
+}}}
+
+This should take around 5 minutes to run and the result file `~/test-results/final-list_candidates-fusion-genes.txt` should look like [http://sourceforge.net/projects/fusioncatcher/files/test/final-list_candidate-fusion-genes.txt this].
+
+This dataset contains a very small set of short reads covering 12 already known fusion genes from human tumor cell lines which have been RNA sequenced (for more see [http://sourceforge.net/projects/fusioncatcher/files/test/readme.txt here]).
+
+=== 4.4.2 - BT-474 cell line ===
 
 In order to test that *!FusionCatcher* has been installed correctly and it is working correctly the following steps are needed (it requires the SRA toolkit to be installed):
   * download the publicly available RNA-seq data for BT-474 tumor breast cell line published in article *H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011.* http://genomebiology.com/2011/12/1/R6/
@@ -830,10 +855,12 @@ The output files are:
   * *`info.txt`* - information regarding genome version, Ensembl database version, versions of tools used, read counts, etc.;
   * *`fusioncatcher.log`* -  log of the entire run (e.g. all commands/programs which have been run, command line arguments used, running time for each command, etc.).
 
+<font color="red">
 !FusionCatcher reports:
-  * up to four times exactly the same candidate fusion gene, which has exactly the same fusion points/junction (i.e. !FusionCatcher will output separately the fusions found for each of its four aligners/methods such that it is easy to see what method was used to find a fusion gene)
+  * *multiple times* (up to four times) *exactly the same candidate fusion gene*, which has exactly the same fusion points/junction (i.e. !FusionCatcher will output separately the fusions found for each of its four aligners/methods such that it is easy to see what method was used to find a fusion gene)
   * [http://www.ncbi.nlm.nih.gov/pubmed/23340173 reciprocal fusion genes] if they are found (e.g. geneA-geneB and also geneB-geneA)
   * every alternative splicing event found for each fusion gene (i.e. alternative fusion isoforms of the same fusion gene)
+</font>
 
 *Table 1* - The description of columns of file *`final-list_candidate-fusion-genes.txt`*
 || *Column* || *Description* ||
@@ -843,8 +870,8 @@ The output files are:
 || *Gene_2_id(3end_fusion_partner)* || Ensembl gene id of the 3' end fusion partner ||
 || *Exon_1_id(5end_fusion_partner)* || Ensembl exon id of the 5' end fusion exon-exon junction ||
 || *Exon_2_id(3end_fusion_partner)* || Ensembl exon id of the 3' end fusion exon-exon junction ||
-|| *Fusion_point_for_gene_1(5end_fusion_partner)* || Chromosomal position of the 5' end of fusion junction (chromosome:position:strand) ||
-|| *Fusion_point_for_gene_2(3end_fusion_partner)* || Chromosomal position of the 3' end of fusion junction (chromosome:position:strand) ||
+|| *Fusion_point_for_gene_1(5end_fusion_partner)* || Chromosomal position of the 5' end of fusion junction (chromosome:position:strand); 1-based coordinate ||
+|| *Fusion_point_for_gene_2(3end_fusion_partner)* || Chromosomal position of the 3' end of fusion junction (chromosome:position:strand); 1-based coordinate ||
 || *Spanning_pairs* || Count of pair-end reads supporting the fusion ||
 || *Spanning_unique_reads* || Count of unique reads (i.e. unique mapping positions) mapping on the fusion junction. Shortly, here are counted all the reads which map on fusion junction minus the PCR duplicated reads. ||
 || *Longest_anchor_found* || Longest anchor (hangover) found among the unique reads mapping on the fusion junction ||
@@ -871,8 +898,9 @@ The output files are:
 *Table 3* - The labels used to mark fusion genes (i.e. column `Fusion_description` from Tables 1 and 2) in files *`final-list_candidate-fusion-genes.txt` * and *`preliminary-list_candidate-fusion-genes.txt`*
 || *Fusion_description* || *Description* ||
 || *antisense* || one or both genes is a gene coding for [http://en.wikipedia.org/wiki/Antisense_RNA antisense RNA]||
-|| *banned* || fusion gene is on a list of known false positive fusion genes. These were found with very strong supporting data in healthy samples.<font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
-|| *bodymap2* || fusion gene is on a list of known false positive fusion genes. It has been found in healthy human samples collected from 16 organs from  [http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/ Illumina !BodyMap2 RNA-seq database] <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *banned* || fusion gene is on a list of known false positive fusion genes. These were found with very strong supporting data in healthy samples. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *bodymap2* || fusion gene is on a list of known false positive fusion genes. It has been found in healthy human samples collected from 16 organs from  [http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/ Illumina BodyMap2 RNA-seq database]. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
+|| *cell_lines* || known fusion gene from paper: C. Klijn, A comprehensive transcriptional portrait of human cancer cell lines, Nature Biotechnology, Dec. 2014, [http://dx.doi.org/10.1038/nbt.3080 DOI:10.1038/nbt.3080] ||
 || *chimerdb2* || known fusion gene from the [http://ercsb.ewha.ac.kr/FusionGene/ ChimerDB] database (please use ChimerDB2 database for more information regarding the fusion gene) ||
 || *conjoing* || known conjoined genes (that is fusion genes found in samples from healthy patients) from the [http://metasystems.riken.jp/conjoing/ ConjoinG] database (please use ConjoinG database for more information regarding the fusion gene). <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive in case that one looks for fusion genes specific to a disease._ </font> ||
 || *cosmic* || known fusion gene from the [http://cancer.sanger.ac.uk/cancergenome/projects/cosmic/ COSMIC] database (please use COSMIC database for more information regarding the fusion gene) ||
@@ -901,9 +929,9 @@ The output files are:
 || *oncogene* || one gene or both genes are a known [http://en.wikipedia.org/wiki/Oncogene oncogene] ||
 || *pair_pseudo_genes* || one gene is the other's [http://en.wikipedia.org/wiki/Pseudogene pseudogene]. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
 || *paralogs* || both genes involved in the fusion gene are  [http://en.wikipedia.org/wiki/Paralog#Paralogy paralog] for each other (most likely this is a false positive fusion gene). <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
-|| *ensembl_partially_overlapping* || the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the Ensembl database. ||
-|| *ucsc_partially_overlapping* || the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the UCSC database. ||
-|| *refseq_partially_overlapping* || the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the !RefSeq NCBI. ||
+|| *ensembl_partially_overlapping* || the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the Ensembl database. <font color="red">_A candidate fusion gene having this label has a good probability of being a false positive._ </font> ||
+|| *ucsc_partially_overlapping* || the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the UCSC database.  <font color="red">_A candidate fusion gene having this label has a good probability of being a false positive._ </font> ||
+|| *refseq_partially_overlapping* || the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the !RefSeq NCBI. <font color="red">_A candidate fusion gene having this label has a good probability of being a false positive._ </font> ||
 || *pseudogene* || one or both of the genes is a [http://en.wikipedia.org/wiki/Pseudogene pseudogene] ||
 || *readthrough* || the fusion gene is a readthrough event (that is both genes forming the fusion are on the same strand and there is no known gene situated in between); Please notice, that many of readthrough fusion genes might be false positive fusion genes due to errors in Ensembl database annotation (for example, one gene is annotated in Ensembl database as two separate genes). <font color="red">_A candidate fusion gene having this label has a high probability of being a false positive._</font> ||
 || *ribosomal_protein* || one or both gene is a gene encoding for [http://en.wikipedia.org/wiki/Ribosomal_protein ribosomal protein] ||

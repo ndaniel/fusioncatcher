@@ -478,6 +478,7 @@ def parse_cigar(c,toversion="1.3"):
 def blocks(cigar, ig = 0, use_cigar_13 = True):
     # returns block of matches
     # input is from cigar()
+    # NOTE: hard clipping is converted forecfully to soft clipping
     ir = 0 # index on read
     #ig = 0 # index on genome
     rr = [] # on read
@@ -572,7 +573,7 @@ def get_psl(sam, lens, use_cigar_13=True):
             (interval_query,interval_ref, match, mismatch, mismatch_clip, mismatch_x,insert_ref,insert_ref_count,insert_query,insert_query_count,seq_len) = blocks(sam[sam_CIGAR], ig = psl[psl_tStart], use_cigar_13 = use_cigar_13)
 
             # read sequence length
-            if sam[sam_SEQ] != '*':
+            if sam[sam_SEQ] != '*' and sam[sam_CIGAR].find('H') == -1:
                 psl[psl_qSize] = len(sam[sam_SEQ])
             else:
                 # • Sum of lengths of the M/I/S/=/X operations shall equal the length of SEQ
@@ -705,7 +706,7 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = """It takes as input a file in SAM format and it converts into a PSL format file."""
-    version = "%prog 0.10 beta"
+    version = "%prog 0.11 beta"
 
     parser = optparse.OptionParser(usage = usage, description = description, version = version)
 

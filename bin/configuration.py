@@ -44,8 +44,10 @@ import os
 import sys
 import ConfigParser
 
+
 def _expand(*p):
     return os.path.abspath(os.path.expanduser(os.path.join(*p)))
+
 
 def _get_config(c,k,v):
     r = None
@@ -69,6 +71,7 @@ def _pythonpath(p,c,k,v,skip=False,last=False):
             else:
                 os.environ["PYTHONPATH"] = _expand(r)
 
+
 def _envpath(p,c,k,v):
     r = _get_config(c,k,v)
     if r:
@@ -79,23 +82,25 @@ def _envpath(p,c,k,v):
         else:
             os.environ["PATH"] = _expand(r)
 
+
 def _versions(p,c,k,v):
     r = _get_config(c,k,v)
     if r:
         r = r.strip()
     p[v.upper()] = r
 
+
 def _path(p,c,k,v):
     r = _get_config(c,k,v)
     if r:
         p[v.upper()] = _expand(r)
 
+
 def manage(configuration_filename, skip_python = []):
     #
     CONF = dict()
     if (not os.path.isfile(configuration_filename)) and (not os.path.islink(configuration_filename)):
-        print >> sys.stderr,"WARNING: Configuration file '%s' not found!" % (configuration_filename,)
-        print >> sys.stderr,"Moving on..."
+        print >> sys.stderr,"WARNING: Configuration file '%s' not found!  Moving on..." % (configuration_filename,)
     else:
 
         config = ConfigParser.ConfigParser()
@@ -126,7 +131,9 @@ def manage(configuration_filename, skip_python = []):
         _envpath(CONF,config,"paths","samtools")
         _envpath(CONF,config,"paths","seqtk")
         _envpath(CONF,config,"paths","star")
+        _envpath(CONF,config,"paths","bwa")
         _envpath(CONF,config,"paths","picard")
+        _envpath(CONF,config,"paths","sra")
 
         _path(CONF,config,"paths","data")
         _path(CONF,config,"paths","picard")

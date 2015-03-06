@@ -5,11 +5,15 @@ Version Release History
 =======================
 
 
-Version 0.99.3f beta - ..., 2015
+Version 0.99.4a beta - ..., 2015
   * added support for fusion genes from paper: C. Klijn, A comprehensive
     transcriptional portrait of human cancer cell lines, Nature Biotechnology,
     Dec. 2014, doi:10.1038/nbt.3080
   * added support for Ensembl version 78
+  * added a very short summary of candidate fusions found in 'short_summary.txt'
+  * fixed bug affecting PATH variable for sratoolkit
+  * fixed bug affecting input paths which contain comma(s)
+  * fixed bug affecting the frame prediction for found candidate fusion genes
   * fixed several minor bugs
   * updated manual
 

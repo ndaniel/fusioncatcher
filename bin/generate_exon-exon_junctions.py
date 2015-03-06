@@ -214,7 +214,7 @@ Length_of_the_exon-exon_juntion = 2 * (length_reads - overlap_read). The joint p
         temp = record.id.partition(';')
         t = temp[0]
         g = temp[2]
-        transcript[t]=record.seq.tostring().upper()
+        transcript[t]=str(record.seq).upper()
         if not gene.has_key(g):
             gene[g]=[]
         gene[g].append(t)

@@ -17150,7 +17150,6 @@ if __name__ == '__main__':
         ['RP11-464F9.1','BMS1P4'],
         ['RP11-522L3.6','MTND4P32'],
         ['SLC16A8','BAIAP2L2'],
-        ['SLC45A3','ELK4'],
         ['SORBS1','RP11-476E15.3'],
         ['TBCE','RP11-293G6__A.2'],
         ['TLL2','RP11-35J23.5'],
@@ -17866,7 +17865,10 @@ if __name__ == '__main__':
         ['VN1R40P','VN1R37P'],
         ['SUMO1','SUMO1P4'],
         ['RP11-274B21.1','TLK2'],
-        ['MCM8','CRLS1']
+        ['MCM8','CRLS1'],
+        ['DNM1','DNM1P33'],
+        ['TUBAP2','TUBA4A'],
+        ['HIST1H3J','H2AFJ']
 
         ]
 

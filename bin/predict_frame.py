@@ -97,10 +97,12 @@ def predict(aexon,acds,achrom,aposition,astrand):
                         if acds:
                             txt = 'UTR'
                             f  = True
-                            if achrom == '+':
+                            if astrand == '+':
                                 start[at] = nuc + aposition - e[1] + 1
-                            else:
+                            elif astrand == '-':
                                 start[at] = s - (nuc + aposition - e[1] + 1) + 1
+                            else:
+                                print >>sys.stderr,"WARNING: unknown strand found!"
                         elif not txt.startswith('UTR'):
                             txt = 'exonic(no-known-CDS)'
                         break
@@ -138,11 +140,13 @@ def predict(aexon,acds,achrom,aposition,astrand):
                                     # length of first UTR (from 5 to 3 on genome)
                                     utr = start[at] - nuc
                                     info.append((nuc,at,islastnucleotide,s,utr))
-                                else:
+                                elif astrand == '-':
                                     islastnucleotide = True if nuc == 1 else False
                                     #length of first UTR (from 5 to 3 on genome)
                                     utr = start[at] - (s-nuc+1)
                                     info.append((s-nuc+1,at,islastnucleotide,s,utr))
+                                else:
+                                    print >>sys.stderr,"WARNING: unknown strand found!"
                                 txt = 'CDS'
                                 break
     # info - 0 : position in CDS
@@ -163,7 +167,8 @@ def add_line(aline,adict):
     strand = aline[6]
     if pstart > pend:
         (pstart,pend) = (pend,pstart)
-    ids = dict([l.replace('"','').replace("'","").strip().split(' ') for l in aline[8].split(";") if l])
+    ids = [l.replace('"','').replace("'","").strip().split(' ') for l in aline[8].split(";") if l]
+    ids = dict([l for l in ids if len(l) == 2])
     g_id = ids["gene_id"]
     t_id = ids["transcript_id"]
     e_no = int(ids["exon_number"])
@@ -202,7 +207,7 @@ def predict_frame(gtf_file,
             t = temp[0]
             g = temp[2]
             if g in myg:
-                tr2fa[t] = record.seq.tostring().upper()
+                tr2fa[t] = str(record.seq).upper()
         handle.close()
 
 
@@ -222,7 +227,7 @@ def predict_frame(gtf_file,
     if myg:
         # get all exons per gene as a dictionary
         if verbose:
-            print >>sys.stderr,"Building the database of exon and CDSes..."
+            print >>sys.stderr,"Building the database of exons and CDSes..."
         exon = dict()
         cds = dict()
         q = 0
@@ -266,7 +271,7 @@ def predict_frame(gtf_file,
                       elem[0][4]+elem[0][0], # end position in transcript 1
                       elem[1][1], # transcript 2 id
                       elem[1][4]+elem[1][0], # # start position in transcript 2
-                      (elem[0][0]%3+(elem[1][0]-1)%3)%3, # is divisible by 3?
+                      ((elem[0][0]%3)-((elem[1][0]-1)%3)), # just test if they are the same ## is divisible by 3?
                       elem[0][4], # length UTR in transcript 1
                       elem[1][4]  # length UTR in transcript 2
                       ) for elem in itertools.product(info1,info2)]
@@ -368,7 +373,7 @@ Email: Daniel.Nicorici@gmail.com
 
 
 
-    version = "%prog 0.02 beta"
+    version = "%prog 0.03 beta"
 
     parser = MyOptionParser(usage       = usage,
                             epilog      = epilog,

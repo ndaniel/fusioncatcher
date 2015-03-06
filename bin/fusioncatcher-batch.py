@@ -111,6 +111,7 @@ if __name__ == "__main__":
         else:
             newcmds.insert(0,head.replace('fusioncatcher-batch','fusioncatcher.py'))
         if xin and os.path.isdir(xin):
+            # input is a directory and contains subdirectories, one subdirectory is one sample
             dirs = [el for el in os.listdir(xin) if os.path.isdir(os.path.join(xin,el)) and not el.startswith('.')]
             nos = None
             if xno and os.path.isdir(xno):
@@ -186,6 +187,7 @@ if __name__ == "__main__":
                     print t
                     print "------------------------------------------"
                     r = os.system(t)
+
         elif xin and os.path.isfile(xin):
             # the input is text file containing the files/directories which should be given as input to FusionCatcher
             # ignore the lines which are empty of start with #
@@ -194,6 +196,7 @@ if __name__ == "__main__":
             nos = None
             if xno:
                 nos = [line.rstrip('\r\n').split('\t') for line in file(xno,'r').readlines() if line.rstrip("\r\n") and not line.strip().startswith("#")]
+
             if nos:
                 if xou and not os.path.isdir(xou):
                     os.makedirs(xou)
@@ -203,7 +206,9 @@ if __name__ == "__main__":
                 file(partialnormaltemp,"w").write('')
 
                 first = True
+                ix = 0
                 for line in nos:
+                    ix = ix + 1
                     t = newcmds[:]
                     pin = None
                     pou = None
@@ -211,7 +216,13 @@ if __name__ == "__main__":
                     if len(line) >= 2 and line[1]:
                         pou = os.path.join(xou,line[1])
                     else:
-                        pou = os.path.join(xou,os.path.basename(line[0].rstrip(os.sep)))
+                        #pou = os.path.join(xou,os.path.basename(line[0].rstrip(os.sep)))
+                        vu = line[0]
+                        if vu.find(',') != -1:
+                            vu = str(ix) + "_" + os.path.basename(vu.split(",")[0].rstrip(os.sep))
+                        else:
+                            vu = os.path.basename(vu.rstrip(os.sep))
+                        pou = os.path.join(xou,vu)
                     t.append('--input')
                     t.append(pin)
                     t.append('--output')
@@ -242,6 +253,7 @@ if __name__ == "__main__":
                     r = os.system(t)
 
                 for line in txt:
+                    ix = ix + 1
                     t = newcmds[:]
                     pin = None
                     pou = None
@@ -249,7 +261,13 @@ if __name__ == "__main__":
                     if len(line) >= 2 and line[1]:
                         pou = os.path.join(xou,line[1])
                     else:
-                        pou = os.path.join(xou,os.path.basename(line[0].rstrip(os.sep)))
+                        #pou = os.path.join(xou,os.path.basename(line[0].rstrip(os.sep)))
+                        vu = line[0]
+                        if vu.find(',') != -1:
+                            vu = str(ix) + "_" + os.path.basename(vu.split(",")[0].rstrip(os.sep))
+                        else:
+                            vu = os.path.basename(vu.rstrip(os.sep))
+                        pou = os.path.join(xou,vu)
                     t.append('--input')
                     t.append(pin)
                     t.append('--output')
@@ -268,16 +286,24 @@ if __name__ == "__main__":
                 os.remove(normaltemp)
                 os.remove(partialnormaltemp)
             else:
+                ix = 0
                 for line in txt:
+                    ix = ix + 1
                     t = newcmds[:]
-                    print t
+                    #print t
                     pin = None
                     pou = None
                     pin = os.path.join(line[0])
                     if len(line) >= 2 and line[1]:
                         pou = os.path.join(xou,line[1])
                     else:
-                        pou = os.path.join(xou,os.path.basename(line[0].rstrip(os.sep)))
+                        #pou = os.path.join(xou,os.path.basename(line[0].rstrip(os.sep)))
+                        vu = line[0]
+                        if vu.find(',') != -1:
+                            vu = str(ix) + "_" + os.path.basename(vu.split(",")[0].rstrip(os.sep))
+                        else:
+                            vu = os.path.basename(vu.rstrip(os.sep))
+                        pou = os.path.join(xou,vu)
                     t.append('--input')
                     t.append(pin)
                     t.append('--output')
@@ -294,7 +320,7 @@ if __name__ == "__main__":
         #newcmds = ' '.join(newcmds)
         #os.system(newcmds)
         print """
-FUSIONCATCHER-BATCH.PY version 0.11
+FUSIONCATCHER-BATCH.PY version 0.12
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 

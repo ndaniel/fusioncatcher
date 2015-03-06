@@ -77,7 +77,12 @@ class lines_to_file:
     def __init__(self,file_name,size_buffer=10**8):
         self.file_name = file_name
         if file_name:
-            self.file_handle=open(file_name,'w')
+            if file_name == "-":
+                self.file_handle = sys.stdout
+            elif file_name.lower().endswith('.gz'):
+                self.file_handle = gzip.open(file_name,'w')
+            else:
+                self.file_handle = open(file_name,'w')
         self.size_buffer=size_buffer
         self.data=[]
         self.size=0
@@ -151,15 +156,15 @@ def extract_reads(f_in, f_list, f_out, mate = False, size_buffer = 2*(10**9)):
 
         gc.disable()
         list_reads = [line.rstrip('\r\n') for line in lines]
-        gc.disable()
+        gc.enable()
 
         if mate:
-            gc.enable()
+            gc.disable()
             list_reads = frozenset(['%s%s' % (line[:-1],'2' if line.endswith('1') else '1') for line in list_reads])
             gc.enable()
         else:
             gc.disable()
-            list_reads = frozenset([line.rstrip('\r\n') for line in lines])
+            list_reads = frozenset(list_reads)
             gc.enable()
         for reads in reads_from_fastq_file(f_in):
             if reads[0][1:].rstrip('\r\n') in list_reads:
@@ -175,7 +180,7 @@ if __name__ == '__main__':
 
     usage="%prog [options]"
     description="""Given a list of short read names it extracts them from a FASTQ file."""
-    version="%prog 0.12 beta"
+    version="%prog 0.14 beta"
 
     parser=optparse.OptionParser(usage=usage,description=description,version=version)
 
@@ -229,11 +234,8 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # running
-    print "Removing..."
     extract_reads(options.input_filename,
                   options.input_list_filename,
                   options.output_filename,
                   options.mate,
                   options.bucket)
-
-    print "The end."
