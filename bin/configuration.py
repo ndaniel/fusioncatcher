@@ -134,6 +134,7 @@ def manage(configuration_filename, skip_python = []):
         _envpath(CONF,config,"paths","bwa")
         _envpath(CONF,config,"paths","picard")
         _envpath(CONF,config,"paths","sra")
+        _envpath(CONF,config,"paths","bwa")
 
         _path(CONF,config,"paths","data")
         _path(CONF,config,"paths","picard")

@@ -4,23 +4,23 @@
 ==============================================================================
 FusionCatcher
 ==============================================================================
-FusionCatcher searches for novel gene fusions in RNA-seq paired-end
+FusionCatcher searches for novel somatic fusion genes in RNA-seq paired-end
 reads data produced by the Illumina Solexa platforms (for example: Illumina
 HiSeq 2000, GAIIx, GAII).
 
 Required dependencies:
 - Linux 64-bit (e.g. Ubuntu 12.04 or newer)
-- Python version 2.7.3 (>=2.6.0 and < 3.0 is probably fine but it has not been tested)
-- BioPython version 1.60 (>=1.50 is probably fine but it has not been fully tested)
+- Python version 2.7.6 (>=2.6.0 and < 3.0 is probably fine but it has not been tested)
+- BioPython version 1.65 (>=1.50 is probably fine but it has not been fully tested)
 - Bowtie 64-bit version 1.1.1  <http://bowtie-bio.sourceforge.net/index.shtml>
-- Bowtie2 64-bit version 2.2.4  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
-- STAR version 2.4.0h <http://code.google.com/p/rna-star/>. Executables are
+- Bowtie2 64-bit version 2.2.5  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
+- STAR version 2.4.0j <http://code.google.com/p/rna-star/>. Executables are
   available at <http://github.com/alexdobin/STAR/releases>
 - SEQTK version 1.0-r68e-dirty  <http://github.com/ndaniel/seqtk>
 
 Optional dependencies:
 - strongly recommended (expected by default to be installed but their use can
-be disabled by using the command line option '--skip-blat'):
+  be disabled by using the command line option '--skip-blat'):
    * BLAT version 0.35 <http://users.soe.ucsc.edu/~kent/src/>. Executables are
      available at <http://hgdownload.cse.ucsc.edu/admin/exe/>. Please, check the
      license to see if it allows you to run/use it!
@@ -920,7 +920,7 @@ if __name__ == "__main__":
                              "By default always BOWTIE aligner is used and it "+
                              "cannot be disabled. The choices are: "+
                              "['blat','star','bowtie2','bwa']. Any combination of these is "+
-                             "accepted if the aligners names are comma separated. "+
+                             "accepted if the aligners' names are comma separated. "+
                              "For example, if one wants to used all four aligners "+
                              "then 'blat,star,bowtie2,bwa' should be given. "+
                              "The command line options '--skip-blat', '--skip-star', "+
@@ -1227,8 +1227,15 @@ if __name__ == "__main__":
     x1 = expand(options.output_directory)
     x2 = options.output_directory
     if  x1.find(",") != -1 or x2.find(",") != -1:
-        parser.error("ERROR: Output path shall not contain comma(s)!")
+        parser.error("ERROR: Output path contains comma(s)!")
         sys.exit(1)
+
+    x1 = expand(options.tmp_directory)
+    x2 = options.tmp_directory
+    if  x1.find(",") != -1 or x2.find(",") != -1:
+        parser.error("ERROR: Temporary path contains comma(s)!")
+        sys.exit(1)
+
 
     if options.normal_matched_filename:
         cc = sys.argv[:]
@@ -1627,6 +1634,10 @@ if __name__ == "__main__":
 #    job.run()
 
     if not os.system("cat /etc/issue 2>&1 >/dev/null"):
+        job.add('printf',kind='program')
+        job.add('"\nLinux:\n------\n"',kind='parameter')
+        job.add('>>',info_file,kind='output')
+        job.run()
         job.add('cat',kind='program')
         job.add('/etc/issue',kind='parameter')
         job.add('2>&1',kind='parameter')
@@ -1881,10 +1892,10 @@ if __name__ == "__main__":
         clo.append("\n")
         clo.append("Current working directory:\n---------------------------\n%s\n" % (expand(os.getcwd()),))
         clo.append("\n")
-        clo.append("Command line used for launching FusionCacher:\n")
-        clo.append("---------------------------------------------\n")
+        clo.append("Command line used for launching FusionCatcher:\n")
+        clo.append("----------------------------------------------\n")
         clo.append("%s\n" % (' \\ \n'.join(sys.argv),))
-        clo.append("---------------------------------------------\n")
+        clo.append("----------------------------------------------\n")
         clo.append("\n")
         file(info_file,'a').writelines(clo)
 
@@ -1905,6 +1916,18 @@ if __name__ == "__main__":
                 "CONFIGURATION.CFG:",
                 "==================="],
          bottom = "\n\n\n")
+
+    x = data_dir[:-1] if data_dir.endswith(os.sep) else data_dir
+    if os.path.islink(x):
+        job.add('printf',kind='program')
+        job.add('"\n============\nDATA DIRECTORY:\n============\n%s\nIt links to:\n%s\n\n\n"' % (data_dir,expand(os.readlink(x))),kind='parameter')
+        job.add('>>',info_file,kind='output')
+        job.run()
+    else:
+        job.add('printf',kind='program')
+        job.add('"\n============\nDATA DIRECTORY:\n============\n%s\nIt is not a link!\n\n\n"' % (data_dir,),kind='parameter')
+        job.add('>>',info_file,kind='output')
+        job.run()
 
 
     if job.run():
@@ -2994,6 +3017,10 @@ if __name__ == "__main__":
     job.run()
     job.add('free',kind='program')
     job.add('-m',kind='parameter')
+    job.add('>>',info_file,kind='output')
+    job.run()
+    job.add('printf',kind='program')
+    job.add('"\n\n\n"',kind='parameter')
     job.add('>>',info_file,kind='output')
     job.run()
 

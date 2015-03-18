@@ -481,7 +481,7 @@ if __name__ == '__main__':
                 "then it can be skipped by re-running fusioncatcher-build with "+
                 "command line option '--skip-database hla'! This database is optional."))
     elif job.run():
-        file(outdir('hla.fa'),'w').write('>fake-hla\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n')
+        file(outdir('hla.fa'),'w').write('>mock-hla\nACGTGGGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n')
 
     # adds some missing genes to Ensembl Database
     job.add('add_custom_gene.py',kind='program')

@@ -9,13 +9,12 @@ Download / Install / Update FusionCatcher
 
 Use this one-line command:
 
-
     wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download
 
 
 Description
 -----------
-FusionCatcher searches for somatic novel/known fusion genes, translocations, and
+FusionCatcher searches for novel/known somatic fusion genes, translocations, and
 chimeras in RNA-seq data (paired-end reads from Illumina NGS platforms like
 Solexa/HiSeq/NextSeq/MiSeq) from diseased samples.
 
@@ -46,6 +45,7 @@ The aims of FusionCatcher are:
 Manual
 ------
 A detailed manual is at doc/MANUAL or [here](http://code.google.com/p/fusioncatcher/wiki/Manual).
+
 
 Citing
 ------

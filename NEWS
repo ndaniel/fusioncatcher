@@ -1,23 +1,23 @@
-FusionCatcher: Somatic gene fusion finder in paired-end RNA-seq data produced
-on Illumina sequencing platforms (i.e. Solexa and HiSeq).
-
-Version Release History
-=======================
+Version Release History for FusionCatcher
+=========================================
 
 
-Version 0.99.4a beta - ..., 2015
+Version 0.99.4a beta - March 18, 2015
+-------------------------------------
   * added support for fusion genes from paper: C. Klijn, A comprehensive
     transcriptional portrait of human cancer cell lines, Nature Biotechnology,
     Dec. 2014, doi:10.1038/nbt.3080
-  * added support for Ensembl version 78
+  * added support for Ensembl version 79 and human genome GRCh38.p2/hg38.p2
   * added a very short summary of candidate fusions found in 'short_summary.txt'
+  * increased sensitivity for method using BOWTIE2 aligner
   * fixed bug affecting PATH variable for sratoolkit
-  * fixed bug affecting input paths which contain comma(s)
+  * fixed bug affecting input/output paths which contain comma(s)
   * fixed bug affecting the frame prediction for found candidate fusion genes
   * fixed several minor bugs
   * updated manual
 
 Version 0.99.3e beta - November 14, 2014
+----------------------------------------
   * fixed bug regarding memory allocation for BOWTIE2 aligner
   * fixed bug regarding detection of Python version
   * fixed bug regarding conversion to GRCh37/hg19 coordinates
@@ -27,6 +27,7 @@ Version 0.99.3e beta - November 14, 2014
   * updated manual
 
 Version 0.99.3d beta - November 4, 2014
+---------------------------------------
   * added support for BOWTIE2 aligner http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
   * sensitivity and precision improved slightly (due to addition of fourth read aligner, that is BOWTIE2, in addition to BOWTIE, BLAT, and STAR)
   * added automatic conversion of fusion genes coordinates to GRCh37/hg19 (only for human genome)
@@ -42,6 +43,7 @@ Version 0.99.3d beta - November 4, 2014
   * updated manual
 
 Version 0.99.3c beta - October 9, 2014
+--------------------------------------
   * added support for STAR aligner http://code.google.com/p/rna-star/ (STAR is used only and only for splitting reads while mapping)
   * added support for latest version of Ensembl database http://www.ensembl.org (that is version 77)
   * added support for latest version GRCh38/hg38 of human genome from Ensembl, RefSeq, and UCSC databases
@@ -59,18 +61,21 @@ Version 0.99.3c beta - October 9, 2014
   * fixed several minor bugs
 
 Version 0.99.3b beta - June 27, 2014
+------------------------------------
   * added effect prediction of fusion gene (e.g. in-frame, out-of-frame, etc.)
   * fixed a bug due to Bowtie and BLAT limitation of building indexes for reference sequences with size over 2^32
   * fixed bug regarding the hard links created on different devices
   * fixed several minor bugs
 
 Version 0.99.3a beta - April 15, 2014
+-------------------------------------
   * added support for latest version of Ensembl database http://www.ensembl.org (that is version 75)
   * added support IMGT/HLA Database http://www.ebi.ac.uk/ipd/imgt/hla/ for filtering purposes (optional)
   * added as known false-positive fusion genes, the fusion genes found in Illumina Body Map RNA-seq dataset
   * fixed several minor bugs
 
 Version 0.99.2 beta - February 5, 2014
+--------------------------------------
   * added full virus/bacteria/phages names when reporting the reads mapping on them for filtering purposes
   * added option to save as FASTQ file, for later use, the unmapped reads (i.e. reads which do not map on genome, transcriptome, viruses, phages, and bacteria)
   * added option to save as SAM file, for later use, the reads mapping on genomes of viruses/bacteria/phages (from the NCBI database)
@@ -90,6 +95,7 @@ Version 0.99.1 beta - December 4, 2013
   * fixed several minor bugs
 
 Version 0.99 beta - September 5, 2013
+-------------------------------------
   * added support for the latest version of Ensembl database http://www.ensembl.org (that is version 73)
   * added support for the latest version of CGP database
   * filtering out the reads which map on genomes of viruses/bacteria/phages (from NCBI database)
@@ -98,6 +104,7 @@ Version 0.99 beta - September 5, 2013
   * fixed several minor bugs
 
 Version 0.98 beta - June 26, 2013
+---------------------------------
   * added support for the latest version of Ensembl database http://www.ensembl.org (that is version 72)
   * added support for Velvet v1.2.10
   * reads containing short tandem repeats are filtered out
@@ -106,6 +113,7 @@ Version 0.98 beta - June 26, 2013
   * fixed several minor bugs
 
 Version 0.97 beta - April 9, 2013
+---------------------------------
   * reads are trimmed automatically to 60 bp instead of 50 bp long as previously was done when
     using the BOWTIE aligner
   * added suport for the latest version of TICdb database <http://www.unav.es/genetica/TICdb/>
@@ -116,6 +124,7 @@ Version 0.97 beta - April 9, 2013
   * fixed several minor bugs
 
 Version 0.96 beta - March 7, 2013
+---------------------------------
   * fusion genes which are readthroughs are considered for analysis by default
     now (it can still be skipped if necessary); previously it was necessary to
     specify it clearly in order for FusionCatcher to search also for
@@ -131,6 +140,7 @@ Version 0.96 beta - March 7, 2013
   * fixed several minor bugs
 
 Version 0.95 beta - January 25, 2013
+------------------------------------
   * *NOTE*: it needs a newer `build data` gotten with 'fusioncatcher-build' version 95
   * improved the detection rate for finding fusion genes (genes and their
     corresponding pseudogenes are filtered out from the preliminary list of
@@ -141,6 +151,7 @@ Version 0.95 beta - January 25, 2013
   * fixed several other minor bugs
 
 Version 0.94 beta - December 21, 2012
+-------------------------------------
   * NOTE: it needs a newer built data gotten with 'fusioncatcher-build'
     version 94 (in case that one already has an older built data obtained with
     version 93 then one easily may upgrade it by running upgrade93to94.py in
@@ -157,6 +168,7 @@ Version 0.94 beta - December 21, 2012
   * fixed several other bugs
 
 Version 0.93 beta - December 18, 2011
+-------------------------------------
   * First public release of FusionCatcher.
   * Includes the two core tools: the builder 'fusioncatcher-build',
     the fusion genes finder 'fusioncatcher'

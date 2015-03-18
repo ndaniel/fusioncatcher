@@ -55,25 +55,87 @@ def add(outdir,
         end = '',
         chrom = '',
         strand = ''):
-    file(os.path.join(outdir,'descriptions.txt'),'a').write('%s\t\n' % (gene_id,))
-    file(os.path.join(outdir,'genes_symbols.txt'),'a').write('%s\t%s\n' % (gene_id,gene_symbol))
-    file(os.path.join(outdir,'synonyms.txt'),'a').write('%s\t%s\n' % (gene_id,gene_symbol))
-    file(os.path.join(outdir,'genes.txt'),'a').write('%s\t%s\t%s\t%s\t%s\n' % (gene_id,end,start,strand,chrom))
-    file(os.path.join(outdir,'exons.txt'),'a').write(
-        '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' % (
-            protein_id,
-            gene_id,
-            transcript_id,
-            exon_id,
-            start,
-            end,
-            exon_number,
-            start,
-            end,
-            start,
-            end,
-            strand,
-            chrom))
+    #
+    g = [line.rstrip("\r\n").split("\t") for line in file("genes.txt","r").readlines() if line.rstrip("\r\n")]
+    gid = [(el[0], el[1], el[2], el[3], el[4]) for el in g if el[0] == gene_id]
+    if gene_id and (not gid):
+        print "Gene %s not found in the database! Gene %s and transcript %s added into database!" % (gene_id,gene_id,transcript_id)
+        file(os.path.join(outdir,'descriptions.txt'),'a').write('%s\t\n' % (gene_id,))
+        file(os.path.join(outdir,'genes_symbols.txt'),'a').write('%s\t%s\n' % (gene_id,gene_symbol))
+        file(os.path.join(outdir,'synonyms.txt'),'a').write('%s\t%s\n' % (gene_id,gene_symbol))
+        file(os.path.join(outdir,'genes.txt'),'a').write('%s\t%s\t%s\t%s\t%s\n' % (gene_id,end,start,strand,chrom))
+        file(os.path.join(outdir,'exons.txt'),'a').write(
+            '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' % (
+                protein_id,
+                gene_id,
+                transcript_id,
+                exon_id,
+                start,
+                end,
+                exon_number,
+                start,
+                end,
+                start,
+                end,
+                strand,
+                chrom))
+    elif gid:
+        print "Gene %s found already in the database!" % (gene_id,)
+        if len(gid) == 1:
+            gid = gid.pop(0)
+        else:
+            print "  Error: Too many genes found in 'genes.txt'!",gid
+            sys.exit(1)
+
+        e = [line.rstrip("\r\n").split("\t") for line in file("exons.txt","r").readlines() if line.rstrip("\r\n")]
+
+        if end != gid[1] or start != gid[2] or strand != gid[3] or chrom != gid[4]:
+            print "  Gene %s requires changes in the entire database! New transcript %s added for this gene!" % (gene_id,transcript_id)
+            # update the genes.txt
+            g = [line for line in g if line[0] != gene_id]
+            g.append([gene_id,end,start,strand,chrom])
+            file(os.path.join(outdir,'genes.txt'),'w').writelines(['\t'.join(line)+'\n' for line in g])
+            # update the exons.txt
+            e_rest = [line for line in e if line[1] != gene_id]
+            e_target = [line for line in e if line[1] == gene_id]
+            e_target = [[line[0],line[1],line[2],line[3],line[4],line[5],line[6],start,end,line[9],line[10],strand,chrom] for line in e_target]
+            e_target.append([
+                    protein_id,
+                    gene_id,
+                    transcript_id,
+                    exon_id,
+                    start,
+                    end,
+                    exon_number,
+                    start,
+                    end,
+                    start,
+                    end,
+                    strand,
+                    chrom] )
+            e = e_rest + e_target
+            file(os.path.join(outdir,'exons.txt'),'w').writelines(['\t'.join(line)+'\n' for line in e])
+        else:
+            e_tr = [line for line in e if line[2] == transcript_id and line[1] == gene_id]
+            if e_tr:
+                print "  Transcript %s already in the database and it will not be added again!" % (transcript_id,)
+            else:
+                print "  New transcript %s added for already present gene %s!" % (transcript_id,gene_id)
+                file(os.path.join(outdir,'exons.txt'),'a').write(
+                    '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' % (
+                        protein_id,
+                        gene_id,
+                        transcript_id,
+                        exon_id,
+                        start,
+                        end,
+                        exon_number,
+                        start,
+                        end,
+                        start,
+                        end,
+                        strand,
+                        chrom))
 
 if __name__ == '__main__':
 
@@ -81,7 +143,7 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = """Add the custom human genes which are missing from the Ensembl database."""
-    version = "%prog 0.13 beta"
+    version = "%prog 0.14 beta"
 
     parser = optparse.OptionParser(usage=usage,description=description,version=version)
 
@@ -177,6 +239,24 @@ if __name__ == '__main__':
                     strand = '1'
                 )
 
+                # coordinates valid only for GRCh37
+                add(outdir = options.output_directory,
+                    protein_id = '',
+                    gene_symbol = 'AC008746.10',
+                    gene_id = 'ENSG00000237955',
+                    transcript_id = 'ENST09000000005',
+                    exon_id = 'ENSE09000000005',
+                    exon_number = '1',
+                    start = '54883000', #54890500
+                    end = '54926000', #54891700
+                    chrom = '19',
+                    strand = '1'
+                )
+
+
+            ####################################################################
+            # GRCh38
+            ####################################################################
             elif d[0].lower().find('grch38') !=-1:
                 print "Found version GRCh38 human genome version!"
                 # coordinates valid only for GRCh38
@@ -234,6 +314,22 @@ if __name__ == '__main__':
                     chrom = '9',
                     strand = '1'
                 )
+
+                # coordinates valid only for GRCh38
+                add(outdir = options.output_directory,
+                    protein_id = '',
+                    gene_symbol = 'AC008746.10',
+                    gene_id = 'ENSG00000237955',
+                    transcript_id = 'ENST09000000005',
+                    exon_id = 'ENSE09000000005',
+                    exon_number = '1',
+                    start = '54371500', # 54378500
+                    end = '54414500', # 54380200
+                    chrom = '19',
+                    strand = '1'
+                )
+
+
             else:
                 print >>sys.stderr,"WARNING: Cannot identify correctly the human genome version!",d[0]
 

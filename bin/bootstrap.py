@@ -78,6 +78,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     global XLRD_URL
     global OPENPYXL_PATH
     global OPENPYXL_URL
+    global BWA_PATH
+    global BWA_URL
     global SAMTOOLS_PATH
     global SAMTOOLS_URL
     global SETUPTOOLS_PATH
@@ -142,10 +144,10 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     FUSIONCATCHER_CONFIGURATION = expand(FUSIONCATCHER_BIN,'..','etc','configuration.cfg')
     # numpy
     NUMPY_PATH = os.path.join(FUSIONCATCHER_TOOLS,'numpy')
-    NUMPY_URL = 'http://pypi.python.org/packages/source/n/numpy/numpy-1.9.1.tar.gz'
+    NUMPY_URL = 'http://pypi.python.org/packages/source/n/numpy/numpy-1.9.2.tar.gz'
     # biopython
     BIOPYTHON_PATH = os.path.join(FUSIONCATCHER_TOOLS,'biopython')
-    BIOPYTHON_URL = 'http://pypi.python.org/packages/source/b/biopython/biopython-1.64.tar.gz'
+    BIOPYTHON_URL = 'http://pypi.python.org/packages/source/b/biopython/biopython-1.65.tar.gz'
     # xlrd python
     XLRD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'xlrd')
     XLRD_URL = 'http://pypi.python.org/packages/source/x/xlrd/xlrd-0.9.2.tar.gz'
@@ -154,19 +156,19 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     OPENPYXL_URL = 'http://pypi.python.org/packages/source/o/openpyxl/openpyxl-1.8.5.tar.gz'
     # setuptools python
     SETUPTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'setuptools')
-    SETUPTOOLS_URL = 'http://pypi.python.org/packages/source/s/setuptools/setuptools-7.0.tar.gz'
+    SETUPTOOLS_URL = 'http://pypi.python.org/packages/source/s/setuptools/setuptools-14.0.tar.gz'
     # BOWTIE
     BOWTIE_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie')
     BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.1/bowtie-1.1.1-linux-x86_64.zip'
     # BOWTIE2
     BOWTIE2_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie2')
-    BOWTIE2_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.4/bowtie2-2.2.4-linux-x86_64.zip'
+    BOWTIE2_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.5/bowtie2-2.2.5-linux-x86_64.zip'
     # BLAT
     BLAT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'blat')
     BLAT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/blat/blat'
     # STAR
     STAR_PATH = os.path.join(FUSIONCATCHER_TOOLS,'star')
-    STAR_URL = 'http://github.com/alexdobin/STAR/archive/STAR_2.4.0h1.tar.gz'
+    STAR_URL = 'http://github.com/alexdobin/STAR/archive/STAR_2.4.0j.tar.gz'
    # BWA
     BWA_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bwa')
     BWA_URL = 'http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2'
@@ -192,7 +194,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     COREUTILS_URL = 'http://ftp.gnu.org/gnu/coreutils/coreutils-8.23.tar.xz'
     # PIGZ (GZIP parallel)
     PIGZ_PATH = os.path.join(FUSIONCATCHER_TOOLS,'pigz')
-    PIGZ_URL = 'http://zlib.net/pigz/pigz-2.3.1.tar.gz'
+    PIGZ_URL = 'http://zlib.net/pigz/pigz-2.3.3.tar.gz'
     # samtools
     SAMTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'samtools')
     SAMTOOLS_URL = 'http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2'
@@ -204,7 +206,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     # PICARD
     PICARD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'picard')
     #PICARD_URL = 'http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip'
-    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/1.126/picard-tools-1.126.zip'
+    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/1.129/picard-tools-1.129.zip'
     # LiftOver
     LIFTOVER_PATH = os.path.join(FUSIONCATCHER_TOOLS,'liftover')
     LIFTOVER_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/liftOver'
@@ -969,7 +971,7 @@ if __name__ == '__main__':
 ################################################################################
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "ensembl_v78"
+    v = "ensembl_v79"
     ############################################################################
     # List all dependencies
     ############################################################################
@@ -1157,20 +1159,21 @@ if __name__ == '__main__':
                                    "rm -rf ../doc",
                                    "rm -rf ../VERSION",
                                    "rm -rf ../README",
+                                   "rm -rf ../README.md",
                                    "rm -rf ../NEWS",
                                    "rm -rf ../LICENSE",
                                    "rm -rf ../DEPENDENCIES",
                                    "mkdir -p ../etc",
-                                   "ln -s etc/configuration.cfg ../etc/configuration.cfg",
-                                   "ln -s bin ../bin",
-                                   "ln -s test ../test",
-                                   "ln -s doc ../doc",
-                                   "ln -s VERSION ../VERSION",
-                                   "ln -s NEWS ../NEWS",
-                                   "ln -s LICENSE ../LICENSE",
-                                   "ln -s README ../README",
-                                   "ln -s DEPENDENCIES ../DEPENDENCIES"
-                                   ])
+                                   "ln -s $(pwd)/etc ../etc",
+                                   "ln -s $(pwd)/bin ../bin",
+                                   "ln -s $(pwd)/test ../test",
+                                   "ln -s $(pwd)/doc ../doc",
+                                   "ln -s $(pwd)/VERSION ../VERSION",
+                                   "ln -s $(pwd)/NEWS ../NEWS",
+                                   "ln -s $(pwd)/LICENSE ../LICENSE",
+                                   "ln -s $(pwd)/README.md ../README.md",
+                                   "ln -s $(pwd)/DEPENDENCIES ../DEPENDENCIES"
+                                   ]
                 )
 
 
@@ -1288,7 +1291,7 @@ if __name__ == '__main__':
                  exe = "bowtie2",
                  param = "--version",
                  web = "<http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>",
-                 versions = ('2.2.4',),
+                 versions = ('2.2.5',),
                  force = options.force_yes,
                  url = BOWTIE2_URL,
                  path = BOWTIE2_PATH,
@@ -1393,7 +1396,7 @@ if __name__ == '__main__':
                  exe = "STAR",
                  param = "--version",
                  web = "<http://code.google.com/p/rna-star/>",
-                 versions = ('STAR_2.4.0h',),
+                 versions = ('STAR_2.4.0j',),
                  version_word = 'STAR_',
                  force = options.force_yes,
                  url = STAR_URL,
@@ -1434,7 +1437,7 @@ if __name__ == '__main__':
                      exe = "samtools",
                      param = "",
                      web = "<http://samtools.sourceforge.net/>",
-                     versions = ('0.1.19-44428cd','1.1'),
+                     versions = ('0.1.19-44428cd',),
                      version_word = 'Version:',
                      force = options.force_yes,
                      url = SAMTOOLS_URL,
@@ -1509,7 +1512,7 @@ if __name__ == '__main__':
                      exe = "pigz",
                      param = "--version",
                      web = "<http://zlib.net/pigz/>",
-                     versions = ('2.3.1',),
+                     versions = ('2.3.3',),
                      version_word = 'pigz',
                      force = options.force_yes,
                      url = PIGZ_URL,
@@ -1524,7 +1527,7 @@ if __name__ == '__main__':
                      exe = "java -jar picard.jar SamToFastq",
                      param = "--version",
                      web = "<http://picard.sourceforge.net/>",
-                     versions = ('1.126(4691ee611ac205d4afe2a1b7a2ea975a6f997426_1417447214)',),
+                     versions = ('1.129(b508b2885562a4e932d3a3a60b8ea283b7ec78e2_1424706677)',),
                      force = options.force_yes,
                      url = PICARD_URL,
                      path = PICARD_PATH,
@@ -1591,6 +1594,7 @@ if __name__ == '__main__':
     data.append("scripts = %s\n"%(FUSIONCATCHER_BIN,))
     data.append("bowtie = %s\n"%(BOWTIE_PATH,))
     data.append("bowtie2 = %s\n"%(BOWTIE2_PATH,))
+    data.append("bwa = %s\n"%(BWA_PATH,))
     data.append("blat = %s\n"%(BLAT_PATH,))
     data.append("liftover = %s\n"%(LIFTOVER_PATH,))
     data.append("star = %s\n"%(star,))
@@ -1653,7 +1657,7 @@ if __name__ == '__main__':
         print "*  OPTION 1: Download the data needed by FusionCatcher from SOURCEFORGE!"
         print "             THIS IS HIGHLY RECOMMENDED"
         print "---------------------------------------------------------------------------"
-        print "In order to download the latest human data files needed by FusionCatcher, please run these (it will take hours):"
+        print "In order to download the latest human data files needed by FusionCatcher, please run these (it will take several hours):"
         print ""
         txt = []
         txt.append("rm -rf %s" % (FUSIONCATCHER_CURRENT.replace(" ","\\ "),))
@@ -1684,7 +1688,7 @@ if __name__ == '__main__':
         print "*  OPTION 2: Download the data needed by FusionCatcher from MEGA.CO.NZ!"
         print "             TRY THIS ONLY IF OPTION 1 DID NOT WORK!"
         print "---------------------------------------------------------------------------"
-        print "In order to download the latest human data files needed by FusionCatcher, please run these (it will take hours):"
+        print "In order to download the latest human data files needed by FusionCatcher, please run these (it will take several hours):"
         print ""
         txt = []
         txt.append("rm  -rf  %s" % (FUSIONCATCHER_CURRENT.replace(" ","\\ "),))
@@ -1718,7 +1722,7 @@ if __name__ == '__main__':
         print "*  OPTION 3: Build yourself the data needed by FusionCatcher!"
         print "             TRY THIS ONLY IF OPTION 1 and OPTION 2 DID NOT WORK!"
         print "---------------------------------------------------------------------------"
-        print "In order to build yourself the latest human data files needed by FusionCatcher, please run these (it will take hours):"
+        print "In order to build yourself the latest human data files needed by FusionCatcher, please run these (it will take several hours):"
         print ""
         txt = []
         txt.append("rm  -rf  %s" % (FUSIONCATCHER_CURRENT.replace(" ","\\ "),))

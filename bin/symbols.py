@@ -475,7 +475,10 @@ synonym = {
 'RP11-715D1.1':'MORC1',
 'RP11-322M19.1':'NUTM2A-AS1',
 'LPPR1':'RP11-35N6.1',
-'RFX1':'HGNC:9982'
+'RFX1':'HGNC:9982',
+'RNA28S5':'CTD-2328D6.1',
+'DKFZP586I1420':'AC006978.6',
+'CHDC2':'CXORF22'
 }
 
 # see here for more: http://www.genenames.org/genefamilies/TR#TRG

@@ -124,8 +124,10 @@ if __name__ == '__main__':
     # http://www.nature.com/nbt/journal/vaop/ncurrent/extref/nbt.3080-S8.xls
 
 
-    url1 = 'http://www.nature.com/nbt/journal/vaop/ncurrent/extref/nbt.3080-S7.xls'
-    url2 = 'http://www.nature.com/nbt/journal/vaop/ncurrent/extref/nbt.3080-S8.xls'
+    #url1 = 'http://www.nature.com/nbt/journal/vaop/ncurrent/extref/nbt.3080-S7.xls'
+    #url2 = 'http://www.nature.com/nbt/journal/vaop/ncurrent/extref/nbt.3080-S8.xls'
+    url1 = 'http://www.nature.com/nbt/journal/v33/n3/extref/nbt.3080-S7.xls'
+    url2 = 'http://www.nature.com/nbt/journal/v33/n3/extref/nbt.3080-S8.xls'
     tmp1_file = os.path.join(options.output_directory,'temp1_celllines.xls')
     tmp2_file = os.path.join(options.output_directory,'temp2_celllines.xls')
 
@@ -267,7 +269,12 @@ if __name__ == '__main__':
 
                 print "%d known fusion genes left after removing the overlappings" % (len(data),)
 
-        file(os.path.join(options.output_directory,'cellines.txt'),'w').writelines(data)
+        file(os.path.join(options.output_directory,'celllines.txt'),'w').writelines(data)
+
+        if os.path.exists(tmp1_file):
+            os.remove(tmp1_file)
+        if os.path.exists(tmp2_file):
+            os.remove(tmp2_file)
 
     else:
         # write an empty file for other organisms than human
