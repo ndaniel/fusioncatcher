@@ -44,7 +44,7 @@ The aims of FusionCatcher are:
 
 Manual
 ------
-A detailed manual is at doc/MANUAL or [here](http://code.google.com/p/fusioncatcher/wiki/Manual).
+A detailed manual is at [here](doc/MANUAL.md) or [here](http://code.google.com/p/fusioncatcher/wiki/Manual).
 
 
 Citing
