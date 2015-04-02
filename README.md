@@ -4,8 +4,8 @@ FusionCatcher
 Finder of somatic fusion-genes in RNA-seq data.
 
 
-Download / Install / Update FusionCatcher
------------------------------------------
+Download / Install / Update / Upgrade [FusionCatcher](http://github.com/ndaniel/fusioncatcher)
+-----------------------------------------------------
 
 Use this one-line command:
 
