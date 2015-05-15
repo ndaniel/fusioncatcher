@@ -216,6 +216,10 @@ def lines(filename):
     fin.close()
 
 #########################
+def index_max(values):
+    return max(xrange(len(values)),key=values.__getitem__)
+
+#########################
 def chunks(psl_file,min_count = 2, ids_out = None, clip_size = 10):
     # gives in a chunk the PSL files which have the same read is a QNAME
     last_qname = None
@@ -236,22 +240,34 @@ def chunks(psl_file,min_count = 2, ids_out = None, clip_size = 10):
                 elif len(chunk) == 1: #and int(chunk[0][psl_qSize]) + int(chunk[0][psl_qStart]) - int(chunk[0][psl_qEnd]) > clip_size - 1:
                     #z = "%s\t%s\t%s\t%s\t%s\n" % (chunk[0][psl_qName],chunk[0][psl_qSize],chunk[0][psl_strand],chunk[0][psl_qStart],chunk[0][psl_qEnd])
                     nn = int(chunk[0][psl_qSize])
-                    p2 = int(chunk[0][psl_qStart])
-                    p3 = int(chunk[0][psl_qEnd])
-                    if chunk[0][psl_strand] == "-":
-                        (p2,p3) = (nn - p3,nn - p2)
-                    cut = -1
-                    if p2 >= clip_size:
-                        cut = p2 - 1
-                    elif nn - p3 >= clip_size:
-                        cut = p3
-                    if cut != -1:
-                        z = "%s\t%d\n" % (chunk[0][psl_qName],cut)
-                        if not(buff and buff[-1] == z):
-                            buff.append(z)
-                            if len(buff) > 100000:
-                                ft.writelines(buff)
-                                buff = []
+                    pqs = int(chunk[0][psl_qStart])
+                    pqe = int(chunk[0][psl_qEnd])
+                    if nn + pqs - pqe > clip_size - 1:
+                        if chunk[0][psl_blockCount] == '1':
+                            p2 = pqs
+                            p3 = pqe
+                        else:
+                            # here are more blocks
+                            # find the largest block
+                            blen = map(int,chunk[0][psl_blockSizes][:-1].split(','))
+                            qstart = map(int,chunk[0][psl_qStarts][:-1].split(','))
+                            bidx = index_max(blen)
+                            p2 = qstart[bidx]
+                            p3 = p2 + blen[bidx]
+                        if chunk[0][psl_strand] == "-":
+                            (p2,p3) = (nn - p3,nn - p2)
+                        cut = -1
+                        if p2 >= clip_size:
+                            cut = p2 - 1
+                        elif nn - p3 >= clip_size:
+                            cut = p3
+                        if cut != -1:
+                            z = "%s\t%d\n" % (chunk[0][psl_qName],cut)
+                            if not(buff and buff[-1] == z):
+                                buff.append(z)
+                                if len(buff) > 100000:
+                                    ft.writelines(buff)
+                                    buff = []
                 last_qname = line[psl_qName]
                 last_tname = line[psl_tName]
                 last_strand = line[psl_strand]

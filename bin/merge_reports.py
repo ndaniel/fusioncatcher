@@ -225,6 +225,13 @@ if __name__ == '__main__':
                       default=2,
                       help="""The minimum number of supporting pairs (found using BWA aligner) necessary for considering valid a candidate fusion gene. Default is '%default'.""")
 
+    parser.add_option("--squish-report",
+                      action = "store_true",
+                      dest = "squish",
+                      default = False,
+                      help = """If set then the report is squished (i.e. fusion genes with same junction coordinates are listed once even that they are found by severeal methods). Default is '%default'.""")
+
+
 
     parser.add_option("--anchor2",
                       action = "store",
@@ -350,8 +357,29 @@ if __name__ == '__main__':
     ]
     new_bowtie = zip(*new_bowtie)
     header = new_bowtie.pop(0)
-    bowtie = sorted(new_bowtie, key = lambda x: (-int(x[4]),x[0],x[1],-int(x[5]),-int(x[6])))
+    bowtie = sorted(new_bowtie, key = lambda x: (-int(x[4]),x[0],x[1],-int(x[5]),-int(x[6]),x[7]))
     bowtie.insert(0,header)
+
+    if options.squish and bowtie and len(bowtie)>1:
+        b = bowtie[:]
+        h = b.pop(0) # header
+        r = [h]
+        n = len(b)
+        f = [True] * n
+        for i in xrange(n):
+            if f[i]:
+                method = set([b[i][7]])
+                ids = []
+                for j in xrange(i+1,n):
+                    if f[j] and b[i][8] == b[j][8] and b[i][9] == b[j][9] and b[i][10] == b[j][10] and b[i][11] == b[j][11]:
+                        method.add(b[j][7])
+                        f[j] = False
+                line = list(b[i][:])
+                if method:
+                    line[7] = ';'.join(sorted(method))
+                r.append(line)
+        bowtie = r
+
 
     # FINAL REPORT
     print "Writing the merged report..."

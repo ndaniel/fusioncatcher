@@ -478,7 +478,18 @@ synonym = {
 'RFX1':'HGNC:9982',
 'RNA28S5':'CTD-2328D6.1',
 'DKFZP586I1420':'AC006978.6',
-'CHDC2':'CXORF22'
+'CHDC2':'CXORF22',
+'AC126544.2':'CRHR1-IT1',
+'ACBD6':'LHX4-AS1',
+'FAM75A4':'SPATA31A7',
+'C6ORF164':'RP1-102H19.7',
+'IG':'IG@',
+'IGH':'IGH@',
+'IGL':'IGL@',
+'IGK':'IGK@',
+'HLA':'HLA@',
+'AC008279.1':'RPL5P8',
+'AC096579.7':'AC096579.13'
 }
 
 # see here for more: http://www.genenames.org/genefamilies/TR#TRG
@@ -709,20 +720,27 @@ def generate_loci(gene_symbols_filename = 'genes_symbols.txt'):
     loci['HOXC@'] = find_starts(['HOXC'],genes)
     loci['HOXD@'] = find_starts(['HOXD'],genes)
     loci['HLA@'] = find_starts(['HLA-'],genes)
-    loci['IGL@'] = find_starts(['IGLV','IGLJ','IGLC','IGLL'],genes)
+
+    loci['IGL@'] = find_starts(['IGLV','IGLJ','IGLC','IGLL','IGL_locus','IGH_locus'],genes)
     loci['IGLV@'] = loci['IGL@']
-    loci['IGK@'] = find_starts(['IGKV','IGKJ','IGKC'],genes)
+    loci['IGK@'] = find_starts(['IGKV','IGKJ','IGKC','IGK_locus'],genes)
     loci['IGKV@'] = loci['IGK@']
-    loci['IGH@'] = find_starts(['IGHV','IGHD','IGHJ','IGHA','IGHG','IGHE','IGHM'],genes)
+    loci['IGH@'] = find_starts(['IGHV','IGHD','IGHJ','IGHA','IGHG','IGHE','IGHM','IGH_locus','IGL_locus'],genes)
     loci['IGHV@'] = loci['IGH@']
+    loci['IG@'] = loci['IGL@'] + loci['IGK@'] + loci['IGH@']
+
     loci['TRA@'] = find_starts(['TRAC','TRAV','TRAJ'],genes)
     loci['TCRA@'] = loci['TRA@']
     loci['TRB@'] = find_starts(['TRBV','TRBD','TRBJ','TRBC'],genes)
     loci['TCRB@'] = loci['TRB@']
+    loci['TRBV@'] = find_starts(['TRBV'],genes)
+    loci['TCRVB@'] = loci['TRBV@']
+    loci['TCRBV@'] = loci['TRBV@']
     loci['TRD@'] = find_starts(['TRDV','TRDD','TRDJ','TRDC'],genes)
     loci['TCRB@'] = loci['TRD@']
     loci['TRG@'] = find_starts(['TRGV','TRGJ','TRGC'],genes)
     loci['TCRG@'] = loci['TRG@']
+    loci['TCR@'] = loci['TRG@'] + loci['TRD@'] + loci['TRBV@'] + loci['TRB@'] + loci['TRA@']
     return loci
 
 # converts only gene symbol to ensembl id
@@ -742,7 +760,7 @@ def ensembl(g,genes):
             if (not ens) and g.upper().startswith('ENS'):
                 ens = [g.upper()]
     if not ens:
-        print >>sys.stderr,"Warning: Could not find Ensembl gene id for gene '%s'." % (g,)
+        print >>sys.stderr,"Warning: Could not find Ensembl gene id for gene '%s' [synonym: %s]!" % (g,synonym.get(g,None))
     else:
         ens = list(ens)
     return ens
@@ -762,7 +780,7 @@ def ensembl(g,genes,loci):
             if (not ens) and g.upper().startswith('ENS'):
                 ens = [g.upper()]
     if not ens:
-        print >>sys.stderr,"Warning: Could not find Ensembl gene id for gene '%s'." % (g,)
+        print >>sys.stderr,"Warning: Could not find Ensembl gene id for gene '%s' [synonym: %s]." % (g,synonym.get(g,None))
     else:
         ens = list(ens)
     return ens

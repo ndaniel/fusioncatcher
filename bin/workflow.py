@@ -330,6 +330,19 @@ def _expand(*p):
     """
     return os.path.abspath(os.path.expanduser(os.path.join(*p)))
 
+
+def _islink(alink = None):
+    """
+    Wrapper for: os.path.islink()
+    """
+    f = False
+    if alink:
+        alink = alink[:-1] if alink.endswith(os.sep) else alink
+        if os.path.islink(alink):
+            f = True
+    return f
+
+
 #############################
 class _crc32:
     """
@@ -380,7 +393,7 @@ class pipeline:
     """
     Pipeline class
     """
-    __version__ = '0.98.1 beta'
+    __version__ = '0.98.2 beta'
     __author__  = 'Daniel Nicorici'
     __copyright__ = "Copyright 2009-2015, Daniel Nicorici"
     __credits__ = ["Henrikki Almusa"]
@@ -829,7 +842,8 @@ class pipeline:
     ###
     def run(self,
             comment = 'no',
-            error_message = ''):
+            error_message = '',
+            successful_exit_status = (0,0) ):
         """
         It runs what has been added using method ADD.
 
@@ -927,7 +941,9 @@ class pipeline:
                             proc = os.system(' '.join(cmd_line))
                         else:
                             self.write('+-->MOCK EXECUTION (i.e. code executed outside of workflow)...')
-                        if proc:
+                        #print "---------------------->",proc,max(successful_exit_status),min(successful_exit_status)
+                        newproc = float(proc)/float(256)
+                        if newproc > max(successful_exit_status) or newproc < min(successful_exit_status):
                             temp = "\n\nERROR: Workflow execution failed at step %d while executing:\n----------------\n   %s\n----------------\n" % (self.task_count,' \\\n   '.join(cmd_line),)
                             self.write(temp, stderr = True)
                             if error_message:
@@ -942,7 +958,7 @@ class pipeline:
                             # print the captured error message from '2>&1>' or '2>'
                             if hit_redirect:
                                 for il in captured_error_message:
-                                    if os.path.isfile(il) or os.path.islink(il):
+                                    if os.path.isfile(il) or _islink(il):
                                         temp = []
                                         try:
                                             temp = file(il,'r').readlines()
@@ -960,7 +976,8 @@ class pipeline:
                                 temp = []
                                 temp_file = self.__give_me_temp_filename()
                                 procx = os.system(' '.join(cmd_line+['2>',temp_file]))
-                                if procx:
+                                newprocx = float(procx)/float(256)
+                                if newprocx > max(successful_exit_status) or newprocx < min(successful_exit_status):
                                     if os.path.isfile(temp_file):
                                         # read error message
                                         try:
@@ -1072,7 +1089,7 @@ class pipeline:
                     if a_value.endswith('\\*') or a_value.endswith('/*'):
                         a_value = a_value[:-1]
                     if os.path.exists(a_value):
-                        if os.path.isfile(a_value) or os.path.islink(a_value):
+                        if os.path.isfile(a_value) or _islink(a_value):
                             list_files_to_check.append(a_value[:])
                             if io == 'output':
                                 output_files.add(a_value[:])
@@ -1111,7 +1128,7 @@ class pipeline:
             if a_file in self.__devs:
                 continue
             a = _expand(a_file)
-            b = _expand(os.readlink(a)) if os.path.islink(a) else None
+            b = _expand(os.readlink(a)) if _islink(a) else None
             dig = None
             if (self.hash_type == 'smart' and
                 (a not in output_files) and
@@ -1214,7 +1231,7 @@ class pipeline:
                                 directories):
 
                                 os.makedirs(dir_name)
-                            if links and os.path.islink(a_value):
+                            if links and _islink(a_value):
                                 self.__delete_path(a_value)
                             if files:
                                 file(a_value,'w').write('')
@@ -1306,14 +1323,14 @@ class pipeline:
                 if a_path in self.temp_paths:
                     self.temp_paths.remove(a_path)
                 continue
-            if os.path.exists(a_path) or os.path.islink(a_path):
+            if os.path.exists(a_path) or _islink(a_path):
                 if os.path.isdir(a_path):
                     temp = "==> Erasing directory (and all directories and files within): '%s' (size: %d bytes)" %(a_path,self.__path_size(a_path))
                     self.write(temp)
                     shutil.rmtree(a_path)
                     if a_path in self.temp_paths:
                         self.temp_paths.remove(a_path)
-                elif os.path.isfile(a_path) or os.path.islink(a_path):
+                elif os.path.isfile(a_path) or _islink(a_path):
                     temp = "==> Erasing file: '%s' (size: %d bytes)"%(a_path,self.__path_size(a_path))
                     self.write(temp)
                     os.remove(a_path)
@@ -1454,10 +1471,10 @@ class pipeline:
                 setattr(self, dest_list, [fout])
 
         if self.task_count >= self.start_step:
-            if os.path.exists(fout) or os.path.islink(fout):
+            if os.path.exists(fout) or _islink(fout):
                 self.__delete_path(fout)
             linkfrom = fin
-            if os.path.islink(fin):
+            if _islink(fin):
                 linkfrom = _expand(os.readlink(fin))
             if (not self.__isprotected(fin)) and ((temp_path == 'yes' and kind == 'soft') or kind == 'move'):
                 shutil.move(fin, fout)
@@ -1498,7 +1515,7 @@ class pipeline:
 
         else:
             linkfrom = fin
-            if os.path.exists(fin) and os.path.islink(fin):
+            if os.path.exists(fin) and _islink(fin):
                 linkfrom = _expand(os.readlink(fin))
             if (not self.__isprotected(fin)) and ((temp_path == 'yes' and kind == 'soft') or kind == 'move'):
                 self.write("Skipping the moving from:\n'%s'\nto:\n'%s'" % (fin,fout) )
@@ -1543,7 +1560,7 @@ class pipeline:
         self.__show_step_header_start()
         executed = True
         if self.task_count >= self.start_step:
-            if os.path.exists(fout) or os.path.islink(fout):
+            if os.path.exists(fout) or _islink(fout):
                 self.__delete_path(fout)
             if variable:
                 data = []
@@ -1657,7 +1674,7 @@ class pipeline:
           sys.exit(1)
         executed = True
         if self.task_count >= self.start_step:
-            if (os.path.exists(a_path) or os.path.islink(a_path)) and temp_path == 'yes':
+            if (os.path.exists(a_path) or _islink(a_path)) and temp_path == 'yes':
                 self.__delete_path(a_path)
         else:
             executed = False
@@ -1784,7 +1801,7 @@ class pipeline:
             for dirpath, dirnames, filenames in os.walk(apath):
                 for f in filenames:
                     fp = os.path.join(dirpath, f)
-                    if os.path.exists(fp) and (not os.path.islink(fp)):
+                    if os.path.exists(fp) and (not _islink(fp)):
                         t = 0
                         try:
                             t = os.path.getsize(fp)
@@ -1798,12 +1815,11 @@ class pipeline:
     ###
     def __give_me_temp_filename(self, tmp_dir = None):
         if tmp_dir:
-            if not (os.path.isdir(tmp_dir) or os.path.islink(tmp_dir)):
+            if not (os.path.isdir(tmp_dir) or _islink(tmp_dir)):
                 os.makedirs(tmp_dir)
         (ft,ft_name) = tempfile.mkstemp(dir = tmp_dir)
         os.close(ft)
         return ft_name
-
 
 ###
 ### MAIN

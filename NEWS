@@ -2,6 +2,14 @@ Version Release History for FusionCatcher
 =========================================
 
 
+Version 0.99.4b beta - May 14, 2015
+-------------------------------------
+ * added support for Gencode annotation release 22
+ * fixed bug affecting fusion genes which involve IG loci
+ * added installation test script (for human genome only)
+ * fixed several minor bugs
+ * updated manual
+
 Version 0.99.4a beta - March 18, 2015
 -------------------------------------
   * added support for fusion genes from paper: C. Klijn, A comprehensive
@@ -91,7 +99,7 @@ Version 0.99.1 beta - December 4, 2013
   * added support for the latest version of Ensembl database http://www.ensembl.org (that is version 74)
   * all viruses/bacteria/phages found to have reads mapping on their genomes will be listed together with the corresponding reads counts
   * speed improvements when using BLAT aligner
-  * added support for filtering out the reads which map on Phage phiX174 genome (it is used in Illumina NGS)
+  * added support for filtering out the reads which map on Phage phiX174 genome (it is used by several sample preparation protocols for Illumina NGS)
   * fixed several minor bugs
 
 Version 0.99 beta - September 5, 2013

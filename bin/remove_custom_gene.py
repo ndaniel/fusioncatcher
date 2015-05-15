@@ -122,6 +122,12 @@ if __name__ == '__main__':
                       dest="genes_ucsc",
                       help="""Build-in of fusion genes which should be removed from UCSC.""")
 
+    parser.add_option("--genes_gencode",
+                      action="store_true",
+                      dest="genes_gencode",
+                      help="""Build-in of fusion genes which should be removed from Gencode.""")
+
+
     (options,args) = parser.parse_args()
 
     # validate options

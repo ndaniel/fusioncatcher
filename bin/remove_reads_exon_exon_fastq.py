@@ -190,8 +190,8 @@ if __name__ == '__main__':
             break
         for line in lines:
             i = i + 1
-            j = j + 1
             if i == 1:
+                j = j + 1
                 # this is read id
                 r = line[1:-1]
                 if r.endswith('/2'):
@@ -227,7 +227,7 @@ if __name__ == '__main__':
             fo = sys.stdin
         else:
             fo = open(options.output_log_filename,'a')
-        fo.write("\nFrom %d reads, %d reads remained after filtering out the reads which do not have their paired-read mapping on any candidate fusion gene.\n" % (j,len(remains),))
+        fo.write("\n\nFiltering reads which do not have their mate-read mapping on any candidate fusion gene:\n--------------------------------------------------------\nFrom a total of %d read(s), %d read(s) are left after filtering.\n\n" % (j,len(remains),))
         fo.close()
 
     #

@@ -57,7 +57,10 @@ if __name__ == '__main__':
     description = """It downloads the positions of all exons from the Ensembl database."""
     version = "%prog 0.10 beta"
 
-    parser = optparse.OptionParser(usage=usage,description=description,version=version)
+    parser = optparse.OptionParser(
+        usage = usage,
+        description = description,
+        version = version)
 
     parser.add_option("--organism",
                       action = "store",
@@ -72,6 +75,15 @@ if __name__ == '__main__':
                       dest="output_directory",
                       default = '.',
                       help="""The output directory where the exons positions are stored. Default is '%default'.""")
+
+
+    parser.add_option("--threshold_length","-t",
+                      action = "store",
+                      type = "int",
+                      dest = "gene_length",
+                      default = 150,
+                      help = "Genes shorter than this will be skipped and they will not be in the output. "+
+                             "Default is '%default'.")
 
     parser.add_option("--server",
                       action="store",
@@ -182,15 +194,27 @@ if __name__ == '__main__':
 
     fid=open(temp_exons_filename,'rt')
     fod=open(exons_filename,'wt')
+    removed = []
     while True:
         lines = fid.readlines(10**8)
         if not lines:
             break
-        lines = [line for line in lines if line.rstrip('\r\n').split('\t')[12].upper() in chromosomes]
+        lines = [line.rstrip('\r\n').split("\t") for line in lines if line.rstrip('\r\n')]
+        li = []
+        for line in lines:
+            if (line[12].upper() not in chromosomes) or abs(int(line[7])-int(line[8])) <= options.gene_length:
+                removed.append(line)
+            else:
+                li.append(line)
+        lines = li
+#        lines = [line for line in lines if line[12].upper() in chromosomes]
+#        lines = [line for line in lines if abs(int(line[7])-int(line[8]))>options.gene_length]
         if lines:
-            fod.writelines(lines)
+            fod.writelines(['\t'.join(line)+'\n' for line in lines])
     fod.close()
     fid.close()
+
+    file(os.path.join(options.output_directory,'exons_removed.txt'),"w").writelines(['\t'.join(line)+'\n' for line in removed])
 
     os.remove(temp_exons_filename)
 

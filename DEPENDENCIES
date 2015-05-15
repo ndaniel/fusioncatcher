@@ -1,13 +1,12 @@
 Required dependencies:
- - Linux 64-bit (e.g. Ubuntu 12.04 or newer) with a minimum of 24 GB RAM
- - Python version 2.7.3 (>=2.6.0 and < 3.0 are probably fine but have not been
-   fully tested)
- - BioPython version 1.65 (>=1.50 is probably fine but has not been fully tested)
+ - Linux 64-bit (e.g. Ubuntu 12.04/14.04 or newer) with a minimum of 24 GB RAM
+ - Python version 2.7.x (>=2.6.0 and < 3.0 is fine)
+ - BioPython version 1.65 (>=1.50 is fine)
  - Bowtie 64-bit version 1.1.1  http://bowtie-bio.sourceforge.net/index.shtml
  - Bowtie2 64-bit version 2.2.5  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
- - STAR version 2.4.0j <http://code.google.com/p/rna-star/>. Executables are
-   available at <http://github.com/alexdobin/STAR/releases>
+ - STAR version 2.4.1c <http://github.com/alexdobin/STAR/releases>
  - SEQTK version 1.0-r68e-dirty  http://github.com/ndaniel/seqtk
+ - BWA version 0.7.12  <http://sourceforge.net/projects/bio-bwa/>
 
 Optional dependencies:
 - strongly recommended (expected by default to be installed but their use can

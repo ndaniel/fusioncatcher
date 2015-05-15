@@ -89,7 +89,11 @@ def readfq(fp): # this is a generator function
 #
 #
 def fastq(file_name, size_buffer = 10**8):
-    fid = open(file_name,'r')
+    fid = None
+    if file_name == '-':
+        fid = sys.stdin
+    else:
+        fid = open(file_name,'r')
     while True:
         gc.disable()
         lines = fid.readlines(size_buffer)
@@ -263,7 +267,7 @@ def str_filter(
     if cpus == 0:
         cpus = multiprocessing.cpu_count()
     if verbose:
-        print "Using",cpus,"process(es)..."
+        print >>sys.stderr,"Using",cpus,"process(es)..."
 
     # in case the pool.imap does not work use itertools.imap instead
 
@@ -277,7 +281,7 @@ def str_filter(
     para.window_length = window_length
     para.window_overlap = window_overlap
     para.nucleotide = kmer
-    for w in pool.imap(codelength,
+    for w in pool.imap_unordered(codelength,
                        itertools.izip_longest(readfq(fastq(file_input)),
                                               [],
                                               fillvalue = para),
@@ -304,7 +308,7 @@ def str_filter(
     if p != 0:
         t ="%.5f %% reads removed due to STR (short tandem repeats) content (%d out of %d)!" % ((100*float(f)/float(p)),f,p)
     if verbose:
-        print t
+        print >>sys.stderr,t
     if file_log:
         file(file_log,'w').write(t+'\n')
 

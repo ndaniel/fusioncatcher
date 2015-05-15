@@ -118,15 +118,16 @@ genes."""
 
     adjacent=set()
 
+    cr=col['chr']
+    start=col['start']
+    end=col['end']
+    name=col['gene']
+    strand=col['strand']
+
     for c in chrom:
         for st in stra:
-            cr=col['chr']
-            start=col['start']
-            end=col['end']
-            name=col['gene']
-            strand=col['strand']
             data=[(line[0],int(line[1]),int(line[2]),int(line[3]),line[4]) for line in database if line[cr]==c and line[strand]==st]
-            data=sorted( data, key=lambda x: (x[col['start']],x[col['end']]))
+            data=sorted( data, key=lambda x: (x[start],x[end]))
             print 'chromsome=',c,'has', len(data),'known genes on',st,'strand.'
             n=len(data)
             for i in range(n-1):

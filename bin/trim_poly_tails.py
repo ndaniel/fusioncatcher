@@ -73,8 +73,12 @@ def reads_from_fastq_file(f_name,size_read_buffer=10**8):
 class lines_to_file:
     def __init__(self,file_name,size_buffer=10**8):
         self.file_name=file_name
-        if file_name:
-            self.file_handle=open(file_name,'w')
+        if file_name == '-':
+            self.file_handle = sys.stdout
+        elif file_name.lower().endswith('.gz'):
+            self.file_handle = gzip.open(file_name,'w')
+        else:
+            self.file_handle = open(file_name,'w')
         self.size_buffer=size_buffer
         self.data=[]
         self.size=0
@@ -165,42 +169,43 @@ if __name__ == '__main__':
 
     parser=optparse.OptionParser(usage=usage,description=description,version=version)
 
-    parser.add_option("--input",
+    parser.add_option("--input","-i",
                       action="store",
                       type="string",
                       dest="input_filename",
                       help="""The input file in FASTQ format.""")
 
-    parser.add_option("--output",
+    parser.add_option("--output","-o",
                       action="store",
                       type="string",
                       dest="output_filename",
                       help="""The output FASTQ file containing all the trimmed sequences.""")
 
-    parser.add_option("--repeats",
+    parser.add_option("--repeats","-r",
                       action="store",
                       type="int",
                       dest="repeats",
                       default=9,
                       help="""The number of times a nucleotide specified with '--nucleotide' should be repeated in order to be considered a poly Default is %default.""")
 
-    parser.add_option("--skip_reads",
+    parser.add_option("--skip_reads","-s",
                       dest="skip_reads",
                       action="store_true",
                       default=False,
                       help="""If this is specified then the reads which are having poly tails are filtered out (i.e. not written to the output) instead of trimming. Default is %default.""")
 
-    parser.add_option("--keep-too-short",
+    parser.add_option("--keep-too-short","-k",
                       dest="keep_too_short",
                       action="store_true",
                       default=False,
-                      help="""If this is specified then the reads which are less than 20bp will be kept. Default is %default.""")
+                      help="""If this is specified then the reads which are less than N bp will be kept, where N is set using '--keep-too-short-length'. Default is %default.""")
 
-    parser.add_option("--replace",
-                      dest="replace",
-                      action="store_true",
-                      default=False,
-                      help="""If this is specified then the replacement is done. Default is %default.""")
+    parser.add_option("--keep-too-short-length","-l",
+                      dest = "keep_too_short_length",
+                      action = "store",
+                      type = "int",
+                      default = 20,
+                      help = """The threshold used to decide when a read is too short. Default is %default.""")
 
     (options,args) = parser.parse_args()
 
@@ -211,18 +216,31 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
-    print "Starting..."
+    #print >>sys.stderr,"Starting..."
     poly = {}
     poly['A'] = 'A' * options.repeats
     poly['T'] = 'T' * options.repeats
     poly['C'] = 'C' * options.repeats
     poly['G'] = 'G' * options.repeats
+    poly['N'] = 'N' * options.repeats
+    poly['R'] = 'R' * options.repeats
+    poly['Y'] = 'Y' * options.repeats
+    poly['S'] = 'S' * options.repeats
+    poly['W'] = 'W' * options.repeats
+    poly['K'] = 'K' * options.repeats
+    poly['M'] = 'M' * options.repeats
+    poly['B'] = 'B' * options.repeats
+    poly['D'] = 'D' * options.repeats
+    poly['H'] = 'H' * options.repeats
+    poly['V'] = 'V' * options.repeats
+
+    thr = options.keep_too_short_length
+
     poly_keys = sorted(poly.keys())
     data = lines_to_file(options.output_filename)
     c = 0
     i = 0
     j = 0
-    replace = options.replace
 
     if options.skip_reads:
         for reads in reads_from_fastq_file(options.input_filename):
@@ -234,22 +252,20 @@ if __name__ == '__main__':
             ts = ss
             tq = qq
             h = False
-            for k in poly_keys:
-                if ss.startswith(poly[k]) or ss.endswith(poly[k]):
-                    h = True
-                    break
+            caracter1 = ss[-1:]
+            caracter2 = ss[0:1]
+            if caracter2 and ss.startswith(poly[caracter2]):
+                h = True
+            elif caracter1 and ss.endswith(poly[caracter1]):
+                h = True
+#            for k in poly_keys:
+#                if ss.startswith(poly[k]) or ss.endswith(poly[k]):
+#                    h = True
+#                    break
             if h:
                 c = c + 1
             else:
                 #data.add_lines([id,ts,'+',tq])
-                if replace:
-                    ts = ts.upper()
-                    if ts.find('AGAGAAATAGAGTTTAGTGCTTCAAGGG') != -1:
-                        ts = ts.replace('AGAGAAATAGAGTTTAGTGCTTCAAGGG','AGAGAAATAGAGAGTGCTTCAAGGG')
-                        tq = tq[:-3]
-                    elif ts.find('CCCTTGAAGCACTAAACTCTATTTCTCT') != -1:
-                        ts = ts.replace('CCCTTGAAGCACTAAACTCTATTTCTCT','CCCTTGAAGCACTCTCTATTTCTCT')
-                        tq = tq[:-3]
                 data.add_simple_line("%s\n%s\n+\n%s\n" % (id,ts,tq))
                 j = j + 1
     else:
@@ -262,33 +278,36 @@ if __name__ == '__main__':
             ts = ss
             tq = qq
             h = False
-            for k in poly_keys:
-                h1 = False
-                h2 = False
-                if ss.startswith(poly[k]):
-                    (ts,tq,h1) = trim_poly_5_end(ts, tq, k, no_repeats = options.repeats)
-                if ss.endswith(poly[k]):
-                    (ts,tq,h2) = trim_poly_3_end(ts, tq, k, no_repeats = options.repeats)
-                if h1 or h2:
-                    h = True
-                    break
-            if len(ts) >= 20 or options.keep_too_short:
+            h1 = False
+            h2 = False
+            caracter1 = ss[-1:]
+            caracter2 = ss[0:1]
+            if caracter2 and ss.startswith(poly[caracter2]):
+                (ts,tq,h1) = trim_poly_5_end(ts, tq, caracter2, no_repeats = options.repeats)
+            if caracter1 and ss.endswith(poly[caracter1]):
+                (ts,tq,h2) = trim_poly_3_end(ts, tq, caracter1, no_repeats = options.repeats)
+            if h1 or h2:
+                h = True
+
+#            for k in poly_keys:
+#                h1 = False
+#                h2 = False
+#                if ss.startswith(poly[k]):
+#                    (ts,tq,h1) = trim_poly_5_end(ts, tq, k, no_repeats = options.repeats)
+#                if ss.endswith(poly[k]):
+#                    (ts,tq,h2) = trim_poly_3_end(ts, tq, k, no_repeats = options.repeats)
+#                if h1 or h2:
+#                    h = True
+#                    break
+            if options.keep_too_short or len(ts) >= thr:
                 #data.add_lines([id,ts,'+',tq])
-                if replace:
-                    ts = ts.upper()
-                    if ts.find('AGAGAAATAGAGTTTAGTGCTTCAAGGG') != -1:
-                        ts = ts.replace('AGAGAAATAGAGTTTAGTGCTTCAAGGG','AGAGAAATAGAGAGTGCTTCAAGGG')
-                        tq = tq[:-3]
-                    elif ts.find('CCCTTGAAGCACTAAACTCTATTTCTCT') != -1:
-                        ts = ts.replace('CCCTTGAAGCACTAAACTCTATTTCTCT','CCCTTGAAGCACTCTCTATTTCTCT')
-                        tq = tq[:-3]
                 data.add_simple_line("%s\n%s\n+\n%s\n" % (id,ts,tq))
                 j = j + 1
             if h:
                 c = c + 1
         data.close()
 
-    print "Found %d reads with poly-A/C/G/T tails (equal or more %s repeat nucleotides)" % (c,options.repeats)
-    print "Total number of input reads = %d" % (i,)
-    print "Total number of reads written in the output = %d" % (j,)
+    print >>sys.stderr,"Found %d reads with poly-A/C/G/T/N tails (equal or more %s repeat nucleotides)" % (c,options.repeats)
+    print >>sys.stderr,"Total number of input reads = %d" % (i,)
+    print >>sys.stderr,"Total number of reads written in the output = %d" % (j,)
     #

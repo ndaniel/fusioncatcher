@@ -127,7 +127,7 @@ class lines_to_file:
         self.close()
 
 ##################
-def split_reads(f_in, f_list, f_out_1, f_out_2, size_buffer = 2*(10**9)):
+def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, size_buffer = 2*(10**9)):
 
     data1 = lines_to_file(f_out_1)
     data2 = lines_to_file(f_out_2)
@@ -167,16 +167,23 @@ def split_reads(f_in, f_list, f_out_1, f_out_2, size_buffer = 2*(10**9)):
 
         gc.disable()
         r = dict()
+        wiggle_range = range(-wiggle,wiggle+1)
+
         for line in reads:
             k = line[0]
             if not r.has_key(k):
-                r[k] = []
-            r[k].append(int(line[2]))
+                r[k] = set()
+            w = int(line[2])
+            for wig in wiggle_range:
+                r[k].add(w+wig)
         reads = r
         gc.enable()
 
         for read in reads_from_fastq_file(f_in):
             v = reads.get(read[0][1:].rstrip('\r\n'),None)
+            if not v:
+                continue
+            v = list(v)
             if len(v) == 1:
                 cut = v[0]
                 w = read[0][:-1]
@@ -230,6 +237,14 @@ an input FASTQ file and split each read into two (paired) reads in two separate 
                       dest="output_filename_2",
                       help="""The output FASTQ file where is the second part of the reads (on forward strand).""")
 
+    parser.add_option("--wiggle-size",
+                      action = "store",
+                      type = "int",
+                      default = 0,
+                      dest = "wiggle",
+                      help="""The size of the wiggle for the cut. If it is 0 then a read is cut into one paired-reads. If it is 1 then a read is cut into 3 paired-reads. Default is %default.""")
+
+
 
     parser.add_option("--buffer-size",
                       action = "store",
@@ -263,4 +278,7 @@ an input FASTQ file and split each read into two (paired) reads in two separate 
                 options.input_list_filename,
                 options.output_filename_1,
                 options.output_filename_2,
+                options.wiggle,
                 options.bucket)
+
+#

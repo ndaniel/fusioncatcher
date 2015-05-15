@@ -112,10 +112,10 @@ if __name__ == "__main__":
             newcmds.insert(0,head.replace('fusioncatcher-batch','fusioncatcher.py'))
         if xin and os.path.isdir(xin):
             # input is a directory and contains subdirectories, one subdirectory is one sample
-            dirs = [el for el in os.listdir(xin) if os.path.isdir(os.path.join(xin,el)) and not el.startswith('.')]
+            dirs = sorted([el for el in os.listdir(xin) if os.path.isdir(os.path.join(xin,el)) and not el.startswith('.')])
             nos = None
             if xno and os.path.isdir(xno):
-                nos =  [el for el in os.listdir(xno) if os.path.isdir(os.path.join(xno,el)) and not el.startswith('.')]
+                nos =  sorted([el for el in os.listdir(xno) if os.path.isdir(os.path.join(xno,el)) and not el.startswith('.')])
             if nos:
                 if xou and not os.path.isdir(xou):
                     os.makedirs(xou)

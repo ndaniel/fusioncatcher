@@ -122,7 +122,7 @@ if __name__ == '__main__':
     elif options.organism.lower() == 'mus_musculus':
         org = 'mm10'
     elif options.organism.lower() == 'canis_familiaris':
-        org = 'camFam3'
+        org = 'canFam3'
 
     if org:
         url = 'goldenPath/%s/database' % (org,)

@@ -171,6 +171,16 @@ def low(quality,score,window_length):
             break
     return n
 
+def find_n(x):
+    n = len(x)
+    j = n
+    for i in xrange(n-1,-1,-1):
+        if x[i] != 'N':
+            j = i+1
+            break
+    return j
+
+
 #
 #
 #
@@ -181,6 +191,12 @@ def shred(stuff):
     seq = aread[1]
     qual = aread[2]
     cut = low(qual,par.score,par.window)
+    if seq.endswith('N'):
+        cutn = find_n(seq)
+        if cut != -1:
+            cut = min(cut,cutn)
+        else:
+            cut = cutn
     f = False
     if cut != -1:
         if cut == 0:
@@ -246,8 +262,7 @@ def clip(
                        itertools.izip_longest(readfq(fastq(file_input)),
                                               [],
                                               fillvalue = para),
-                                              chunksize = 100
-                                       ):
+                       chunksize = 100):
         name = w[0]
         seq = w[1]
         qual = w[2]
@@ -296,7 +311,7 @@ Email: Daniel.Nicorici@gmail.com
 
 """
 
-    version = "%prog 0.11 beta"
+    version = "%prog 0.12 beta"
 
     parser = MyOptionParser(usage       = usage,
                             epilog      = epilog,

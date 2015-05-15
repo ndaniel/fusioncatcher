@@ -162,5 +162,6 @@ if __name__ == '__main__':
     if options.organism.lower() == 'homo_sapiens':
         remove(options.output_directory,"ENST00000467125") # ENST00000467125 is listed as GOPC, but is actually the GOPC/ROS1
         remove(options.output_directory,"ENST00000507166") # ENST00000507166 is listed as FIP1L1 but is really the FIP1L1/PDGFRA
+        remove(options.output_directory,"ENST00000621209") # ENST00000621209 is listed as CEL but is really the CEL/CELP
 
     #

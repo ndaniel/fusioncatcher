@@ -100,6 +100,15 @@ if __name__=='__main__':
                       dest="skip_genes_filename",
                       help="""A text file containg all the (Ensembl) genes ids which should be skipped (i.e. not added to the output), e.g. miRNA genes.""")
 
+    parser.add_option("--threshold_length","-t",
+                      action = "store",
+                      type = "int",
+                      dest = "transcript_length",
+                      default = 150,
+                      help = "Transcripts shorter than this will be skipped and their sequences will not be in the output. "+
+                             "Default is '%default'.")
+
+
     parser.add_option("--output_fasta",
                       action="store",
                       type="string",
@@ -264,7 +273,7 @@ if __name__=='__main__':
         id1 = id
         #id2=';'.join([id]+idplus+info_exon)
         id2=';'.join(idplus+info_exon)
-        if len(s) > 100:
+        if len(s) > options.transcript_length:
             sequences.append(Bio.SeqRecord.SeqRecord(Bio.Seq.Seq(s,Bio.Alphabet.IUPAC.ambiguous_dna),id=id1,name="",description=""))
             extra.append(id1+'\t'+id2+'\n')
 

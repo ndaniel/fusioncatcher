@@ -195,36 +195,38 @@ def predict_frame(gtf_file,
     data = [line.rstrip('\r\n').split('\t') for line in file(input_file,'r').readlines() if line.rstrip('')]
     fusion1 = [tuple([line[10]] + line[8].split(':')) for line in data[1:]]
     fusion2 = [tuple([line[11]] + line[9].split(':')) for line in data[1:]]
-    myg = set([line[10] for line in data]+[line[11] for line in data[1:]])
-
-    tr2fa = dict()
-    if transcripts_file:
-        if verbose:
-            print >>sys.stderr,"Reading the transcripts' sequences..."
-        handle = open(transcripts_file,"rU")
-        for record in Bio.SeqIO.parse(handle, "fasta"):
-            temp = record.id.partition(';')
-            t = temp[0]
-            g = temp[2]
-            if g in myg:
-                tr2fa[t] = str(record.seq).upper()
-        handle.close()
-
-
-    # read and pre-process the GTF file
-    if verbose:
-        print >>sys.stderr,"Parsing the GTF file..."
-    g = []
-    if gtf_file == '-':
-        g = [line.rstrip('\r\n').split("\t") for line in file(sys.stdin,"r").readlines() if (not line.startswith("#")) and line.rstrip()]
-    elif gtf_file.endswith('.gz'):
-        z = gzip.open(gtf_file,"r")
-        g = [line.rstrip('\r\n').split("\t") for line in z.readlines() if (not line.startswith("#")) and line.rstrip()]
-        z.close()
-    else:
-        g = [line.rstrip('\r\n').split("\t") for line in file(gtf_file,"r").readlines() if (not line.startswith("#")) and line.rstrip()]
+    myg = set([line[10] for line in data[1:]]+[line[11] for line in data[1:]])
 
     if myg:
+
+        tr2fa = dict()
+        if transcripts_file:
+            if verbose:
+                print >>sys.stderr,"Reading the transcripts' sequences..."
+            handle = open(transcripts_file,"rU")
+            for record in Bio.SeqIO.parse(handle, "fasta"):
+                temp = record.id.partition(';')
+                t = temp[0]
+                g = temp[2]
+                if g in myg:
+                    tr2fa[t] = str(record.seq).upper()
+            handle.close()
+
+        # read and pre-process the GTF file
+        if verbose:
+            print >>sys.stderr,"Parsing the GTF file..."
+        g = []
+        if gtf_file == '-':
+            g = [line.rstrip('\r\n').split("\t") for line in file(sys.stdin,"r").readlines() if (not line.startswith("#")) and line.rstrip()]
+        elif gtf_file.endswith('.gz'):
+            z = gzip.open(gtf_file,"r")
+            g = [line.rstrip('\r\n').split("\t") for line in z.readlines() if (not line.startswith("#")) and line.rstrip()]
+            z.close()
+        else:
+            g = [line.rstrip('\r\n').split("\t") for line in file(gtf_file,"r").readlines() if (not line.startswith("#")) and line.rstrip()]
+
+
+
         # get all exons per gene as a dictionary
         if verbose:
             print >>sys.stderr,"Building the database of exons and CDSes..."
@@ -342,6 +344,8 @@ def predict_frame(gtf_file,
         data.append(protein)
         data = zip(*data)
         file(output_file,'w').writelines(['\t'.join(line)+'\n' for line in data])
+    else:
+        file(output_file,'w').write('\t'.join(data[0])+'\n')
 
 
 

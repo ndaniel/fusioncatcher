@@ -39,13 +39,53 @@ candidate fusion genes!
 This file is not running/executing/using BLAT.
 
 """
+
+"""
+Input file looks like:
+
+
+0001/2	ENST00000274276;ENSG00000145623
+0001/2	ENST00000291547;ENSG00000160199
+0001/2	ENST00000299163;ENSG00000166135
+0001/2	ENST00000343325;ENSG00000173875
+0001/2	ENST00000432907;ENSG00000160199
+0001/2	ENST00000446165;ENSG00000173875
+0001/2	ENST00000482342;ENSG00000177479
+0001/2	ENST00000534447;ENSG00000166473
+0001/2	ENST00000553458;ENSG00000119711
+0001/2	ENST00000587343;ENSG00000267703
+0001/2	ENST00000623232;ENSG00000256591
+0001/2	ENST09000000012;ENSG09000000012
+0002/1	ENST00000274276;ENSG00000145623
+0002/1	ENST00000291547;ENSG00000160199
+0002/1	ENST00000299163;ENSG00000166135
+0002/1	ENST00000343325;ENSG00000173875
+0002/1	ENST00000432907;ENSG00000160199
+0002/1	ENST00000446165;ENSG00000173875
+0002/1	ENST00000482342;ENSG00000177479
+0002/1	ENST00000534447;ENSG00000166473
+0002/1	ENST00000553458;ENSG00000119711
+0002/1	ENST00000587343;ENSG00000267703
+0002/1	ENST00000623232;ENSG00000256591
+0002/1	ENST09000000012;ENSG09000000012
+0003/1	ENST00000299163;ENSG00000166135
+0003/1	ENST00000446165;ENSG00000173875
+0003/1	ENST00000482342;ENSG00000177479
+0003/1	ENST00000553458;ENSG00000119711
+0003/1	ENST00000584148;ENSG00000264188
+0003/1	ENST00000623232;ENSG00000256591
+
+
+"""
 import sys
 import os
 import optparse
 import gc
+import multiprocessing
+import itertools
 
 #########################
-def line_from(a_map_filename):
+def line_from3(a_map_filename):
     # it gives chunks from a_map_filename which is assumed to be ordered by the name of transcripts (i.e. column 3)
     fin = None
     if a_map_filename == '-':
@@ -57,29 +97,62 @@ def line_from(a_map_filename):
 
     while True:
         gc.disable()
-        lines=fin.readlines(10**8)
+        lines = fin.readlines(10**8)
         gc.enable()
         if not lines:
             break
         gc.disable()
-        lines=[line.rstrip('\r\n').split('\t',3)[:3] for line in lines if line.rstrip('\r\n')]
+        lines = [line.rstrip('\r\n').split('\t',2)[:2] for line in lines]
         gc.enable()
         for line in lines:
-            yield line
+            if line:
+                yield line
     fin.close()
 
 #########################
-def read_from(a_map_filename):
-    last_r=''
-    chunk=set()
+def line_from4(a_map_filename):
+    # it gives chunks from a_map_filename which is assumed to be ordered by the name of transcripts (i.e. column 3)
+    fin = None
+    if a_map_filename == '-':
+        fin = sys.stdin
+    elif a_map_filename.lower().endswith('.gz'):
+        fin = gzip.open(a_map_filename,'r')
+    else:
+        fin = open(a_map_filename,'r')
+
+    while True:
+        gc.disable()
+        lines = fin.readlines(10**8)
+        gc.enable()
+        if not lines:
+            break
+        gc.disable()
+        lines = [line.rstrip('\r\n').split('\t',3)[:3] for line in lines]
+        gc.enable()
+        for line in lines:
+            if line:
+                yield line
+    fin.close()
+
+#########################
+def read_from3(a_map_filename, database = None, filter_gene = None):
+    last_r = ''
+    chunk = set()
     last_g = '' # for speed purposes only
-    for line in line_from(a_map_filename):
+    for line in line_from3(a_map_filename):
         if not chunk:
-            last_r=line[0]
-        if last_r!=line[0]: # line[2] is column no 3 in the BOWTIE MAP file which contains the reference sequence name
-            yield (last_r,chunk)
-            last_r=line[0]
-            chunk=set()
+            last_r = line[0]
+        if last_r != line[0]: # line[2] is column no 3 in the BOWTIE MAP file which contains the reference sequence name
+            if chunk and len(chunk) != 1:
+                sc = sorted(chunk)
+                if len(sc) > 50: # take only the first 100 genes
+                    sc = sc[0:50]
+                ex = []
+                if database:
+                    ex = [database[e] for e in sc]
+                yield (last_r,sc,ex)
+            last_r = line[0]
+            chunk = set()
             last_g = ''
         #tr=ENST00000000233;ge=ENSG00000004059;pn=ENSP00000000233;chr=7;str=+;len=1103
         #g=[el.split('ge=')[1] for el in line[2].split(';') if el.startswith('ge=')]
@@ -87,18 +160,81 @@ def read_from(a_map_filename):
 #        g1 = line[2].find('ge=') + 3
 #        g2 = line[2].find(';',g1+1)
 #        g = line[2][g1:g2]
-        g = line[2].partition(';')[2]
+        #g = line[2].partition(';')[2]
+        g = line[1]
+        if filter_gene and g.startswith(filter_gene):
+            continue
         if g != last_g:
             chunk.add(g)
             last_g = g
-    if chunk:
-        yield (last_r,chunk)
+    if chunk and len(chunk) != 1:
+        sc = sorted(chunk)
+        ex = []
+        if database:
+            ex = [database[e] for e in sc]
+        yield (last_r,sc,ex)
 
 #########################
-def is_overlapping(g1,g2,tolerance = 50):
+def read_from4(a_map_filename, database = None, filter_gene = None):
+    last_r = ''
+    chunk = set()
+    m0 = False
+    #m1 = set()
+    m2 = set()
+    last_g = '' # for speed purposes only
+    for line in line_from4(a_map_filename):
+        if not chunk:
+            last_r = line[0]
+        if last_r != line[0]: # line[2] is column no 3 in the BOWTIE MAP file which contains the reference sequence name
+            if chunk and len(chunk) != 1:
+                if m0 and m2:
+                    chunk.difference_update(m2)
+                if chunk and len(chunk) != 1:
+                    sc = sorted(chunk)
+                    if len(sc) > 50: # take only the first 100 genes
+                        sc = sc[0:50]
+                    ex = []
+                    if database:
+                        ex = [database[e] for e in sc]
+                    yield (last_r,sc,ex)
+            last_r = line[0]
+            chunk = set()
+            m0 = False
+            m2 = set()
+            last_g = ''
+        #tr=ENST00000000233;ge=ENSG00000004059;pn=ENSP00000000233;chr=7;str=+;len=1103
+        #g=[el.split('ge=')[1] for el in line[2].split(';') if el.startswith('ge=')]
+        #chunk.add(g[0])
+#        g1 = line[2].find('ge=') + 3
+#        g2 = line[2].find(';',g1+1)
+#        g = line[2][g1:g2]
+        #g = line[2].partition(';')[2]
+        g = line[1]
+        if filter_gene and g.startswith(filter_gene):
+            continue
+        if g != last_g:
+            chunk.add(g)
+            last_g = g
+            if line[2] == "0": # mismatches
+                m0 = True
+            elif line[2] == "2":
+                    m2.add(g)
+
+    if chunk and len(chunk) != 1:
+        if m0 and m2:
+            chunk.difference_update(m2)
+        sc = sorted(chunk)
+        ex = []
+        if database:
+            ex = [database[e] for e in sc]
+        yield (last_r,sc,ex)
+
+
+#########################
+def is_overlapping(e1,e2,tolerance = 50):
     r = False
-    e1 = database[g1]
-    e2 = database[g2]
+#    e1 = db[g1]
+#    e2 = db[g2]
     if e1[2] == e2[2]: # same chromosomes
         if e1[1] - e2[0] > tolerance:
             if e2[1] - e1[0] > tolerance:
@@ -106,13 +242,48 @@ def is_overlapping(g1,g2,tolerance = 50):
     return r
 
 
+#########################
+#def compute_homology(ar,ge,ex):
+def homology(stuff):
+    # ar = read id
+    # ge = list of gene ids
+    # ex = list of exons coordinates
+
+    ar = stuff[0]
+    ge = stuff[1]
+    ex = stuff[2]
+
+    n = len(ge)
+
+    flag = False
+    hom = []
+    # limit the amount of combinations
+    if n > 100:
+        n = 100
+    for a in xrange(0,n-1):
+        for b in xrange(a+1,n):
+            k = '%s\t%s' % (ge[a],ge[b])
+#            if g[a] > g[b]:
+#                k = '%s\t%s' % (g[b],g[a])
+            hom.append(k)
+            if ex and (not is_overlapping(ex[a],ex[b])):
+                flag = True
+    return (hom, ar if flag else None )
+
+#
+# def shred(stuff):
+#    return compute_homology(stuff[0],stuff[1],stuff[2])
+
+#
+#
+#
 if __name__ == '__main__':
 
     #command line parsing
 
     usage="%prog [options]"
     description="""It finds a list of genes that might homologous (there is a short read which maps on both genes)."""
-    version="%prog 0.10 beta"
+    version="%prog 0.12 beta"
 
     parser=optparse.OptionParser(usage=usage,description=description,version=version)
 
@@ -136,11 +307,11 @@ if __name__ == '__main__':
                       help="""The minimum number of reads which map simultaneously on two genes in order to be considered as homolog genes. Default is %default.""")
 
 
-    parser.add_option("--output_offending_reads",
-                      action="store",
-                      type="string",
-                      dest="output_offending_reads_filename",
-                      help="""The output text file containing the reads names which mapp simultaneously on transcripts from at least two genes.""")
+#    parser.add_option("--output_offending_reads",
+#                      action="store",
+#                      type="string",
+#                      dest="output_offending_reads_filename",
+#                      help="""The output text file containing the reads names which mapp simultaneously on transcripts from at least two genes.""")
 
     parser.add_option("--output_offending_pair_reads",
                       action="store",
@@ -154,6 +325,27 @@ if __name__ == '__main__':
                       dest="exons_filename",
                       help="""Database with exons position on chromosomes, e.g. 'more_exons_ensembl.txt'. This is used for filtering the UTRs extensions by removing any extension which overlaps with any exons from the database. This is optional.""")
 
+    parser.add_option("--filter",
+                      action="store",
+                      type="string",
+                      dest="filter_filename",
+                      help="""Input file which contain a pattern for genes which should be ignored/skipped from the analysis.""")
+
+    parser.add_option("--d1",
+                      action="store_true",
+                      dest="distance_mismatches_1",
+                      default = False,
+                      help="""If it set then only the alignments of a read are taken into consideration which are at maximum one mismatch away. This works only for maximum two mismatches. This expects that the input has 4 columns instead of 3, and the fourth column contains the mismatches from Bowtie.""")
+
+
+    parser.add_option("-p", "--processes",
+                      action = "store",
+                      type = "int",
+                      dest = "processes",
+                      default = 0,
+                      help = """Number of parallel processes/CPUs to be used for computations. In case of value 0 then the program will use all the CPUs which are found. The default value is %default.""")
+
+
 
     (options,args) = parser.parse_args()
 
@@ -163,6 +355,19 @@ if __name__ == '__main__':
             ):
         parser.print_help()
         sys.exit(1)
+
+
+    #
+    cpus = 0
+    if options.processes:
+        cpus = options.processes
+    if cpus == 0:
+        cpus = multiprocessing.cpu_count()
+    print >>sys.stderr,"Using",cpus,"process(es)..."
+
+    filterout = None
+    if options.filter_filename:
+        filterout = file(options.filter_filename,"r").readline().rstrip("\r\n")
 
     database = {}
     if options.exons_filename:
@@ -203,55 +408,153 @@ if __name__ == '__main__':
             if not database.has_key(gn):
                 database[gn] = (gs,ge,ch)
 
+
+
+
     #print "Finding the homolog genes..."
-    homolog=dict()
-    offenders=set()
-    for (a_read,genes) in read_from(options.input_map_filename):
-        n=len(genes)
-        if n==1:
-            continue
-        g=list(genes)
-        flag = False
-        for a in xrange(0,n-1):
-            for b in xrange(a+1,n):
-                k = ''
-                if g[a] < g[b]:
-                    k = '%s\t%s' % (g[a],g[b])
-                else:
-                    k = '%s\t%s' % (g[b],g[a])
+    pool = multiprocessing.Pool(processes=cpus)
+    homolog = dict()
+    offenders = list()
+    fo = None
+    if options.output_offending_pair_reads_filename:
+        fo = open(options.output_offending_pair_reads_filename,"w")
+#    for (a_read,genes,exo) in read_from(options.input_map_filename, database = database, filter_gene = filterout):
+#        (h,f) = compute_homology(a_read,genes,exo)
+#
+#        gc.disable()
+#        for k in h:
+#            homolog[k] = homolog.get(k,0) + 1
+#        if f:
+#            offenders.append(a_read)
+#        gc.enable()
+
+    my_iter = None
+    if options.distance_mismatches_1:
+        my_iter = read_from4(
+            options.input_map_filename,
+            database = database,
+            filter_gene = filterout)
+    else:
+        my_iter = read_from3(
+            options.input_map_filename,
+            database = database,
+            filter_gene = filterout)
+
+    max_genes_per_read = 0
+    max_genes_per_read_id = ''
+
+    if fo:
+        for w in pool.imap_unordered(
+            homology,
+            my_iter,
+            chunksize = 100):
+
+            h = w[0]
+            f = w[1]
+
+            z = len(h)
+            if z > max_genes_per_read:
+                max_genes_per_read = z
+                max_genes_per_read_id = f
+
+            for k in h:
                 gc.disable()
                 homolog[k] = homolog.get(k,0) + 1
                 gc.enable()
-                if database and not is_overlapping(g[a],g[b]):
-                    flag = True
-        if (not database) or flag:
-            gc.disable()
-            offenders.add(a_read)
-            gc.enable()
+            if f:
+                offenders.append(f)
+                if len(offenders) > 100000:
+                    d = list()
+                    for e in offenders:
+                        if e.endswith('/1'):
+                            gc.disable()
+                            d.append(e)
+                            d.append(e[:-1]+'2')
+                            gc.enable()
+                        elif e.endswith('/2'):
+                            gc.disable()
+                            d.append(e[:-1]+'1')
+                            d.append(e)
+                            gc.enable()
+                    fo.writelines([line+'\n' for line in d])
+                    offenders = []
+
+        if offenders:
+            d = list()
+            for e in offenders:
+                if e.endswith('/1'):
+                    gc.disable()
+                    d.append(e)
+                    d.append(e[:-1]+'2')
+                    gc.enable()
+                elif e.endswith('/2'):
+                    gc.disable()
+                    d.append(e[:-1]+'1')
+                    d.append(e)
+                    gc.enable()
+            fo.writelines([line+'\n' for line in d])
+        fo.close()
+
+    else:
+
+        for w in pool.imap_unordered(
+            homology,
+            my_iter,
+            chunksize = 100):
+
+
+#        for w in itertools.imap(
+#            shred,
+#            my_iter):
+
+
+
+            h = w[0]
+            #f = w[1]
+
+            z = len(h)
+            if z > max_genes_per_read:
+                max_genes_per_read = z
+                max_genes_per_read_id = w[1]
+
+            for k in h:
+                gc.disable()
+                homolog[k] = homolog.get(k,0) + 1
+                gc.enable()
+
+
+#        g = genes
+#        n = len(genes)
+#        flag = False
+#        for a in xrange(0,n-1):
+#            for b in xrange(a+1,n):
+#                k = '%s\t%s' % (g[a],g[b])
+#                if g[a] > g[b]:
+#                    k = '%s\t%s' % (g[b],g[a])
+#                gc.disable()
+#                homolog[k] = homolog.get(k,0) + 1
+#                gc.enable()
+#                if database and (not is_overlapping(g[a],g[b])):
+#                    flag = True
+#        if flag:
+#            gc.disable()
+#            offenders.add(a_read)
+#            gc.enable()
 
     #print "Writing...",options.output_filename
     #homolog = sorted([k+'\t'+str(v)+'\n' for (k,v) in homolog.items() if v >= options.reads])
     homolog = [k+'\t'+str(v)+'\n' for (k,v) in homolog.items() if v >= options.reads]
     file(options.output_filename,'w').writelines(homolog)
 
-    if options.output_offending_reads_filename:
-        #print "Writing...",options.output_offending_reads_filename
-        d = sorted(list(offenders))
-        file(options.output_offending_reads_filename,'w').writelines([line+'\n' for line in d])
+    print >> sys.stderr, "Read '%s' found mapping on %d genes!" % (max_genes_per_read_id,max_genes_per_read)
 
-    if options.output_offending_pair_reads_filename:
-        #print "Writing...",options.output_offending_pair_reads_filename
-        d = set()
-        for e in offenders:
-            if e.endswith('/1'):
-                d.add(e[:-1]+'2')
-            elif e.endswith('/2'):
-                d.add(e[:-1]+'1')
-        gc.disable()
-        offenders.update(d)
-        gc.enable()
-        d = sorted(list(offenders))
-        file(options.output_offending_pair_reads_filename,'w').writelines([line+'\n' for line in d])
+    #if options.output_offending_reads_filename:
+        #print "Writing...",options.output_offending_reads_filename
+        #gc.disable()
+        #d = sorted(set(offenders))
+        #gc.enable()
+        #file(options.output_offending_reads_filename,'w').writelines([line+'\n' for line in offenders])
+
 
     #print "The end."
     #

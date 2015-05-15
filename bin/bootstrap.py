@@ -53,6 +53,16 @@ import time
 import tempfile
 import ftplib
 
+HEADER = '\033[95m'
+OKBLUE = '\033[94m'
+OKGREEN = '\033[92m'
+WARNING = '\033[93m'
+FAIL = '\033[91m'
+ENDC = '\033[0m'
+BOLD = "\033[1m"
+UNDERLINE = '\033[4m'
+HIGHLIGHT = '\033[33;7m'
+
 
 ################################################################################
 ################################################################################
@@ -135,8 +145,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
 
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4a.zip'
-    FUSIONCATCHER_VERSION = "0.99.4a beta"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4b.zip'
+    FUSIONCATCHER_VERSION = "0.99.4b beta"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -168,7 +178,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BLAT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/blat/blat'
     # STAR
     STAR_PATH = os.path.join(FUSIONCATCHER_TOOLS,'star')
-    STAR_URL = 'http://github.com/alexdobin/STAR/archive/STAR_2.4.0j.tar.gz'
+    STAR_URL = 'http://github.com/alexdobin/STAR/archive/STAR_2.4.1c.tar.gz'
    # BWA
     BWA_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bwa')
     BWA_URL = 'http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2'
@@ -878,20 +888,20 @@ if __name__ == '__main__':
                   "<http://code.google.com/p/fusioncatcher/>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 0.21 beta"
+    version = "%prog 0.22 beta"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
                                    version = version)
 
-    parser.add_option("-d","--install-dir",
+    parser.add_option("-i","--installation-path",
                       action = "store",
                       type = "string",
                       dest = "installation_directory",
                       default = FUSIONCATCHER_PATH,
                       help = """The directory where FusionCatcher will be installed. Default is '%default'.""")
 
-    parser.add_option("-p","--prefix",
+    parser.add_option("-p","--prefix-path",
                       action = "store",
                       type = "string",
                       dest = "prefix_directory",
@@ -901,25 +911,25 @@ if __name__ == '__main__':
                       action = "store_true",
                       default = False,
                       dest = "install_all",
-                      help = """It forcibly installs all the software tools and Python modules needed even if they are already installed.""")
+                      help = """It forcibly installs (1) all the software tools, and (2) the Python modules, which are needed (even if they are already installed).""")
 
     parser.add_option("-m","--install-all-py",
                       action = "store_true",
                       default = False,
                       dest = "install_all_py",
-                      help = """It forcibly installs all the Python modules needed even if they are already installed.""")
+                      help = """It forcibly only installs all the Python modules needed (even if they are already installed).""")
 
     parser.add_option("-t","--install-all-tools",
                       action = "store_true",
                       default = False,
                       dest = "install_all_tools",
-                      help = """It forcibly installs all the software tools needed even if they are already installed.""")
+                      help = """It forcibly only installs all the software tools needed (even if they are already installed).""")
 
     parser.add_option("-s","--skip-dependencies",
                       action = "store_true",
                       default = False,
                       dest = "skip_install_all",
-                      help = """It skips installing and testing all the dependencies (i.e. software tools and Python modules). Only the FusionCatcher scripts will be installed. Use this when there the internet connection is broken or not available.""")
+                      help = """It skips installing and testing all the dependencies, which are the (1) software tools, and (2) Python modules. Only the FusionCatcher scripts will be installed. Use this when there the internet connection is broken or not available.""")
 
     parser.add_option("-y","--yes",
                       action = "store_true",
@@ -927,7 +937,7 @@ if __name__ == '__main__':
                       dest = "force_yes",
                       help = """It answers automatically all questions with yes.""")
 
-    parser.add_option("--list-dependencies",
+    parser.add_option("-e","--list-dependencies",
                       action = "store_true",
                       default = False,
                       dest = "list_dependencies",
@@ -939,7 +949,7 @@ if __name__ == '__main__':
                       dest = "build",
                       help = """It builds (and also some download is required) the build files for human organism, which are needed to run FusionCatcher. Default value is '%default'.""")
 
-    parser.add_option("-n","--download",
+    parser.add_option("-d","--download",
                       action = "store_true",
                       default = False,
                       dest = "download",
@@ -971,7 +981,7 @@ if __name__ == '__main__':
 ################################################################################
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "ensembl_v79"
+    v = "ensembl_v79b"
     ############################################################################
     # List all dependencies
     ############################################################################
@@ -1396,13 +1406,13 @@ if __name__ == '__main__':
                  exe = "STAR",
                  param = "--version",
                  web = "<http://code.google.com/p/rna-star/>",
-                 versions = ('STAR_2.4.0j',),
+                 versions = ('STAR_2.4.1c',),
                  version_word = 'STAR_',
                  force = options.force_yes,
                  url = STAR_URL,
                  path = STAR_PATH,
                  install = options.install_all or options.install_all_tools,
-                 custom_install = ["#!/usr/bin/env bash","rm -f source/STAR","cp bin/Linux_x86_64/STAR source/STAR","cd source","make","exit 0"])
+                 custom_install = ["#!/usr/bin/env bash","rm -f source/STAR","cp bin/Linux_x86_64/STAR source/STAR","cd source","make","if ! ./STAR --version; then","    rm -f STAR","    cp ../bin/Linux_x86_64_static/STAR .","fi","exit 0"])
         if r:
             STAR_PATH = r
 
@@ -1630,7 +1640,7 @@ if __name__ == '__main__':
     print "Run FusionCatcher as following:\n  %s" % (os.path.join(FUSIONCATCHER_BIN,'fusioncatcher'),)
     print "In order to download and build the files for FusionCatcher run the following:\n  %s" % (os.path.join(FUSIONCATCHER_PATH,FUSIONCATCHER_BIN,'fusioncatcher-build'),)
     print ""
-    print "=== Installed successfully! ==="
+    print HIGHLIGHT+"=== Installed successfully! ==="+ENDC
     print ""
     if options.build:
         time.sleep(5)
@@ -1670,8 +1680,13 @@ if __name__ == '__main__':
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ac -O %s.tar.gz.ac" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ad -O %s.tar.gz.ad" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         #txt.append("tar  zxvf  %s -C %s" % (v,FUSIONCATCHER_DATA.replace(" ","\\ ")))
-        txt.append("cat %s.tar.gz.* | tar xz -C %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),FUSIONCATCHER_DATA.replace(" ","\\ ")))
+        txt.append("cat %s.tar.gz.* > %s.tar.gz" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ ")))
         txt.append("rm -f %s.tar.gz.*" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
+        txt.append("if ! tar -xzf %s.tar.gz -C %s; then" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),FUSIONCATCHER_DATA.replace(" ","\\ ")))
+        txt.append('    echo -e "\\n\\n\\n\\033[33;7m   ERROR: The downloaded files are corrupted!   \\033[0m\\n"')
+        txt.append("    exit 1")
+        txt.append("fi")
+        txt.append("rm -f %s.tar.gz" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
         for t in txt:
             print t
         print ""
@@ -1751,6 +1766,7 @@ if __name__ == '__main__':
             print "---------------------------------------------------------------------------"
             r = os.system(file_download)
             if r:
+                print HIGHLIGHT+"ERROR found!"+ENDC
                 print >>sys.stderr,"ERROR: Something went wrong during the execution of '%s'. Exit code %d." % (file_download,r)
                 sys.exit(1)
             print "--> DONE!"
@@ -1761,12 +1777,13 @@ if __name__ == '__main__':
             print "---------------------------------------------------------------------------"
             r = os.system(file_build)
             if r:
+                print HIGHLIGHT+"ERROR found!"+ENDC
                 print >>sys.stderr,"ERROR: Something went wrong during the execution of '%s'. Exit code %d." % (file_build,r)
                 sys.exit(1)
             print "--> DONE!"
             forget = True
         print ""
-        print "--------------> THE END (it looks good)! <---------------------------"
+        print HIGHLIGHT+"--------------> THE END! <---------------------------"+ENDC
         print ""
         print ""
         if not forget:

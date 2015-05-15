@@ -149,10 +149,28 @@ def lines_from(a_filename):
         if not lines:
             break
         gc.disable()
-        lines = [line.rstrip('\r\n').split('\t') for line in lines if line.rstrip('\r\n')]
+        lines = [line.rstrip('\r\n').split('\t') for line in lines]
         gc.enable()
         for line in lines:
-            yield line
+            if line:
+                yield line
+    fin.close()
+
+#########################
+def lines_none_from(a_filename):
+    # it gives chunks
+    fin = open(a_filename,'r')
+    while True:
+        lines = fin.readlines(10**8)
+        if not lines:
+            break
+        gc.disable()
+        lines = [line.rstrip('\r\n').split('\t') for line in lines]
+        gc.enable()
+        for line in lines:
+            if line:
+                yield line
+    yield None
     fin.close()
 
 #########################
@@ -178,6 +196,15 @@ def contigs_multiple_from(a_psl_filename):
             yield chunk[0][9]+'\n'
 
 #########################
+def check_ties(string1,string2,ensg09):
+    f = False
+    a = string1.find(ensg09)
+    b = string2.find(ensg09)
+    if ensg09 and (a == -1 and b != -1) or (a != -1 and b == -1):
+        f = True
+    return f
+
+#########################
 def contigs_unique_from(a_psl_filename):
     last_contig = ''
     chunk = []
@@ -186,16 +213,149 @@ def contigs_unique_from(a_psl_filename):
             last_contig = line[9] # line[9] is column no 10 which is query name
         if last_contig != line[9]: # line[9] is column no 10 which is query name
             # the bin is full and now analyze it
-            if len(chunk)<2 or int(chunk[0][0]) > int(chunk[1][0]):
+            n = len(chunk)
+            if n == 1:
+                yield '\t'.join(chunk[0])+'\n'
+            elif chunk[0][0] != chunk[1][0]: #matches for first best mapping and second best mapping
                 yield '\t'.join(chunk[0])+'\n'
             last_contig = line[9]
             chunk = []
         chunk.append(line)
     if chunk:
-        if len(chunk)<2 or int(chunk[0][0]) > int(chunk[1][0]):
+        n = len(chunk)
+        if n == 1:
+            yield '\t'.join(chunk[0])+'\n'
+        elif chunk[0][0] != chunk[1][0]:
             yield '\t'.join(chunk[0])+'\n'
 
-####
+#########################
+def contigs_unique_overlapping_from(a_psl_filename):
+    # when there is tie best mapping then all the best mappings are outputed if they overlap each other on same reference sequence
+    last_contig = ''
+    chunk = []
+    for line in lines_none_from(a_psl_filename):
+        if not line: # signal for last line
+            line9 = last_contig+'_'
+        else:
+            line9 = line[9]
+        if not chunk:
+            last_contig = line9 # line[9] is column no 10 which is query name
+        if last_contig != line9: # line[9] is column no 10 which is query name
+            # the bin is full and now analyze it
+            n = len(chunk)
+            if n == 1:
+                yield '\t'.join(chunk[0])+'\n'
+            elif chunk[0][0] != chunk[1][0]: #matches for first best mapping and second best mapping
+                yield '\t'.join(chunk[0])+'\n'
+            else: # allow ties for best mappins if all of them are overllaping each other
+                chunk = [el for el in chunk if el[0]==chunk[0][0]] # get top ties
+                tseq =  set([el[13] for el in chunk]) # get target sequence for all ties
+                if len(tseq) == 1:
+                    # test overlapping
+                    a0 = int(chunk[0][15])
+                    a1 = int(chunk[0][16])
+                    flg = True
+                    for e in xrange(1,len(chunk)):
+                        b0 = int(chunk[e][15])
+                        b1 = int(chunk[e][16])
+                        if not (b0 <= a1 and b1 >= a0):
+                            flg = False
+                            break
+                    if flg:
+                        for el in chunk:
+                            yield '\t'.join(el)+'\n'
+            last_contig = line9
+            chunk = []
+        chunk.append(line)
+
+#########################
+def contigs_unique_overlapping_and_ties_from(a_psl_filename, allowed_ties = ""):
+    # when there is tie best mapping then all the best mappings are outputed if they overlap each other on same reference sequence
+    last_contig = ''
+    chunk = []
+    for line in lines_none_from(a_psl_filename):
+        if not line: # signal for last line
+            line9 = last_contig+'_'
+        else:
+            line9 = line[9]
+        if not chunk:
+            last_contig = line9 # line[9] is column no 10 which is query name
+        if last_contig != line9: # line[9] is column no 10 which is query name
+            # the bin is full and now analyze it
+            n = len(chunk)
+            if n == 1:
+                yield '\t'.join(chunk[0])+'\n'
+            elif chunk[0][0] != chunk[1][0]: #matches for first best mapping and second best mapping
+                yield '\t'.join(chunk[0])+'\n'
+            else: # allow ties for best mappins if all of them are overllaping each other
+                chunk = [el for el in chunk if el[0]==chunk[0][0]] # get top ties
+                if allowed_ties:
+                    tseq =  set([el[13] for el in chunk if el[13].find(allowed_ties) == -1]) # get target sequence for all ties
+                else:
+                    tseq =  set([el[13] for el in chunk]) # get target sequence for all ties
+                if len(tseq) == 1:
+                    # test overlapping
+                    a0 = int(chunk[0][15])
+                    a1 = int(chunk[0][16])
+                    flg = True
+                    for e in xrange(1,len(chunk)):
+                        b0 = int(chunk[e][15])
+                        b1 = int(chunk[e][16])
+                        if not (b0 <= a1 and b1 >= a0):
+                            if allowed_ties:
+                                if chunk[e][13].find(allowed_ties) == -1:
+                                    flg = False
+                                    break
+                            else:
+                                flg = False
+                                break
+                    if flg:
+                        for el in chunk:
+                            yield '\t'.join(el)+'\n'
+            last_contig = line9
+            chunk = []
+        chunk.append(line)
+
+
+#########################
+def contigs_unique_and_ties_from(a_psl_filename, allowed_ties = ""):
+    last_contig = ''
+    chunk = []
+    for line in lines_from(a_psl_filename):
+        if not chunk:
+            last_contig = line[9] # line[9] is column no 10 which is query name
+        if last_contig != line[9]: # line[9] is column no 10 which is query name
+            # the bin is full and now analyze it
+            n = len(chunk)
+            if n == 1:
+                yield '\t'.join(chunk[0])+'\n'
+            else:
+                c00 = int(chunk[0][0])
+                c10 = int(chunk[1][0])
+                if c00 != c10:
+                    yield '\t'.join(chunk[0])+'\n'
+                elif allowed_ties and c00 == c10 and (n == 2 or int(chunk[2][0]) < c00) and check_ties(chunk[0][13],chunk[1][13],allowed_ties):
+                    yield '\t'.join(chunk[0])+'\n'
+                    yield '\t'.join(chunk[1])+'\n'
+            last_contig = line[9]
+            chunk = []
+        chunk.append(line)
+    if chunk:
+        n = len(chunk)
+        if n == 1:
+            yield '\t'.join(chunk[0])+'\n'
+        else:
+            c00 = int(chunk[0][0])
+            c10 = int(chunk[1][0])
+            if c00 != c10:
+                yield '\t'.join(chunk[0])+'\n'
+            elif allowed_ties and c00 == c10 and (n == 2 or int(chunk[2][0]) < c00) and check_ties(chunk[0][13],chunk[1][13],allowed_ties):
+                yield '\t'.join(chunk[0])+'\n'
+                yield '\t'.join(chunk[1])+'\n'
+
+
+
+########################
 def give_gene_name(t):
     #g = [el.split('ge=')[1] for el in t.split(';') if el.startswith('ge=')]
     g = t.partition(';')[2]
@@ -301,7 +461,7 @@ if __name__ == '__main__':
     #command line parsing
 
     usage = "%prog [options]"
-    description = """It takes as input a PSL format file generated by BLAT and it outputs only the lines which contains the contigs with the best aligment which must be unique."""
+    description = """It takes as input a PSL format file (generated by BLAT) and it outputs only the lines which contains the contigs with the best aligment which must be unique."""
     version = "%prog 0.10 beta"
 
     parser=optparse.OptionParser(usage=usage,description=description,version=version)
@@ -324,13 +484,20 @@ if __name__ == '__main__':
                       dest="output_filename",
                       help="""The output PSL file containing the contigs with the best alignment which must be unique.""")
 
-    parser.add_option("--output_multiple_alignments",
+    parser.add_option("--ties",
+                      action="store",
+                      type="string",
+                      dest="input_ties_filename",
+                      help="""A input text file containing a string (which is part of a gene) for which ties are allowed.""")
+
+
+    parser.add_option("--output_multiple_alignments","-m",
                       action="store",
                       type="string",
                       dest="output_multiple_alignments_filename",
                       help="""A text file containing a list with the names of the contigs such that the best of their alignments are not unique.""")
 
-    parser.add_option("--output_unique_alignments",
+    parser.add_option("--output_unique_alignments","-u",
                       action="store",
                       type="string",
                       dest="output_unique_alignments_filename",
@@ -382,35 +549,51 @@ if __name__ == '__main__':
         cpus = multiprocessing.cpu_count()
 
     # running
-    print "Fixing..."
-
+    print >>sys.stderr,"Fixing PSL..."
     ft_name_1 = give_me_temp_filename(tmp_dir = options.tmp_dir)
     fix_short_blocks(options.input_filename, ft_name_1, threshold = options.anchor, mismatches = options.mismatches)
+#    for line in file(ft_name_1,'r'):
+#        os.write(2,line)
 
-    print "Sorting..."
+    print >>sys.stderr,"Sorting PSL..."
     ft_name_2 = give_me_temp_filename(tmp_dir = options.tmp_dir)
     sort_ttdb.sort_columns(ft_name_1,
                            ft_name_2,
-                           columns = '10,1nd,2n,18n', # sequence name, matches, mismatches, count blocks
+                           columns = '10,1nd,2n,18n,13', # sequence name, matches, mismatches, count blocks, target sequence
                            header = False,
                            ignore_case = False,
                            tmp_dir = options.tmp_dir,
                            parallel = cpus
                            )
+#    for line in file(ft_name_2,'r'):
+#        os.write(3,line)
     delete_file(ft_name_1)
-    print "Processing..."
+
+    print >>sys.stderr,"Processing PSL..."
     data=[]
+    ties = []
     if options.same_gene: # or file(ft_name_2,'r').readline().find(';ge=')>-1:
         data = contigs_unique_within_same_gene_from(ft_name_2)
     else:
-        data = contigs_unique_from(ft_name_2)
+        ties = ""
+        if options.input_ties_filename:
+            ties = file(options.input_ties_filename,"r").readline().rstrip("\r\n")
+        if ties:
+            #data = contigs_unique_and_ties_from(ft_name_2,ties)
+            data = contigs_unique_overlapping_and_ties_from(ft_name_2,ties)
+        else:
+            #data = contigs_unique_from(ft_name_2)
+            data = contigs_unique_overlapping_from(ft_name_2)
 
     ft_name_3 = give_me_temp_filename(tmp_dir = options.tmp_dir)
     file(ft_name_3,'w').writelines(data)
+#    for line in file(ft_name_3,'r'):
+#        os.write(4,line)
 
+
+    print >>sys.stderr,"Sorting again..."
     ft_name_4 = give_me_temp_filename(tmp_dir = options.tmp_dir)
     if options.output_filename:
-        print "Sorting..."
         file(options.output_filename,'w').write('')
         sort_ttdb.sort_columns(ft_name_3,
                                options.output_filename,
@@ -429,11 +612,13 @@ if __name__ == '__main__':
                                tmp_dir = options.tmp_dir,
                                parallel = cpus
                                )
+#    for line in file(options.output_filename,'r'):
+#        os.write(5,line)
     delete_file(ft_name_3)
 
 
     if options.output_multiple_alignments_filename:
-        print "Writing multiple alignments..."
+        print >>sys.stderr,"Writing multiple alignments..."
         data = []
         #if options.same_gene or file(ft_name_2,'r').readline().find(';ge=')>-1: # ;gen=?????
         if options.same_gene: # or file(ft_name_2,'r').readline().find(';ENSG')>-1: # ;gen=?????
@@ -444,11 +629,13 @@ if __name__ == '__main__':
     delete_file(ft_name_2)
 
     if options.output_unique_alignments_filename:
-        print "Writing unique alignments..."
+        print >>sys.stderr,"Writing unique alignments..."
         d = options.output_filename if options.output_filename else ft_name_4
         data = list(set([line.rstrip('\r\n').split('\t')[9]+'\n' for line in file(d,'r').readlines()])) # [9] is column 10 which is query name
         file(options.output_unique_alignments_filename,'w').writelines(data)
 
     delete_file(ft_name_4)
 
-    print "The end."
+    print >>sys.stderr,"The end."
+
+#

@@ -152,7 +152,7 @@ if __name__ == '__main__':
     size = os.path.getsize(options.input_filename)
 
     #
-    if options.threshold == 1:
+    if options.threshold < 10:
         options.seq_per_fasta = 1
 
     if options.seq_per_fasta:

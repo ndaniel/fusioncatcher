@@ -87,11 +87,17 @@ def reads_from_fastq_file(f_name,size_read_buffer=10**8):
                 j = 0
     fid.close()
 
+
+
 class lines_to_file:
     def __init__(self,file_name,size_buffer=10**8):
-        self.file_name=file_name
-        if file_name:
-            self.file_handle=open(file_name,'w')
+        self.file_name = file_name
+        if file_name == '-':
+            self.file_handle = sys.stdout
+        elif file_name.lower().endswith('.gz'):
+            self.file_handle = gzip.open(file_name,'w')
+        else:
+            self.file_handle = open(file_name,'w')
         self.size_buffer=size_buffer
         self.data=[]
         self.size=0
@@ -141,7 +147,7 @@ if __name__=='__main__':
 
     usage="%prog [options]"
     description="""It takes a FASTQ file and converts all nucleotides with low quality score 'B' to ambigous nucleotide N."""
-    version="%prog 0.11 beta              Author: Daniel Nicorici, E-mail: Daniel.Nicorici@gmail.com"
+    version="%prog 0.12 beta              Author: Daniel Nicorici, E-mail: Daniel.Nicorici@gmail.com"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -201,7 +207,7 @@ if __name__=='__main__':
         parser.print_help()
         parser.error("No inputs and outputs specified!")
 
-    print >>sys.stderr,"Starting..."
+    #print >>sys.stderr,"Starting..."
     data = lines_to_file(options.output_filename)
     threshold = options.threshold
     b = 'B'
@@ -260,5 +266,5 @@ if __name__=='__main__':
                 else:
                     data.addline("%s%s+\n%s" % (reads[0],reads[1],reads[2]))
 
-    print >>sys.stderr,"Done."
+    #print >>sys.stderr,"Done."
     #

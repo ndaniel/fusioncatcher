@@ -44,6 +44,8 @@ import os
 import optparse
 import symbols
 
+global list_genes
+
 def add(outdir,
         protein_id = '',
         gene_symbol = '',
@@ -136,6 +138,7 @@ def add(outdir,
                         end,
                         strand,
                         chrom))
+    list_genes.append(gene_id)
 
 if __name__ == '__main__':
 
@@ -173,10 +176,19 @@ if __name__ == '__main__':
     #
     #
     #
+    list_genes = []
 
-    print "Add the custom human genes which are missing from the Ensembl database..."
+    print "Add/change the human genes which have mistakes or are missing from the Ensembl database..."
 
-    if options.organism.lower() == 'homo_sapiens':
+    file(os.path.join(options.output_directory,"custom_genes.txt"),"w").write('')
+
+    if options.organism.lower() == 'mus_musculus':
+        pass
+    elif options.organism.lower() == 'rattus_norvegicus':
+        pass
+    elif options.organism.lower() == 'canis_familiaris':
+        pass
+    elif options.organism.lower() == 'homo_sapiens':
 
         # find genome information
         d = [line for line in file(os.path.join(options.output_directory,'version.txt'),'r') if line.lower().startswith('genome version') ]
@@ -255,13 +267,12 @@ if __name__ == '__main__':
 
 
             ####################################################################
-            # GRCh38
+            # human GRCh38/hg38
             ####################################################################
             elif d[0].lower().find('grch38') !=-1:
                 print "Found version GRCh38 human genome version!"
-                # coordinates valid only for GRCh38
                 add(outdir = options.output_directory,
-                    protein_id = '',
+                    protein_id = 'ENSP09000000001',
                     gene_symbol = 'C19MC',
                     gene_id = 'ENSG09000000001',
                     transcript_id = 'ENST09000000001',
@@ -273,9 +284,8 @@ if __name__ == '__main__':
                     strand = '1'
                 )
 
-                # coordinates valid only for GRCh38
                 add(outdir = options.output_directory,
-                    protein_id = '',
+                    protein_id = 'ENSP09000000002',
                     gene_symbol = 'MIR-371-CLUSTER',
                     gene_id = 'ENSG09000000002',
                     transcript_id = 'ENST09000000002',
@@ -287,7 +297,6 @@ if __name__ == '__main__':
                     strand = '1'
                 )
 
-#                coordinates valid only for GRCh38
 #                add(outdir = options.output_directory,
 #                    protein_id = '',
 #                    gene_symbol = 'AL035685.1',
@@ -303,7 +312,7 @@ if __name__ == '__main__':
 
                 # coordinates valid only for GRCh38
                 add(outdir = options.output_directory,
-                    protein_id = '',
+                    protein_id = 'ENSP09000000004',
                     gene_symbol = 'DA750114',
                     gene_id = 'ENSG09000000004',
                     transcript_id = 'ENST09000000004',
@@ -315,10 +324,9 @@ if __name__ == '__main__':
                     strand = '1'
                 )
 
-                # coordinates valid only for GRCh38
                 add(outdir = options.output_directory,
-                    protein_id = '',
-                    gene_symbol = 'AC008746.10',
+                    protein_id = 'ENSP09000000005',
+                    gene_symbol = 'AC008746.10', # stjude
                     gene_id = 'ENSG00000237955',
                     transcript_id = 'ENST09000000005',
                     exon_id = 'ENSE09000000005',
@@ -329,8 +337,224 @@ if __name__ == '__main__':
                     strand = '1'
                 )
 
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000006',
+                    gene_symbol = 'CRLF2', # stjude
+                    gene_id = 'ENSG00000205755',
+                    transcript_id = 'ENST09000000006',
+                    exon_id = 'ENSE09000000006',
+                    exon_number = '1',
+                    start = '1115000', # 54378500
+                    end = '1220000', # 1267000 #1393000
+                    chrom = 'X',
+                    strand = '-1'
+                )
+
+                # coordinates valid only for GRCh38
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000007',
+                    gene_symbol = 'CSF2RA', # stjude
+                    gene_id = 'ENSG00000198223',
+                    transcript_id = 'ENST09000000007',
+                    exon_id = 'ENSE09000000007',
+                    exon_number = '1',
+                    start = '1220001', #'1213300'
+                    end = '1322000', # 54380200
+                    chrom = 'X',
+                    strand = '1'
+                )
+
+                # coordinates valid only for GRCh38
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000008',
+                    gene_symbol = 'IL3RA', # stjude
+                    gene_id = 'ENSG00000185291',
+                    transcript_id = 'ENST09000000008',
+                    exon_id = 'ENSE09000000008',
+                    exon_number = '1',
+                    start = '1322001', #'1213300'
+                    end = '1383500', # 54380200
+                    chrom = 'X',
+                    strand = '1'
+                )
+
+                #coordinates valid only for GRCh38
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000009',
+                    gene_symbol = 'IGK_locus_', # stjude
+                    gene_id = 'ENSG09000000009',
+                    transcript_id = 'ENST09000000009',
+                    exon_id = 'ENSE09000000009',
+                    exon_number = '1',
+                    start = '88846000', #'1213300'
+                    end =   '89154500', # 54380200
+                    chrom = '2',
+                    strand = '1'
+                )
+
+                #coordinates valid only for GRCh38
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000010',
+                    gene_symbol = 'IGK_locus__', # stjude
+                    gene_id = 'ENSG09000000010',
+                    transcript_id = 'ENSG09000000009',
+                    exon_id = 'ENSE09000000010',
+                    exon_number = '1',
+                    start = '89154501', #'1213300'
+                    end =   '89463000', # 54380200
+                    chrom = '2',
+                    strand = '1'
+                )
+                #coordinates valid only for GRCh38
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000011',
+                    gene_symbol = 'IGK_locus___', # stjude
+                    gene_id = 'ENSG09000000011',
+                    transcript_id = 'ENST09000000011',
+                    exon_id = 'ENSE09000000011',
+                    exon_number = '1',
+                    start = '89521000', #'1213300'
+                    end =   '89951250', # 54380200
+                    chrom = '2',
+                    strand = '-1'
+                )
+                #coordinates valid only for GRCh38
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000012',
+                    gene_symbol = 'IGK_locus____', # stjude
+                    gene_id = 'ENSG09000000012',
+                    transcript_id = 'ENST09000000012',
+                    exon_id = 'ENSE09000000012',
+                    exon_number = '1',
+                    start = '89951251', #'1213300'
+                    end =   '90381500', # 54380200
+                    chrom = '2',
+                    strand = '-1'
+                )
+
+                #
+                # IGH locus -- split in several pieces
+                #
+                # IGH_locus: 14::+:chr14:105,556,000-106,883,700
+
+                # coordinates valid only for GRCh38
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000013',
+                    gene_symbol = 'IGH_locus_', # stjude
+                    gene_id = 'ENSG09000000013',
+                    transcript_id = 'ENST09000000013',
+                    exon_id = 'ENSE09000000013',
+                    exon_number = '1',
+                    start = '105556000', #
+                    end =   '105778000', #
+                    chrom = '14',
+                    strand = '1'
+                )
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000014',
+                    gene_symbol = 'IGH_locus__', # stjude
+                    gene_id = 'ENSG09000000014',
+                    transcript_id = 'ENST09000000014',
+                    exon_id = 'ENSE09000000014',
+                    exon_number = '1',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '1'
+                )
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000015',
+                    gene_symbol = 'IGH_locus___', # stjude
+                    gene_id = 'ENSG09000000015',
+                    transcript_id = 'ENST09000000015',
+                    exon_id = 'ENSE09000000015',
+                    exon_number = '1',
+                    start = '106000001', #
+                    end =   '106221250', #
+                    chrom = '14',
+                    strand = '1'
+                )
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000016',
+                    gene_symbol = 'IGH_locus____', # stjude
+                    gene_id = 'ENSG09000000016',
+                    transcript_id = 'ENST09000000016',
+                    exon_id = 'ENSE09000000016',
+                    exon_number = '1',
+                    start = '106221251', #
+                    end =   '106442500', #
+                    chrom = '14',
+                    strand = '1'
+                )
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000017',
+                    gene_symbol = 'IGH_locus_____', # stjude
+                    gene_id = 'ENSG09000000017',
+                    transcript_id = 'ENST09000000017',
+                    exon_id = 'ENSE09000000017',
+                    exon_number = '1',
+                    start = '106442501', #
+                    end =   '106663100', #
+                    chrom = '14',
+                    strand = '1'
+                )
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000018',
+                    gene_symbol = 'IGH_locus______', # stjude
+                    gene_id = 'ENSG09000000018',
+                    transcript_id = 'ENST09000000018',
+                    exon_id = 'ENSE09000000018',
+                    exon_number = '1',
+                    start = '106663101', #
+                    end =   '106883700', #
+                    chrom = '14',
+                    strand = '1'
+                )
+
+
+#                add(outdir = options.output_directory,
+#                    protein_id = 'ENSP09000000019',
+#                    gene_symbol = 'SWSAP1_', # stjude # overlaps EPOR on opposite strand
+#                    gene_id = 'ENSG09000000019',
+#                    transcript_id = 'ENST09000000019',
+#                    exon_id = 'ENSE09000000019',
+#                    exon_number = '1',
+#                    start = '11377000', #
+#                    end =   '11394000', #
+#                    chrom = '19',
+#                    strand = '1'
+#                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000020',
+                    gene_symbol = 'CRHR1-IT1_', # stjude # overlaps CRHR1-IT1 on opposite strand
+                    gene_id = 'ENSG09000000020',
+                    transcript_id = 'ENST09000000020',
+                    exon_id = 'ENSE09000000020',
+                    exon_number = '1',
+                    start = '45614000', #
+                    end =   '45651000', #
+                    chrom = '17',
+                    strand = '-1'
+                )
+
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000000030',
+                    gene_symbol = 'WHSC1', #
+                    gene_id = 'ENSG00000109685',
+                    transcript_id = 'ENST09000000030',
+                    exon_id = 'ENSE09000000030',
+                    exon_number = '1',
+                    start = '1865000', #1,871,424-1,982,207
+                    end =   '1982500', #
+                    chrom = '4',
+                    strand = '1'
+                )
+
 
             else:
                 print >>sys.stderr,"WARNING: Cannot identify correctly the human genome version!",d[0]
 
+    file(os.path.join(options.output_directory,"custom_genes.txt"),"w").writelines([line+'\n'for line in list_genes])
     #

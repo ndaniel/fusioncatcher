@@ -15,6 +15,6 @@ Found 12 fusion gene(s), which are as follows:
   * CD74--ROS1  (already known fusion)
   * EML4--ALK  (already known fusion)
 
-Found 25 fusion transcript(s).
+Found 16 fusion transcript(s).
 
 For more information regarding these candidate fusions, see text file 'final-list_candidate-fusion-genes.txt'.

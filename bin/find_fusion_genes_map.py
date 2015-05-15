@@ -98,8 +98,8 @@ def read_from(a_map_filename):
             # line[2] is column no 3 in the BOWTIE MAP file which contains
             # the "reference sequence name" = "transcript name"
             yield (last_r,chunk)
-            last_r=r
-            chunk=dict()
+            last_r = r
+            chunk = dict()
             seq = dict()
         #tr=ENST00000000233;ge=ENSG00000004059;pn=ENSP00000000233;chr=7;str=+;len=1103
 #        w = line[2].split(';')
@@ -250,6 +250,7 @@ if __name__ == '__main__':
     s_b = None
     unique_positions = set()
     for (a_read,piece) in read_from(options.input_map_filename):
+
         #
         i_paired = i_paired+1
         if i_paired % 5000000 == 0:
@@ -271,6 +272,7 @@ if __name__ == '__main__':
             p_b = b[3]
         else:
             flag = True
+
         if flag:
             if piece.has_key('1'):
                 missing_mates.append("%s/2\t%s/1\t%s\n" % (a_read,a_read,','.join(set(g_a))))
@@ -279,6 +281,7 @@ if __name__ == '__main__':
             continue
         if set(g_a).intersection(set(g_b)): # if there are common genes skip the paired-end read
             continue
+
         unique_genes=set()
         for i in xrange(len(g_a)):
             for j in xrange(len(g_b)):
@@ -293,7 +296,6 @@ if __name__ == '__main__':
                     (g_b[j] in no_proteins)):
                     continue
                 else:
-
                     if g not in unique_genes: # local unique gene fusions
                         if (z not in unique_positions):
                             fusion_genes[g] = fusion_genes.get(g,0)+1
@@ -306,6 +308,7 @@ if __name__ == '__main__':
                     unique_positions.add(z)
 
                     if flag_transcripts:
+
                         t1 = t_a[i]+'\t'+g_a[i]
                         t2 = t_b[j]+'\t'+g_b[j]
                         t = '%s\t%s' % (t1,t2) if t1 < t2 else '%s\t%s' % (t2,t1)

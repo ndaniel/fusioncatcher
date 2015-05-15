@@ -363,7 +363,7 @@ def overlap(input_1_filename,
     else: # flag_log
         log = lines_to_file(output_alignment_filename)
 
-        for w in pool.imap(compute,
+        for w in pool.imap_unordered(compute,
                            itertools.izip_longest(reads_from_paired_fastq_file(input_1_filename, input_2_filename, nn, fail_gracefully = fail_gracefully),
                                                   [],
                                                   fillvalue = para),
