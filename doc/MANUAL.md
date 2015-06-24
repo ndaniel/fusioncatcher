@@ -164,7 +164,7 @@ This is an example (or one of the many ways) for installing **FusionCatcher** on
 sudo apt-get install build-essential
 sudo apt-get install python-dev
 ```
-> and for [RedHat](http://www.redhat.com)/[CentOS](http://www.centos.org) this would be required
+and for [RedHat](http://www.redhat.com)/[CentOS](http://www.centos.org) this would be required
 ```
 sudo yum groupinstall "Development Tools"
 sudo yum install gcc
@@ -172,7 +172,7 @@ sudo yum install ncurses-devel
 sudo yum install python-devel
 sudo yum install zlib-devel
 ```
-> and for [OpenSUSE](http://www.opensuse.org) this would be required
+and for [OpenSUSE](http://www.opensuse.org) this would be required
 ```
 sudo zypper in --type pattern Basis-Devel
 sudo zypper in gcc
