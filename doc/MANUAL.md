@@ -253,11 +253,11 @@ cd source
 rm -f STAR
 cp ../bin/Linux_x86_64_static/STAR .
 ```
-> Try to run this command (if it fails please ignore the error messages and continue further; continue further either way):
+Try to run this command (if it fails please ignore the error messages and continue further; continue further either way):
 ```
 make
 ```
-> and continue with:
+and continue with:
 ```
 cd ..
 ln -s STAR-STAR_2.4.1c star
@@ -272,7 +272,7 @@ make
 cd ..
 ln -s velvet_1.2.10 velvet
 ```
-> Note: Velvet depends on zlib-dev which may be installed like this
+*Note*: Velvet depends on zlib-dev which may be installed like this
 ```
 sudo apt-get install zlib-dev
 ```
