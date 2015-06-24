@@ -341,7 +341,7 @@ ln -s $(pwd)/README.md ../README.md
 ln -s $(pwd)/DEPENDENCIES ../DEPENDENCIES
 ```
   * specify the paths to the above tools such that **FusionCatcher** can find them. There are two choices:
-    1. Edit the **FusionCatcher** configuration file **`configuration.cfg`** (type: **`nano /apps/fusioncatcher/etc/configuration.cfg`** at command line) and make sure that the **FusionCatcher**'s configuration file **'configuration.cfg'** looks like this:
+   1. Edit the **FusionCatcher** configuration file **`configuration.cfg`** (type: **`nano /apps/fusioncatcher/etc/configuration.cfg`** at command line) and make sure that the **FusionCatcher**'s configuration file **'configuration.cfg'** looks like this:
 ```
 [paths]
 python = /usr/bin/
@@ -369,7 +369,7 @@ picard = /apps/fusioncatcher/tools/picard/
 [versions]
 fusioncatcher = 0.99.4c beta
 ```
-    1. Add the paths for the needed tools to the `PATH` variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) and add the following lines at the end:
+   2. Add the paths for the needed tools to the `PATH` variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) and add the following lines at the end:
 ```
 export PATH=/apps/fusioncatcher/bin:$PATH
 export PATH=/apps/fusioncatcher/tools/bowtie:$PATH
@@ -388,16 +388,16 @@ export PATH=/apps/fusioncatcher/tools/pigz/:$PATH
 export PATH=/apps/fusioncatcher/tools/samtools/:$PATH
 export PATH=/apps/fusioncatcher/tools/picard/:$PATH
 ```
-    1. if a different version of Python is used/needed by **FusionCatcher** than the standard **`/usr/bin/env python`** then also please make sure that that specific version of Python is added to the **`PATH`** variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) or add the following lines at the end:
+   3. if a different version of Python is used/needed by **FusionCatcher** than the standard **`/usr/bin/env python`** then also please make sure that that specific version of Python is added to the **`PATH`** variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) or add the following lines at the end:
 ```
 export PATH=/some/other/version/of/python:$PATH
 ```
-    1. in some cases it might not be enough to change the Python's path in **`.bashrc`** file, like for example the case when **FusionCatcher** is run on a server which defaults to another Python than one used to install **FusionCatcher**. In this case it is required that one changes all the [shebangs](http://en.wikipedia.org/wiki/Shebang_(Unix)) of the all Python scripts which belong to **FusionCatcher**. In case that one uses the Python which has the following Python executable path **`/some/other/python`** than this can be done like this (it changes in place **`/usr/bin/env python`** into **`/some/other/python`** in all `/apps/fusioncatcher/bin/*.py`):
+   4. in some cases it might not be enough to change the Python's path in **`.bashrc`** file, like for example the case when **FusionCatcher** is run on a server which defaults to another Python than one used to install **FusionCatcher**. In this case it is required that one changes all the [shebangs](http://en.wikipedia.org/wiki/Shebang_(Unix)) of the all Python scripts which belong to **FusionCatcher**. In case that one uses the Python which has the following Python executable path **`/some/other/python`** than this can be done like this (it changes in place **`/usr/bin/env python`** into **`/some/other/python`** in all `/apps/fusioncatcher/bin/*.py`):
 ```
 sed -i 's/\/usr\/bin\/env\ python/\/some\/other\/python/g' /apps/fusioncatcher/bin/*.py
 ```
   * download/build the human build data from Ensembl database and other databases and build the necessary indexes and files (the latest release of Ensembl data is release 80 as June 2015 when this section was updated last time). There are two alternative ways to get the human **build data**. The recommended way is to use `fusioncatcher-build`.
-    1. Using direct download
+   1. Using direct download
 ```
 mkdir -p /apps/fusioncatcher/data
 cd /apps/fusioncatcher/data
@@ -408,7 +408,7 @@ wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v80.tar.gz
 cat ensembl_v80.tar.gz.* | tar xz
 ln -s ensembl_v80 current
 ```
-    1. Using `fusioncatcher-build` -- It will takes several hours (e.g. 5-10 hours) and it depends highly on the bandwidth of your internet connection. One may find out what Ensembl database version is available at [www.ensembl.org] and what version has been downloaded by looking to the last three lines printed on the screen by **`fusioncatcher-build`**.
+   2. Using `fusioncatcher-build` -- It will takes several hours (e.g. 5-10 hours) and it depends highly on the bandwidth of your internet connection. One may find out what Ensembl database version is available at [www.ensembl.org] and what version has been downloaded by looking to the last three lines printed on the screen by **`fusioncatcher-build`**.
 ```
 mkdir -p /apps/fusioncatcher/data/ensembl_v80
 cd /apps/fusioncatcher/data/ensembl_v80
