@@ -122,12 +122,14 @@ where:
 In case that there are several Python versions installed already then it is possible to point which one to use for installation and running **FusionCatcher**, as following (no required databases and indexes are installed automatically in this example):
 ```
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py
+
 /some/other/python bootstrap.py
 ```
 
 In case that one wants to install **`FusionCatcher`** here **`/some/directory/fusioncatcher/`**, then this shall be run (no required databases and indexes are installed automatically in this example):
 ```
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py
+
 /your/favourite/python bootstrap.py --prefix=/some/directory/
 ```
 
@@ -159,273 +161,292 @@ Please, do not forget to build/download the organism data after this is done run
 ## 4.2 - Manual installation
 
 This is an example (or one of the many ways) for installing **FusionCatcher** on a **Ubuntu Linux 12.04/14.04 64-bit system** and the **FusionCatcher** and its dependencies are installed in **`/apps`**.
+
   * check that Python 2.6.X or 2.7.X is installed and working properly! If not then install it together with its development environment and other (probably) needed dependencies (required):
   ```
-sudo apt-get install build-essential
-sudo apt-get install python-dev
-```
+  sudo apt-get install build-essential
+  sudo apt-get install python-dev
+  ```
+  
   and for [RedHat](http://www.redhat.com)/[CentOS](http://www.centos.org) this would be required
   ```
-sudo yum groupinstall "Development Tools"
-sudo yum install gcc
-sudo yum install ncurses-devel
-sudo yum install python-devel
-sudo yum install zlib-devel
-```
+  sudo yum groupinstall "Development Tools"
+  sudo yum install gcc
+  sudo yum install ncurses-devel
+  sudo yum install python-devel
+  sudo yum install zlib-devel
+  ```
+  
   and for [OpenSUSE](http://www.opensuse.org) this would be required
   ```
-sudo zypper in --type pattern Basis-Devel
-sudo zypper in gcc
-sudo zypper in ncurses-devel
-sudo zypper in python-devel
-sudo zypper in zlib-devel
-```
+  sudo zypper in --type pattern Basis-Devel
+  sudo zypper in gcc
+  sudo zypper in ncurses-devel
+  sudo zypper in python-devel
+  sudo zypper in zlib-devel
+  ```
+  
   * installing **`BioPython`** (required):
   ```
-sudo apt-get install python-numpy
-sudo apt-get install python-biopython
-```
+  sudo apt-get install python-numpy
+  sudo apt-get install python-biopython
+  ```
+  
   * installing Python module **`xlrd`** (optional):
   ```
-sudo apt-get install python-xlrd
-```
+  sudo apt-get install python-xlrd
+  ```
+  
   * installing Python module **`openpyxl`** (optional):
   ```
-sudo apt-get install python-openpyxl
-```
+  sudo apt-get install python-openpyxl
+  ```
+  
   * create the needed directories:
   ```
-mkdir -p /apps/fusioncatcher/tools
-mkdir -p /apps/fusioncatcher/data
- ```
+  mkdir -p /apps/fusioncatcher/tools
+  mkdir -p /apps/fusioncatcher/data
+  ```
+  
   * installing **Bowtie** 64-bit version 1.1.1 (required)
   ```
-cd /apps/fusioncatcher/tools
-wget http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.1/bowtie-1.1.1-linux-x86_64.zip
-unzip bowtie-1.1.1-linux-x86_64.zip
-ln -s bowtie-1.1.1 bowtie
-```
+  cd /apps/fusioncatcher/tools
+  wget http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.1/bowtie-1.1.1-linux-x86_64.zip
+  unzip bowtie-1.1.1-linux-x86_64.zip
+  ln -s bowtie-1.1.1 bowtie
+  ```
+  
   * installing **Bowtie2** 64-bit version 2.2.5 (required)
   ```
-cd /apps/fusioncatcher/tools
-wget http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.5/bowtie2-2.2.5-linux-x86_64.zip
-unzip bowtie2-2.2.5-linux-x86_64.zip
-ln -s bowtie2-2.2.5-linux-x86_64 bowtie2
-```
+  cd /apps/fusioncatcher/tools
+  wget http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.5/bowtie2-2.2.5-linux-x86_64.zip
+  unzip bowtie2-2.2.5-linux-x86_64.zip
+  ln -s bowtie2-2.2.5-linux-x86_64 bowtie2
+  ```
+  
   * installing **BLAT** version 0.35 (optional but **strongly** recommended; if **BLAT** is not installed please use option '--skip-blat' in order to let know **FusionCatcher** that it should not use it)
   ```
-cd /apps/fusioncatcher/tools
-mkdir blat_v0.35
-cd blat_v0.35
-wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/blat/blat
-chmod +x blat
-wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/faToTwoBit
-chmod +x faToTwoBit
-wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/liftOver
-chmod +x liftOver
-cd ..
-ln -s blat_v0.35 blat
-```
+  cd /apps/fusioncatcher/tools
+  mkdir blat_v0.35
+  cd blat_v0.35
+  wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/blat/blat
+  chmod +x blat
+  wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/faToTwoBit
+  chmod +x faToTwoBit
+  wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/liftOver
+  chmod +x liftOver
+  cd ..
+  ln -s blat_v0.35 blat
+  ```
+  
   * installing **fastq-dump** version 2.3.5 from **NCBI SRA Toolkit** version 2.3.5 (optional but it is required in case that one wants to test the installation using the example given below)
   ```
-cd /apps/fusioncatcher/tools
-wget http://ftp-private.ncbi.nlm.nih.gov/sra/sdk/2.3.5/sratoolkit.2.3.5-centos_linux64.tar.gz
-tar zxvf sratoolkit.2.3.5-centos_linux64.tar.gz
-ln -s sratoolkit.2.3.5-centos_linux64 sratoolkit
-```
+  cd /apps/fusioncatcher/tools
+  wget http://ftp-private.ncbi.nlm.nih.gov/sra/sdk/2.3.5/sratoolkit.2.3.5-centos_linux64.tar.gz
+  tar zxvf sratoolkit.2.3.5-centos_linux64.tar.gz
+  ln -s sratoolkit.2.3.5-centos_linux64 sratoolkit
+  ```
+  
   * installing **SeqTK** version 1.0-r68e (please note that this is a different development branch than the official development) (required)
   ```
-cd /apps/fusioncatcher/tools
-wget http://github.com/ndaniel/seqtk/archive/1.0-r68e.tar.gz -O 1.0-r68e.tar.gz
-tar zxvf 1.0-r68e.tar.gz
-cd seqtk-1.0-r68e
-make
-cd ..
-ln -s seqtk-1.0-r68e seqtk
-```
+  cd /apps/fusioncatcher/tools
+  wget http://github.com/ndaniel/seqtk/archive/1.0-r68e.tar.gz -O 1.0-r68e.tar.gz
+  tar zxvf 1.0-r68e.tar.gz
+  cd seqtk-1.0-r68e
+  make
+  cd ..
+  ln -s seqtk-1.0-r68e seqtk
+  ```
+  
   * installing **STAR** version 2.4.1c (required)
   ```
-cd /apps/fusioncatcher/tools
-wget http://github.com/alexdobin/STAR/archive/STAR_2.4.1c.tar.gz -O STAR_2.4.1c.tar.gz
-tar zxvf STAR_2.4.1c.tar.gz
-cd STAR-STAR_2.4.1c
-cd source
-rm -f STAR
-cp ../bin/Linux_x86_64_static/STAR .
-```
-  Try to run this command (if it fails please ignore the error messages and continue further; continue further either way):
- ```
-make
-```
-  and continue with:
+  cd /apps/fusioncatcher/tools
+  wget http://github.com/alexdobin/STAR/archive/STAR_2.4.1c.tar.gz -O STAR_2.4.1c.tar.gz
+  tar zxvf STAR_2.4.1c.tar.gz
+  cd STAR-STAR_2.4.1c
+  cd source
+  rm -f STAR
+  cp ../bin/Linux_x86_64_static/STAR .
   ```
-cd ..
-ln -s STAR-STAR_2.4.1c star
-```
+  
+  Try to run this command (if it fails please ignore the error messages and continue further; continue further either way)
+  ```
+  make
+  ```
+  
+  and continue with
+  ```
+  cd ..
+  ln -s STAR-STAR_2.4.1c star
+  ```
+  
   * installing **Velvet** version 1.2.10 (optional)
   ```
-cd /apps/fusioncatcher/tools
-wget http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz
-tar zxvf velvet_1.2.10.tgz
-cd velvet_1.2.10
-make
-cd ..
-ln -s velvet_1.2.10 velvet
-```
+  cd /apps/fusioncatcher/tools
+  wget http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz
+  tar zxvf velvet_1.2.10.tgz
+  cd velvet_1.2.10
+  make
+  cd ..
+  ln -s velvet_1.2.10 velvet
+  ```
   > *Note*: Velvet depends on zlib-dev which may be installed like this
   ```
-sudo apt-get install zlib-dev
-```
-
+  sudo apt-get install zlib-dev
+  ```
+  
   * installing **coreutils** version 8.22 for a newer version of **sort** command which allows use of several CPUs in parallel, that is the use of `--parallel` command line option (optional)
   ```
-cd /apps/fusioncatcher/tools
-wget http://ftp.gnu.org/gnu/coreutils/coreutils-8.22.tar.xz
-tar --xz -xvf coreutils-8.22.tar.xz
-cd coreutils-8.22
-./configure
-make
-cd ..
-ln -s coreutils-8.22 coreutils
-```
+  cd /apps/fusioncatcher/tools
+  wget http://ftp.gnu.org/gnu/coreutils/coreutils-8.22.tar.xz
+  tar --xz -xvf coreutils-8.22.tar.xz
+  cd coreutils-8.22
+  ./configure
+  make
+  cd ..
+  ln -s coreutils-8.22 coreutils
+  ```
+  
   * installing **pigz** version 1.2.10 (optional)
   ```
-cd /apps/fusioncatcher/tools
-wget http://zlib.net/pigz/pigz-2.3.1.tar.gz
-tar zxvf pigz-2.3.1.tar.gz
-cd pigz-2.3.1
-make
-cd ..
-ln -s pigz-2.3.1 pigz
-```
+  cd /apps/fusioncatcher/tools
+  wget http://zlib.net/pigz/pigz-2.3.1.tar.gz
+  tar zxvf pigz-2.3.1.tar.gz
+  cd pigz-2.3.1
+  make
+  cd ..
+  ln -s pigz-2.3.1 pigz
+  ```
+  
   * installing **SAMTools** version 1.19 (optional)
   ```
-cd /apps/fusioncatcher/tools
-wget http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2
-tar jxvf samtools-0.1.19.tar.bz2
-cd samtools-0.1.19
-make
-cd ..
-ln -s samtools-0.1.19 samtools
-```
+  cd /apps/fusioncatcher/tools
+  wget http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2
+  tar jxvf samtools-0.1.19.tar.bz2
+  cd samtools-0.1.19
+  make
+  cd ..
+  ln -s samtools-0.1.19 samtools
+  ```
+  
   * installing **Picard tools** version 1.119 (optional)
   ```
-cd /apps/fusioncatcher/tools
-wget http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip
-unzip picard-tools-1.119.zip
-ln -s picard-tools-1.119 picard
-```
+  cd /apps/fusioncatcher/tools
+  wget http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip
+  unzip picard-tools-1.119.zip
+  ln -s picard-tools-1.119 picard
+  ```
+  
   * installing **FusionCatcher** version 0.99.4c (required)
   ```
-cd /apps/fusioncatcher
-wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4c.zip
-unzip fusioncatcher_v0.99.4c.zip
-cd fusioncatcher_v0.99.4c
-
-rm -rf ../bin
-rm -rf ../etc
-rm -rf ../doc
-rm -rf ../VERSION
-rm -rf ../NEWS
-rm -rf ../LICENSE
-rm -rf ../README.md
-rm -rf ../DEPENDENCIES
-
-ln -s $(pwd)/bin ../bin
-ln -s $(pwd)/etc ../etc
-ln -s $(pwd)/doc ../doc
-ln -s $(pwd)/test ../test
-ln -s $(pwd)/VERSION ../VERSION
-ln -s $(pwd)/NEWS ../NEWS
-ln -s $(pwd)/LICENSE ../LICENSE
-ln -s $(pwd)/README.md ../README.md
-ln -s $(pwd)/DEPENDENCIES ../DEPENDENCIES
-```
+  cd /apps/fusioncatcher
+  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4c.zip
+  unzip fusioncatcher_v0.99.4c.zip
+  cd fusioncatcher_v0.99.4c
+  
+  rm -rf ../bin
+  rm -rf ../etc
+  rm -rf ../doc
+  rm -rf ../VERSION
+  rm -rf ../NEWS
+  rm -rf ../LICENSE
+  rm -rf ../README.md
+  rm -rf ../DEPENDENCIES
+  
+  ln -s $(pwd)/bin ../bin
+  ln -s $(pwd)/etc ../etc
+  ln -s $(pwd)/doc ../doc
+  ln -s $(pwd)/test ../test
+  ln -s $(pwd)/VERSION ../VERSION
+  ln -s $(pwd)/NEWS ../NEWS
+  ln -s $(pwd)/LICENSE ../LICENSE
+  ln -s $(pwd)/README.md ../README.md
+  ln -s $(pwd)/DEPENDENCIES ../DEPENDENCIES
+  ```
+  
   * specify the paths to the above tools such that **FusionCatcher** can find them. There are two choices.
    * *Choice A*: Edit the **FusionCatcher** configuration file **`configuration.cfg`** (type: **`nano /apps/fusioncatcher/etc/configuration.cfg`** at command line) and make sure that the **FusionCatcher**'s configuration file **'configuration.cfg'** looks like this:
    ```
-[paths]
-python = /usr/bin/
-data = /apps/fusioncatcher/data/current/
-scripts = /apps/fusioncatcher/bin/
-bowtie = /apps/fusioncatcher/tools/bowtie/
-blat = /apps/fusioncatcher/tools/blat/
-bowtie2 = /apps/fusioncatcher/tools/bowtie2/
-bwa = /apps/fusioncatcher/tools/bwa/
-star = /apps/fusioncatcher/tools/star/
-seqtk = /apps/fusioncatcher/tools/seqtk/
-velvet = /apps/fusioncatcher/tools/velvet/
-fatotwobit = /apps/fusioncatcher/tools/blat/
-liftover = /apps/fusioncatcher/tools/blat/
-sra = /apps/fusioncatcher/tools/sratoolkit/bin/
-numpy = /apps/fusioncatcher/tools/numpy/
-biopython = /apps/fusioncatcher/tools/biopython/
-xlrd = /apps/fusioncatcher/tools/xlrd/
-openpyxl = /apps/fusioncatcher/tools/openpyxl
-lzop = /apps/fusioncatcher/tools/lzop/src/
-coreutils = /apps/fusioncatcher/tools/coreutils/src
-pigz = /apps/fusioncatcher/tools/pigz/
-samtools = /apps/fusioncatcher/tools/samtools/
-picard = /apps/fusioncatcher/tools/picard/
-[versions]
-fusioncatcher = 0.99.4c beta
-```
+   [paths]
+   python = /usr/bin/
+   data = /apps/fusioncatcher/data/current/
+   scripts = /apps/fusioncatcher/bin/
+   bowtie = /apps/fusioncatcher/tools/bowtie/
+   blat = /apps/fusioncatcher/tools/blat/
+   bowtie2 = /apps/fusioncatcher/tools/bowtie2/
+   bwa = /apps/fusioncatcher/tools/bwa/
+   star = /apps/fusioncatcher/tools/star/
+   seqtk = /apps/fusioncatcher/tools/seqtk/
+   velvet = /apps/fusioncatcher/tools/velvet/
+   fatotwobit = /apps/fusioncatcher/tools/blat/
+   liftover = /apps/fusioncatcher/tools/blat/
+   sra = /apps/fusioncatcher/tools/sratoolkit/bin/
+   numpy = /apps/fusioncatcher/tools/numpy/
+   biopython = /apps/fusioncatcher/tools/biopython/
+   xlrd = /apps/fusioncatcher/tools/xlrd/
+   openpyxl = /apps/fusioncatcher/tools/openpyxl
+   lzop = /apps/fusioncatcher/tools/lzop/src/
+   coreutils = /apps/fusioncatcher/tools/coreutils/src
+   pigz = /apps/fusioncatcher/tools/pigz/
+   samtools = /apps/fusioncatcher/tools/samtools/
+   picard = /apps/fusioncatcher/tools/picard/
+   [versions]
+   fusioncatcher = 0.99.4c beta
+   ```
+   
    * *Choice B*: Add the paths for the needed tools to the `PATH` variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) and add the following lines at the end:
    ```
-export PATH=/apps/fusioncatcher/bin:$PATH
-export PATH=/apps/fusioncatcher/tools/bowtie:$PATH
-export PATH=/apps/fusioncatcher/tools/bowtie2:$PATH
-export PATH=/apps/fusioncatcher/tools/bwa:$PATH
-export PATH=/apps/fusioncatcher/tools/blat:$PATH
-export PATH=/apps/fusioncatcher/tools/star:$PATH
-export PATH=/apps/fusioncatcher/tools/liftover:$PATH
-export PATH=/apps/fusioncatcher/tools/seqtk:$PATH
-export PATH=/apps/fusioncatcher/tools/sratoolkit/bin:$PATH
-export PATH=/apps/fusioncatcher/tools/velvet/:$PATH
-export PATH=/apps/fusioncatcher/tools/fatotwobit/:$PATH
-export PATH=/apps/fusioncatcher/tools/lzop/src/:$PATH
-export PATH=/apps/fusioncatcher/tools/coreutils/src/:$PATH
-export PATH=/apps/fusioncatcher/tools/pigz/:$PATH
-export PATH=/apps/fusioncatcher/tools/samtools/:$PATH
-export PATH=/apps/fusioncatcher/tools/picard/:$PATH
-```
-
-
-
+   export PATH=/apps/fusioncatcher/bin:$PATH
+   export PATH=/apps/fusioncatcher/tools/bowtie:$PATH
+   export PATH=/apps/fusioncatcher/tools/bowtie2:$PATH
+   export PATH=/apps/fusioncatcher/tools/bwa:$PATH
+   export PATH=/apps/fusioncatcher/tools/blat:$PATH
+   export PATH=/apps/fusioncatcher/tools/star:$PATH
+   export PATH=/apps/fusioncatcher/tools/liftover:$PATH
+   export PATH=/apps/fusioncatcher/tools/seqtk:$PATH
+   export PATH=/apps/fusioncatcher/tools/sratoolkit/bin:$PATH
+   export PATH=/apps/fusioncatcher/tools/velvet/:$PATH
+   export PATH=/apps/fusioncatcher/tools/fatotwobit/:$PATH
+   export PATH=/apps/fusioncatcher/tools/lzop/src/:$PATH
+   export PATH=/apps/fusioncatcher/tools/coreutils/src/:$PATH
+   export PATH=/apps/fusioncatcher/tools/pigz/:$PATH
+   export PATH=/apps/fusioncatcher/tools/samtools/:$PATH
+   export PATH=/apps/fusioncatcher/tools/picard/:$PATH
+   ```
+   
    > *Note 1*: If a different version of Python is used/needed by **FusionCatcher** than the standard **`/usr/bin/env python`** then also please make sure that that specific version of Python is added to the **`PATH`** variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) or add the following lines at the end:
    ```
-export PATH=/some/other/version/of/python:$PATH
-```
-
-
-
+   export PATH=/some/other/version/of/python:$PATH
+   ```
+   
    > *Note 2*: In some cases it might not be enough to change the Python's path in **`.bashrc`** file, like for example the case when **FusionCatcher** is run on a server which defaults to another Python than one used to install **FusionCatcher**. In this case it is required that one changes all the [shebangs](http://en.wikipedia.org/wiki/Shebang_(Unix)) of the all Python scripts which belong to **FusionCatcher**. In case that one uses the Python which has the following Python executable path **`/some/other/python`** than this can be done like this (it changes in place **`/usr/bin/env python`** into **`/some/other/python`** in all `/apps/fusioncatcher/bin/*.py`):
    ```
-sed -i 's/\/usr\/bin\/env\ python/\/some\/other\/python/g' /apps/fusioncatcher/bin/*.py
-```
-
-
-
+   sed -i 's/\/usr\/bin\/env\ python/\/some\/other\/python/g' /apps/fusioncatcher/bin/*.py
+   ```
+  
   * download/build the human build data from Ensembl database and other databases and build the necessary indexes and files (the latest release of Ensembl data is release 80 as June 2015 when this section was updated last time). There are two alternative ways to get the human **build data**. The recommended way is to use `fusioncatcher-build`.
    * Using direct download
    ```
-mkdir -p /apps/fusioncatcher/data
-cd /apps/fusioncatcher/data
-wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v80.tar.gz.aa
-wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v80.tar.gz.ab
-wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v80.tar.gz.ac
-wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v80.tar.gz.ad
-cat ensembl_v80.tar.gz.* | tar xz
-ln -s ensembl_v80 current
-```
+   mkdir -p /apps/fusioncatcher/data
+   cd /apps/fusioncatcher/data
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v80.tar.gz.aa
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v80.tar.gz.ab
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v80.tar.gz.ac
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v80.tar.gz.ad
+   cat ensembl_v80.tar.gz.* | tar xz
+   ln -s ensembl_v80 current
+   ```
+   
    * Using `fusioncatcher-build` -- It will takes several hours (e.g. 5-10 hours) and it depends highly on the bandwidth of your internet connection. One may find out what Ensembl database version is available at [www.ensembl.org] and what version has been downloaded by looking to the last three lines printed on the screen by **`fusioncatcher-build`**.
    ```
-mkdir -p /apps/fusioncatcher/data/ensembl_v80
-cd /apps/fusioncatcher/data/ensembl_v80
-/apps/fusioncatcher/bin/fusioncatcher-build -g homo_sapiens -o .
-cd ..
-ln -s ensembl_v80 current
-```
+   mkdir -p /apps/fusioncatcher/data/ensembl_v80
+   cd /apps/fusioncatcher/data/ensembl_v80
+   /apps/fusioncatcher/bin/fusioncatcher-build -g homo_sapiens -o .
+   cd ..
+   ln -s ensembl_v80 current
+   ```
+
+
 
 ## 4.3 - Semi-automatic installation
 
