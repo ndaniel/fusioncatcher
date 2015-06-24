@@ -6,7 +6,7 @@
 
 # 1 - INTRODUCTION
 
-**FusionCatcher** searchers for **somatic** novel/known **fusion genes**, **translocations** and/or **chimeras** in RNA-seq data (stranded/unstranded  **paired-end** reads FASTQ files produced by Illumina next-generation sequencing platforms like Illumina Solexa/`HiSeq`/`NextSeq`/`MiSeq`) from _diseased_ samples.
+**FusionCatcher** searchers for **somatic** novel/known **fusion genes**, **translocations** and/or **chimeras** in RNA-seq data (stranded/unstranded  **paired-end/single-end** reads FASTQ files produced by Illumina next-generation sequencing platforms like Illumina Solexa/`HiSeq`/`NextSeq`/`MiSeq`) from _diseased_ samples.
 
 The aims of **`FusionCatcher`** are:
   * very good detection rate for finding candidate **somatic fusion genes** (see [somatic mutations](http://en.wikipedia.org/wiki/Mutation#Somatic_mutations); using a matched **normal** sample is optional; several databases of known fusion genes found in healthy samples are used as a list of known false positives; biological knowledge is used, like for example gene fusion between a gene and its pseudogene is filtered out),
@@ -96,7 +96,7 @@ These are used (downloaded and parsed) automatically by **FusionCatcher**:
   * **DGD** database http://dgd.genouest.org/ (optional)
   * **Illumina BodyMap2 RNA-seq** database http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/
 
-**NOTE**:
+**NOTES**:
   * **ENSEMBL** database is used for finding novel/known fusions genes
   * **COSMIC**, **TICdb**, **ChimerDB**, **Cancer Genome Project**, **ConjoinG**, and manual curated fusion gene database are indexed and used further for annotating/labeling the found fusion genes for an easier visualization of **novel** genes (i.e. not published yet) found by **FusionCatcher**. For more information how this is used see [Tables 1,2,3](Manual#6.2_-_Output_data.md).
   * **FusionCatcher** can work just fine and is able to find fusion genes without any of the optional dependencies/tools/programs!
@@ -160,20 +160,20 @@ Please, do not forget to build/download the organism data after this is done run
 
 This is an example (or one of the many ways) for installing **FusionCatcher** on a **Ubuntu Linux 12.04/14.04 64-bit system** and the **FusionCatcher** and its dependencies are installed in **`/apps`**.
   * check that Python 2.6.X or 2.7.X is installed and working properly! If not then install it together with its development environment and other (probably) needed dependencies (required):
- ```
+  ```
 sudo apt-get install build-essential
 sudo apt-get install python-dev
 ```
- and for [RedHat](http://www.redhat.com)/[CentOS](http://www.centos.org) this would be required
- ```
+  and for [RedHat](http://www.redhat.com)/[CentOS](http://www.centos.org) this would be required
+  ```
 sudo yum groupinstall "Development Tools"
 sudo yum install gcc
 sudo yum install ncurses-devel
 sudo yum install python-devel
 sudo yum install zlib-devel
- ```
- and for [OpenSUSE](http://www.opensuse.org) this would be required
- ```
+```
+  and for [OpenSUSE](http://www.opensuse.org) this would be required
+  ```
 sudo zypper in --type pattern Basis-Devel
 sudo zypper in gcc
 sudo zypper in ncurses-devel
@@ -181,39 +181,39 @@ sudo zypper in python-devel
 sudo zypper in zlib-devel
 ```
   * installing **`BioPython`** (required):
- ```
+  ```
 sudo apt-get install python-numpy
 sudo apt-get install python-biopython
 ```
   * installing Python module **`xlrd`** (optional):
- ```
+  ```
 sudo apt-get install python-xlrd
 ```
   * installing Python module **`openpyxl`** (optional):
- ```
+  ```
 sudo apt-get install python-openpyxl
 ```
   * create the needed directories:
- ```
+  ```
 mkdir -p /apps/fusioncatcher/tools
 mkdir -p /apps/fusioncatcher/data
  ```
   * installing **Bowtie** 64-bit version 1.1.1 (required)
- ```
+  ```
 cd /apps/fusioncatcher/tools
 wget http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.1/bowtie-1.1.1-linux-x86_64.zip
 unzip bowtie-1.1.1-linux-x86_64.zip
 ln -s bowtie-1.1.1 bowtie
 ```
   * installing **Bowtie2** 64-bit version 2.2.5 (required)
- ```
+  ```
 cd /apps/fusioncatcher/tools
 wget http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.5/bowtie2-2.2.5-linux-x86_64.zip
 unzip bowtie2-2.2.5-linux-x86_64.zip
 ln -s bowtie2-2.2.5-linux-x86_64 bowtie2
 ```
   * installing **BLAT** version 0.35 (optional but **strongly** recommended; if **BLAT** is not installed please use option '--skip-blat' in order to let know **FusionCatcher** that it should not use it)
- ```
+  ```
 cd /apps/fusioncatcher/tools
 mkdir blat_v0.35
 cd blat_v0.35
@@ -227,14 +227,14 @@ cd ..
 ln -s blat_v0.35 blat
 ```
   * installing **fastq-dump** version 2.3.5 from **NCBI SRA Toolkit** version 2.3.5 (optional but it is required in case that one wants to test the installation using the example given below)
- ```
+  ```
 cd /apps/fusioncatcher/tools
 wget http://ftp-private.ncbi.nlm.nih.gov/sra/sdk/2.3.5/sratoolkit.2.3.5-centos_linux64.tar.gz
 tar zxvf sratoolkit.2.3.5-centos_linux64.tar.gz
 ln -s sratoolkit.2.3.5-centos_linux64 sratoolkit
 ```
   * installing **SeqTK** version 1.0-r68e (please note that this is a different development branch than the official development) (required)
- ```
+  ```
 cd /apps/fusioncatcher/tools
 wget http://github.com/ndaniel/seqtk/archive/1.0-r68e.tar.gz -O 1.0-r68e.tar.gz
 tar zxvf 1.0-r68e.tar.gz
@@ -244,7 +244,7 @@ cd ..
 ln -s seqtk-1.0-r68e seqtk
 ```
   * installing **STAR** version 2.4.1c (required)
- ```
+  ```
 cd /apps/fusioncatcher/tools
 wget http://github.com/alexdobin/STAR/archive/STAR_2.4.1c.tar.gz -O STAR_2.4.1c.tar.gz
 tar zxvf STAR_2.4.1c.tar.gz
@@ -253,17 +253,17 @@ cd source
 rm -f STAR
 cp ../bin/Linux_x86_64_static/STAR .
 ```
- Try to run this command (if it fails please ignore the error messages and continue further; continue further either way):
+  Try to run this command (if it fails please ignore the error messages and continue further; continue further either way):
  ```
 make
 ```
- and continue with:
- ```
+  and continue with:
+  ```
 cd ..
 ln -s STAR-STAR_2.4.1c star
 ```
   * installing **Velvet** version 1.2.10 (optional)
- ```
+  ```
 cd /apps/fusioncatcher/tools
 wget http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz
 tar zxvf velvet_1.2.10.tgz
@@ -272,13 +272,13 @@ make
 cd ..
 ln -s velvet_1.2.10 velvet
 ```
- > *Note*: Velvet depends on zlib-dev which may be installed like this
- ```
+  > *Note*: Velvet depends on zlib-dev which may be installed like this
+  ```
 sudo apt-get install zlib-dev
 ```
 
   * installing **coreutils** version 8.22 for a newer version of **sort** command which allows use of several CPUs in parallel, that is the use of `--parallel` command line option (optional)
- ```
+  ```
 cd /apps/fusioncatcher/tools
 wget http://ftp.gnu.org/gnu/coreutils/coreutils-8.22.tar.xz
 tar --xz -xvf coreutils-8.22.tar.xz
@@ -289,7 +289,7 @@ cd ..
 ln -s coreutils-8.22 coreutils
 ```
   * installing **pigz** version 1.2.10 (optional)
- ```
+  ```
 cd /apps/fusioncatcher/tools
 wget http://zlib.net/pigz/pigz-2.3.1.tar.gz
 tar zxvf pigz-2.3.1.tar.gz
@@ -299,7 +299,7 @@ cd ..
 ln -s pigz-2.3.1 pigz
 ```
   * installing **SAMTools** version 1.19 (optional)
- ```
+  ```
 cd /apps/fusioncatcher/tools
 wget http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2
 tar jxvf samtools-0.1.19.tar.bz2
@@ -309,14 +309,14 @@ cd ..
 ln -s samtools-0.1.19 samtools
 ```
   * installing **Picard tools** version 1.119 (optional)
- ```
+  ```
 cd /apps/fusioncatcher/tools
 wget http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip
 unzip picard-tools-1.119.zip
 ln -s picard-tools-1.119 picard
 ```
   * installing **FusionCatcher** version 0.99.4c (required)
- ```
+  ```
 cd /apps/fusioncatcher
 wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4c.zip
 unzip fusioncatcher_v0.99.4c.zip
@@ -407,8 +407,8 @@ sed -i 's/\/usr\/bin\/env\ python/\/some\/other\/python/g' /apps/fusioncatcher/b
 
 
   * download/build the human build data from Ensembl database and other databases and build the necessary indexes and files (the latest release of Ensembl data is release 80 as June 2015 when this section was updated last time). There are two alternative ways to get the human **build data**. The recommended way is to use `fusioncatcher-build`.
-   1. Using direct download
-```
+   * Using direct download
+   ```
 mkdir -p /apps/fusioncatcher/data
 cd /apps/fusioncatcher/data
 wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v80.tar.gz.aa
@@ -418,8 +418,8 @@ wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v80.tar.gz
 cat ensembl_v80.tar.gz.* | tar xz
 ln -s ensembl_v80 current
 ```
-   2. Using `fusioncatcher-build` -- It will takes several hours (e.g. 5-10 hours) and it depends highly on the bandwidth of your internet connection. One may find out what Ensembl database version is available at [www.ensembl.org] and what version has been downloaded by looking to the last three lines printed on the screen by **`fusioncatcher-build`**.
-```
+   * Using `fusioncatcher-build` -- It will takes several hours (e.g. 5-10 hours) and it depends highly on the bandwidth of your internet connection. One may find out what Ensembl database version is available at [www.ensembl.org] and what version has been downloaded by looking to the last three lines printed on the screen by **`fusioncatcher-build`**.
+   ```
 mkdir -p /apps/fusioncatcher/data/ensembl_v80
 cd /apps/fusioncatcher/data/ensembl_v80
 /apps/fusioncatcher/bin/fusioncatcher-build -g homo_sapiens -o .
