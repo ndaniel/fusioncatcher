@@ -308,12 +308,12 @@ wget http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tool
 unzip picard-tools-1.119.zip
 ln -s picard-tools-1.119 picard
 }}}
-  * installing *!FusionCatcher* version 0.99.4b (required)
+  * installing *!FusionCatcher* version 0.99.4c (required)
 {{{
 cd /apps/fusioncatcher
-wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4b.zip
-unzip fusioncatcher_v0.99.4b.zip
-cd fusioncatcher_v0.99.4b
+wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4c.zip
+unzip fusioncatcher_v0.99.4c.zip
+cd fusioncatcher_v0.99.4c
 
 rm -rf ../bin
 rm -rf ../etc
@@ -361,7 +361,7 @@ pigz = /apps/fusioncatcher/tools/pigz/
 samtools = /apps/fusioncatcher/tools/samtools/
 picard = /apps/fusioncatcher/tools/picard/
 [versions]
-fusioncatcher = 0.99.4b beta
+fusioncatcher = 0.99.4c beta
 }}}
     # Add the paths for the needed tools to the `PATH` variable by editing, for example, the *`.bashrc`* file (type: *`nano ~/.bashrc`* at command line) and add the following lines at the end:
 {{{
@@ -596,8 +596,8 @@ wget http://sf.net/projects/fusioncatcher/files/bootstrap.py && python bootstrap
 
 In case of a manual installation, first please check that (i) the required dependencies are installed, and (ii) download the source files of *`FusionCatcher`*, like for example:
 {{{
-wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4b.zip 
-unzip fusioncatcher_v0.99.4b.zip
+wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4c.zip 
+unzip fusioncatcher_v0.99.4c.zip
 }}}
 
 For an example of:
@@ -668,7 +668,7 @@ fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
 }}}
 .
 
-*NOTE*: *!FusionCatcher* version 0.99.4b needs a newer *build data* than the previous version (that is 0.99.4a) of 'fusioncatcher-build'. 
+*NOTE*: *!FusionCatcher* version 0.99.4c needs a newer *build data* than the previous version (that is 0.99.4b) of 'fusioncatcher-build'. 
 ----
 
 = 6 - USAGE =
@@ -926,7 +926,7 @@ The output files are:
 || *metazoa* || one or both genes is a metazoa_srp gene [http://www.genecards.org/index.php?path=/Search/keyword/metazoa_srp Metazia_srp] ||
 || *mirna* || one or both genes is a [http://en.wikipedia.org/wiki/MicroRNA miRNA] ||
 || *mt* || one or both genes are situated on [http://en.wikipedia.org/wiki/Mitochondrion mitochondrion]. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
-|| *non-tumor_cell-lines* || fusion gene which has been previously reported/found in non-tumor cell lines, like for example HEK293. This are considered as non-somatic mutation and therefore they are skipped and not reported. ||
+|| *non_tumor_cells* || fusion gene which has been previously reported/found in non-tumor cell lines, like for example HEK293. This are considered as non-somatic mutation and therefore they are skipped and not reported. ||
 || *no_protein_product* || one or both genes have no known protein product ||
 || *oncogene* || one gene or both genes are a known [http://en.wikipedia.org/wiki/Oncogene oncogene] ||
 || *pair_pseudo_genes* || one gene is the other's [http://en.wikipedia.org/wiki/Pseudogene pseudogene]. <font color="red">_A candidate fusion gene having this label has a very high probability of being a false positive._</font> ||
@@ -1198,8 +1198,8 @@ fusioncatcher [options]
                         the filenames separated by comma. If a directory is
                         given then it will analyze all the files found with
                         the following extensions: .sra, .fastq, .fastq.zip,
-                        .fastq.gz, .fastq.bz2, .fq, .fq.zip, .fq.gz, .fq.bz2,
-                        .txt, .txt.zip, .txt.gz, .txt.bz2 .
+                        .fastq.gz, .fastq.bz2, fastq.xz, .fq, .fq.zip, .fq.gz,
+                        .fq.bz2, fz.xz, .txt, .txt.zip, .txt.gz, .txt.bz2 .
   --batch               If this is used then batch mode is used and the input
                         specified using '--input' or '-i' is: (i) a tab-
                         separated text file containing a each line such that
@@ -1212,6 +1212,10 @@ fusioncatcher [options]
                         to only one sample and it contains all the FASTQ files
                         corresponding to that sample. This is useful when
                         several samples needs to be analyzed.
+  --single-end          If this is used then it is assumed that all the input
+                        reads are single-end reads which must be longer than
+                        130 bp. Be default it is assumed that all input reads
+                        come from a paired-end reads.
   -I NORMAL_MATCHED_FILENAME, --normal=NORMAL_MATCHED_FILENAME
                         The input file(s) or directory containing the healthy
                         normal-matched data. They should be given in the same
@@ -1252,16 +1256,19 @@ fusioncatcher [options]
 
   Trimming options:
     -l TRIM_3END_KEEP, --5keep=TRIM_3END_KEEP
-                        All reads longer than '60' will be trimmed from their
+                        This may be seen as seed length. For Bowtie aligner
+                        the reads longer than '60' will be trimmed from their
                         3-end such that to become exactly '60' bp long. Reads
                         shorter than '60' will not be trimmed. The trimming
                         priorities are '--5end','--3end','--5keep'. if several
                         trimming options are used simultaneously. The trimming
                         is done by default only to the reads used for BOWTIE
-                        aligner but not for BLAT/STAR/BOWTIE2 aligners. In
+                        aligner but not for BLAT/STAR/BOWTIE2/BWA aligners. In
                         order to apply the trimming also the reads used by
-                        BLAT/STAR/BOWTIE2 aligners option '--trim-psl' should
-                        be used! Default is '60'.
+                        BLAT/STAR/BOWTIE2/BWA aligners option '--trim-psl'
+                        should be used! The trimming of reads for
+                        BLAT/STAR/BOWTIE2/BWA aligners is done using the
+                        option '--trim-psl-5keep'. Default is '60'.
     -5 TRIM_5END, --5end=TRIM_5END
                         It trims all the reads from their 5-end with the given
                         size. The trimming priorities are '--5end','--3end','
@@ -1269,8 +1276,9 @@ fusioncatcher [options]
                         simultaneously. The trimming is done by default only
                         to the reads used for BOWTIE aligner but not for BLAT
                         aligner. In order to apply the trimming also the reads
-                        used by BLAT/STAR/BOWTIE2 aligners option '--trim-psl'
-                        or '--trim-psl-5end' should be used! Default is '0'.
+                        used by BLAT/STAR/BOWTIE2/BWA aligners option '--trim-
+                        psl' or '--trim-psl-5end' should be used! Default is
+                        '0'.
     -3 TRIM_3END, --3end=TRIM_3END
                         It trims all the reads from their 3-end with the given
                         size. The trimming priorities are '--5end','--3end','
@@ -1278,30 +1286,31 @@ fusioncatcher [options]
                         simultaneously. The trimming is done by default only
                         to the reads used for BOWTIE aligner but not for BLAT
                         aligner. In order to apply the trimming also the reads
-                        used by BLAT/STAR/BOWTIE2 aligners option '--trim-psl'
-                        should be used! Default is '0'.
+                        used by BLAT/STAR/BOWTIE2/BWA aligners option '--trim-
+                        psl' should be used! Default is '0'.
     --trim-psl          If it is specified then also the reads given as input
-                        to BLAT/STAR/BOWTIE2 aligners are trimmed using the
-                        parameters given by command line arguments '--5keep',
-                        '--5end', and '--3end'. By default the trimming
-                        options '--5keep', '--5end', '--3end' are trimming the
-                        reads only for for the BOWTIE method but not when
-                        BLAT/STAR/BOWTIE2 are used. Default is 'False'.
+                        to BLAT/STAR/BOWTIE2/BWA aligners are trimmed using
+                        the parameters given by command line arguments '--
+                        5keep', '--5end', and '--3end'. By default the
+                        trimming options '--5keep', '--5end', '--3end' are
+                        trimming the reads only for for the BOWTIE method but
+                        not when BLAT/STAR/BOWTIE2/BWA are used. Default is
+                        'False'.
     -x TRIM_PSL_3END_KEEP, --trim-psl-5keep=TRIM_PSL_3END_KEEP
-                        All reads given as input to BLAT/STAR/BOWTIE2 aligners
-                        and which are longer than '82' will be trimmed from
-                        their 3-end such that to become exactly '82' bp long.
-                        The reads given as input to Bowtie are not trimmed
-                        using this option. It should be set to 0 if no
-                        trimming should be done for BLAT/STAR/BOWTIE2. Default
-                        is '82'.
+                        This may be seen as seed length. All reads given as
+                        input to BLAT/STAR/BOWTIE2/BWA aligners and which are
+                        longer than '82' will be trimmed from their 3-end such
+                        that to become exactly '82' bp long. The reads given
+                        as input to Bowtie are not trimmed using this option.
+                        It should be set to 0 if no trimming should be done
+                        for BLAT/STAR/BOWTIE2/BWA. Default is '82'.
     --trim-psl-5end     If it is specified then also the reads given as input
-                        to BLAT/STAR/BOWTIE2 aligners are trimmed using the
-                        parameters given by command line argument '--5end'. By
-                        default the trimming options '--5keep', '--5end', '--
-                        3end' are trimming the reads only for for the BOWTIE
-                        method but not when BLAT/STAR/BOWTIE2 are used.
-                        Default is 'False'.
+                        to BLAT/STAR/BOWTIE2/BWA aligners are trimmed using
+                        the parameters given by command line argument '--
+                        5end'. By default the trimming options '--5keep', '--
+                        5end', '--3end' are trimming the reads only for for
+                        the BOWTIE method but not when BLAT/STAR/BOWTIE2/BWA
+                        are used. Default is 'False'.
     -Q TRIM_QUALITY, --trim-quality=TRIM_QUALITY
                         The input reads will be trimmed from their 3'end when
                         the quality scores are below the given threshold, e.g.
@@ -1310,6 +1319,14 @@ fusioncatcher [options]
                         The input reads will be trimmed during the alignment
                         from their 5' and 3' ends for filtering only purposes.
                         Default is '0'.
+    --trimfq=TRIMFQ     If this is set less than 1.00 the quality then the
+                        quality trimming will be done using Phred algorithm in
+                        addition to quality filtering which is already done by
+                        default. For this the 'seqtk trimfq' tool is used and
+                        also the input reads should have quality score in
+                        Sanger format. A recommended value here for quality
+                        trimming is 0.05 (which is the default value of 'seqtk
+                        trimfq') or 0.10.
 
   Search fusion genes options:
     -m MISMATCHES, --mismatches=MISMATCHES
@@ -1318,7 +1335,8 @@ fusioncatcher [options]
                         zero and maximum is 3. Default is '2'.
     --mismatches-psl=MISMATCHES_PSL
                         Maximum number of mismatches to be allowed for mapping
-                        reads using BLAT/STAR/BOWTIE2 aligner. Default is '2'.
+                        reads using BLAT/STAR/BOWTIE2/BWA aligner. Default is
+                        '2'.
     --mismatches-ambiguous=AMBIGUOUS_MISMATCHES
                         Maximum number of mapping mismatches for which the
                         same reads are considered mapping ambiguously. Default
@@ -1366,8 +1384,8 @@ fusioncatcher [options]
                         Candidate gene fusions to be skipped from further
                         analysis in case that one of partner gene or both
                         genes (which form a fusion) are specified here. All
-                        possible values are: [7skrna, ambiguous, banned,
-                        bodymap2, cacg, chimerdb2, conjoing, cta_gene,
+                        possible values are: [7skrna, adjacent, ambiguous,
+                        banned, bodymap2, cacg, chimerdb2, conjoing, cta_gene,
                         ctb_gene, ctc_gene, ctd_gene, distance1000bp,
                         distance100kbp, distance10kbp, duplicates,
                         ensembl_fully_overlapping,
@@ -1376,14 +1394,14 @@ fusioncatcher [options]
                         gencode_fully_overlapping,
                         gencode_partially_overlapping,
                         gencode_same_strand_overlapping, healthy, lincrna,
-                        metazoa, mirna, mt, pair_pseudo_genes, paralogs,
-                        pseudogene, readthrough, refseq_fully_overlapping,
+                        metazoa, mirna, mt, non_tumor_cells, removed,
+                        pair_pseudo_genes, paralogs, pseudogene,
+                        refseq_fully_overlapping,
                         refseq_partially_overlapping,
-                        refseq_same_strand_overlapping, removed,
-                        ribosomal_protein, rp11_gene, rp_gene, rrna,
-                        short_distance, similar_reads, similar_symbols,
-                        snorna, snrna, trna, ucsc_fully_overlapping,
-                        ucsc_partially_overlapping,
+                        refseq_same_strand_overlapping, ribosomal_protein,
+                        rp11_gene, rp_gene, rrna, short_distance,
+                        similar_reads, similar_symbols, snorna, snrna, trna,
+                        ucsc_fully_overlapping, ucsc_partially_overlapping,
                         ucsc_same_strand_overlapping, yrna]. 'short_distance'
                         is used for labeling the candidate fusion genes which
                         do meet the criteria specified with '--min-dist-
@@ -1391,11 +1409,11 @@ fusioncatcher [options]
                         should comma separated. Default is '7skrna,ambiguous,b
                         anned,bodymap2,conjoing,cta_gene,ctb_gene,ctc_gene,ctd
                         _gene,distance1000bp,ensembl_fully_overlapping,ensembl
-                        _same_strand_overlapping,healthy,metazoa,mirna,mt,pair
-                        _pseudo_genes,paralogs,refseq_fully_overlapping,refseq
-                        _same_strand_overlapping,removed,rp11_gene,rp_gene,rrn
-                        a,similar_reads,similar_symbols,snorna,snrna,trna,yrna
-                        '.
+                        _same_strand_overlapping,healthy,metazoa,mirna,mt,non_
+tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
+                        ly_overlapping,refseq_same_strand_overlapping,removed,
+                        rp11_gene,rp_gene,rrna,similar_reads,similar_symbols,s
+                        norna,snrna,trna,yrna'.
     -B BIOTYPES_MORE, --filter-fusion-add=BIOTYPES_MORE
                         Any label of fusion genes specified here will be
                         appended to the list given to '--filter-fusion'. This
@@ -1448,6 +1466,18 @@ fusioncatcher [options]
                         VELVET <http://www.ebi.ac.uk/~zerbino/velvet/>.
                         Default is 'False'.
 
+  Bioinformatics sonication (for input reads longer than 130bp only):
+    --sonication=SONICATION
+                        In case that the input reads are longer than the
+                        threshold set here then they will be broken up
+                        bioinformatically in smaller reads. If this is set to
+                        0 then no break up will be done. Default is '130'.
+    --bridges=BRIDGES   Number of encompasses paired-reads to be generated for
+                        each input long read. If it is set to 0 then the
+                        number will chosen automatically based on the length
+                        of input reads, i.e. ceil(length_read/160). Default is
+                        '0'.
+
   Reads filtering/processing options:
     --skip-filter-mt    If specified then it skips filtering out the reads
                         which map on the mitochondrion. Default is 'False'.
@@ -1478,13 +1508,13 @@ fusioncatcher [options]
                         which contains the adapters. Default is 'False'.
     --skip-filter-psl   If it is set then the pipeline will not prefilter the
                         short reads which will be used for doing
-                        BLAT/STAR/BOWTIE2 alignment. By default, the short
+                        BLAT/STAR/BOWTIE2/BWA alignment. By default, the short
                         reads are prefiltered before being aligned using
                         BLAT/STAR/BOWTIE2 in order to speed up the
-                        BLAT/STAR/BOWTIE2alignment which is time and
+                        BLAT/STAR/BOWTIE2/BWA alignment which is time and
                         computationally demanding. The disadvantage of doing
                         prefiltering is that the sensitivity of
-                        BLAT/STAR/BOWTIE2 alignment is somewhat lowered.
+                        BLAT/STAR/BOWTIE2/BWA alignment is somewhat lowered.
                         Default is 'False'.
     --skip-interleave   If specified then it skips interleaving the short
                         reads from the input FASTQ files. The program tries
@@ -1502,13 +1532,13 @@ fusioncatcher [options]
                         fusion genes are treated preferentially and are pushed
                         directly to the very final step of finding the
                         junction point. Default is 'False'.
-    --skip-readthroughs
-                        If it is set then the pipeline will not seach for
-                        candidate fusion genes which are readthroughs! By
-                        default the candidate fusion genes which are
-                        readthroughs are analysed also but in many cases they
-                        are just annotation errors in the Ensembl database and
-                        not real fusion genes. Default is 'False'.
+    --skip-adjacent     If it is set then the pipeline will not seach for
+                        candidate fusion genes where the genes are adjacent!
+                        By default the candidate fusion genes which have genes
+                        that are adjacent are analysed also but in many cases
+                        they are just annotation errors in the Ensembl
+                        database and maybe they are not real fusion genes.
+                        Default is 'False'.
     --skip-banned-fusions
                         If it is set then the list of known banned fusion
                         genes (which are found in healthy samples) is not
@@ -1608,9 +1638,9 @@ fusioncatcher [options]
                         aligner is able to handle.  If the genome is larger
                         than this limit then it will be split automatically in
                         smaller pieces such that the aligner can handle them
-                        without an error. Default is '30000000'.
+                        without an error. Default is '500000000'.
 
-  Search sensitivity of fusions:
+  Search sensitivity of fusions (they are mutually exclusive):
     --sensitive         This will increase the sensitivity of finding fusion
                         genes at the expense of finding slightly more false
                         positives. Default is 'False'.
@@ -1629,7 +1659,7 @@ fusioncatcher [options]
                         were missed in previous runs with default sensitivity.
                         Default is 'False'.
 
-  Custom labels for fusions and filtering of fusions:
+  Custom labels for fusions and (pre)filtering of fusions:
     --label-title=LABEL_TITLE
                         The label title(s) which will be used to mark the
                         candidate fusion genes given as input to '--label-
@@ -1650,6 +1680,38 @@ fusioncatcher [options]
                         3 strictly less than this given threshold will be
                         ignored/skipped. If several are given then they should
                         be comma separated.
+    --focus=FOCUS_FUSIONS
+                        It contains a tab separated file text containd two
+                        columns with Ensembl gene ids for candidate fusion
+                        genes which will be forced to pass the preliminary
+                        filtering. This lines should be sorted and also the
+                        columns should be sorted.
+    --reads-preliminary-fusions
+                        The sequences of all reads which support the
+                        preliminary candidate fusion genes are extracted.
+                        Default is 'False'.
+
+  SeqTK subseq tool:
+    --extract-buffer-size=EXTRACT_BUFFER_SIZE
+                        The size of memory buffer used by Python script (for
+                        extracting reads from a FASTQ file based on a list of
+                        reads ids). This depends more on the amount of memory
+                        which Python environment is able to handle and less
+                        than the free actual free RAM memory on the computer
+                        where this is run. It might be that the default value
+                        is too high and needs to be lowered, e.g. '500000000'
+                        be required to be lowered. This is meant to be used
+                        together with '--split-seqtk-subseq 0'. Default is
+                        '1000000000'.
+    --split-seqtk-subseq=SPLIT_SEQTK_SUBSEQ
+                        The input file (i.e. file containing read ids) of
+                        'SEQTK SUBSEQ' will be splitted in a number of parts
+                        specified here. If it is 1 then no spliting is done.
+                        If it is set to 0 then 'SEQTK SUBSEQ' will not be used
+                        and instead an alternative Python script is used.
+                        Setting this to 0 or 2 or larger values is meant to be
+                        used in cases when 'SEQTK SUBSEQ' fails due to not
+                        enough memory. Default is '1'.
 
   Debug Options:
     --start=START_STEP  It starts executing the workflow from the given step
@@ -1670,21 +1732,12 @@ fusioncatcher [options]
     --checksums=CHECKSUMS_FILENAME
                         The name of the checksums file. Default value is
                         'checksums.txt'.
-    --extract-buffer-size=EXTRACT_BUFFER_SIZE
-                        The size of the buffer used for extracting reads using
-                        Python (and not SUBSEQ from SEQTK) from a Fastq file
-                        when given a list of reads ids. This operation
-                        requires a lot of free RAM memory and therefore on some computers with
-                        low memory this might be required to be lowered (e.g. '1000000000'). See
-                        also '--no-seqtk-subseq'. Default is '2000000000'.
-    --no-seqtk-subseq   If it is set then Python (requires less memory)
-                        instead of SUBSEQ (from SEQTK) will be used for extracting
-                        reads from a FASTQ file based on a list of reads ids.
-                        By default SUBSEQ from SEQTK is used.
     --bowtie-chunkmbs=CHUNKMBS
                         The value to be passed to the '--chunkmbs' command
                         line option of Bowtie aligner. Default is '128'.
-
+    --long              A slightly longer report for fusion genes will be
+                        generated (i.e. fusions genes will be given per each
+                        aligner used). Default value is 'False'.
 
 }}}
 ----
@@ -1764,7 +1817,6 @@ fusioncatcher-build [options]
   -u CHECKSUMS_FILENAME, --checksums=CHECKSUMS_FILENAME
                         The name of the checksums file. This is intended to be
                         used for debugging. Default value is 'checksums.txt'.
-
 
 }}}
 

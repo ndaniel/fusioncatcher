@@ -3564,8 +3564,18 @@ if __name__ == '__main__':
         ['TG','MAT2A'],
         ['ART4','SMCO3'],
         ['LCAT','PSMB10'],
-        ['ACSS1','APMAP']
-        
+        ['ACSS1','APMAP'],
+        ['TTC7B','MVD'],
+        ['MOB3A','MFSD11'],
+        ['PPOX','IKZF3'],
+        ['ENTPD1','KIAA0922'],
+        ['PRH1-PRR4','POLK'],
+        ['TRG@','MX1'],
+        ['CDC37','B4GALT3'],
+        ['ZCCHC8','STAT3'],
+        ['SPN','NUB1'],
+        ['STAT3','UBXN7']
+
         ]
     # up is human
 

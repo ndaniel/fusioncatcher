@@ -627,7 +627,7 @@ if __name__ == "__main__":
             "conjoing",
             "metazoa",
             "bodymap2",
-            "non-tumor_cell-lines",
+            "non_tumor_cells",
             "removed"])
     all_choices = sorted([
             'paralogs',
@@ -677,7 +677,7 @@ if __name__ == "__main__":
             'distance10kbp',
             'distance100kbp',
             'banned',
-            'non-tumor_cell-lines'
+            'non_tumor_cells',
             'removed'])
     group.add_option("--filter-fusion","-b",
                       action = "store",
@@ -5013,7 +5013,7 @@ if __name__ == "__main__":
     # label fusion genes -- non-tumor cell lines
     job.add('label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_55.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','non-tumor_cell-lines',kind='parameter')
+    job.add('--label','non_tumor_cells',kind='parameter')
     job.add('--filter_gene_pairs',datadir('non-tumor_cells.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_56.txt'),kind='output')
     job.run()

@@ -900,7 +900,18 @@ if __name__ == '__main__':
         ['ZNF397','PIEZO2'],
         ['ZNF593','CLK2'],
         ['ZNF814','VPS53'],
-        ['ZYX','NUP210']
+        ['ZYX','NUP210'],
+        ['TTC7B','MVD'],
+        ['MOB3A','MFSD11'],
+        ['PPOX','IKZF3'],
+        ['ENTPD1','KIAA0922'],
+        ['PRH1-PRR4','POLK'],
+        ['TRG@','MX1'],
+        ['CDC37','B4GALT3'],
+        ['ZCCHC8','STAT3'],
+        ['SPN','NUB1'],
+        ['STAT3','UBXN7'],
+        ['NCOR2','SCARB1']
 
         ]
 
