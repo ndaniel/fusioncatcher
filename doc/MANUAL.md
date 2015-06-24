@@ -160,20 +160,20 @@ Please, do not forget to build/download the organism data after this is done run
 
 This is an example (or one of the many ways) for installing **FusionCatcher** on a **Ubuntu Linux 12.04/14.04 64-bit system** and the **FusionCatcher** and its dependencies are installed in **`/apps`**.
   * check that Python 2.6.X or 2.7.X is installed and working properly! If not then install it together with its development environment and other (probably) needed dependencies (required):
-```
+ ```
 sudo apt-get install build-essential
 sudo apt-get install python-dev
 ```
-and for [RedHat](http://www.redhat.com)/[CentOS](http://www.centos.org) this would be required
-```
+ and for [RedHat](http://www.redhat.com)/[CentOS](http://www.centos.org) this would be required
+ ```
 sudo yum groupinstall "Development Tools"
 sudo yum install gcc
 sudo yum install ncurses-devel
 sudo yum install python-devel
 sudo yum install zlib-devel
-```
-and for [OpenSUSE](http://www.opensuse.org) this would be required
-```
+ ```
+ and for [OpenSUSE](http://www.opensuse.org) this would be required
+ ```
 sudo zypper in --type pattern Basis-Devel
 sudo zypper in gcc
 sudo zypper in ncurses-devel
@@ -181,39 +181,39 @@ sudo zypper in python-devel
 sudo zypper in zlib-devel
 ```
   * installing **`BioPython`** (required):
-```
+ ```
 sudo apt-get install python-numpy
 sudo apt-get install python-biopython
 ```
   * installing Python module **`xlrd`** (optional):
-```
+ ```
 sudo apt-get install python-xlrd
 ```
   * installing Python module **`openpyxl`** (optional):
-```
+ ```
 sudo apt-get install python-openpyxl
 ```
   * create the needed directories:
-```
+ ```
 mkdir -p /apps/fusioncatcher/tools
 mkdir -p /apps/fusioncatcher/data
-```
+ ```
   * installing **Bowtie** 64-bit version 1.1.1 (required)
-```
+ ```
 cd /apps/fusioncatcher/tools
 wget http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.1/bowtie-1.1.1-linux-x86_64.zip
 unzip bowtie-1.1.1-linux-x86_64.zip
 ln -s bowtie-1.1.1 bowtie
 ```
   * installing **Bowtie2** 64-bit version 2.2.5 (required)
-```
+ ```
 cd /apps/fusioncatcher/tools
 wget http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.5/bowtie2-2.2.5-linux-x86_64.zip
 unzip bowtie2-2.2.5-linux-x86_64.zip
 ln -s bowtie2-2.2.5-linux-x86_64 bowtie2
 ```
   * installing **BLAT** version 0.35 (optional but **strongly** recommended; if **BLAT** is not installed please use option '--skip-blat' in order to let know **FusionCatcher** that it should not use it)
-```
+ ```
 cd /apps/fusioncatcher/tools
 mkdir blat_v0.35
 cd blat_v0.35
@@ -227,14 +227,14 @@ cd ..
 ln -s blat_v0.35 blat
 ```
   * installing **fastq-dump** version 2.3.5 from **NCBI SRA Toolkit** version 2.3.5 (optional but it is required in case that one wants to test the installation using the example given below)
-```
+ ```
 cd /apps/fusioncatcher/tools
 wget http://ftp-private.ncbi.nlm.nih.gov/sra/sdk/2.3.5/sratoolkit.2.3.5-centos_linux64.tar.gz
 tar zxvf sratoolkit.2.3.5-centos_linux64.tar.gz
 ln -s sratoolkit.2.3.5-centos_linux64 sratoolkit
 ```
   * installing **SeqTK** version 1.0-r68e (please note that this is a different development branch than the official development) (required)
-```
+ ```
 cd /apps/fusioncatcher/tools
 wget http://github.com/ndaniel/seqtk/archive/1.0-r68e.tar.gz -O 1.0-r68e.tar.gz
 tar zxvf 1.0-r68e.tar.gz
@@ -244,7 +244,7 @@ cd ..
 ln -s seqtk-1.0-r68e seqtk
 ```
   * installing **STAR** version 2.4.1c (required)
-```
+ ```
 cd /apps/fusioncatcher/tools
 wget http://github.com/alexdobin/STAR/archive/STAR_2.4.1c.tar.gz -O STAR_2.4.1c.tar.gz
 tar zxvf STAR_2.4.1c.tar.gz
@@ -253,17 +253,17 @@ cd source
 rm -f STAR
 cp ../bin/Linux_x86_64_static/STAR .
 ```
-Try to run this command (if it fails please ignore the error messages and continue further; continue further either way):
-```
+ Try to run this command (if it fails please ignore the error messages and continue further; continue further either way):
+ ```
 make
 ```
-and continue with:
-```
+ and continue with:
+ ```
 cd ..
 ln -s STAR-STAR_2.4.1c star
 ```
   * installing **Velvet** version 1.2.10 (optional)
-```
+ ```
 cd /apps/fusioncatcher/tools
 wget http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz
 tar zxvf velvet_1.2.10.tgz
@@ -272,12 +272,13 @@ make
 cd ..
 ln -s velvet_1.2.10 velvet
 ```
-*Note*: Velvet depends on zlib-dev which may be installed like this
-```
+ > *Note*: Velvet depends on zlib-dev which may be installed like this
+ ```
 sudo apt-get install zlib-dev
 ```
+
   * installing **coreutils** version 8.22 for a newer version of **sort** command which allows use of several CPUs in parallel, that is the use of `--parallel` command line option (optional)
-```
+ ```
 cd /apps/fusioncatcher/tools
 wget http://ftp.gnu.org/gnu/coreutils/coreutils-8.22.tar.xz
 tar --xz -xvf coreutils-8.22.tar.xz
@@ -288,7 +289,7 @@ cd ..
 ln -s coreutils-8.22 coreutils
 ```
   * installing **pigz** version 1.2.10 (optional)
-```
+ ```
 cd /apps/fusioncatcher/tools
 wget http://zlib.net/pigz/pigz-2.3.1.tar.gz
 tar zxvf pigz-2.3.1.tar.gz
@@ -298,7 +299,7 @@ cd ..
 ln -s pigz-2.3.1 pigz
 ```
   * installing **SAMTools** version 1.19 (optional)
-```
+ ```
 cd /apps/fusioncatcher/tools
 wget http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2
 tar jxvf samtools-0.1.19.tar.bz2
@@ -308,14 +309,14 @@ cd ..
 ln -s samtools-0.1.19 samtools
 ```
   * installing **Picard tools** version 1.119 (optional)
-```
+ ```
 cd /apps/fusioncatcher/tools
 wget http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip
 unzip picard-tools-1.119.zip
 ln -s picard-tools-1.119 picard
 ```
   * installing **FusionCatcher** version 0.99.4c (required)
-```
+ ```
 cd /apps/fusioncatcher
 wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4c.zip
 unzip fusioncatcher_v0.99.4c.zip
@@ -341,8 +342,8 @@ ln -s $(pwd)/README.md ../README.md
 ln -s $(pwd)/DEPENDENCIES ../DEPENDENCIES
 ```
   * specify the paths to the above tools such that **FusionCatcher** can find them. There are two choices.
-   * Choice A: Edit the **FusionCatcher** configuration file **`configuration.cfg`** (type: **`nano /apps/fusioncatcher/etc/configuration.cfg`** at command line) and make sure that the **FusionCatcher**'s configuration file **'configuration.cfg'** looks like this:
-```
+   * *Choice A*: Edit the **FusionCatcher** configuration file **`configuration.cfg`** (type: **`nano /apps/fusioncatcher/etc/configuration.cfg`** at command line) and make sure that the **FusionCatcher**'s configuration file **'configuration.cfg'** looks like this:
+   ```
 [paths]
 python = /usr/bin/
 data = /apps/fusioncatcher/data/current/
@@ -369,13 +370,8 @@ picard = /apps/fusioncatcher/tools/picard/
 [versions]
 fusioncatcher = 0.99.4c beta
 ```
-
-
-
-The second choice is
-
-   * Choice B: Add the paths for the needed tools to the `PATH` variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) and add the following lines at the end:
-```
+   * *Choice B*: Add the paths for the needed tools to the `PATH` variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) and add the following lines at the end:
+   ```
 export PATH=/apps/fusioncatcher/bin:$PATH
 export PATH=/apps/fusioncatcher/tools/bowtie:$PATH
 export PATH=/apps/fusioncatcher/tools/bowtie2:$PATH
@@ -396,15 +392,15 @@ export PATH=/apps/fusioncatcher/tools/picard/:$PATH
 
 
 
-> *Note 1*: If a different version of Python is used/needed by **FusionCatcher** than the standard **`/usr/bin/env python`** then also please make sure that that specific version of Python is added to the **`PATH`** variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) or add the following lines at the end:
-```
+   > *Note 1*: If a different version of Python is used/needed by **FusionCatcher** than the standard **`/usr/bin/env python`** then also please make sure that that specific version of Python is added to the **`PATH`** variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) or add the following lines at the end:
+   ```
 export PATH=/some/other/version/of/python:$PATH
 ```
 
 
 
-> *Note 2*: In some cases it might not be enough to change the Python's path in **`.bashrc`** file, like for example the case when **FusionCatcher** is run on a server which defaults to another Python than one used to install **FusionCatcher**. In this case it is required that one changes all the [shebangs](http://en.wikipedia.org/wiki/Shebang_(Unix)) of the all Python scripts which belong to **FusionCatcher**. In case that one uses the Python which has the following Python executable path **`/some/other/python`** than this can be done like this (it changes in place **`/usr/bin/env python`** into **`/some/other/python`** in all `/apps/fusioncatcher/bin/*.py`):
-```
+   > *Note 2*: In some cases it might not be enough to change the Python's path in **`.bashrc`** file, like for example the case when **FusionCatcher** is run on a server which defaults to another Python than one used to install **FusionCatcher**. In this case it is required that one changes all the [shebangs](http://en.wikipedia.org/wiki/Shebang_(Unix)) of the all Python scripts which belong to **FusionCatcher**. In case that one uses the Python which has the following Python executable path **`/some/other/python`** than this can be done like this (it changes in place **`/usr/bin/env python`** into **`/some/other/python`** in all `/apps/fusioncatcher/bin/*.py`):
+   ```
 sed -i 's/\/usr\/bin\/env\ python/\/some\/other\/python/g' /apps/fusioncatcher/bin/*.py
 ```
 
