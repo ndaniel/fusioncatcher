@@ -373,7 +373,8 @@ fusioncatcher = 0.99.4c beta
 
 
 The second choice is
-    * Choice B: Add the paths for the needed tools to the `PATH` variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) and add the following lines at the end:
+
+   * Choice B: Add the paths for the needed tools to the `PATH` variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) and add the following lines at the end:
 ```
 export PATH=/apps/fusioncatcher/bin:$PATH
 export PATH=/apps/fusioncatcher/tools/bowtie:$PATH
