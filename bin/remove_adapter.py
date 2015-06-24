@@ -82,7 +82,7 @@ def linkit(file_input, file_output, kind ='soft'):
             try:
                 os.link(linkto, file_output)
             except OSError as er:
-                print >>sys.stderr,"WARNING: Cannot do hard links ('%s' and '%s')!" % (linkto,f_out)
+                print >>sys.stderr,"WARNING: Cannot do hard links ('%s' and '%s')!" % (linkto,file_output)
                 shutil.copyfile(linkto, file_output)
 #                if er.errno == errno.EXDEV:
 #                    # they are on different partitions
@@ -100,7 +100,7 @@ def linkit(file_input, file_output, kind ='soft'):
             try:
                 os.link(file_input, file_output)
             except OSError as er:
-                print >>sys.stderr,"WARNING: Cannot do hard links ('%s' and '%s')!" % (linkto,f_out)
+                print >>sys.stderr,"WARNING: Cannot do hard links ('%s' and '%s')!" % (linkto,file_output)
                 shutil.copyfile(linkto, file_output)
 #                if er.errno == errno.EXDEV:
 #                    # they are on different partitions
@@ -116,7 +116,7 @@ def linkit(file_input, file_output, kind ='soft'):
 #
 #
 def dnaReverseComplement(seq):
-    seq = seq.upper()
+    #seq = seq.upper()
     seq = seq.translate(ttable)
     return seq[::-1]
 
@@ -131,7 +131,9 @@ def read_first_fastq(file_name, first = 2000000, size_buffer = 10**8):
         fid = open(file_name,'r')
     i = 0
     while True:
+        gc.disable()
         lines = fid.readlines(10**8)
+        gc.enable()
         if (not lines) or i > first:
             break
         for line in lines:
@@ -153,7 +155,9 @@ def read_fastq(file_name, size_buffer = 10**8):
     else:
         fid = open(file_name,'r')
     while True:
+        gc.disable()
         lines = fid.readlines(10**8)
+        gc.enable()
         if not lines:
             break
         for line in lines:
@@ -185,12 +189,12 @@ def first_reads_from_paired_fastq_file(file_name_1, file_name_2, first = 2000000
             continue
         if i == 4:
             bucket = [piece[0][0],
-                      piece[1][0].rstrip('\r\n').upper(),
+                      piece[1][0].rstrip('\r\n'),
                       "+\n",
                       piece[3][0],
 
                       piece[0][1],
-                      piece[1][1].rstrip('\r\n').upper(),
+                      piece[1][1].rstrip('\r\n'),
                       "+\n",
                       piece[3][1]
                       ]
@@ -220,12 +224,12 @@ def reads_from_paired_fastq_file(file_name_1, file_name_2, size_read_buffer = 10
         #piece.append((line_1,line_2))
         if it == 4:
             bucket = [piece[0][0],
-                      piece[1][0].rstrip('\r\n').upper(),
+                      piece[1][0].rstrip('\r\n'),
                       "+\n",
                       piece[3][0],
 
                       piece[0][1],
-                      piece[1][1].rstrip('\r\n').upper(),
+                      piece[1][1].rstrip('\r\n'),
                       "+\n",
                       piece[3][1]
                       ]
@@ -234,7 +238,7 @@ def reads_from_paired_fastq_file(file_name_1, file_name_2, size_read_buffer = 10
             it = 0
 
     if piece and len(piece) != 4:
-        print "WARNING: Found unexpected ending of FASTQ file '%s' but still continuing..." % (file_name,)
+        print >>sys.stderr,"WARNING: Found unexpected ending of FASTQ files '%s' and '%s' but still continuing..." % (file_name_1,file_name_2)
 #
 #
 #
@@ -315,7 +319,10 @@ def fast_alignment_adapter(sa, sb, len_adapter = 13, overlap = 13):
             #print xb
             # count the mismatches
             mis = len([1 for ix in xrange(lib) if s+ix<nb and (sa[ix] != sb[s+ix] or (sa[ix] == 'N' and sb[s+ix] == 'N') )])
+            n_notn = len([1 for ix in xrange(lib) if s+ix<nb and (sa[ix] == 'N' or sb[s+ix] == 'N')])
             #print "mismatches",mis
+            if lib > 0 and float(n_notn) / float(lib) > 0.3:
+                mis = mis + n_notn
             if (mis > 0 and lib > 0 and float(mis) / float(lib) < 0.2 and lib != na):
                 continue
             #print xa
@@ -435,6 +442,9 @@ def fast_alignment(sa, sb, overlap = 13, wiggle = 2, adpt5 = "", adpt3 = ""):
         #    print xb
         # count the mismatches in the overlap; N is not considered a mismatch in the overlapping part
         mis = len([1 for ix in xrange(lib) if s+ix<nb and ((sa[ix] != sb[s+ix] and sa[ix] != 'N' and sb[s+ix] != 'N') or ( sa[ix] == 'N' and sb[s+ix] == 'N'))])
+        n_notn = len([1 for ix in xrange(lib) if s+ix<nb and (sa[ix] == 'N' or sb[s+ix] == 'N')])
+        if lib > 0 and float(n_notn) / float(lib) > 0.3:
+            mis = mis + n_notn
         if mis > 0 and lib > 0 and ((mis / float(lib) > cut_mis) or (lib == na and mis / float(lib) > 0.05)):
             continue
 
@@ -676,7 +686,7 @@ def compute(stuff):
 def norepeats(x, t = 0.30):
     cc = dict()
     tt = float(len(x)-1) * t
-    xx = (x[i:i+2].upper() for i in range(0,len(x)-1))
+    xx = (x[i:i+2] for i in range(0,len(x)-1))
     r = True
     for u in xx:
         cc[u] = cc.get(u,0) + 1
@@ -697,6 +707,33 @@ class param:
         self.adapter3 = None
         self.flag_log = None
 
+
+#
+#
+#
+def trim_tail_n(s,q,count = 1):
+    # trim tails of N from a read
+
+    if s:
+        n = len(s)
+        if n != 1:
+            ts = s.rstrip('N')
+            m = len(ts)
+            r = n - m
+            ts = ts.lstrip('N')
+            l = m - len(ts)
+
+            if l+r >= count:
+                s = s[l:n-r]
+                q = q[l:n-r]
+
+    if not s:
+        s = "N"
+        q = "I"
+
+
+    return (s+'\n',q+'\n')
+
 #
 #
 #
@@ -713,23 +750,26 @@ def trim_adapter(input_file_1,
                  verbose = False,
                  link = 'soft',
                  shortest_read = 20,
+                 trim_n = 3,
                  cpus = 0):
     #
     #
     # finding automatically for adapters
     # - read only the first few millions pairs of reads
     if verbose:
-        print "Reading the files for automated finding of adapters..."
-        print " - ",input_file_1
-        print " - ",input_file_2
+        print >>sys.stderr,"Reading the files for automated finding of adapters..."
+        print >>sys.stderr," - ",input_file_1
+        print >>sys.stderr," - ",input_file_2
     i = 0
     # looking for adapter
     adapt5 = dict()
     adapt3 = dict()
     #
-    for mate in first_reads_from_paired_fastq_file(input_file_1,
-                                                   input_file_2,
-                                                   reads_infer_adapter):
+    for mate in first_reads_from_paired_fastq_file(
+        input_file_1,
+        input_file_2,
+        reads_infer_adapter):
+        
         a = mate[1]
         b = dnaReverseComplement(mate[5])
         i = i + 1
@@ -763,10 +803,10 @@ def trim_adapter(input_file_1,
         adapter5 = a5[0][1]
         if a5[0][0] > threshold_infer_adapter * float(reads_infer_adapter):
             if verbose:
-                print "Adapter 3' end found!\n   [%s...]\n   [reverse-complement:...%s]\n   [count=%d/%d] (%.5f%%)" % (adapter5,dnaReverseComplement(adapter5),a5[0][0],reads_infer_adapter,100*float(a5[0][0])/reads_infer_adapter)
+                print >>sys.stderr,"Adapter 3' end found!\n   [%s...]\n   [reverse-complement:...%s]\n   [count=%d/%d] (%.5f%%)" % (adapter5,dnaReverseComplement(adapter5),a5[0][0],reads_infer_adapter,100*float(a5[0][0])/reads_infer_adapter)
         else:
             if verbose:
-                print "Found [%s...]\n   [reverse-complement=...%s]\n   [count=%d/%d (%.5f%%)] but does not look like 3-end adapter! (too low count)" % (adapter5,dnaReverseComplement(adapter5), a5[0][0], reads_infer_adapter,100*float(a5[0][0])/reads_infer_adapter)
+                print >>sys.stderr,"Found [%s...]\n   [reverse-complement=...%s]\n   [count=%d/%d (%.5f%%)] but does not look like 3-end adapter! (too low count)" % (adapter5,dnaReverseComplement(adapter5), a5[0][0], reads_infer_adapter,100*float(a5[0][0])/reads_infer_adapter)
             adapter5 = None
     if a3:
         count_adapter3 = a3[0][0]
@@ -774,10 +814,10 @@ def trim_adapter(input_file_1,
         adapter3reverse = dnaReverseComplement(adapter3)
         if a3[0][0] > threshold_infer_adapter * float(reads_infer_adapter):
             if verbose:
-                print "Adapter 5' end found!\n   [%s...]\n   [reverse-complement:...%s]\n   [count=%d/%d (%.5f%%)]" % (adapter3reverse, adapter3,a3[0][0],reads_infer_adapter,100*float(a3[0][0])/reads_infer_adapter)
+                print >>sys.stderr,"Adapter 5' end found!\n   [%s...]\n   [reverse-complement:...%s]\n   [count=%d/%d (%.5f%%)]" % (adapter3reverse, adapter3,a3[0][0],reads_infer_adapter,100*float(a3[0][0])/reads_infer_adapter)
         else:
             if verbose:
-                print "Found [%s...]\n   [reverse-complement=...%s]\n   [count=%d/%d (%.5f%%)] but does not look like 5-end adapter! (too low count)" % (adapter3reverse, adapter3, a3[0][0], reads_infer_adapter,100*float(a3[0][0])/reads_infer_adapter)
+                print >>sys.stderr,"Found [%s...]\n   [reverse-complement=...%s]\n   [count=%d/%d (%.5f%%)] but does not look like 5-end adapter! (too low count)" % (adapter3reverse, adapter3, a3[0][0], reads_infer_adapter,100*float(a3[0][0])/reads_infer_adapter)
             adapter3 = None
 
     #
@@ -789,10 +829,10 @@ def trim_adapter(input_file_1,
             cpus = multiprocessing.cpu_count()
     else:
         if verbose:
-            print "NOTE: Too few adapters found in order to use several processes! Only one CPU will be used!"
+            print >>sys.stderr,"NOTE: Too few adapters found in order to use several processes! Only one CPU will be used!"
         cpus = 1
     if verbose:
-        print "Using",cpus,"process(es)..."
+        print >>sys.stderr,"Using",cpus,"process(es)..."
     #
     flag_log = False
     log = None
@@ -810,7 +850,7 @@ def trim_adapter(input_file_1,
         # I found both adapters
         #
         if verbose:
-            print "Scanning for adapters..."
+            print >>sys.stderr,"Scanning for adapters..."
         i = 0
         j = 0
         last_j = j
@@ -831,20 +871,34 @@ def trim_adapter(input_file_1,
 
         give = None
         if cpus == 1:
-            give = itertools.imap(compute,
-                                         itertools.izip_longest(reads_from_paired_fastq_file(input_file_1, input_file_2),
-                                            [],
-                                            fillvalue = para)
-                                         )
+            give = itertools.imap(
+                compute,
+                itertools.izip_longest(
+                    reads_from_paired_fastq_file(
+                        input_file_1, 
+                        input_file_2
+                    ),
+                    [],
+                    fillvalue = para
+                )
+            )
         else:
             pool = multiprocessing.Pool(processes = cpus)
-            give = pool.imap_unordered(compute,
-                                         itertools.izip_longest(reads_from_paired_fastq_file(input_file_1, input_file_2),
-                                            [],
-                                            fillvalue = para),
-                                         chunksize = 100
-                                         )
+            give = pool.imap_unordered(
+                compute,
+                itertools.izip_longest(
+                    reads_from_paired_fastq_file(
+                        input_file_1,
+                        input_file_2
+                    ),
+                    [],
+                    fillvalue = para
+                ),
+            chunksize = 100
+            )
         all_fixed = 0
+
+
 
         for stuff in give:
 
@@ -865,6 +919,18 @@ def trim_adapter(input_file_1,
             if stn != -1:
                 statn[stn] = statn.get(stn,0) + 1
             j = j + jj
+
+            if trim_n:
+                # do N trimming from both ends
+                mm1 = mate[1].rstrip('\r\n')
+                if mm1.startswith('N') or mm1.endswith('N'):
+                    mm2 = mate[3].rstrip('\r\n')
+                    (mate[1], mate[3]) = trim_tail_n(mm1,mm2,trim_n)
+
+                mm1 = mate[5].rstrip('\r\n')
+                if mm1.startswith('N') or mm1.endswith('N'):
+                    mm2 = mate[7].rstrip('\r\n')
+                    (mate[5], mate[7]) = trim_tail_n(mm1,mm2,trim_n)
 
 
             if len(mate[1]) < shortest_read + 1:
@@ -888,8 +954,8 @@ def trim_adapter(input_file_1,
                 log.add_line(xx)
 
             last_j = j
-            if verbose and i % 10000000 == 0:
-                print "   %d pair-reads [ %d (%f%%) reads trimmed ]" % (i,j,100*float(j)/float(2*i))
+            if verbose and i % 1 == 10000000: # 10000000
+                print >>sys.stderr,"   %d pair-reads [ %d (%f%%) reads trimmed ]" % (i,j,100*float(j)/float(2*i))
 
         out_1.close()
         out_2.close()
@@ -901,10 +967,10 @@ def trim_adapter(input_file_1,
             s = s + v
 
         if verbose:
-            print "Total count reads = %i" % (2*i,)
-            print "Count trimmed reads = %i [%f%%]" % (j,100*float(j)/float(2*i))
-            print "Count joined pair-reads = %i [%f%%]" % (s,100*float(s)/float(i))
-            print "Count of fixed Ns = %i" % (all_fixed,)
+            print >>sys.stderr,"Total count reads = %i" % (2*i,)
+            print >>sys.stderr,"Count trimmed reads = %i [%f%%]" % (j,100*float(j)/float(2*i))
+            print >>sys.stderr,"Count joined pair-reads = %i [%f%%]" % (s,100*float(s)/float(i))
+            print >>sys.stderr,"Count of fixed Ns = %i" % (all_fixed,)
 
         if log_stat:
             log_stat.add_line("Input file read 1: %s\n" % (input_file_1,))
@@ -941,10 +1007,10 @@ def trim_adapter(input_file_1,
     else:
         # create symbolic links and move on
         if verbose:
-            print "No trimming was done !"
-            print "NOTE: In case that it is known a priori that there are adaptors then "
-            print "      try to run it again with a shorter adapter, see '--len_adapter' "
-            print "      of 'remove_adapter.py'!"
+            print >>sys.stderr,"No trimming was done !"
+            print >>sys.stderr,"NOTE: In case that it is known a priori that there are adaptors then "
+            print >>sys.stderr,"      try to run it again with a shorter adapter, see '--len_adapter' "
+            print >>sys.stderr,"      of 'remove_adapter.py'!"
 
         linkit(input_file_1,output_file_1,kind=link)
         linkit(input_file_2,output_file_2,kind=link)
@@ -1071,12 +1137,23 @@ Email: Daniel.Nicorici@gmail.com
                       default = 3000000,
                       help = """The number of first reads which are used for finding automatically the adapter. If it is set to 0 then all the reads from the files are used. Default is %default.""")
 
+
+    parser.add_option("-x","--trim-n",
+                      action = "store",
+                      type = "int",
+                      dest = "trim_n",
+                      default = 0,
+                      help = """The number of Ns needed to be found in order the trimming of Ns (from both reads ends) is done. Default is %default.""")
+
     parser.add_option("-k","--link",
                       action = "store",
                       type = "string",
                       dest = "link",
                       default = 'soft',
                       help = """The type of link between the input and output file when there are no changes done. The choices are ['soft','hard']. Default is '%default'.""")
+
+
+
 
 
     parser.add_option("-q", "--quiet",
@@ -1123,8 +1200,13 @@ Email: Daniel.Nicorici@gmail.com
                  options.verbose,
                  options.link,
                  options.shortest_read,
+                 options.trim_n,
                  options.processes)
 
 
 if __name__ == '__main__':
     main()
+    
+    
+    
+#

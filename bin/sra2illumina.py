@@ -48,6 +48,8 @@ import optparse
 import phred
 import shutil
 import errno
+import gc
+
 
 
 def give_me_temp_filename(tmp_dir = None):
@@ -92,7 +94,9 @@ def sra2illumina(input_file,
         i = 0
         r = 0
         while True:
+            gc.disable()
             lines = fid.readlines(size_read_buffer)
+            gc.enable()
             if not lines:
                 break
             n = len(lines)

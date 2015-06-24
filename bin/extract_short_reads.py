@@ -139,7 +139,7 @@ def extract_reads(f_in, f_list, f_out, mate = False, size_buffer = 2*(10**9)):
             try:
                 lines = fid.readlines(sb)
             except MemoryError:
-                print "Warning: Not enough free memory (it needed %d)!!! Trying again with a 50% smaller buffer..." % (sb,)
+                print "Warning: Not enough free memory (it needed %d)!!! Trying again with a smaller buffer, like for example %d (or %d)!" % (sb,int(int(sb)/2),int(int(sb)/4))
                 sb = int(sb / 2)
                 if sb < 10000000:
                     print "Error: Not enough free memory (it needed %d)!!! Giving up..." % (sb,)

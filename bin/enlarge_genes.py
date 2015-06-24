@@ -189,7 +189,7 @@ if __name__ == '__main__':
         head_t9 = head[:-1]+"T09"
         head_e7 = head[:-1]+"E07"
         head_e9 = head[:-1]+"E09"
-        file(os.path.join(options.output_directory,"custom_genes_mark.txt"),"w").write(head_g9)
+        #file(os.path.join(options.output_directory,"custom_genes_mark.txt"),"w").write(head_g9)
     else:
         print "Error: unknown Ensembl Id!"
         sys.exit(1)
@@ -284,6 +284,7 @@ if __name__ == '__main__':
 
     w = 0
     data = []
+    bed = []
     z = 0
     nn = m - 2 - len(head)
     for ge in give_gene(database, gene):
@@ -332,6 +333,7 @@ if __name__ == '__main__':
                     b,
                     ge[0][strand],
                     ge[0][cr]])
+                bed.append([ge[0][cr],str(a),str(b),'%s-%s-%s' % (g,head_t7+h,head_e7+h),'0','+' if str(ge[0][strand]) == '1' else '-'])
             else:
                 # here two paddings are added at the beginning and the end of the gene
                 # here no covering of gene is done
@@ -353,7 +355,7 @@ if __name__ == '__main__':
                         str(v[1]),
                         ge[0][strand],
                         ge[0][cr]])
-
+                    bed.append([ge[0][cr],str(v[0]),str(v[1]),'%s-%s-%s' % (g,head_t7+h,head_e7+h),'0','+' if str(ge[0][strand]) == '1' else '-'])
             data.extend(nge)
 
         elif len(ge) != 1 and (g not in p) and (not t) and r:
@@ -382,6 +384,7 @@ if __name__ == '__main__':
                     b,
                     ge[0][strand],
                     ge[0][cr]])
+                bed.append([ge[0][cr],str(a),str(b),'%s-%s-%s' % (g,head_t7+h,head_e7+h),'0','+' if str(ge[0][strand]) == '1' else '-'])
             data.extend(nge)
         else:
             data.extend(ge)
@@ -392,7 +395,7 @@ if __name__ == '__main__':
     file(os.path.join(options.output_directory,"exons.txt"),"w").writelines(['\t'.join(line)+'\n' for line in data])
     x = set(['\t'.join((line[gene],line[end],line[start],line[strand],line[cr]))+'\n' for line in data])
     file(os.path.join(options.output_directory,"genes.txt"),"w").writelines(sorted(x))
-
+    file(os.path.join(options.output_directory,"enlarged_genes.bed"),"w").writelines(['\t'.join(line)+'\n' for line in bed])
 
 
     #

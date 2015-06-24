@@ -393,7 +393,7 @@ class pipeline:
     """
     Pipeline class
     """
-    __version__ = '0.98.2 beta'
+    __version__ = '0.98.3 beta'
     __author__  = 'Daniel Nicorici'
     __copyright__ = "Copyright 2009-2015, Daniel Nicorici"
     __credits__ = ["Henrikki Almusa"]
@@ -582,7 +582,7 @@ class pipeline:
                        or if it should be read from the file (i.e. 'yes' and the
                        VALUE contains the file name; only the first line of the
                        file is passed. It is useful when a step needs to be skipped
-                       but there are no known its VALUE. Default is 'no'.
+                       but there it is not known its VALUE. Default is 'no'.
         COMMAND_LINE - specifies if the parameters IDENTIFIER and VALUE are passed
                        to the command line for execution. It can be only 'yes' or
                        'no'. Default is 'yes'.
@@ -843,7 +843,8 @@ class pipeline:
     def run(self,
             comment = 'no',
             error_message = '',
-            successful_exit_status = (0,0) ):
+            successful_exit_status = (0,0),
+            exit_code = 0):
         """
         It runs what has been added using method ADD.
 
@@ -942,8 +943,8 @@ class pipeline:
                         else:
                             self.write('+-->MOCK EXECUTION (i.e. code executed outside of workflow)...')
                         #print "---------------------->",proc,max(successful_exit_status),min(successful_exit_status)
-                        newproc = float(proc)/float(256)
-                        if newproc > max(successful_exit_status) or newproc < min(successful_exit_status):
+                        exit_code = float(proc)/float(256)
+                        if exit_code > max(successful_exit_status) or exit_code < min(successful_exit_status):
                             temp = "\n\nERROR: Workflow execution failed at step %d while executing:\n----------------\n   %s\n----------------\n" % (self.task_count,' \\\n   '.join(cmd_line),)
                             self.write(temp, stderr = True)
                             if error_message:
@@ -1030,7 +1031,7 @@ class pipeline:
             self.__show_step_header_end()
         else:
             # hmm ... there is a list of tasks to be run
-            print "ERROR: Not implemented this yet!"
+            self.write("ERROR: Not implemented this yet!", stderr = True)
             sys.exit(1)
         # cleaning
         #temp = '-'*self.screen_length
@@ -1315,6 +1316,8 @@ class pipeline:
             paths = [paths]
         paths = list(set(paths))
         for a_path in paths:
+            if not a_path:
+                continue
             if a_path.endswith('\\*') or a_path.endswith('/*'):
                 a_path = a_path[:-1]
             if self.__isprotected(a_path):
@@ -1651,7 +1654,7 @@ class pipeline:
     ###
     ### clean
     ###
-    def clean(self, a_path, temp_path = 'yes'):
+    def clean(self, a_path, list_file = 'no', temp_path = 'yes'):
         """
         If the path 'a_path' exists and 'temp_path' is set to 'yes' then the
         path 'a_path' will be deleted.
@@ -1665,19 +1668,52 @@ class pipeline:
         """
         self.task_count = self.task_count + 1
         self.__show_step_header_start()
-        if temp_path == 'yes':
-            self.write("Erasing '%s' (size: %d bytes)" %(a_path, self.__path_size(a_path)))
-        elif temp_path == 'no':
-            self.write("Skipping from erasing '%s' (size: %d bytes)" % (a_path, self.__path_size(a_path)))
-        else:
-          print >> sys.stderr,"Error: unknown temp_path value!"
-          sys.exit(1)
-        executed = True
-        if self.task_count >= self.start_step:
-            if (os.path.exists(a_path) or _islink(a_path)) and temp_path == 'yes':
-                self.__delete_path(a_path)
-        else:
-            executed = False
+
+        if type(a_path).__name__ == 'str':
+            if temp_path == 'yes':
+                self.write("Erasing '%s' (size: %d bytes)" %(a_path, self.__path_size(a_path)))
+            elif temp_path == 'no':
+                self.write("Skipping from erasing '%s' (size: %d bytes)" % (a_path, self.__path_size(a_path)))
+            else:
+              print >> sys.stderr,"Error: unknown temp_path value!"
+              sys.exit(1)
+              
+            executed = True
+            if self.task_count >= self.start_step:
+                if (os.path.exists(a_path) or _islink(a_path)) and temp_path == 'yes':
+                    if list_file == 'yes':
+                        for ap in file(a_path,'r').readlines():
+                            apr = ap.rstrip('\r\n')
+                            if apr and (os.path.exists(apr) or _islink(apr)):
+                                self.__delete_path(apr)
+                    self.__delete_path(a_path)
+            else:
+                executed = False
+        ########################################################################
+        elif type(a_path).__name__ == 'list':
+            for ap in a_path:
+                if temp_path == 'yes':
+                    self.write("Erasing '%s' (size: %d bytes)" %(ap, self.__path_size(ap)))
+                elif temp_path == 'no':
+                    self.write("Skipping from erasing '%s' (size: %d bytes)" % (ap, self.__path_size(ap)))
+                else:
+                  print >> sys.stderr,"Error: unknown temp_path value!"
+                  sys.exit(1)
+                  
+            executed = True
+            if self.task_count >= self.start_step:
+                for ap in a_path:
+                    if (os.path.exists(ap) or _islink(ap)) and temp_path == 'yes':
+                        if list_file == 'yes':
+                            for apl in file(ap,'r').readlines():
+                                apr = apl.rstrip('\r\n')
+                                if apr and (os.path.exists(apr) or _islink(apr)):
+                                    self.__delete_path(apr)
+                        self.__delete_path(ap)
+            else:
+                executed = False
+        
+
         self.__show_step_header_end()
         return executed # return if the task has been executed or skipped
 

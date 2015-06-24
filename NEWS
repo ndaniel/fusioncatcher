@@ -1,6 +1,21 @@
 Version Release History for FusionCatcher
 =========================================
 
+Version 0.99.4c beta - June 24, 2015
+-------------------------------------
+ * added support for Ensembl version 80
+ * added support for fusion genes from paper: D. Robinson, Integrative Clinical 
+   Genomics of Advanced Prostate Cancer, Cell, Vol. 161, May 2015, doi:10.1016/j.cell.2015.05.001
+ * increased sensitivity for fusion genes involving IGH/IGK/TRA/TRB/TRG loci
+ * new output file which reports viruses/bacteria/phages found in the input data
+ * added support for fusion genes known to appear in non-tumor cell lines (e.g. HEK293 cells)
+ * added support for long (>150 bp) for single-end reads
+ * improved support for long (>150 bp) paired-end reads from Illumina sequencers
+ * fixed bug which may have caused script parallel_blat.py to run for days or even hang in cases 
+   when very large number (>5000) of candidate fusion genes are found
+ * fixed several minor bugs
+ * updated manual
+
 
 Version 0.99.4b beta - May 14, 2015
 -------------------------------------

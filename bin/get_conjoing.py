@@ -99,7 +99,7 @@ if __name__ == '__main__':
         print "The Python Excel parser OPENPYXL was found!"
     except:
         print >> sys.stderr,"WARNING: Python OPENPYXL library was not found!"
-        print >> sys.stderr,"Please, install the Python XLRD library in order to be able to parse the ConjoinG database!"
+        print >> sys.stderr,"Please, install the Python OpenPYXL library in order to be able to parse the ConjoinG database!"
         file(os.path.join(options.output_directory,'conjoing.txt'),'w').write('')
         sys.exit(0)
 

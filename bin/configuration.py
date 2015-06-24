@@ -128,6 +128,7 @@ def manage(configuration_filename, skip_python = []):
         _envpath(CONF,config,"paths","lzop")
         _envpath(CONF,config,"paths","coreutils")
         _envpath(CONF,config,"paths","pigz")
+        _envpath(CONF,config,"paths","pxz")
         _envpath(CONF,config,"paths","samtools")
         _envpath(CONF,config,"paths","seqtk")
         _envpath(CONF,config,"paths","star")
@@ -135,6 +136,7 @@ def manage(configuration_filename, skip_python = []):
         _envpath(CONF,config,"paths","picard")
         _envpath(CONF,config,"paths","sra")
         _envpath(CONF,config,"paths","bwa")
+        _envpath(CONF,config,"paths","parallel")
 
         _path(CONF,config,"paths","data")
         _path(CONF,config,"paths","picard")

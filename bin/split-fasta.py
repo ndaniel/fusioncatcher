@@ -75,6 +75,8 @@ def sequence(afile):
 
 
 def int2str(x,n=3):
+    if n < 1:
+        n = 1
     x = str(x)
     return '0' * int(n - len(x)) + x
 
@@ -85,7 +87,7 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = """It a FASTA file into several equally sized FASTA files such that all are below a given size threshold."""
-    version = "%prog 0.10 beta"
+    version = "%prog 0.11 beta"
 
     parser = optparse.OptionParser(
         usage = usage,
@@ -129,6 +131,13 @@ if __name__ == '__main__':
                       dest = "output_filename",
                       help = """The output file which contains the paths to the splitted FASTA files.""")
 
+
+    parser.add_option("--output-max-lens","-x",
+                      action = "store",
+                      type = "string",
+                      dest = "output_max_lens_filename",
+                      help = """The output file which contains the paths to the maximum lengths of the splitted FASTA files.""")
+
     (options,args) = parser.parse_args()
 
     # validate options
@@ -170,21 +179,30 @@ if __name__ == '__main__':
         n = int(math.ceil(float(size) / float(threshold)))
         bucket = int(math.ceil(float(size) / float(n)))
 
-    xlist = []
+
     truck = []
     level = 0
     xid = 0
 
-    no_digits = math.log(n+1,10)
+    no_digits = int(math.ceil(math.log(n+1,10)))
 
     f = options.output_filename+'.'+int2str(xid,no_digits)
-    xlist.append(f)
+    xlist = [f]
     fod = open(f,"w")
+    
+    max_lens = False
+    if options.output_max_lens_filename:
+        max_lens = True
+    maxlist = []
+    
     temp = 0
     seq_count = 0
-    wrote = False
+    written = False
+    max_x = 0
     if options.seq_per_fasta:
         for (seq,x) in sequence(options.input_filename):
+            if x > max_x:
+                max_x = x
             truck.extend(seq)
             seq_count = seq_count + 1
             temp = temp + x
@@ -195,18 +213,26 @@ if __name__ == '__main__':
                 temp = 0
                 #
                 fod.close()
+                if max_lens:
+                    fmax = options.output_max_lens_filename+'.'+int2str(xid,no_digits)
+                    file(fmax,'w').write("%d" %(max_x,))
+                    maxlist.append(fmax)
+                    max_x = 0
+                    
                 xid = xid + 1
                 f = options.output_filename+'.'+int2str(xid,no_digits)
                 fod = open(f,'w')
-                wrote = False
+                written = False
                 xlist.append(f)
             elif temp >= buffer_size:
                 fod.writelines(truck)
                 truck = []
                 temp = 0
-                wrote = True
+                written = True
     else:
         for (seq,x) in sequence(options.input_filename):
+            if x > max_x:
+                max_x = x
             truck.extend(seq)
             level = level + x
             temp = temp + x
@@ -217,22 +243,39 @@ if __name__ == '__main__':
                 temp = 0
                 #
                 fod.close()
+                if max_lens:
+                    fmax = options.output_max_lens_filename+'.'+int2str(xid,no_digits)
+                    file(fmax,'w').write("%d" %(max_x,))
+                    maxlist.append(fmax)
+                    max_x = 0
+                
                 xid = xid + 1
                 f = options.output_filename+'.'+int2str(xid,no_digits)
                 fod = open(f,'w')
-                wrote = False
+                written = False
                 xlist.append(f)
             elif temp >= buffer_size:
                 fod.writelines(truck)
                 truck = []
                 temp = 0
-                wrote = True
+                written = True
+    if truck:
+        fod.writelines(truck)
+        written = True
+        if max_lens:
+            fmax = options.output_max_lens_filename+'.'+int2str(xid,no_digits)
+            file(fmax,'w').write("%d" %(max_x,))
+            maxlist.append(fmax)
+            max_x = 0
     fod.close()
-    if wrote == False: # the last opened file might be empty
+    if written == False: # the last opened file might be empty
         last = xlist.pop()
         os.remove(last)
 
     file(options.output_filename,"w").writelines([el+'\n' for el in xlist])
+    
+    if max_lens:
+        file(options.output_max_lens_filename,"w").writelines([el+'\n' for el in maxlist])
     #
     # end
     #

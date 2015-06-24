@@ -268,9 +268,18 @@ def contigs_unique_overlapping_from(a_psl_filename):
             chunk = []
         chunk.append(line)
 
+
 #########################
-def contigs_unique_overlapping_and_ties_from(a_psl_filename, allowed_ties = ""):
-    # when there is tie best mapping then all the best mappings are outputed if they overlap each other on same reference sequence
+def contigs_unique_gene_overlapping_ties_from(a_psl_filename, overlapping_genes=set()):
+    # when there is a tie best mapping then all the best mappings are outputed if they overlap each other on same reference sequence
+    """
+    example of overlapping
+    
+100	0	0	0	0	0	1	12890	+	3/2	100	0	100	ENSG00000187266|ENSG09000000020|7138	44139	6042	19032	2	74,26,	0,74,	6042,19006,
+100	0	0	0	0	0	1	10311	-	3/2	100	0	100	ENSG00000204650|ENSG09000000035|27889	44890	18779	29190	2	25,75,	0,25,	18779,29115,
+82	0	0	0	0	0	1	12890	-	4/1	82	0	82	ENSG00000187266|ENSG09000000020|7138	44139	6081	19053	2	35,47,	0,35,	6081,19006,
+82	0	0	0	0	0	1	10311	+	4/1	82	0	82	ENSG00000204650|ENSG09000000035|27889	44890	18758	29151	2	46,36,	0,46,	18758,29115,
+    """
     last_contig = ''
     chunk = []
     for line in lines_none_from(a_psl_filename):
@@ -278,8 +287,81 @@ def contigs_unique_overlapping_and_ties_from(a_psl_filename, allowed_ties = ""):
             line9 = last_contig+'_'
         else:
             line9 = line[9]
+            
         if not chunk:
             last_contig = line9 # line[9] is column no 10 which is query name
+            
+        if last_contig != line9: # line[9] is column no 10 which is query name
+            # the bin is full and now analyze it
+            n = len(chunk)
+            if n == 1:
+                yield '\t'.join(chunk[0])+'\n'
+            elif chunk[0][0] != chunk[1][0]: #matches for first best mapping and second best mapping
+                yield '\t'.join(chunk[0])+'\n'
+            else: # allow ties for best mappins if all of them are overllaping each other
+                chunk = [el for el in chunk if el[0]==chunk[0][0]] # get top ties
+                tseq =  set([el[13] for el in chunk]) # get target sequence for all ties
+                ltseq = len(tseq)
+                if tseq and ltseq == 1:
+                    # test overlapping
+                    a0 = int(chunk[0][15])
+                    a1 = int(chunk[0][16])
+                    flg = True
+                    for e in xrange(1,len(chunk)):
+                        b0 = int(chunk[e][15])
+                        b1 = int(chunk[e][16])
+                        if not (b0 <= a1 and b1 >= a0):
+                            flg = False
+                            break
+                    if flg:
+                        for el in chunk:
+                            yield '\t'.join(el)+'\n'
+                else: # more than one gene
+                    tseq = sorted(set([tuple(sorted(el.split('|')[:2])) for el in tseq]))
+                    # are all the genes overlapping each other?
+                    flg = True
+                    nn = len(tseq)
+                    if ltseq != nn:
+                        flg = False
+                    else:
+                        for ax in xrange(nn-1):
+                            for bx in xrange(ax+1,nn):
+                                cx1 = tseq[ax][0]
+                                cx2 = tseq[ax][1]
+                                dx1 = tseq[bx][0]
+                                dx2 = tseq[bx][1]
+                                e1 = '|'.join(sorted([cx1,dx1]))
+                                e2 = '|'.join(sorted([cx1,dx2]))
+                                e3 = '|'.join(sorted([cx2,dx1]))
+                                e4 = '|'.join(sorted([cx2,dx2]))
+                                if (e1 in overlapping_genes) or (e2 in overlapping_genes) or (e3 in overlapping_genes) or (e4 in overlapping_genes):
+                                    pass
+                                else:
+                                    flg = False
+                                    break
+                            if not flg:
+                                break
+                    if flg:
+                        for el in chunk:
+                            yield '\t'.join(el)+'\n'
+            last_contig = line9
+            chunk = []
+        chunk.append(line)
+
+#########################
+def contigs_unique_overlapping_and_ties_from(a_psl_filename, allowed_ties = ""):
+    # when there is a tie best mapping then all the best mappings are outputed if they overlap each other on same reference sequence
+    last_contig = ''
+    chunk = []
+    for line in lines_none_from(a_psl_filename):
+        if not line: # signal for last line
+            line9 = last_contig+'_'
+        else:
+            line9 = line[9]
+            
+        if not chunk:
+            last_contig = line9 # line[9] is column no 10 which is query name
+            
         if last_contig != line9: # line[9] is column no 10 which is query name
             # the bin is full and now analyze it
             n = len(chunk)
@@ -490,6 +572,11 @@ if __name__ == '__main__':
                       dest="input_ties_filename",
                       help="""A input text file containing a string (which is part of a gene) for which ties are allowed.""")
 
+    parser.add_option("--ties-overlappings",
+                      action="store",
+                      type="string",
+                      dest="input_ties_overlappings_filename",
+                      help="""A input text file containing a list of pairs of genes which overlap each other.""")
 
     parser.add_option("--output_multiple_alignments","-m",
                       action="store",
@@ -576,11 +663,20 @@ if __name__ == '__main__':
         data = contigs_unique_within_same_gene_from(ft_name_2)
     else:
         ties = ""
+        ties_overlappings = set()
         if options.input_ties_filename:
             ties = file(options.input_ties_filename,"r").readline().rstrip("\r\n")
+        elif options.input_ties_overlappings_filename:
+            ties_overlappings = set()
+            for f1 in options.input_ties_overlappings_filename.split(','):
+                if f1:
+                    ties_overlappings.update(set(['|'.join(sorted(line.rstrip('\r\n').split('\t'))) for line in file(f1,"r").readlines() if line.rstrip('\r\n')]))
+            
         if ties:
             #data = contigs_unique_and_ties_from(ft_name_2,ties)
             data = contigs_unique_overlapping_and_ties_from(ft_name_2,ties)
+        elif ties_overlappings:
+            data = contigs_unique_gene_overlapping_ties_from(ft_name_2,ties_overlappings)
         else:
             #data = contigs_unique_from(ft_name_2)
             data = contigs_unique_overlapping_from(ft_name_2)

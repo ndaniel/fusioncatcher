@@ -91,6 +91,7 @@ genes."""
 
     genes_database_filename = options.input_genes_positions
     adjacent_database_filename = os.path.join(options.output_directory,'adjacent_genes.txt')
+    readthrough_database_filename = os.path.join(options.output_directory,'readthroughs.txt')
 
     # of type
     # for example file: genes.txt
@@ -116,7 +117,8 @@ genes."""
 
     stra=set([line[col['strand']] for line in database])
 
-    adjacent=set()
+    adjacent = set()
+    readthrough = set()
 
     cr=col['chr']
     start=col['start']
@@ -126,6 +128,7 @@ genes."""
 
     for c in chrom:
         for st in stra:
+            forward = False if st.startswith('-') else True
             data=[(line[0],int(line[1]),int(line[2]),int(line[3]),line[4]) for line in database if line[cr]==c and line[strand]==st]
             data=sorted( data, key=lambda x: (x[start],x[end]))
             print 'chromsome=',c,'has', len(data),'known genes on',st,'strand.'
@@ -153,9 +156,15 @@ genes."""
                             break
                     if flag: # they are adjacent
                         adjacent.add('\t'.join(sorted([g_1,g_2]))+'\n')
+                        if forward:
+                            readthrough.add("%s\t%s\n"%(g_1,g_2))
+                        else:
+                            readthrough.add("%s\t%s\n"%(g_2,g_1))
                     else:
                         break
-    print "Found",len(adjacent),"genes."
+    print "Found",len(adjacent)," adjacent genes."
+    print "Found",len(readthrough)," reathroughs."
 
     file(adjacent_database_filename,'w').writelines(sorted(list(adjacent)))
+    file(readthrough_database_filename,'w').writelines(sorted(list(readthrough)))
     #

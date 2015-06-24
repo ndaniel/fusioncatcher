@@ -49,22 +49,31 @@ import string
 import math
 import itertools
 
-def generate_id(t, lowercase = False, no12 = False):
+def generate_id(t, lowercase = False, interleaved = True, no12 = False):
     digits = string.digits + string.ascii_uppercase
     if lowercase:
         digits = digits + string.ascii_lowercase
     l = len(digits)
-    r = int(math.ceil(math.log(float(t+10)/float(2),l)))
-    if no12:
-        for el in itertools.product(digits,repeat = r):
-            x = ''.join(el)
-            yield "@%s\n" % (x,)
-            yield "@%s\n" % (x,)
+    if interleaved:
+        r = int(math.ceil(math.log(float(t+10)/float(2),l)))
+        if no12:
+            for el in itertools.product(digits,repeat = r):
+                x = ''.join(el)
+                yield "@%s\n" % (x,)
+                yield "@%s\n" % (x,)
+        else:
+            for el in itertools.product(digits,repeat = r):
+                x = ''.join(el)
+                yield "@%s/1\n" % (x,)
+                yield "@%s/2\n" % (x,)
     else:
+        r = int(math.ceil(math.log(float(t+5),l)))
         for el in itertools.product(digits,repeat = r):
             x = ''.join(el)
-            yield "@%s/1\n" % (x,)
-            yield "@%s/2\n" % (x,)
+            yield "@%s\n" % (x,)
+
+
+
 
 if __name__ == '__main__':
 
@@ -72,15 +81,18 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = """It compresses using lossy compression the ids of all reads from a input FASTQ file (using the read index/count). The compressed reads ids have all the ids in alphabetically order."""
-    version = "%prog 0.11 beta"
+    version = "%prog 0.15 beta"
 
-    parser = optparse.OptionParser(usage=usage,description=description,version=version)
+    parser = optparse.OptionParser(
+                usage = usage,
+                description = description,
+                version = version)
 
     parser.add_option("--input","-i",
                       action="store",
                       type="string",
                       dest="input_filename",
-                      help="""The input file in FASTQ Solexa file (also given thru STDOUT or as gzipped file). It is assumed that the input reads are shuffled/interleaved (that is read id 1 is followed by read id 2 where read 1 and read 2 form a pair). """)
+                      help="""The input file in FASTQ Solexa file (also given thru STDOUT or as gzipped file). By default, it is assumed that the input reads are shuffled/interleaved (that is read id 1 is followed by read id 2 where read 1 and read 2 form a pair). """)
 
     parser.add_option("--output","-o",
                       action="store",
@@ -92,15 +104,21 @@ if __name__ == '__main__':
                       action = "store",
                       type = "string",
                       dest = "count",
-                      help="""The total number of reads in the input file. This is used in order to generate the compress the best the reads ids.""")
+                      help="""The total number of reads in the input file. This is used in order to compress the best the reads ids.""")
 
     parser.add_option("--no12","-s",
                       action = "store_true",
                       dest = "no12",
                       default = False,
-                      help="""If this is set than no /1 and /2 will be added to the compressed reads ids.""")
+                      help="""If this is set than no /1 and /2 will be added to the compressed reads ids. It has an effect only on interleaved inputs.""")
 
-    parser.add_option("--lowercase",
+    parser.add_option("--not-interleaved","-x",
+                      action = "store_true",
+                      dest = "not_interleaved",
+                      default = False,
+                      help="""If it is set then the input reads from the input FASTQ files are not interleaved. Also no /1 or /2 is added to the reads ids.""")
+
+    parser.add_option("--lowercase","-l",
                       action = "store_true",
                       dest = "lowercase",
                       default = False,
@@ -110,8 +128,7 @@ if __name__ == '__main__':
 
     # validate options
     if not (options.input_filename and
-            options.output_filename and
-            options.count
+            options.output_filename
             ):
         parser.print_help()
         parser.error("Input and output files should be specified!")
@@ -135,28 +152,32 @@ if __name__ == '__main__':
         fou = open(options.output_filename,'w')
 
     n = 0
-    if os.path.isfile(options.count):
-        n = sum([int(line.strip()) for line in file(options.count,'r').readlines() if line.strip()])
-    else:
-        n = int(options.count)
+    if options.count:
+        if os.path.isfile(options.count):
+            n = sum([int(line.strip()) for line in file(options.count,'r').readlines() if line.strip()])
+        else:
+            n = int(options.count)
     if not n:
-        print >>sys.stderr,"Warning: Cannot read/use the '--count-reads' option!"
+        print >>sys.stderr,"Warning: Cannot read/use the '--count-reads' option! Therefore the counting will be done by the script!"
         # then use the file size as a proxy for the number of reads
         if options.input_filename != '-':
+            n = 0
             fid = open(options.input_filename,'r')
             sb = 10**8
             while True:
+                gc.disable()
                 lines = fid.readlines(sb)
+                gc.enable()
                 if not lines:
                     break
                 n = n + len(lines)
             fid.close()
             n = n / 4
         else:
-            print >>sys.stderr,"Error: '--count-reads' option is needed to be specified!"
+            print >>sys.stderr,"ERROR: '--count-reads' option is needed to be specified!"
             sys.exit(1)
     i = 0
-    ids = generate_id(n, lowercase = options.lowercase)
+    ids = generate_id(n, lowercase = options.lowercase, interleaved = (not options.not_interleaved), no12=options.no12)
     sb = 10**8
     while True:
         gc.disable()
@@ -165,7 +186,7 @@ if __name__ == '__main__':
         if not lines:
             break
         gc.disable()
-        lines = [line if (j+i)%4 != 0 else ids.next() for (j,line) in enumerate(lines)]
+        lines = [ids.next() if (j+i)%4 == 0 else '+\n' if (j+i)%4 == 2 else line for (j,line) in enumerate(lines)]
         gc.enable()
         i = i + len(lines)
         fou.writelines(lines)

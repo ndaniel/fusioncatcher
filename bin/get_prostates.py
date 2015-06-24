@@ -3,7 +3,7 @@
 """
 
 It downloads the fusion genes from article:
-C. Klijn et al., A comprehensive transcriptional portrait of human cancer cell lines, Nature Biotechnology, Dec. 2014, doi:10.1038/nbt.3080
+D. Robison et al., Integrative Clinical Genomics of Advanced Prostate Cancer, Cell, Vol. 161, May 2015, http://dx.doi.org/10.1016/j.cell.2015.05.001
 
 
 
@@ -59,12 +59,10 @@ if __name__ == '__main__':
     #command line parsing
 
     usage = "%prog [options]"
-    description = """It downloads the human fusion genes found in 675 cell lines from article: C. Klijn et al., A comprehensive transcriptional portrait of human cancer cell lines, Nature Biotechnology, Dec. 2014, doi:10.1038/nbt.3080"""
+    description = """It downloads the human fusion genes found in prostate cancer patients from article: D. Robison et al., Integrative Clinical Genomics of Advanced Prostate Cancer, Cell, Vol. 161, May 2015, http://dx.doi.org/10.1016/j.cell.2015.05.001"""
     version = "%prog 0.12 beta"
 
-    parser = optparse.OptionParser(usage = usage,
-                                   description = description,
-                                   version = version)
+    parser = optparse.OptionParser(usage=usage,description=description,version=version)
 
     parser.add_option("--organism","-g",
                       action = "store",
@@ -80,17 +78,12 @@ if __name__ == '__main__':
                       default = '.',
                       help="""The output directory where the known fusion genes are stored. Default is '%default'.""")
 
-    parser.add_option("--data1",
+    parser.add_option("--data",
                       action="store",
                       type="string",
-                      dest="data1_filename",
+                      dest="data_filename",
                       help="""The input Excel file containg the data from the article. It should be used when there is no internet connection to the site which hosts the article.""")
 
-    parser.add_option("--data2",
-                      action="store",
-                      type="string",
-                      dest="data2_filename",
-                      help="""The input Excel file containg the data from the article. It should be used when there is no internet connection to the site which hosts the article.""")
 
     parser.add_option("--skip-filter-overlap",
                       action="store_true",
@@ -107,13 +100,14 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
+    file(os.path.join(options.output_directory,'prostates.txt'),'w').write('')
+
     try:
-        import xlrd
-        print "The Python Excel XLRD parser was found!"
+        import openpyxl
+        print "The Python Excel parser OPENPYXL was found!"
     except:
-        print >> sys.stderr,"WARNING: Python XLRD library not found!"
-        print >> sys.stderr,"Please, install XLRD python library in order to be able to parse the fusions from cell lines database!"
-        file(os.path.join(options.output_directory,'celllines.txt'),'w').write('')
+        print >> sys.stderr,"WARNING: Python OPENPYXL library was not found!"
+        print >> sys.stderr,"Please, install the Python OpenPYXL library in order to be able to parse the known fusion genes in prostate tumor patients!"
         sys.exit(0)
 
 
@@ -122,84 +116,91 @@ if __name__ == '__main__':
     socket.setdefaulttimeout(timeout)
 
     # NEW:
-    # http://www.nature.com/nbt/journal/vaop/ncurrent/extref/nbt.3080-S7.xls
-    # http://www.nature.com/nbt/journal/vaop/ncurrent/extref/nbt.3080-S8.xls
+    # http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0092867415005486/1-s2.0-S0092867415005486-mmc4.xlsx/272196/html/S0092867415005486/198196b9ed4de2f80a504687fdfb5126/mmc4.xlsx
 
 
-    #url1 = 'http://www.nature.com/nbt/journal/vaop/ncurrent/extref/nbt.3080-S7.xls'
-    #url2 = 'http://www.nature.com/nbt/journal/vaop/ncurrent/extref/nbt.3080-S8.xls'
-    url1 = 'http://www.nature.com/nbt/journal/v33/n3/extref/nbt.3080-S7.xls'
-    url2 = 'http://www.nature.com/nbt/journal/v33/n3/extref/nbt.3080-S8.xls'
-    tmp1_file = os.path.join(options.output_directory,'temp1_celllines.xls')
-    tmp2_file = os.path.join(options.output_directory,'temp2_celllines.xls')
+    #url = 'http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0092867415005486/1-s2.0-S0092867415005486-mmc4.xlsx/272196/html/S0092867415005486/198196b9ed4de2f80a504687fdfb5126/mmc4.xlsx'
+    url = 'http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0092867415005486/1-s2.0-S0092867415005486-mmc4.xlsx/272196/html/S0092867415005486/198196b9ed4de2f80a504687fdfb5126/mmc4.xlsx'
+    tmp_file = os.path.join(options.output_directory,'temp_prostates.xls')
+
+
 
 
     if options.organism.lower() == 'homo_sapiens':
         today = datetime.date.today()
         data = []
         sem = True
-        if options.data1_filename:
-            tmp1_file = options.data1_filename
-            if options.data2_filename:
-                tmp2_file = options.data2_filename
+        if options.data_filename:
+            tmp_file = options.data_filename
             print "Using the local file..."
         else:
             print "Downloading the known fusion genes from the article..."
             try:
-                da1 = urllib2.urlopen('%s' % (url1,))
-                file(tmp1_file,'w').write(da1.read())
+                da = urllib2.urlopen('%s' % (url,))
+                file(tmp_file,'w').write(da.read())
             except:
-                print >>sys.stderr, "Warning: Cannot access '%s'! The output file will be empty!" % (url1,)
-                sem = False
-
-            try:
-                da2 = urllib2.urlopen('%s' % (url2,))
-                file(tmp2_file,'w').write(da2.read())
-            except:
-                print >>sys.stderr, "Warning: Cannot access '%s'! The output file will be empty!" % (url2,)
+                print >>sys.stderr, "Warning: Cannot access '%s'! The output file will be empty!" % (url,)
                 sem = False
 
         data = []
         if sem:
             print "Parsing..."
             # parse the ChimerDB file with the known fusion genes
-            wb = xlrd.open_workbook(tmp1_file)
+            wb = None
             data = set()
 
-            # parse the sheet
-            sheet = wb.sheet_by_index(0) #
-            i = 0
-            for row in xrange(sheet.nrows):
-                if row == 0 or row == 1: # skip first and second line
-                    continue
-                line = sheet.row_values(row)
-                g1 = line[1].upper().encode('ascii','ignore')
-                g2 = line[2].upper().encode('ascii','ignore')
-                (g1,g2) = (g2,g1) if g2 < g1 else (g1,g2)
-                data.add((g1,g2))
-                i = i + 1
-            print " - found",i
+            try:
+                # new version of openpyxl
+                print "Using the new version of openpyxl..."
+                wb = openpyxl.load_workbook(filename=tmp_file)
+            except:
+                print "The new version of openpyxl did not work and now using the old version of openpyxl..."
+                # old version of openpyxl
+                try:
+                    wb = openpyxl.reader.excel.load_workbook(filename=tmp_file)
+                except:
+                    print "WARNING: Not able to use the python openpyxl library!"
+                    if not options.data_filename:
+                        os.remove(tmp_file)
+                    sys.exit(0)
 
-            i = 0
-            wb = xlrd.open_workbook(tmp2_file)
-            # parse the sheet
-            sheet = wb.sheet_by_index(0) #
-            for row in xrange(sheet.nrows):
-                if row == 0 or row == 1: # skip first and second line
+            print "..."
+            # parse the Sheet1 sheet
+            sheet = wb.get_sheet_by_name(name = 'GENE FUSIONS') #
+
+            for i,row in enumerate(sheet.rows): # sheet.iter_rows()
+                if i == 0 or i == 1 or i == 2: # skip first and second lines
                     continue
-                line = sheet.row_values(row)
-                g = line[2].upper().encode('ascii','ignore').strip().split(" ")
-                if g and g[0]:
-                    g1 = g[0]
-                    if g[1]:
-                        g2 = g[1]
-                        (g1,g2) = (g2,g1) if g2 < g1 else (g1,g2)
-                        data.add((g1,g2))
-                        i = i + 1
-            print " - found",i
+                f = False
+                try:
+                    g1 = row[3].value.encode('ascii','ignore').upper().strip()
+                    g2 = row[6].value.encode('ascii','ignore').upper().strip()
+                except:
+                    f = True
+                if f:
+                    continue
+                
+                if g1.find('(') != -1:
+                    t = g1.replace(')','').split('(')
+                    g1 = [t[0].strip(),t[1].strip()]
+                else:
+                    g1 = [g1]
+
+                if g2.find('(') != -1:
+                    t = g2.replace(')','').split('(')
+                    g2 = [t[0].strip(),t[1].strip()]
+                else:
+                    g2 = [g2]
+                for gg1 in g1:
+                    for gg2 in g2:
+                        if gg1 and gg2 and gg1 != gg2:
+                            (gg1,gg2) = (gg2,gg1) if gg2 < gg1 else (gg1,gg2)
+                            data.add((gg1,gg2))
+
+            print " - found",len(data),"fusions"
 
             # save version of
-            txt = ['Cell lines (Klijn et al. Nature Biotechnology 2014) database version: %s\n' % (today.strftime("%Y-%m-%d"),)]
+            txt = ['Prostate Tumor Patients (Robison et al. Cell 2015) database version: %s\n' % (today.strftime("%Y-%m-%d"),)]
             file(os.path.join(options.output_directory,'version.txt'),'a').writelines(txt)
 
     #
@@ -231,12 +232,16 @@ if __name__ == '__main__':
                 d1 = []
                 overlappings = ['ensembl_fully_overlapping_genes.txt',
                                 'ensembl_same_strand_overlapping_genes.txt',
+                                'gencode_fully_overlapping_genes.txt',
+                                'gencode_same_strand_overlapping_genes.txt',
                                 'refseq_fully_overlapping_genes.txt',
                                 'refseq_same_strand_overlapping_genes.txt',
                                 "ucsc_fully_overlapping_genes.txt",
                                 "ucsc_same_strand_overlapping_genes.txt",
                                 'pairs_pseudogenes.txt',
                                 'banned.txt',
+                                'dgd.txt',
+                                'healthy.txt',
                                 'paralogs.txt']
                 ensembls = set(['ensembl_fully_overlapping_genes.txt',
                                 'ensembl_same_strand_overlapping_genes.txt'])
@@ -252,7 +257,7 @@ if __name__ == '__main__':
                         d4 = [line.rstrip('\r\n').split('\t') for line in d4]
                         d4 = [line+[ens2hugo.get(line[0],'')]+[ens2hugo.get(line[1],'')] for line in d4]
                         d4 = ['\t'.join(line)+'\n' for line in d4]
-                        file(os.path.join(options.output_directory,"celllines___%s"%(ov,)),'w').writelines(d4)
+                        file(os.path.join(options.output_directory,"prostates___%s"%(ov,)),'w').writelines(d4)
                     if ov in ensembls:
                         ens.extend(d2)
                     d1.extend(d2)
@@ -264,21 +269,19 @@ if __name__ == '__main__':
                     d.add("%s\t%s\n" % (a,b))
                 ens = set(['\t'.join(line)+'\n' for line in ens])
                 ensembl = [line for line in data if line in ens]
-                file(os.path.join(options.output_directory,'celllines___ensembl.txt'),'w').writelines(sorted(ensembl))
+                file(os.path.join(options.output_directory,'prostates___ensembl.txt'),'w').writelines(sorted(ensembl))
                 skipped = [line for line in data if line in d]
                 data = [line for line in data if line not in d]
-                file(os.path.join(options.output_directory,'celllines___all.txt'),'w').writelines(sorted(skipped))
+                file(os.path.join(options.output_directory,'prostates___all.txt'),'w').writelines(sorted(skipped))
 
                 print "%d known fusion genes left after removing the overlappings" % (len(data),)
 
-        file(os.path.join(options.output_directory,'celllines.txt'),'w').writelines(data)
+        file(os.path.join(options.output_directory,'prostates.txt'),'w').writelines(data)
 
-        if os.path.exists(tmp1_file):
-            os.remove(tmp1_file)
-        if os.path.exists(tmp2_file):
-            os.remove(tmp2_file)
+        if os.path.exists(tmp_file) and (not options.data_filename):
+            os.remove(tmp_file)
 
     else:
         # write an empty file for other organisms than human
-        file(os.path.join(options.output_directory,'celllines.txt'),'w').write('')
+        file(os.path.join(options.output_directory,'prostates.txt'),'w').write('')
 #

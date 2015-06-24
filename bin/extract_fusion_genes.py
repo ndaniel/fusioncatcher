@@ -93,6 +93,15 @@ if __name__ == '__main__':
                       default="known_fusion",
                       help="""A fusion gene candidate which has been labeled in the input file with one of the following labels is considered for further analysis even if it has labels which disqualify it (from the --skipp_labels). Default value is '%default'.""")
 
+    parser.add_option("--further_labels",
+                      action="store",
+                      type="string",
+                      dest="further_labels",
+                      default="further_fusion",
+                      help="""A fusion gene candidate which has been labeled in the input file with one of the following labels is considered for further analysis even if it has labels which disqualify it (from the --skipp_labels) or is below the threshold. Default value is '%default'.""")
+
+
+
     parser.add_option("--output",
                       action="store",
                       type="string",
@@ -127,6 +136,11 @@ if __name__ == '__main__':
     super_labels = set()
     if options.allowed_labels:
         super_labels = set(options.allowed_labels.strip().split(','))
+    further_labels = set()
+    
+    if options.further_labels:
+        further_labels = set(options.further_labels.strip().split(','))
+
     print "Reading...",options.input_filename
     # Assume format:
     #Fusion_gene_1	Fusion_gene_2	Count_paired-end_reads	Fusion_gene_symbol_1	Fusion_gene_symbol_2	Information_fusion_genes
@@ -154,7 +168,7 @@ if __name__ == '__main__':
     for line in data:
         counts = int(line[2])
         labels = set(line[5].strip().split(','))
-        if counts >= options.threshold_pairs and i < options.threshold_count and (labels.intersection(super_labels) or (not labels.intersection(skip_labels))):
+        if labels.intersection(further_labels) or (counts >= options.threshold_pairs and i < options.threshold_count and (labels.intersection(super_labels) or (not labels.intersection(skip_labels)))):
             data_ids.append('\t'.join(line[:2])+'\n')
             data_all.append('\t'.join(line+['further_analysis'])+'\n')
             i = i + 1

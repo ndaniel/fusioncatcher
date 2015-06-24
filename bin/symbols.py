@@ -489,7 +489,10 @@ synonym = {
 'IGK':'IGK@',
 'HLA':'HLA@',
 'AC008279.1':'RPL5P8',
-'AC096579.7':'AC096579.13'
+'AC096579.7':'AC096579.13',
+'AK125726':'KIAA1257',
+'AC138031.1':'RPL23AP45',
+'AL672183.2':'RPL23AP25'
 }
 
 # see here for more: http://www.genenames.org/genefamilies/TR#TRG
@@ -729,16 +732,16 @@ def generate_loci(gene_symbols_filename = 'genes_symbols.txt'):
     loci['IGHV@'] = loci['IGH@']
     loci['IG@'] = loci['IGL@'] + loci['IGK@'] + loci['IGH@']
 
-    loci['TRA@'] = find_starts(['TRAC','TRAV','TRAJ'],genes)
+    loci['TRA@'] = find_starts(['TRAC','TRAV','TRAJ','TRA_locus'],genes)
     loci['TCRA@'] = loci['TRA@']
-    loci['TRB@'] = find_starts(['TRBV','TRBD','TRBJ','TRBC'],genes)
+    loci['TRB@'] = find_starts(['TRBV','TRBD','TRBJ','TRBC','TRB_locus'],genes)
     loci['TCRB@'] = loci['TRB@']
     loci['TRBV@'] = find_starts(['TRBV'],genes)
     loci['TCRVB@'] = loci['TRBV@']
     loci['TCRBV@'] = loci['TRBV@']
-    loci['TRD@'] = find_starts(['TRDV','TRDD','TRDJ','TRDC'],genes)
+    loci['TRD@'] = find_starts(['TRDV','TRDD','TRDJ','TRDC','TRD_locus'],genes)
     loci['TCRB@'] = loci['TRD@']
-    loci['TRG@'] = find_starts(['TRGV','TRGJ','TRGC'],genes)
+    loci['TRG@'] = find_starts(['TRGV','TRGJ','TRGC','TRG_locus'],genes)
     loci['TCRG@'] = loci['TRG@']
     loci['TCR@'] = loci['TRG@'] + loci['TRD@'] + loci['TRBV@'] + loci['TRB@'] + loci['TRA@']
     return loci

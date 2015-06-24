@@ -427,6 +427,12 @@ if __name__ == '__main__':
                       default = False,
                       help = """If used then the supporting reads from the FASTA file are assembled using VELVET. Default is '%default'.""")
 
+    parser.add_option("--output_all_candidate_fusion_genes_reads",
+                      action = "store",
+                      type = "string",
+                      dest = "output_all_candidate_fusion_genes_reads_filename",
+                      help = """The output list of candidate fusion genes and the supporting reads.""")
+
 
 
     (options, args) = parser.parse_args()
@@ -617,8 +623,22 @@ if __name__ == '__main__':
     # 5  - Supporting_paired-read_ids  ==> separated by commas, e.g.  F1000018349733,F1000033997513,F1000046358541,F1000034322437,...
     candidate_fusions_reads = [line.rstrip('\r\n').split('\t') for line in file(options.input_candidate_fusion_genes_reads_filename,'r').readlines()]
     candidate_fusions_reads.pop(0) # remove the header
+    if options.output_all_candidate_fusion_genes_reads_filename:
+        all_candidate_fusions_reads = [(el[2]+"--"+el[3]+"__"+el[0]+"--"+el[1],el[5].split(',')) for el in candidate_fusions_reads]
+        xlist = []
+        for xfusion,xreads in all_candidate_fusions_reads:
+            f = "%s.%s.txt" % (options.output_all_candidate_fusion_genes_reads_filename,xfusion)
+            xlist.append(f)
+            xr = []
+            for xrs in xreads:
+                xr.append("%s/1" %(xrs,))
+                xr.append("%s/2" %(xrs,))
+            xr = sorted(set(xr))
+            file(f,'w').writelines([el+'\n' for el in xr])
+        file(options.output_all_candidate_fusion_genes_reads_filename,'w').writelines([el+'\n' for el in xlist])
+        all_candidate_fusions_reads = []
     candidate_fusions_reads = dict([(tuple(myorder(el[2],el[3])),el[5].split(',')) for el in candidate_fusions_reads if myorder(el[2],el[3]) in candidate_fusions])
-
+    
     print "Reading...",options.input_candidate_fusions_missing_mates_filename
     # 0  - missing_mate
     # 1  - found_mate
@@ -856,7 +876,8 @@ if __name__ == '__main__':
             else:
                 da.append("@%s_supports_fusion_junction%s\n"%(v[:-2],v[-2:]))
             sq = fastq[v]
-            da.append("%s\n+\n%s\n"%(sq[0],illumina2sanger(sq[1])))
+            #da.append("%s\n+\n%s\n"%(sq[0],illumina2sanger(sq[1])))
+            da.append("%s\n+\n%s\n"%(sq[0],sq[1]))
         archive.writestr("%s_reads.fq" % (gg,), ''.join(da))
         if options.input_genome_bowtie2:
             sam = give_me_sam(da,

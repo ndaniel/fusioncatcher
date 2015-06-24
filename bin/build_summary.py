@@ -113,7 +113,7 @@ if __name__ == '__main__':
         for r in data:
             f1 = "%s--%s" % (r[1],r[0])
             f2 = "%s--%s" % (r[0],r[1])
-            if r[2].lower().find('known_fusion') != -1 or r[2].lower().find('tcga') != -1 or r[2].lower().find('cell_lines') != -1:
+            if r[2].lower().find('known_fusion') != -1 or r[2].lower().find('tcga') != -1 or r[2].lower().find('cell_lines') != -1 or r[2].lower().find('prostates') != -1:
                 known.add(f1)
                 known.add(f2)
 
@@ -125,6 +125,16 @@ if __name__ == '__main__':
             if r[2].lower().find('healthy') != -1 or r[2].lower().find('banned') != -1 or r[2].lower().find('overlap') != -1 :
                 questionable.add(f1)
                 questionable.add(f2)
+
+        # readthrough
+        readthrough = set()
+        for r in data:
+            f1 = "%s--%s" % (r[1],r[0])
+            f2 = "%s--%s" % (r[0],r[1])
+            if r[2].lower().find('readthrough') != -1:
+                readthrough.add(f1)
+                readthrough.add(f2)
+
 
         found = []
         bag = set()
@@ -151,6 +161,8 @@ if __name__ == '__main__':
                 label.append('already known fusion')
             if line in questionable:
                 label.append('probably false positive')
+            if line in readthrough:
+                label.append('readthrough')
             if label:
                 label = "  ("+'; '.join(label)+")"
             else:

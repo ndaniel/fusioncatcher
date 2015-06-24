@@ -642,7 +642,8 @@ if __name__ == '__main__':
         for v in sorted(pairs[gg_e]):
             da.append("@%s_supports_fusion_pair%s\n"%(v[:-2],v[-2:]))
             sq = fastq[v]
-            da.append("%s\n+\n%s\n"%(sq[0],illumina2sanger(sq[1])))
+            #da.append("%s\n+\n%s\n"%(sq[0],illumina2sanger(sq[1])))
+            da.append("%s\n+\n%s\n"%(sq[0],sq[1]))
         archive.writestr("%s_reads.fq" % (gg,), ''.join(da))
         if options.input_genome_bowtie2:
             sam = give_me_sam(da,

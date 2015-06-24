@@ -144,7 +144,7 @@ if __name__ == '__main__':
                 ftp.retrbinary("RETR " + filename, fid.write)
                 fid.close()
         else:
-            print "ERROR: Cannot find the genome and mitochondrida files!"
+            print "ERROR: Cannot find the genome and mitochondria files!"
             sys.exit(1)
         ftp.close()
     except ftplib.all_errors, e:

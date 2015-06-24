@@ -130,7 +130,7 @@ def fq2fq(f_in,
         fot = 'fastq-illumina'
     else:
         fot = 'fastq-'+f_out_type
-    if fit == fot:
+    if fit == fot and fit != '-':
         # input type is same as output type
         if os.path.isfile(f_out) or os.path.islink(f_out):
             os.remove(f_out)
@@ -166,10 +166,37 @@ def fq2fq(f_in,
 
     else:
         if hasattr(Bio.SeqIO,'convert'):
+        
+            fin = f_in
+            if f_in == "-":
+                fin = sys.stdin
+            elif f_in.lower().endswith('.gz'):
+                fid = gzip.open(f_in,'r')
+            else:
+                fin = open(f_in,'r')
+                
+
+            fout = f_out
+            if f_out == "-":
+                fout = sys.stdout
+            elif f_out.lower().endswith('.gz'):
+                fout = gzip.open(f_out,'r')
+            else:
+                fout = open(f_out,'w')
+
+
             counts = Bio.SeqIO.convert(f_in, fit, f_out, fot)
+            
+            
+            fin.close()
+            fout.close()
+            
         else:
             print  >>sys.stderr,"Bio.SeqIO.convert() not supported!"
             print  >>sys.stderr,"Trying to go around it!"
+            if f_in == '-' or f_out == '-':
+                print  >>sys.stderr,"ERROR: BioPython library from Python is tool old! Please, upgrade it!"
+                sys.exit(1)
             input_handle = open(f_in, "rU")
             output_handle = open(f_out, "w")
             sequences = Bio.SeqIO.parse(input_handle, fit)

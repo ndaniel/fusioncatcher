@@ -360,23 +360,51 @@ if __name__ == '__main__':
     bowtie = sorted(new_bowtie, key = lambda x: (-int(x[4]),x[0],x[1],-int(x[5]),-int(x[6]),x[7]))
     bowtie.insert(0,header)
 
+    # squish report
     if options.squish and bowtie and len(bowtie)>1:
         b = bowtie[:]
         h = b.pop(0) # header
         r = [h]
         n = len(b)
         f = [True] * n
+        clean_labels = {
+            frozenset(['distance200kbp', 'distance100kbp', 'distance10kbp', 'distance1000bp']): 'gap<1K',
+            frozenset(['distance200kbp', 'distance100kbp', 'distance10kbp']): '1K<gap<10K',
+            frozenset(['distance200kbp', 'distance100kbp']): '10K<gap<100K',
+            frozenset(['distance200kbp']): '100K<gap<200K',
+            }
         for i in xrange(n):
             if f[i]:
                 method = set([b[i][7]])
+                exon1 = ''
+                exon2 = ''
                 ids = []
                 for j in xrange(i+1,n):
                     if f[j] and b[i][8] == b[j][8] and b[i][9] == b[j][9] and b[i][10] == b[j][10] and b[i][11] == b[j][11]:
                         method.add(b[j][7])
+                        if b[j][12]:
+                            exon1 = b[j][12]
+                            exon2 = b[j][13]
                         f[j] = False
                 line = list(b[i][:])
                 if method:
                     line[7] = ';'.join(sorted(method))
+                if exon1 and (not line[12]):
+                    line[12] = exon1
+                    line[13] = exon2
+                # convert IGH_LOCUS to IGH@ and IGK_LOCUS to IGK@
+                if line[0].lower().find('_locus') != -1:
+                    line[0] = line[0].split('_')[0].upper()+'@'
+                if line[1].lower().find('_locus') != -1:
+                    line[1] = line[1].split('_')[0].upper()+'@'
+                # clean the short_distance and distance labels
+                labels = line[2].split(',')
+                labels = [elk for elk in labels if elk != 'short_distance'] # remove short_distance
+                distances = frozenset([elk for elk in labels if elk.startswith('distance')])
+                if distances:
+                    labels = [elk for elk in labels if not elk.startswith('distance')] # remove the distance labels
+                    labels.append(clean_labels.get(distances,''))
+                    line[2] = ','.join(labels)
                 r.append(line)
         bowtie = r
 

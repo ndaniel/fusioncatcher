@@ -77,7 +77,7 @@ if __name__ == '__main__':
                       action = "store",
                       type = "float",
                       dest = "factor",
-                      default = 2,
+                      default = 20,
                       help = """The constant called 'factor' from the inequality:  counts_mapping_ambiguously > factor * counts_supporting_pairs. If this is found to be true then the candidate fusion gene will marked as ambiguous.""")
 
 

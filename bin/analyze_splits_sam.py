@@ -220,7 +220,7 @@ def index_max(values):
     return max(xrange(len(values)),key=values.__getitem__)
 
 #########################
-def chunks(psl_file,min_count = 2, ids_out = None, clip_size = 10):
+def chunks(psl_file, min_count = 2, ids_out = None, ref_out = None, clip_size = 10):
     # gives in a chunk the PSL files which have the same read is a QNAME
     last_qname = None
     last_tname = None
@@ -228,7 +228,11 @@ def chunks(psl_file,min_count = 2, ids_out = None, clip_size = 10):
     chunk = []
     if ids_out:
         ft = open(ids_out,'w')
+        fr = None
+        if ref_out:
+            fr = open(ref_out,'w')
         buff = []
+        ref = []
         for line in lines(psl_file):
             if not chunk:
                 last_qname = line[psl_qName]
@@ -268,6 +272,11 @@ def chunks(psl_file,min_count = 2, ids_out = None, clip_size = 10):
                                 if len(buff) > 100000:
                                     ft.writelines(buff)
                                     buff = []
+                                if fr:
+                                    ref.append(chunk[0][psl_tName]+'\n')
+                                    if len(ref) > 100000:
+                                        fr.writelines(ref)
+                                        ref = []
                 last_qname = line[psl_qName]
                 last_tname = line[psl_tName]
                 last_strand = line[psl_strand]
@@ -277,6 +286,11 @@ def chunks(psl_file,min_count = 2, ids_out = None, clip_size = 10):
             ft.writelines(buff)
             buff = []
         ft.close()
+        if fr:
+            if ref:
+                fr.writelines(ref)
+                ref = []
+            fr.close()
     else:
         for line in lines(psl_file):
             if not chunk:
@@ -295,7 +309,7 @@ def chunks(psl_file,min_count = 2, ids_out = None, clip_size = 10):
         yield chunk
 
 #########################
-def merge_local_alignment_sam(psl_in, psl_ou, ids_ou = None, min_clip = 10, remove_extra = False):
+def merge_local_alignment_sam(psl_in, psl_ou, ids_ou = None, ref_ou = None, min_clip = 10, remove_extra = False):
     #
     psl = []
     fou = None
@@ -306,7 +320,7 @@ def merge_local_alignment_sam(psl_in, psl_ou, ids_ou = None, min_clip = 10, remo
 
     limit_psl = 10**5
 
-    for bucket in chunks(psl_in, min_count = 2, ids_out = ids_ou, clip_size = min_clip):
+    for bucket in chunks(psl_in, min_count = 2, ids_out = ids_ou, ref_out = ref_ou, clip_size = min_clip):
 
         for box in itertools.combinations(bucket,2):
 
@@ -509,6 +523,12 @@ Here the assumption is that the PSL is sorted by columns 10, 14, 12, and 13."""
                       dest="output_ids_filename",
                       help="""The output text file containing ids of reads which have unmapped clippings.""")
 
+    parser.add_option("--clipped-reads-refs","-s",
+                      action="store",
+                      type="string",
+                      dest="output_ref_filename",
+                      help="""The output text file containing reference ids on which the clipped reads are mapped.""")
+
     parser.add_option("--clip-min","-c",
                       action = "store",
                       type = "int",
@@ -516,7 +536,7 @@ Here the assumption is that the PSL is sorted by columns 10, 14, 12, and 13."""
                       default = 10,
                       help = """Minimum size of clipping which will be written in the output given by '--reads-ids'. Default is '%default'.""")
 
-    parser.add_option("--remove-extra",
+    parser.add_option("--remove-extra","-x",
                       action = "store_true",
                       dest = "remove_extra",
                       default = False,
@@ -537,6 +557,7 @@ Here the assumption is that the PSL is sorted by columns 10, 14, 12, and 13."""
     merge_local_alignment_sam(options.input_filename,
                               options.output_filename,
                               options.output_ids_filename,
+                              options.output_ref_filename,
                               options.min_clip,
                               remove_extra = options.remove_extra)
 #

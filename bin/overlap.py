@@ -54,7 +54,7 @@ import gc
 ttable = string.maketrans("ACGTYRSWKMBDHV-","TGCARYSWMKVHDB-")
 
 def dnaReverseComplement(seq):
-    seq = seq.upper()
+    #seq = seq.upper()
     seq = seq.translate(ttable)
     return seq[::-1]
 
@@ -119,14 +119,20 @@ def reads_from_paired_fastq_file(file_name_1, file_name_2, nn, fail_gracefully =
         elif not (r1.startswith('@') and r2.startswith('@')):
             print >>sys.stderr, "ERROR: Something wrong with the id of the reads!"
             print >>sys.stderr, "   - read id from '%s' is '%s'" % (file_name_1,pie1[0])
-            print >>sys.stderr, "   - mate read id from '%s' is '%s'" % (file_name_2,pie2[0])
+            if r2 == 'myexit':
+                print >>sys.stderr, "   - mate read id from '%s' does not exit (i.e. file ends prematurely)!" % (file_name_2,)
+            else:
+                print >>sys.stderr, "   - mate read id from '%s' is '%s'" % (file_name_2,pie2[0])
             yield ('myexit','1','myexit','1')
             break
 
         elif not (r1 == r2 or ((r1[-2:] == "/1" or r1[-2:] == "/2") and r1[:-2] == r2[:-2])):
             print >>sys.stderr, "ERROR: The input FASTQ files do not form a pair!"
             print >>sys.stderr, "   - read id from '%s' is '%s'" % (file_name_1,r1)
-            print >>sys.stderr, "   - mate read id from '%s' is '%s'" % (file_name_2,r2)
+            if r2 == 'myexit':
+                print >>sys.stderr, "   - mate read id from '%s' does not exit (i.e. file ends prematurely)!" % (file_name_2,)
+            else:
+                print >>sys.stderr, "   - mate read id from '%s' is '%s'" % (file_name_2,r2)
             yield ('myexit','1','myexit','1')
             break
 
@@ -201,7 +207,10 @@ def fast_alignment5(sa, sb, n, positions, wiggle = 2):
     xa = ""
     xb = ""
     for (pa,pb) in positions:
-        p = sb.find(sa[pa:pb],wiggle,-wiggle)
+        z = sa[pa:pb]
+        if z.find('N') != -1:
+            continue
+        p = sb.find(z,wiggle,-wiggle)
         if p != -1:
             if pa > p:
                 lib = pa + n - p
@@ -225,7 +234,10 @@ def fast_alignment3(sa, sb, n, positions, wiggle = 2):
     xa = ""
     xb = ""
     for (pa,pb) in positions:
-        p = sa.find(sb[pa:pb],wiggle,-wiggle)
+        z = sb[pa:pb]
+        if z.find('N') != -1:
+            continue
+        p = sa.find(z,wiggle,-wiggle)
         if p != -1:
             if p < pa:
                 lib =  n - pa + p
@@ -473,7 +485,7 @@ if __name__ == '__main__':
                       action = "store",
                       type = "string",
                       dest = "input_2_filename",
-                      help = """The input FASTQ file containing the reads from 3' fragmetn end.""")
+                      help = """The input FASTQ file containing the reads from 3' fragment end.""")
 
     parser.add_option("-o","--output",
                       action = "store",
@@ -486,6 +498,12 @@ if __name__ == '__main__':
                       type = "string",
                       dest = "output_alignment_filename",
                       help = """It outputs also the alignment for each found overlapping.""")
+                      
+    parser.add_option("-s","--fragment-size",
+                      action = "store",
+                      type = "string",
+                      dest = "output_fragment_size_filename",
+                      help = """It outputs the fragment size for paired reads which are found to overlap.""")
 
     parser.add_option("-v","--overlap",
                       action = "store",

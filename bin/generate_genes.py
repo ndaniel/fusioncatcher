@@ -78,7 +78,7 @@ import Bio.SeqRecord
 import Bio.Alphabet
 import optparse
 
-def give_seq(seq,start,end,strand):
+def give_seq(seq,start,end,strand,chrom_len):
     if start > end:
         (start,end) = (end,start)
     s = ""
@@ -86,6 +86,8 @@ def give_seq(seq,start,end,strand):
         s = seq[start-1:end]
     else:
         s = seq[start-1:end].reverse_complement()
+    if end > chrom_len:
+        s = s + "N"*(chrom_len-end)
     return s
 
 def get_cols(t):
@@ -151,13 +153,17 @@ if __name__ == '__main__':
 
     genes = []
     output_handle = open(os.path.join(options.output_directory,'genes.fa'), "w")
+    chrome = []
     for record in Bio.SeqIO.parse(open(options.input_genome_fasta, "rU"), "fasta") :
-        print 'chromosome %s has length %d' % (record.id, len(record.seq))
+        reid = record.id
+        lerese = len(record.seq)
+        print 'chromosome %s has length %d' % (reid, lerese)
+        chrome.append("%s\t%s\n" % (reid,str(lerese)))
         if record.id in dc:
             s = record.seq
             d = dc[record.id]
             for line in d:
-                seq = give_seq(s,line[1],line[2],line[3])
+                seq = give_seq(s,line[1],line[2],line[3],chrom_len=lerese)
                 if seq:
                     gene = line[0]
                     genes.append(Bio.SeqRecord.SeqRecord(seq,id=gene,name="",description=""))
@@ -165,3 +171,5 @@ if __name__ == '__main__':
             genes = []
     output_handle.close()
 
+    file(os.path.join(options.output_directory,'chromosomes_information.txt'),'w').writelines(chrome)
+    #

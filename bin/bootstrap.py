@@ -116,8 +116,12 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     global COREUTILS_URL
     global PIGZ_PATH
     global PIGZ_URL
+    global PXZ_PATH
+    global PXZ_URL
     global SEQTK_PATH
     global SEQTK_URL
+    global PARALLEL_PATH
+    global PARALLEL_URL
     global PICARD_PATH
     global PICARD_URL
     global LIFTOVER_PATH
@@ -145,8 +149,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
 
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4b.zip'
-    FUSIONCATCHER_VERSION = "0.99.4b beta"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4c.zip'
+    FUSIONCATCHER_VERSION = "0.99.4c beta"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -163,7 +167,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     XLRD_URL = 'http://pypi.python.org/packages/source/x/xlrd/xlrd-0.9.2.tar.gz'
     # openpyxl python
     OPENPYXL_PATH = os.path.join(FUSIONCATCHER_TOOLS,'openpyxl')
-    OPENPYXL_URL = 'http://pypi.python.org/packages/source/o/openpyxl/openpyxl-1.8.5.tar.gz'
+    OPENPYXL_URL = 'http://pypi.python.org/packages/source/o/openpyxl/openpyxl-2.2.2.tar.gz'
     # setuptools python
     SETUPTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'setuptools')
     SETUPTOOLS_URL = 'http://pypi.python.org/packages/source/s/setuptools/setuptools-14.0.tar.gz'
@@ -187,7 +191,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     FATOTWOBIT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/faToTwoBit'
     # SRATOOLKIT
     SRATOOLKIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'sratoolkit')
-    SRATOOLKIT_URL = 'http://ftp-private.ncbi.nlm.nih.gov/sra/sdk/2.4.2/sratoolkit.2.4.2-centos_linux64.tar.gz'
+    SRATOOLKIT_URL = 'http://ftp-private.ncbi.nlm.nih.gov/sra/sdk/2.5.1/sratoolkit.2.5.1-centos_linux64.tar.gz'
     # VELVET
     VELVET_PATH = os.path.join(FUSIONCATCHER_TOOLS,'velvet')
     VELVET_URL = 'http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz'
@@ -205,6 +209,12 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     # PIGZ (GZIP parallel)
     PIGZ_PATH = os.path.join(FUSIONCATCHER_TOOLS,'pigz')
     PIGZ_URL = 'http://zlib.net/pigz/pigz-2.3.3.tar.gz'
+    # PXZ (XZ parallel)
+    PXZ_PATH = os.path.join(FUSIONCATCHER_TOOLS,'pxz')
+    PXZ_URL = 'http://jnovy.fedorapeople.org/pxz/pxz-4.999.9beta.20091201git.tar.xz'
+    # GNU PARALLEL
+    PARALLEL_PATH = os.path.join(FUSIONCATCHER_TOOLS,'parallel')
+    PARALLEL_URL = 'http://ftp.gnu.org/gnu/parallel/parallel-20150522.tar.bz2'
     # samtools
     SAMTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'samtools')
     SAMTOOLS_URL = 'http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2'
@@ -888,7 +898,7 @@ if __name__ == '__main__':
                   "<http://code.google.com/p/fusioncatcher/>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 0.22 beta"
+    version = "%prog 0.99.4c beta"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -981,7 +991,7 @@ if __name__ == '__main__':
 ################################################################################
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "ensembl_v79b"
+    v = "ensembl_v80"
     ############################################################################
     # List all dependencies
     ############################################################################
@@ -1004,6 +1014,7 @@ if __name__ == '__main__':
         print "SeqTK [REQUIRED]: ",SEQTK_URL
         print "Velvet (de novo assembler) [OPTIONAL]: ",VELVET_URL
         print "Picard (Java-based SAM tools) [OPTIONAL]: ",PICARD_URL
+        print "GNU Parallel (shell tool for executing jobs in parallel) [OPTIONAL]: ",PARALLEL_URL
         print "Pre-built database indexes for human [REQUIRED unless one wants to build them from scratch]:"
         print "  * http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.aa" % (v,)
         print "  * http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ab" % (v,)
@@ -1118,6 +1129,7 @@ if __name__ == '__main__':
             SEQTK_URL = os.path.join(ol, os.path.basename(SEQTK_URL))
             VELVET_URL = os.path.join(ol, os.path.basename(VELVET_URL))
             PICARD_URL = os.path.join(ol, os.path.basename(PICARD_URL))
+            PARALLEL_URL = os.path.join(ol, os.path.basename(PARALLEL_URL))
             # remove options.local from the PATH variable in order tooid conflicts
             ps = []
             for p in os.environ["PATH"].split(os.pathsep):
@@ -1173,7 +1185,7 @@ if __name__ == '__main__':
                                    "rm -rf ../NEWS",
                                    "rm -rf ../LICENSE",
                                    "rm -rf ../DEPENDENCIES",
-                                   "mkdir -p ../etc",
+                                   "#mkdir -p ../etc",
                                    "ln -s $(pwd)/etc ../etc",
                                    "ln -s $(pwd)/bin ../bin",
                                    "ln -s $(pwd)/test ../test",
@@ -1313,11 +1325,11 @@ if __name__ == '__main__':
         ############################################################################
         # SRATOOLKIT
         ############################################################################
-        r = tool(name = "NCBI SRA Toolkit (sequence assembler for short reads)",
+        r = tool(name = "NCBI SRA Toolkit (SRA System Development Kit)",
                  exe = "fastq-dump",
                  param = "",
                  web = "<http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software>",
-                 versions = ('2.3.5-2','2.4.2'),
+                 versions = ('2.3.5-2','2.4.2','2.5.1'),
                  version_word = 'fastq-dump',
                  force = options.force_yes,
                  url = SRATOOLKIT_URL,
@@ -1389,7 +1401,7 @@ if __name__ == '__main__':
         r = tool(name = "SEQTK (Toolkit for processing sequences in FASTA/Q formats)",
                  exe = "seqtk",
                  param = "",
-                 web = "<http://github.com/lh3/seqtk/>",
+                 web = "<http://github.com/ndaniel/seqtk/>",
                  versions = ('1.0-r68e-dirty',),
                  version_word = "Version:",
                  force = options.force_yes,
@@ -1412,7 +1424,16 @@ if __name__ == '__main__':
                  url = STAR_URL,
                  path = STAR_PATH,
                  install = options.install_all or options.install_all_tools,
-                 custom_install = ["#!/usr/bin/env bash","rm -f source/STAR","cp bin/Linux_x86_64/STAR source/STAR","cd source","make","if ! ./STAR --version; then","    rm -f STAR","    cp ../bin/Linux_x86_64_static/STAR .","fi","exit 0"])
+                 custom_install = ["#!/usr/bin/env bash",
+                                   "rm -f source/STAR",
+                                   "cp bin/Linux_x86_64/STAR source/STAR",
+                                   "cd source",
+                                   "make",
+                                   "if ! ./STAR --version; then",
+                                   "    rm -f STAR",
+                                   "    cp ../bin/Linux_x86_64_static/STAR .",
+                                   "fi",
+                                   "exit 0"])
         if r:
             STAR_PATH = r
 
@@ -1532,6 +1553,21 @@ if __name__ == '__main__':
             if r:
                 PIGZ_PATH = r
 
+            # PXZ (XZ parallel)
+            r = tool(name = "PXZ (XZ parallel)",
+                     exe = "pxz",
+                     param = "--version",
+                     web = "<http://jnovy.fedorapeople.org/pxz/>",
+                     versions = ('4.999.9beta',),
+                     version_word = 'pxz',
+                     force = options.force_yes,
+                     url = PXZ_URL,
+                     path = PXZ_PATH,
+                     install = options.install_all or options.install_all_tools,
+                     skip = True)
+            if r:
+                PXZ_PATH = r
+
             # PICARD (Java-based command-line utilities that manipulate SAM files)
             r = tool(name = "PICARD (Java-based command-line utilities that manipulate SAM files)",
                      exe = "java -jar picard.jar SamToFastq",
@@ -1545,6 +1581,21 @@ if __name__ == '__main__':
                      skip = True)
             if r:
                 PICARD_PATH = r
+
+            # GNU PARALLEL (shell tool for executing jobs in parallel)
+            r = tool(name = "GNU PARALLEL (shell tool for executing jobs in parallel)",
+                     exe = "parallel",
+                     param = "--version",
+                     web = "<http://www.gnu.org/software/parallel/>",
+                     versions = ('20150522',),
+                     force = options.force_yes,
+                     url = PARALLEL_URL,
+                     path = PARALLEL_PATH,
+                     install = options.install_all or options.install_all_tools,
+                     skip = True)
+            if r:
+                PARALLEL_PATH = r
+
 
     ############################################################################
     # PYTHON SHEBANG
@@ -1567,34 +1618,58 @@ if __name__ == '__main__':
     ############################################################################
     print "Updating the configuration file of FusionCatcher..."
     print "  * configuration file '%s'" % (FUSIONCATCHER_CONFIGURATION,)
-    # update the SRATOOLKIT with 'bin'
-    sra = os.path.join(SRATOOLKIT_PATH,'bin')
-    if (SRATOOLKIT_PATH and
-        (not os.path.isfile(os.path.join(SRATOOLKIT_PATH,'bin','fastq-dump'))) and
-        os.path.isfile(os.path.join(SRATOOLKIT_PATH,'fastq-dump'))
-       ):
-        sra = SRATOOLKIT_PATH
-    # update the COREUTILS with 'src'
-    coreutils = os.path.join(COREUTILS_PATH,'src')
-    if (COREUTILS_PATH and
-        (not os.path.isfile(os.path.join(COREUTILS_PATH,'src','sort'))) and
-        os.path.isfile(os.path.join(COREUTILS_PATH,'sort'))
-       ):
-        coreutils = COREUTILS_PATH
-    # update the LZOP with 'src'
-    lzop = os.path.join(LZOP_PATH,'src')
-    if (LZOP_PATH and
-        (not os.path.isfile(os.path.join(LZOP_PATH,'src','lzop'))) and
-        os.path.isfile(os.path.join(LZOP_PATH,'lzop'))
-       ):
-        lzop = LZOP_PATH
-    # update the STAR with 'source'
-    star = os.path.join(STAR_PATH,'source')
-    if (STAR_PATH and
-        (not os.path.isfile(os.path.join(STAR_PATH,'source','STAR'))) and
-        os.path.isfile(os.path.join(STAR_PATH,'STAR'))
-       ):
-        star = STAR_PATH
+    
+    def update_path(SOME_PATH,executable,subdir='src'):
+        # update the SOME_PATH with subdir
+        some_var = os.path.join(SOME_PATH,subdir)
+        if (SOME_PATH and
+            (not os.path.isfile(os.path.join(SOME_PATH,subdir,executable))) and
+            os.path.isfile(os.path.join(SOME_PATH,executable))
+           ):
+            some_var = SOME_PATH
+        return some_var
+
+    sra = update_path(SRATOOLKIT_PATH, 'fastq-dump','bin')
+    coreutils = update_path(COREUTILS_PATH, 'sort','src')
+    lzop = update_path(LZOP_PATH,'lzop','src')
+    star = update_path(STAR_PATH,'STAR','source')
+    parallel2 = update_path(PARALLEL_PATH,'parallel','src')
+        
+#    # update the SRATOOLKIT with 'bin'
+#    sra = os.path.join(SRATOOLKIT_PATH,'bin')
+#    if (SRATOOLKIT_PATH and
+#        (not os.path.isfile(os.path.join(SRATOOLKIT_PATH,'bin','fastq-dump'))) and
+#        os.path.isfile(os.path.join(SRATOOLKIT_PATH,'fastq-dump'))
+#       ):
+#        sra = SRATOOLKIT_PATH
+#    # update the COREUTILS with 'src'
+#    coreutils = os.path.join(COREUTILS_PATH,'src')
+#    if (COREUTILS_PATH and
+#        (not os.path.isfile(os.path.join(COREUTILS_PATH,'src','sort'))) and
+#        os.path.isfile(os.path.join(COREUTILS_PATH,'sort'))
+#       ):
+#        coreutils = COREUTILS_PATH
+#    # update the LZOP with 'src'
+#    lzop = os.path.join(LZOP_PATH,'src')
+#    if (LZOP_PATH and
+#        (not os.path.isfile(os.path.join(LZOP_PATH,'src','lzop'))) and
+#        os.path.isfile(os.path.join(LZOP_PATH,'lzop'))
+#       ):
+#        lzop = LZOP_PATH
+#    # update the STAR with 'source'
+#    star = os.path.join(STAR_PATH,'source')
+#    if (STAR_PATH and
+#        (not os.path.isfile(os.path.join(STAR_PATH,'source','STAR'))) and
+#        os.path.isfile(os.path.join(STAR_PATH,'STAR'))
+#       ):
+#        star = STAR_PATH
+#    # update the PARALLEL with 'src'
+#    parallel2 = os.path.join(PARALLEL_PATH,'src')
+#    if (PARALLEL_PATH and
+#        (not os.path.isfile(os.path.join(PARALLEL_PATH,'src','parallel'))) and
+#        os.path.isfile(os.path.join(PARALLEL_PATH,'parallel'))
+#       ):
+#        parallel2 = PARALLEL_PATH
 
     config_file = FUSIONCATCHER_CONFIGURATION
     data = []
@@ -1622,7 +1697,9 @@ if __name__ == '__main__':
     data.append("lzop = %s\n"%(lzop,))
     data.append("coreutils = %s\n"%(coreutils,))
     data.append("pigz = %s\n"%(PIGZ_PATH,))
+    data.append("pxz = %s\n"%(PXZ_PATH,))
     data.append("picard = %s\n"%(PICARD_PATH,))
+    data.append("parallel = %s\n"%(parallel2,))
     data.append("java = %s\n"%(JAVA_PATH,))
     data.append("\n")
     data.append("[paths]\n")
@@ -1679,6 +1756,12 @@ if __name__ == '__main__':
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ab -O %s.tar.gz.ab" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ac -O %s.tar.gz.ac" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ad -O %s.tar.gz.ad" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
+        txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/checksums.md5 -O checksums.md5")
+        txt.append("md5sum -c checksums.md5")
+        txt.append('if [ "$?" -ne "0" ]; then')
+        txt.append('  echo "ERROR: Downloaded files from above have errors! MD5 checksums do not match! Please, download them again or re-run this again!"')
+        txt.append('  exit 1')
+        txt.append('fi')
         #txt.append("tar  zxvf  %s -C %s" % (v,FUSIONCATCHER_DATA.replace(" ","\\ ")))
         txt.append("cat %s.tar.gz.* > %s.tar.gz" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ ")))
         txt.append("rm -f %s.tar.gz.*" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))

@@ -103,7 +103,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 0.99.4b beta"
+    version = "%prog 0.99.4c beta"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -405,6 +405,27 @@ if __name__ == '__main__':
     job.add('',outdir('genes_symbols.txt'),kind='output',command_line='no')
     job.run()
 
+    if options.organism == 'homo_sapiens':
+        job.add('cut',kind='program')
+        job.add('-f1,2',kind='parameter')
+        job.add('',outdir('genes_symbols.txt'),kind='input')
+        job.add('|',kind='parameter')
+        job.add('grep',kind='parameter')
+        job.add('','"\tIG[K|L|H|J]"',kind='parameter')
+        job.add('|',kind='parameter')
+        job.add('cut',kind='parameter')
+        job.add('-f1',kind='parameter')
+        job.add('|',kind='parameter')
+        job.add('uniq',kind='parameter')
+        job.add('>',outdir('ig_loci.txt'),kind='output')
+        job.run()
+
+    else:
+        job.add('echo',kind='program')
+        job.add('-n','""',kind='parameter')
+        job.add('>',outdir('ig_loci.txt'),kind='output')
+        job.run()
+
     job.add('get_genes_descriptions.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.web_ensembl,kind='parameter')
@@ -508,6 +529,9 @@ if __name__ == '__main__':
     job.add('add_custom_gene.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('exons.txt'),kind='output',command_line='no')
+    job.add('',outdir('genes.txt'),kind='output',command_line='no')
+    job.add('',outdir('genes_symbols.txt'),kind='output',command_line='no')
     job.run()
 
     job.add('generate_overlapping_genes.py',kind='program')
@@ -662,36 +686,26 @@ if __name__ == '__main__':
     job.add('--output',outdir('gencode_same_strand_overlapping_genes.txt'),kind='output')
     job.run()
 
-    if options.organism == 'homo_sapiens':
-        job.add('cut',kind='program')
-        job.add('-f1,2',kind='parameter')
-        job.add('',outdir('genes_symbols.txt'),kind='input')
-        job.add('|',kind='parameter')
-        job.add('grep',kind='parameter')
-        job.add('','"\tIG[K|L|H|J]"',kind='parameter')
-        job.add('|',kind='parameter')
-        job.add('cut',kind='parameter')
-        job.add('-f1',kind='parameter')
-        job.add('|',kind='parameter')
-        job.add('uniq',kind='parameter')
-        job.add('>',outdir('ig_loci.txt'),kind='output')
-        job.run()
 
+    job.add('cat',kind='program')
+    job.add('',outdir('ensembl_partially_overlapping_genes.txt'),kind='input')
+    job.add('',outdir('ensembl_fully_overlapping_genes.txt'),kind='input')
+    job.add('|',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('uniq',kind='parameter')
+    job.add('>',outdir('ensembl_overlapping_genes.txt'),kind='output')
+    job.run()
 
-        job.add('enlarge_genes.py',kind='program')
-        job.add('--enlargement-size','5000',kind='parameter')
-        #job.add('--gene-length','1000',kind='parameter')
-        job.add('--gene-length','1000000',kind='parameter')
-        job.add('--genes',outdir('ig_loci.txt'),kind='input') # enalrge only IG loci
-        job.add('--output',out_dir,kind='output',checksum='no')
-        job.add('',outdir('exons.txt'),kind='output',command_line='no')
-        job.add('',outdir('genes.txt'),kind='output',command_line='no')
-        job.run()
-    else:
-        job.add('echo',kind='program')
-        job.add('-n','""',kind='parameter')
-        job.add('>',outdir('ig_loci.txt'),kind='output')
-        job.run()
+#    if options.organism == 'homo_sapiens':
+#        job.add('enlarge_genes.py',kind='program')
+#        job.add('--enlargement-size','500000',kind='parameter') # 5000
+#        #job.add('--gene-length','1000',kind='parameter')
+#        job.add('--genes',outdir('ig_loci.txt'),kind='input') # enlarge only IG loci
+#        job.add('--output',out_dir,kind='output',checksum='no')
+#        job.add('',outdir('exons.txt'),kind='output',command_line='no')
+#        job.add('',outdir('genes.txt'),kind='output',command_line='no')
+#        job.run()
 
 
     job.add('generate_rrna_unit.py',kind='program')
@@ -769,6 +783,12 @@ if __name__ == '__main__':
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('celllines.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add('get_prostates.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('prostates.txt'),kind='output',command_line='no')
     job.run()
 
     job.add('grep',kind='program')
@@ -1263,6 +1283,8 @@ if __name__ == '__main__':
     job.add('',outdir('rtrna.fa'),kind='output')
     job.run()
 
+
+
     bowtie_error = ("Please, check if 'Bowtie' (from <http://bowtie-bio.sourceforge.net/index.shtml>) "+
                    "is installed correctly and it is in the corresponding PATH "+
                    "(or if 'configuration.cfg' file is set up correctly)!")
@@ -1403,4 +1425,6 @@ if __name__ == '__main__':
     file(outdir('version.txt'),'w').writelines([line+'\n' for line in d])
     for line in d:
         print line
+    
+
     #

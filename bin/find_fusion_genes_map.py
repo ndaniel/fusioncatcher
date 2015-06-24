@@ -180,6 +180,13 @@ if __name__ == '__main__':
                       dest="output_fusion_reads_filename",
                       help="""The output text tab-separated file containing the candidate fusion genes and transcripts together with the ids/names of supporting reads.""")
 
+    parser.add_option("--output_fusion_reads_split",
+                      action="store",
+                      type="string",
+                      dest="output_fusion_reads_split_filename",
+                      help="""A file containing paths to candidate fusion genes and transcripts together with the ids/names of supporting reads.""")
+
+
     parser.add_option("--output_fusion_reads_simple",
                       action="store",
                       type="string",
@@ -348,6 +355,21 @@ if __name__ == '__main__':
     data.insert(0,'Fusion_gene_symbol_1\tFusion_gene_symbol_2\tFusion_gene_1\tFusion_gene_2\tCount_paired-end_reads\tSupporting_paired-read_ids\n')
     fo.writelines(data)
     fo.close()
+
+    if options.output_fusion_reads_split_filename:
+        xlist=[]
+        xdata = data[:]
+        xdata.pop(0)
+        for xline in xdata:
+            xl = xline.rstrip("\r\n").split("\t")
+            kx = "%s.%s--%s__%s--%s" % (options.output_fusion_reads_split_filename,xl[0],xl[1],xl[2],xl[3])
+            rx = []
+            for ry in sorted(set(xl[5].split(","))):
+                rx.append("%s/1\n" %(ry,))
+                rx.append("%s/2\n" %(ry,))
+            file(kx,"w").writelines(rx)
+            xlist.append(kx+"\n")
+        file(options.output_fusion_reads_split_filename,'w').writelines(xlist)
 
     if options.output_fusion_reads_simple_filename:
         fo = open(options.output_fusion_reads_simple_filename,'w')

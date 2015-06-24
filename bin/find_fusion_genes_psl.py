@@ -273,8 +273,11 @@ a candidate list of fusion genes (where short reads have been aligned using BLAT
         if not gene_dict.has_key(g):
             gene_dict[g]={'chr':'','strand':'','start':0,'end':0,'hugo':''}
         else:
-            print "Error: some gene id is not unique!"
-            sys.exit(1)
+            if gene_dict[g]['chr'] == c and gene_dict[g]['start'] == int(s) and gene_dict[g]['end'] == int(e) and gene_dict[g]['strand'] == int(t):
+                print >>sys.stderr,"WARNING: gene id %s is not unique!" % (g,)
+            else:
+                print >>sys.stderr,"ERROR: gene id %s is not unique!" % (g,)
+                sys.exit(1)
         gene_dict[g]['chr'] = c
         gene_dict[g]['start'] = int(s)
         gene_dict[g]['end'] = int(e)

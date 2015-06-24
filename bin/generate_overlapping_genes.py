@@ -166,9 +166,9 @@ if __name__ == '__main__':
                         partially.add(k)
                         if g_1d == g_2d:
                             same_strand.add(k)
-    print "Found",len(fully),"fully overlapping genes."
-    print "Found",len(partially),"partially overlapping genes."
-    print "Found",len(same_strand),"overlapping genes on the same strand."
+    print "Found",len(fully),"fully overlapping genes (on same strand or on different strands)."
+    print "Found",len(partially),"partially overlapping genes (on same strand or on different strands)."
+    print "Found",len(same_strand),"(partially and fully) overlapping genes on the same strand."
 
     fully = sorted(fully)
     partially = sorted(partially)
