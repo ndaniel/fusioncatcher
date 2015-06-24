@@ -341,6 +341,8 @@ ln -s $(pwd)/README.md ../README.md
 ln -s $(pwd)/DEPENDENCIES ../DEPENDENCIES
 ```
   * specify the paths to the above tools such that **FusionCatcher** can find them. There are two choices:
+   
+  
    1. Edit the **FusionCatcher** configuration file **`configuration.cfg`** (type: **`nano /apps/fusioncatcher/etc/configuration.cfg`** at command line) and make sure that the **FusionCatcher**'s configuration file **'configuration.cfg'** looks like this:
 ```
 [paths]
