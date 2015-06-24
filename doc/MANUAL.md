@@ -340,10 +340,8 @@ ln -s $(pwd)/LICENSE ../LICENSE
 ln -s $(pwd)/README.md ../README.md
 ln -s $(pwd)/DEPENDENCIES ../DEPENDENCIES
 ```
-  * specify the paths to the above tools such that **FusionCatcher** can find them. There are two choices:
-   
-  
-   1. Edit the **FusionCatcher** configuration file **`configuration.cfg`** (type: **`nano /apps/fusioncatcher/etc/configuration.cfg`** at command line) and make sure that the **FusionCatcher**'s configuration file **'configuration.cfg'** looks like this:
+  * specify the paths to the above tools such that **FusionCatcher** can find them. There are two choices.
+   * Choice A: Edit the **FusionCatcher** configuration file **`configuration.cfg`** (type: **`nano /apps/fusioncatcher/etc/configuration.cfg`** at command line) and make sure that the **FusionCatcher**'s configuration file **'configuration.cfg'** looks like this:
 ```
 [paths]
 python = /usr/bin/
@@ -371,7 +369,7 @@ picard = /apps/fusioncatcher/tools/picard/
 [versions]
 fusioncatcher = 0.99.4c beta
 ```
-   2. Add the paths for the needed tools to the `PATH` variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) and add the following lines at the end:
+    * Choice B: Add the paths for the needed tools to the `PATH` variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) and add the following lines at the end:
 ```
 export PATH=/apps/fusioncatcher/bin:$PATH
 export PATH=/apps/fusioncatcher/tools/bowtie:$PATH
@@ -390,14 +388,17 @@ export PATH=/apps/fusioncatcher/tools/pigz/:$PATH
 export PATH=/apps/fusioncatcher/tools/samtools/:$PATH
 export PATH=/apps/fusioncatcher/tools/picard/:$PATH
 ```
-   3. if a different version of Python is used/needed by **FusionCatcher** than the standard **`/usr/bin/env python`** then also please make sure that that specific version of Python is added to the **`PATH`** variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) or add the following lines at the end:
+> *Note 1*: If a different version of Python is used/needed by **FusionCatcher** than the standard **`/usr/bin/env python`** then also please make sure that that specific version of Python is added to the **`PATH`** variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) or add the following lines at the end:
 ```
 export PATH=/some/other/version/of/python:$PATH
 ```
-   4. in some cases it might not be enough to change the Python's path in **`.bashrc`** file, like for example the case when **FusionCatcher** is run on a server which defaults to another Python than one used to install **FusionCatcher**. In this case it is required that one changes all the [shebangs](http://en.wikipedia.org/wiki/Shebang_(Unix)) of the all Python scripts which belong to **FusionCatcher**. In case that one uses the Python which has the following Python executable path **`/some/other/python`** than this can be done like this (it changes in place **`/usr/bin/env python`** into **`/some/other/python`** in all `/apps/fusioncatcher/bin/*.py`):
+> *Note 2*: In some cases it might not be enough to change the Python's path in **`.bashrc`** file, like for example the case when **FusionCatcher** is run on a server which defaults to another Python than one used to install **FusionCatcher**. In this case it is required that one changes all the [shebangs](http://en.wikipedia.org/wiki/Shebang_(Unix)) of the all Python scripts which belong to **FusionCatcher**. In case that one uses the Python which has the following Python executable path **`/some/other/python`** than this can be done like this (it changes in place **`/usr/bin/env python`** into **`/some/other/python`** in all `/apps/fusioncatcher/bin/*.py`):
 ```
 sed -i 's/\/usr\/bin\/env\ python/\/some\/other\/python/g' /apps/fusioncatcher/bin/*.py
 ```
+
+
+
   * download/build the human build data from Ensembl database and other databases and build the necessary indexes and files (the latest release of Ensembl data is release 80 as June 2015 when this section was updated last time). There are two alternative ways to get the human **build data**. The recommended way is to use `fusioncatcher-build`.
    1. Using direct download
 ```
