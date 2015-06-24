@@ -369,6 +369,10 @@ picard = /apps/fusioncatcher/tools/picard/
 [versions]
 fusioncatcher = 0.99.4c beta
 ```
+
+
+
+The second choice is
     * Choice B: Add the paths for the needed tools to the `PATH` variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) and add the following lines at the end:
 ```
 export PATH=/apps/fusioncatcher/bin:$PATH
@@ -388,10 +392,16 @@ export PATH=/apps/fusioncatcher/tools/pigz/:$PATH
 export PATH=/apps/fusioncatcher/tools/samtools/:$PATH
 export PATH=/apps/fusioncatcher/tools/picard/:$PATH
 ```
+
+
+
 > *Note 1*: If a different version of Python is used/needed by **FusionCatcher** than the standard **`/usr/bin/env python`** then also please make sure that that specific version of Python is added to the **`PATH`** variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) or add the following lines at the end:
 ```
 export PATH=/some/other/version/of/python:$PATH
 ```
+
+
+
 > *Note 2*: In some cases it might not be enough to change the Python's path in **`.bashrc`** file, like for example the case when **FusionCatcher** is run on a server which defaults to another Python than one used to install **FusionCatcher**. In this case it is required that one changes all the [shebangs](http://en.wikipedia.org/wiki/Shebang_(Unix)) of the all Python scripts which belong to **FusionCatcher**. In case that one uses the Python which has the following Python executable path **`/some/other/python`** than this can be done like this (it changes in place **`/usr/bin/env python`** into **`/some/other/python`** in all `/apps/fusioncatcher/bin/*.py`):
 ```
 sed -i 's/\/usr\/bin\/env\ python/\/some\/other\/python/g' /apps/fusioncatcher/bin/*.py
