@@ -58,7 +58,7 @@ For running **FusionCatcher** it is needed a computer with:
   * **Bowtie** 64-bit version 1.1.1 http://bowtie-bio.sourceforge.net/index.shtml
   * **SeqTK** version 1.0-r68e-dirty  http://github.com/ndaniel/seqtk
   * organism specific  data from [Ensembl](http://www.ensembl.org) database version 80 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed)
-  * **STAR** version 2.4.1c https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases
+  * **STAR** version 2.4.1d https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases
   * **BOWTIE2** version 2.2.5 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
   * **BWA** version 0.7.12 http://sourceforge.net/projects/bio-bwa/
 
@@ -258,12 +258,12 @@ This is an example (or one of the many ways) for installing **FusionCatcher** on
   ln -s seqtk-1.0-r68e seqtk
   ```
   
-  * installing **STAR** version 2.4.1c (required)
+  * installing **STAR** version 2.4.1d (required)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://github.com/alexdobin/STAR/archive/STAR_2.4.1c.tar.gz -O STAR_2.4.1c.tar.gz
-  tar zxvf STAR_2.4.1c.tar.gz
-  cd STAR-STAR_2.4.1c
+  wget http://github.com/alexdobin/STAR/archive/STAR_2.4.1d.tar.gz -O STAR_2.4.1d.tar.gz
+  tar zxvf STAR_2.4.1d.tar.gz
+  cd STAR-STAR_2.4.1d
   cd source
   rm -f STAR
   cp ../bin/Linux_x86_64_static/STAR .
@@ -277,7 +277,7 @@ This is an example (or one of the many ways) for installing **FusionCatcher** on
   and continue with
   ```
   cd ..
-  ln -s STAR-STAR_2.4.1c star
+  ln -s STAR-STAR_2.4.1d star
   ```
   
   * installing **Velvet** version 1.2.10 (optional)
