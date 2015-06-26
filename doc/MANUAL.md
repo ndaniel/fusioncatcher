@@ -496,7 +496,7 @@ Here are the steps for testing the installation of **FusionCatcher** using human
 
 ```
 cd ~
-/apps/fusioncatcher/bin/test.sh
+/apps/fusioncatcher/test/test.sh
 ```
 Afterwards a message will be shown at console if the installation test went fine or not.
 
