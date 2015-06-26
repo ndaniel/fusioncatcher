@@ -911,8 +911,10 @@ if __name__ == '__main__':
         ['ZCCHC8','STAT3'],
         ['SPN','NUB1'],
         ['STAT3','UBXN7'],
-        ['NCOR2','SCARB1']
-
+        ['NCOR2','SCARB1'],
+        ['SPN','PCID2'],
+        ['TAS2R14','POLK']
+        
         ]
 
 

@@ -14,7 +14,7 @@ Required dependencies:
 - BioPython version 1.65 (>=1.50 is fine)
 - Bowtie 64-bit version 1.1.1  <http://bowtie-bio.sourceforge.net/index.shtml>
 - Bowtie2 64-bit version 2.2.5  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
-- STAR version 2.4.1c <http://github.com/alexdobin/STAR>
+- STAR version 2.4.1d <http://github.com/alexdobin/STAR>
 - BWA version 0.7.12  <http://sourceforge.net/projects/bio-bwa/>
 - SEQTK version 1.0-r68e-dirty  <http://github.com/ndaniel/seqtk>
 
@@ -1411,6 +1411,13 @@ if __name__ == "__main__":
         parser.error("ERROR: Temporary path contains comma(s)!")
         sys.exit(1)
 
+    multiple_files = ["'%s' '%s'" % (sys.argv[i-1],sys.argv[i]) for i in xrange(1,len(sys.argv)) if ((not sys.argv[i-1].startswith('-')) and (not sys.argv[i].startswith('-')))]
+    if  multiple_files:
+        print >>sys.stderr,"ERROR: There were found multiple parameters/values given for the same command line parameter (for example: two input files separated by blank)! "
+        for mf in multiple_files:
+            print >>sys.stderr,mf
+        print >>sys.stderr,"POSSIBLE FIX: Please, give multiple parameters/values/filenames for the same command line option by separating them using comma(s)!"
+        sys.exit(1)
 
 
     if options.batch_mode:

@@ -1,15 +1,10 @@
 #!/usr/bin/env bash
-prefix=""
 fbin=""
-if [[ -z $prefix ]]; then
-   fc=$(readlink $0)
-   if [[ -z $fc ]]; then
-     fbin=$(dirname $0)
-   else
-     fbin=$(dirname $fc)
-   fi
+fc=$(readlink $0)
+if [[ -z $fc ]]; then
+ fbin=$(dirname $0)
 else
- fbin=$prefix/bin
+ fbin=$(dirname $fc)
 fi
 export PATH=$fbin:$PATH
 "$fbin/fusioncatcher-build.py" "$@"

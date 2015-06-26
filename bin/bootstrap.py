@@ -173,7 +173,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     SETUPTOOLS_URL = 'http://pypi.python.org/packages/source/s/setuptools/setuptools-14.0.tar.gz'
     # BOWTIE
     BOWTIE_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie')
-    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.1/bowtie-1.1.1-linux-x86_64.zip'
+    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-linux-x86_64.zip'
     # BOWTIE2
     BOWTIE2_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie2')
     BOWTIE2_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.5/bowtie2-2.2.5-linux-x86_64.zip'
@@ -182,7 +182,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BLAT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/blat/blat'
     # STAR
     STAR_PATH = os.path.join(FUSIONCATCHER_TOOLS,'star')
-    STAR_URL = 'http://github.com/alexdobin/STAR/archive/STAR_2.4.1c.tar.gz'
+    STAR_URL = 'http://github.com/alexdobin/STAR/archive/STAR_2.4.1d.tar.gz'
    # BWA
     BWA_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bwa')
     BWA_URL = 'http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2'
@@ -208,7 +208,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     COREUTILS_URL = 'http://ftp.gnu.org/gnu/coreutils/coreutils-8.23.tar.xz'
     # PIGZ (GZIP parallel)
     PIGZ_PATH = os.path.join(FUSIONCATCHER_TOOLS,'pigz')
-    PIGZ_URL = 'http://zlib.net/pigz/pigz-2.3.3.tar.gz'
+    PIGZ_URL = 'http://http.debian.net/debian/pool/main/p/pigz/pigz_2.3.1.orig.tar.gz' #'http://zlib.net/pigz/pigz-2.3.3.tar.gz'
     # PXZ (XZ parallel)
     PXZ_PATH = os.path.join(FUSIONCATCHER_TOOLS,'pxz')
     PXZ_URL = 'http://jnovy.fedorapeople.org/pxz/pxz-4.999.9beta.20091201git.tar.xz'
@@ -607,7 +607,7 @@ def install_tool(name, url, path, verbose = True, exit = True, env_configure = [
         cwd = os.path.abspath(os.path.expanduser(os.getcwd()))
         decompress = [(["cd",short_path],False),
                       (["unxz","-f","--keep",os.path.join(short_path,afile)],False),
-                      (["tar","--overwrite", "xvf", os.path.join(short_path,afile[:-3]), "-C", short_path],False),
+                      (["tar", "xvf", os.path.join(short_path,afile[:-3]), "-C", short_path],False),
                       (["cd",cwd],False),
                       ]
         #unxz -c coreutils-8.22.tar.xz | tar xv
@@ -830,6 +830,7 @@ def tool(name,
 
     r = False
     thepath = None
+    p = None
     if not install:
         if version_word:
             (r, p) = test_tool(name = name,
@@ -866,7 +867,10 @@ def tool(name,
                 if p:
                     path = p
                 thepath = path
-        if skip and p.lower() == 's':
+        else:
+            thepath = path
+
+        if skip and p and p.lower() == 's':
             pass
         else:
             install_tool(name = name,
@@ -1162,7 +1166,8 @@ if __name__ == '__main__':
                exit = False,
                force = options.force_yes)
     if r:
-        FUSIONCATCHER_PATH = options.installation_directory
+        FUSIONCATCHER_PATH = expand(options.installation_directory)
+        PATHS(exe = PYTHON_EXE, installdir = FUSIONCATCHER_PATH)
     else:
         p = expand(raw_input("  Type new path:"))
         PATHS(exe = PYTHON_EXE, installdir = p)
@@ -1298,7 +1303,7 @@ if __name__ == '__main__':
                  exe = "bowtie",
                  param = "--version",
                  web = "<http://bowtie-bio.sourceforge.net/index.shtml>",
-                 versions = ('1.1.1',),
+                 versions = ('1.1.2',),
                  force = options.force_yes,
                  url = BOWTIE_URL,
                  path = BOWTIE_PATH,
@@ -1418,7 +1423,7 @@ if __name__ == '__main__':
                  exe = "STAR",
                  param = "--version",
                  web = "<http://code.google.com/p/rna-star/>",
-                 versions = ('STAR_2.4.1c',),
+                 versions = ('STAR_2.4.1d',),
                  version_word = 'STAR_',
                  force = options.force_yes,
                  url = STAR_URL,
@@ -1543,7 +1548,7 @@ if __name__ == '__main__':
                      exe = "pigz",
                      param = "--version",
                      web = "<http://zlib.net/pigz/>",
-                     versions = ('2.3.3',),
+                     versions = ('2.3','2.3.1','2.3.3'),
                      version_word = 'pigz',
                      force = options.force_yes,
                      url = PIGZ_URL,
@@ -1554,19 +1559,19 @@ if __name__ == '__main__':
                 PIGZ_PATH = r
 
             # PXZ (XZ parallel)
-            r = tool(name = "PXZ (XZ parallel)",
-                     exe = "pxz",
-                     param = "--version",
-                     web = "<http://jnovy.fedorapeople.org/pxz/>",
-                     versions = ('4.999.9beta',),
-                     version_word = 'pxz',
-                     force = options.force_yes,
-                     url = PXZ_URL,
-                     path = PXZ_PATH,
-                     install = options.install_all or options.install_all_tools,
-                     skip = True)
-            if r:
-                PXZ_PATH = r
+#            r = tool(name = "PXZ (XZ parallel)",
+#                     exe = "pxz",
+#                     param = "--version",
+#                     web = "<http://jnovy.fedorapeople.org/pxz/>",
+#                     versions = ('4.999.9beta',),
+#                     version_word = 'pxz',
+#                     force = options.force_yes,
+#                     url = PXZ_URL,
+#                     path = PXZ_PATH,
+#                     install = options.install_all or options.install_all_tools,
+#                     skip = True)
+#            if r:
+#                PXZ_PATH = r
 
             # PICARD (Java-based command-line utilities that manipulate SAM files)
             r = tool(name = "PICARD (Java-based command-line utilities that manipulate SAM files)",
@@ -1750,16 +1755,18 @@ if __name__ == '__main__':
         txt.append("rm -rf %s" % (FUSIONCATCHER_CURRENT.replace(" ","\\ "),))
         txt.append("rm -f %s.tar.gz.*" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
         txt.append("rm -rf %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
+        txt.append("rm -f %s/checksums.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
         txt.append("mkdir -p %s" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
         txt.append("ln -s %s %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),FUSIONCATCHER_CURRENT.replace(" ","\\ ")))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.aa -O %s.tar.gz.aa" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ab -O %s.tar.gz.ab" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ac -O %s.tar.gz.ac" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ad -O %s.tar.gz.ad" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
-        txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/checksums.md5 -O checksums.md5")
-        txt.append("md5sum -c checksums.md5")
+        txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/checksums.md5 -O %s/checksums.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
+        txt.append("cd %s" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
+        txt.append("md5sum -c %s/checksums.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
         txt.append('if [ "$?" -ne "0" ]; then')
-        txt.append('  echo "ERROR: Downloaded files from above have errors! MD5 checksums do not match! Please, download them again or re-run this again!"')
+        txt.append('  echo -e "\\n\\n\\n\\033[33;7m   ERROR: The downloaded files from above have errors! MD5 checksums do not match! Please, download them again or re-run this script again!   \\033[0m\\n"')
         txt.append('  exit 1')
         txt.append('fi')
         #txt.append("tar  zxvf  %s -C %s" % (v,FUSIONCATCHER_DATA.replace(" ","\\ ")))
@@ -1770,6 +1777,7 @@ if __name__ == '__main__':
         txt.append("    exit 1")
         txt.append("fi")
         txt.append("rm -f %s.tar.gz" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
+        txt.append("rm -f %s/checksums.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
         for t in txt:
             print t
         print ""
