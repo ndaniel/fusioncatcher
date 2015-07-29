@@ -28,6 +28,7 @@ The aims of **`FusionCatcher`** are:
   * J. Nordlund, C.L. Backlin, V. Zachariadis, L. Cavelier, J. Dahlberg, I. Ofverholm, G. Barbany, A. Nordgren, E. Overnas, J. Abrahamsson, T. Flaegstad, M.M. Heyman, O.G. Jonsson, J. Kanerva, R. Larsson, J. Palle, K. Schmiegelow, M.G. Gustafsson, G. Lonnerholm, E. Forestier, A.C. Syvanen, **DNA methylation-based subtype prediction for pediatric acute lymphoblastic leukemia**, Clinical Epigenetics, 7:11, Feb. 2015,  http://dx.doi.org/10.1186/s13148-014-0039-z
   * J.H. Luo, S. Liu, Z.H. Zuo, R. Chen, G.C. Tseng, Y.P. Yu, **Discovery and Classification of Fusion Transcripts in Prostate Cancer and Normal Prostate Tissue**, The American Journal of Pathology, May 2015, http://dx.doi.org/10.1016/j.ajpath.2015.03.008
   * T. Meissner, K.M. Fisch, L. Gioia, **OncoRep: an n-of-1 reporting tool to support genome-guided treatment for breast cancer patients using RNA-sequencing**, BMC Medical Genomics, May 2015, http://dx.doi.org/10.1186/s12920-015-0095-z
+  * S. Torkildsen, L. Gorunova, K. Beiske, G.E. Tjonnfjord, S. Heim, I. Panagopoulos, **Novel ZEB2-BCL11B Fusion Gene Identified by RNA-Sequencing in Acute Myeloid Leukemia with t(2;14)(q22;q32)**, PLOS One, July 2015, http://dx.doi.org/10.1371/journal.pone.0132736
 
 **FusionCatcher** supports:
   * as input FASTQ and/or SRA file types (paired-end reads from stranded or strand-specific experiments),
