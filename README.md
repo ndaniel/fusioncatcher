@@ -1,3 +1,4 @@
+
 FusionCatcher
 =============
 
@@ -5,7 +6,7 @@ Finder of somatic fusion-genes in RNA-seq data.
 
 
 Download / Install / Update / Upgrade [FusionCatcher](http://github.com/ndaniel/fusioncatcher)
----------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------
 
 Use this one-line command:
 
@@ -15,8 +16,8 @@ Use this one-line command:
 Description
 -----------
 FusionCatcher searches for novel/known somatic fusion genes, translocations, and
-chimeras in RNA-seq data (paired-end reads from Illumina NGS platforms like
-Solexa/HiSeq/NextSeq/MiSeq) from diseased samples.
+chimeras in RNA-seq data (paired-end or single-end reads from Illumina NGS platforms 
+like Solexa/HiSeq/NextSeq/MiSeq) from diseased samples.
 
 The aims of FusionCatcher are:
  * very good detection rate for finding candidate somatic fusion
@@ -41,10 +42,19 @@ The aims of FusionCatcher are:
    but a very good precision).
 
 
-
 Manual
 ------
-A detailed manual is at [here](doc/MANUAL.md) or [here](http://code.google.com/p/fusioncatcher/wiki/Manual).
+A detailed manual is available [here](doc/MANUAL.md).
+
+
+Forum
+-----
+A forum for FusionCatcher is available at [Google Groups](http://groups.google.com/d/forum/fusioncatcher).
+
+
+Release history
+---------------
+A complete release history can be found [here](NEWS).
 
 
 Citing
