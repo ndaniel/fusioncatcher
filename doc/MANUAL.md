@@ -456,14 +456,14 @@ This is an example of semi-automatic installation of **FusionCatcher** (and it i
 
   * on computer A (which has internet connection):
     1. create locally a folder named, for example, `fuscat`:
-    ```
-    mkdir fuscat
-    cd fuscat
-    ```
+     ```
+     mkdir fuscat
+     cd fuscat
+     ```
     1. download `bootstrap.py` of **FusionCatcher**
-    ```
-    wget http://sf.net/projects/fusioncatcher/files/bootstrap.py
-    ```
+     ```
+     wget http://sf.net/projects/fusioncatcher/files/bootstrap.py
+     ```
     1. find out the dependencies needed to be downloaded and download them manually into folder `fuscat` (their URLs will be shown and the user needs to download them manually using wget or its favourite browser)
     ```
     python bootstrap.py --list-dependencies
