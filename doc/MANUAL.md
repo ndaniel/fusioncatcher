@@ -528,19 +528,19 @@ This dataset contains a very small set of short reads covering 12 already known 
 
 This is an example of finding fusion genes in the BT474 cell line using the public available RNA-seq data (from SRA archive):
   * download the publicly available RNA-seq data for BT-474 tumor breast cell line published in article **H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011.** http://genomebiology.com/2011/12/1/R6/
-   ```
-   mkdir -p ~/bt474
-   cd ~/bt474
-   wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
-   wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064439/SRR064439.sra
-   ```
+  ```
+  mkdir -p ~/bt474
+  cd ~/bt474
+  wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
+  wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064439/SRR064439.sra
+  ```
   * run **FusionCatcher** (it takes around ~2.5 hours)
-   ```
-   /apps/fusioncatcher/bin/fusioncatcher \
-   -d /apps/fusioncatcher/data/current/ \
-   -i ~/bt474/ \
-   -o ~/bt474_fusions/
-   ```
+  ```
+  /apps/fusioncatcher/bin/fusioncatcher \
+  -d /apps/fusioncatcher/data/current/ \
+  -i ~/bt474/ \
+  -o ~/bt474_fusions/
+  ```
   * if the run was successful then there should be the (non-empty) files (for more information see [here](Manual#6.2_-_Output_data.md)):
    ```
    ~/bt474_fusions/final-list_candidate_fusion_genes.txt
@@ -700,13 +700,11 @@ For rat genome, one has
 ```
 fusioncatcher-build -g rattus_norvegicus -o /some/rat/data/directory/
 ```
-.
 
 For mouse genome, one has
 ```
 fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
 ```
-.
 
 **NOTE**: **FusionCatcher** version 0.99.4c needs a newer **build data** than the previous version (that is 0.99.4b) of 'fusioncatcher-build'.
 
