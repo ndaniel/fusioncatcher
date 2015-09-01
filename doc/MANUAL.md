@@ -455,16 +455,16 @@ This is an example (or one of the many ways) for installing **FusionCatcher** on
 This is an example of semi-automatic installation of **FusionCatcher** (and it is installed here: `/some/server/apps/fusioncatcher`). This may be used when **FusionCatcher** should be installed on a computer without internet connection. Shortly, in this case all the software dependencies and indexes of databases need to be downloaded separately on another computer which has internet connection and from there they should be copied/moved to the computer without internet connection. Here are the steps for achieving these:
 
   * on computer A (which has internet connection):
-    1. create locally a folder named, for example, `fuscat`:
-     ```
-     mkdir fuscat
-     cd fuscat
-     ```
-    1. download `bootstrap.py` of **FusionCatcher**
-     ```
-     wget http://sf.net/projects/fusioncatcher/files/bootstrap.py
-     ```
-    1. find out the dependencies needed to be downloaded and download them manually into folder `fuscat` (their URLs will be shown and the user needs to download them manually using wget or its favourite browser)
+   1. create locally a folder named, for example, `fuscat`:
+    ```
+    mkdir fuscat
+    cd fuscat
+    ```
+   1. download `bootstrap.py` of **FusionCatcher**
+    ```
+    wget http://sf.net/projects/fusioncatcher/files/bootstrap.py
+    ```
+   1. find out the dependencies needed to be downloaded and download them manually into folder `fuscat` (their URLs will be shown and the user needs to download them manually using wget or its favourite browser)
     ```
     python bootstrap.py --list-dependencies
     ...
