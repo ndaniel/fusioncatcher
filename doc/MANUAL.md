@@ -469,19 +469,19 @@ This is an example of semi-automatic installation of **FusionCatcher** (and it i
     python bootstrap.py --list-dependencies
     ...
     ```
-    1. copy/move (manually) the folder `fuscat` and all its content to computer B (which does not have internet connection) where one intends to install **FusionCatcher**
+   * copy/move (manually) the folder `fuscat` and all its content to computer B (which does not have internet connection) where one intends to install **FusionCatcher**
   * on the computer B (which does not have internet connection), where one intends to install **FusionCatcher**:
-    1. go to the folder `fuscat` and make sure that the downloaded files do **not** have their permissions set as executables (this might confuse bootstrap.py)
-   ```
-   cd fuscat
-   chmod -x *
-   ```
-    1. start the installing process of **FusionCatcher** using `bootstrap.py` (if one wishes to use another version of Python, like for example having the path `/some/other/python` then below please replace `python` with `/some/other/python`)
-   ```
-   python bootstrap.py --local .
-   ```
-    1. for installing the pre-built index files for human, please run (or take a look for instructions to) `mega.sh` (it should be in `bin` directory where **FusionCatcher** has been installed)
-    1. for installing the pre-built index files for other organisms than human please, use `fusioncatcher-build` according tot the manual
+   * go to the folder `fuscat` and make sure that the downloaded files do **not** have their permissions set as executables (this might confuse bootstrap.py)
+    ```
+    cd fuscat
+    chmod -x *
+    ```
+   * start the installing process of **FusionCatcher** using `bootstrap.py` (if one wishes to use another version of Python, like for example having the path `/some/other/python` then below please replace `python` with `/some/other/python`)
+    ```
+    python bootstrap.py --local .
+    ```
+   * for installing the pre-built index files for human, please run (or take a look for instructions to) `mega.sh` (it should be in `bin` directory where **FusionCatcher** has been installed)
+   * for installing the pre-built index files for other organisms than human please, use `fusioncatcher-build` according tot the manual
 
 For more information regarding the installation settings and possibilities, run:
 ```
@@ -495,7 +495,6 @@ This test works only when human organism.
 ### 4.4.1 - Automatic
 
 Here are the steps for testing the installation of **FusionCatcher** using human genome.
-
 ```
 cd ~
 /apps/fusioncatcher/test/test.sh
@@ -529,36 +528,36 @@ This dataset contains a very small set of short reads covering 12 already known 
 
 This is an example of finding fusion genes in the BT474 cell line using the public available RNA-seq data (from SRA archive):
   * download the publicly available RNA-seq data for BT-474 tumor breast cell line published in article **H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011.** http://genomebiology.com/2011/12/1/R6/
-```
-mkdir -p ~/bt474
-cd ~/bt474
-wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
-wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064439/SRR064439.sra
-```
+   ```
+   mkdir -p ~/bt474
+   cd ~/bt474
+   wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
+   wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064439/SRR064439.sra
+   ```
   * run **FusionCatcher** (it takes around ~2.5 hours)
-```
-/apps/fusioncatcher/bin/fusioncatcher \
--d /apps/fusioncatcher/data/current/ \
--i ~/bt474/ \
--o ~/bt474_fusions/
-```
+   ```
+   /apps/fusioncatcher/bin/fusioncatcher \
+   -d /apps/fusioncatcher/data/current/ \
+   -i ~/bt474/ \
+   -o ~/bt474_fusions/
+   ```
   * if the run was successful then there should be the (non-empty) files (for more information see [here](Manual#6.2_-_Output_data.md)):
-```
-~/bt474_fusions/final-list_candidate_fusion_genes.txt
-~/bt474_fusions/preliminary-list_candidate_fusion_genes.txt
-~/bt474_fusions/supporting-reads_gene-fusions_BOWTIE.zip
-~/bt474_fusions/supporting-reads_gene-fusions_BLAT.zip
-~/bt474_fusions/supporting-reads_gene-fusions_STAR.zip
-~/bt474_fusions/info.txt
-~/bt474_fusions/fusioncatcher.log
-```
-and the file
-```
-~/bt474_fusions/final-list_candidate_fusion_genes.txt
-```
-should look like [this](fusionsBT474.md) and almost all of them have been published here:
-  * S. Kangaspeska, S. Hultsch, H. Edgren, D. Nicorici, A. Murumägi, O.P. Kallioniemi, Reanalysis of RNA-sequencing data reveals several additional fusion genes with multiple isoforms, PLOS One, Oct. 2012. http://dx.plos.org/10.1371/journal.pone.0048745
-  * H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011. http://genomebiology.com/2011/12/1/R6
+   ```
+   ~/bt474_fusions/final-list_candidate_fusion_genes.txt
+   ~/bt474_fusions/preliminary-list_candidate_fusion_genes.txt
+   ~/bt474_fusions/supporting-reads_gene-fusions_BOWTIE.zip
+   ~/bt474_fusions/supporting-reads_gene-fusions_BLAT.zip
+   ~/bt474_fusions/supporting-reads_gene-fusions_STAR.zip
+   ~/bt474_fusions/info.txt
+   ~/bt474_fusions/fusioncatcher.log
+  ```
+  and the file
+   ```
+   ~/bt474_fusions/final-list_candidate_fusion_genes.txt
+   ```
+  should look like [this](fusionsBT474.md) and almost all of them have been published here:
+   * S. Kangaspeska, S. Hultsch, H. Edgren, D. Nicorici, A. Murumägi, O.P. Kallioniemi, Reanalysis of RNA-sequencing data reveals several additional fusion genes with multiple isoforms, PLOS One, Oct. 2012. http://dx.plos.org/10.1371/journal.pone.0048745
+   * H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011. http://genomebiology.com/2011/12/1/R6
 
 ## 4.6 - Batch mode
 
@@ -571,7 +570,7 @@ fusioncatcher-batch.py -i illumina-bodymap2.txt -o results
 ```
 The input file for `fusioncatcher-batch.py` is a text tab-separated file with two columns and 16 lines (one line for each organ from Illumina Body Map 2.0). The first column contains the URLs for the input FASTQ files and the second column (which is optional) contains the name of the organ (which will be used to create a output directory later where the results will be). Therefore, **FusionCatcher** will be run automatically 16 times by the `fusioncatcher-batch.py`.
 
-The fusion genes found in Illumina Body Map 2.0 could be used later, for example, as a list of known false positives when looking for fusion genes in diseased/tumor samples.
+The fusion genes found in *Illumina Body Map 2.0* could be used later, for example, as a list of known false positives when looking for fusion genes in diseased/tumor samples.
 
 ## 4.7 - Matched normal sample
 
