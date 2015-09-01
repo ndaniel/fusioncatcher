@@ -1080,6 +1080,7 @@ samtools index fusion_genes.sorted.bam
 STAR \
 --genomeDir your_choice_of_genome_star_index \
 --alignSJoverhangMin 9 \
+--chimSegmentMin 17 \
 --readFilesIn supporting_reads.fq \
 --outFileNamePrefix .
 
@@ -1096,6 +1097,7 @@ awk '{print $1"\n"$2"\n"$3"\n"$4 > "r1.fq"; print $5"\n"$6"\n"$7"\n"$8 > "r2.fq"
 STAR \
 --genomeDir /your_choice_of_genome_star_index/ \
 --alignSJoverhangMin 9 \
+--chimSegmentMin 17 \
 --readFilesIn r1.fq r2.fq\
 --outFileNamePrefix .
 
