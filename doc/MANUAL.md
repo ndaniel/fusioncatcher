@@ -903,6 +903,7 @@ FusionCatcher reports:<br>
 </font></li></ul>
 
 **Table 1** - The description of columns of file **`final-list_candidate-fusion-genes.txt`**
+
 | **Column** | **Description** |
 |:-----------|:----------------|
 | **Gene\_1\_symbol(5end\_fusion\_partner)** | Gene symbol of the 5' end fusion partner |
