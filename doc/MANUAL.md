@@ -1041,8 +1041,8 @@ The files with names ending in **`_reads.sam`** (please note, that they still ne
 #### 6.3.3.2 - Manual method
 Here is an rough example of manually aligning the supporting reads (that is named as `supporting_reads.fq` in the below example; the FASTQ files needed here are the files ending in **`_reads.fq`** from the ZIP archives **`supporting-reads_gene-fusions_*.zip`** produced by **FusionCatcher**) using different aligners.
   * [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) aligner (where **`your_choice_of_genome_bowtie2_index`** may be for human, for example [this](ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19.zip))
-    * alignment done ignoring the paired-end information (i.e. like single reads):
-```
+   * alignment done ignoring the paired-end information (i.e. like single reads):
+    ```
 bowtie2 \
 --local \
 -k 10 \
@@ -1053,9 +1053,9 @@ bowtie2 \
 samtools view -bS fusion_genes.sam | samtools sort - fusion_genes.sorted
 
 samtools index fusion_genes.sorted.bam
-```
-    * alignment done taking into account the paired-end information:
-```
+    ```
+   * alignment done taking into account the paired-end information:
+    ```
 cat supporting_reads.fq | \
 paste - - - - - - - - | \
 awk '{print $1"\n"$2"\n"$3"\n"$4 > "r1.fq"; print $5"\n"$6"\n"$7"\n"$8 > "r2.fq"}'
@@ -1071,10 +1071,10 @@ bowtie2 \
 samtools view -bS fusion_genes.sam | samtools sort - fusion_genes.sorted
 
 samtools index fusion_genes.sorted.bam
-```
+    ```
   * [STAR](http://github.com/alexdobin/STAR) aligner (where **`your_choice_of_genome_star_index`** should be built according to the [STAR Manual](http://github.com/alexdobin/STAR/tree/master/doc))
-    * alignment done ignoring the paired-end information (i.e. like single reads):
-```
+   * alignment done ignoring the paired-end information (i.e. like single reads):
+    ```
 STAR \
 --genomeDir your_choice_of_genome_star_index \
 --alignSJoverhangMin 9 \
@@ -1085,9 +1085,9 @@ STAR \
 samtools view -bS fusion_genes.sam | samtools sort - fusion_genes.sorted
 
 samtools index fusion_genes.sorted.bam
-```
-    * alignment done taking into account the paired-end information:
-```
+    ```
+   * alignment done taking into account the paired-end information:
+    ```
 cat supporting_reads.fq | \
 paste - - - - - - - - | \
 awk '{print $1"\n"$2"\n"$3"\n"$4 > "r1.fq"; print $5"\n"$6"\n"$7"\n"$8 > "r2.fq"}'
@@ -1102,7 +1102,8 @@ STAR \
 samtools view -bS Aligned.out.sam | samtools sort - fusion_genes.sorted
 
 samtools index fusion_genes.sorted.bam
-```
+    ```
+
 Further, the files `fusion_genes.sorted.bam` and `fusion_genes.sorted.bam.bai` may be used with your favourite NGS visualizer!
 
 ### 6.3.4 - Chimera `R/BioConductor` package
