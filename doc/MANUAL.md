@@ -6,16 +6,16 @@
 
 # 1 - INTRODUCTION
 
-**FusionCatcher** searchers for **somatic** novel/known **fusion genes**, **translocations** and/or **chimeras** in RNA-seq data (stranded/unstranded  **paired-end/single-end** reads FASTQ files produced by Illumina next-generation sequencing platforms like Illumina Solexa/`HiSeq`/`NextSeq`/`MiSeq`) from _diseased_ samples.
+*FusionCatcher* searchers for **somatic** novel/known **fusion genes**, **translocations** and/or **chimeras** in RNA-seq data (stranded/unstranded  **paired-end/single-end** reads FASTQ files produced by Illumina next-generation sequencing platforms like Illumina Solexa/`HiSeq`/`NextSeq`/`MiSeq`) from _diseased_ samples.
 
-The aims of **`FusionCatcher`** are:
+The aims of *FusionCatcher* are:
   * very good detection rate for finding candidate **somatic fusion genes** (see [somatic mutations](http://en.wikipedia.org/wiki/Mutation#Somatic_mutations); using a matched **normal** sample is optional; several databases of known fusion genes found in healthy samples are used as a list of known false positives; biological knowledge is used, like for example gene fusion between a gene and its pseudogene is filtered out),
   * very good RT-PCR validation rate of found candidate somatic fusion genes (this is very important for us),
-  * very easy to use (i.e. no _a priori_ knowledge of bioinformatic databases and bioinformatics is needed in order to run **`FusionCatcher`** BUT Linux/Unix knowledge is needed; it allows a very high level of control for expert users),
-  * to be as automatic as possible (i.e. the **`FusionCatcher`** will choose automatically the best parameters in order to find candidate somatic fusion genes, e.g. finding automatically the adapters, quality trimming of reads, building the exon-exon junctions automatically based on the length of the reads given as input, etc. while giving also full control to expert users) while providing the best possible detection rate for finding somatic fusion genes (with a very low rate of false positives but a very good sensitivity).
+  * very easy to use (i.e. no _a priori_ knowledge of bioinformatic databases and bioinformatics is needed in order to run *FusionCatcher* BUT Linux/Unix knowledge is needed; it allows a very high level of control for expert users),
+  * to be as automatic as possible (i.e. the *FusionCatcher* will choose automatically the best parameters in order to find candidate somatic fusion genes, e.g. finding automatically the adapters, quality trimming of reads, building the exon-exon junctions automatically based on the length of the reads given as input, etc. while giving also full control to expert users) while providing the best possible detection rate for finding somatic fusion genes (with a very low rate of false positives but a very good sensitivity).
 
 
-**FusionCatcher** has been used for finding novel and known fusion genes in the following articles:
+*FusionCatcher* has been used for finding novel and known fusion genes in the following articles:
   * S. Kangaspeska, S. Hultsch, H. Edgren, D. Nicorici, A. Murumägi, O.P. Kallioniemi, **Reanalysis of RNA-sequencing data reveals several additional fusion genes with multiple isoforms**, PLOS One, Oct. 2012. http://dx.doi.org/10.1371/journal.pone.0048745
   * H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, **Identification of fusion genes in breast cancer by paired-end RNA-sequencing**, Genome Biology, Vol. 12, Jan. 2011. http://dx.doi.org/10.1186/gb-2011-12-1-r6
   * JN. Honeyman, EP. Simon, N. Robine, R. Chiaroni-Clarke, DG. Darcy, I. Isabel, P. Lim, CE. Gleason, JM. Murphy, BR. Rosenberg, L. Teegan, CN. Takacs, S. Botero, R. Belote, S. Germer, A-K. Emde, V. Vacic, U. Bhanot, MP. LaQuaglia, and S.M. Simon, **Detection of a Recurrent DNAJB1-PRKACA Chimeric Transcript in Fibrolamellar Hepatocellular Carcinoma**, Science 343 (6174), Feb. 2014, pp. 1010-1014, http://dx.doi.org/10.1126/science.1249484
@@ -31,7 +31,7 @@ The aims of **`FusionCatcher`** are:
   * S. Torkildsen, L. Gorunova, K. Beiske, G.E. Tjonnfjord, S. Heim, I. Panagopoulos, **Novel ZEB2-BCL11B Fusion Gene Identified by RNA-Sequencing in Acute Myeloid Leukemia with t(2;14)(q22;q32)**, PLOS One, July 2015, http://dx.doi.org/10.1371/journal.pone.0132736
   * M. Cieslik, R. Chugh, Y.M. Wu, M. Wu, C. Brennan, R. Lonigro, F. Su, R. Wang, J. Siddiqui, R. Mehra, X. Cao, D. Lucas, A.M. Chinnaiyan. D. Robinson, **The use of exome capture RNA-seq for highly degraded RNA with application to clinical cancer sequencing**, Genome Research, August 2015, http://dx.doi.org/10.1101/gr.189621.115
 
-**FusionCatcher** supports:
+*FusionCatcher* supports:
   * as input FASTQ and/or SRA file types (paired-end reads from stranded or strand-specific experiments),
   * five different methods (using Bowtie aligner and optionally BLAT, STAR, BOWTIE2, BWA aligners) for finding new fusion genes **BUT** by default only Bowtie, Blat, and STAR aligners will be used,
   * several eukaryotic organisms (which are in [Ensembl database](http://www.ensembl.org/index.html)), like for example, human, rat, mouse, dog, etc.
@@ -41,7 +41,7 @@ The aims of **`FusionCatcher`** are:
 
 # 2 - HARDWARE REQUIREMENTS
 
-For running **FusionCatcher** it is needed a computer with:
+For running *FusionCatcher* it is needed a computer with:
   * 64-bit `*NIX` environment
   * minimum 24 GB of RAM (in many cases it might work even with 16GB of RAM for very small input FASTQ files in order of megabytes)
   * 1 CPU (minimum)
@@ -56,7 +56,7 @@ For running **FusionCatcher** it is needed a computer with:
 ## 3.1 - Required dependencies
   * **Linux/Unix** 64-bit (e.g. Ubuntu version 12.04/14.04 or newer)
   * **Python** version 2.7.6 (>=2.6.0 and < 3.0 is fine)
-  * **`BioPython`** version 1.65 (>=1.50 is fine)
+  * **BioPython** version 1.65 (>=1.50 is fine)
   * **Bowtie** 64-bit version 1.1.1 http://bowtie-bio.sourceforge.net/index.shtml
   * **SeqTK** version 1.0-r68e-dirty  http://github.com/ndaniel/seqtk
   * organism specific  data from [Ensembl](http://www.ensembl.org) database version 80 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed)
@@ -68,14 +68,14 @@ For running **FusionCatcher** it is needed a computer with:
 
 ### 3.2.1 - Strongly recommended
 These are expected by default to be installed but their use can be disabled by using the command line option '--skip-blat'.
-  * **BLAT** version 0.35 http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by **FusionCatcher** (hint: if you are a non-profit organization you should be fine).
-  * **faToTwoBit** http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by **FusionCatcher** and **`fusioncatcher-build`** if one plans to use BLAT as a second (optional) alternative method for finding fusion genes! (required also by option `--blat-visualization`)
+  * **BLAT** version 0.35 http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *FusionCatcher* (hint: if you are a non-profit organization you should be fine).
+  * **faToTwoBit** http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *FusionCatcher* and `fusioncatcher-build` if one plans to use BLAT as a second (optional) alternative method for finding fusion genes! (required also by option `--blat-visualization`)
 
 ### 3.2.2 - Nice to have
-  * **Velvet** (de novo assembler) version 1.2.10 http://www.ebi.ac.uk/~zerbino/velvet/ . This is needed if one plans to do _de novo_ assembly of the reads which support the candidate fusion genes. (required by option `--assembly` of **FusionCatcher**)
-  * **fastq-dump** version 2.3.5 from NCBI SRA Toolkit http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software . This is needed by **FusionCatcher** if one plans to use as input SRA files.
-  * Python library **openpyxl** version 1.5.6 http://pypi.python.org/pypi/openpyxl (other versions might work but have not been tested). It is needed by **`fusioncatcher-build`** for parsing the [ConjoinG](http://metasystems.riken.jp/conjoing/) database.
-  * Python library **xlrd** version 0.6.1 http://pypi.python.org/pypi/xlrd (other versions might work but have not been tested). It is needed by **`fusioncatcher-build`** for parsing the [ChimerDB](http://ercsb.ewha.ac.kr/FusionGene/) database.
+  * **Velvet** (de novo assembler) version 1.2.10 http://www.ebi.ac.uk/~zerbino/velvet/ . This is needed if one plans to do _de novo_ assembly of the reads which support the candidate fusion genes. (required by option `--assembly` of *FusionCatcher*)
+  * **fastq-dump** version 2.3.5 from NCBI SRA Toolkit http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software . This is needed by *FusionCatcher* if one plans to use as input SRA files.
+  * Python library **openpyxl** version 1.5.6 http://pypi.python.org/pypi/openpyxl (other versions might work but have not been tested). It is needed by `fusioncatcher-build` for parsing the [ConjoinG](http://metasystems.riken.jp/conjoing/) database.
+  * Python library **xlrd** version 0.6.1 http://pypi.python.org/pypi/xlrd (other versions might work but have not been tested). It is needed by `fusioncatcher-build` for parsing the [ChimerDB](http://ercsb.ewha.ac.kr/FusionGene/) database.
   * **coreutils** version 8.22  http://ftp.gnu.org/gnu/coreutils for a newer version of SORT command which allows the use of several CPUs in parallel, that is '--parallel'  command line options (other older versions might also support this!).
   * **pigz** version 2.3.1 http://zlib.net/pigz/ for using GZIP on several CPUs in parallel (other older versions might support this).
   * **SAMTools** version 1.19 http://www.htslib.org/
@@ -83,7 +83,7 @@ These are expected by default to be installed but their use can be disabled by u
 
 
 ## 3.3 - Genomic Databases
-These are used (downloaded and parsed) automatically by **FusionCatcher**:
+These are used (downloaded and parsed) automatically by *FusionCatcher*:
   * **ENSEMBL** database http://www.ensembl.org/ (required)
   * **UCSC** database http://hgdownload.cse.ucsc.edu/downloads.html#human (required)
   * **RefSeq** database (thru **UCSC** database) (required)
@@ -100,9 +100,9 @@ These are used (downloaded and parsed) automatically by **FusionCatcher**:
 
 **NOTES**:
   * **ENSEMBL** database is used for finding novel/known fusions genes
-  * **COSMIC**, **TICdb**, **ChimerDB**, **Cancer Genome Project**, **ConjoinG**, and manual curated fusion gene database are indexed and used further for annotating/labeling the found fusion genes for an easier visualization of **novel** genes (i.e. not published yet) found by **FusionCatcher**. For more information how this is used see [Tables 1,2,3](Manual#6.2_-_Output_data.md).
-  * **FusionCatcher** can work just fine and is able to find fusion genes without any of the optional dependencies/tools/programs!
-  * if **BLAT** is not installed please use option '--skip-blat' in order to let know **FusionCatcher** that it should not use it!
+  * **COSMIC**, **TICdb**, **ChimerDB**, **Cancer Genome Project**, **ConjoinG**, and manual curated fusion gene database are indexed and used further for annotating/labeling the found fusion genes for an easier visualization of **novel** genes (i.e. not published yet) found by *FusionCatcher*. For more information how this is used see [Tables 1,2,3](Manual#6.2_-_Output_data.md).
+  * *FusionCatcher* can work just fine and is able to find fusion genes without any of the optional dependencies/tools/programs!
+  * if **BLAT** is not installed please use option '--skip-blat' in order to let know *FusionCatcher* that it should not use it!
 
 
 ---
@@ -112,40 +112,40 @@ These are used (downloaded and parsed) automatically by **FusionCatcher**:
 
 ## 4.1 - Automatic installation
 
-This is an example of automatic installation of **FusionCatcher** (and it is installed here "~/fusioncatcher" if these are run in your home directory) and the required databases and indexes (which are downloaded instead of being built locally):
+This is an example of automatic installation of *FusionCatcher* (and it is installed here "~/fusioncatcher" if these are run in your home directory) and the required databases and indexes (which are downloaded instead of being built locally):
 ```
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download
 ```
 where:
   * `wget http://sf.net/projects/fusioncatcher/files/bootstrap.py` downloads from internet the `bootstrap.py` which is the installation script (it is recommended to use the `boostrap.py` from `ttp://sf.net/projects/fusioncatcher/files/bootstrap.py` because it is more up to date)
   * `python bootstrap.py` runs using `python` the installation script `bootstrap.py` (here one may replace `python` with its own custom installation of python, like for example `/some/other/custom/python`)
-  * `--download` forces the installation script `bootstrap.py` to download and install automatically also the databases needed by **FusionCatcher** (if this is not used the databases needed by **FusionCatcher** will not be installed and the user will have to build/install them manually later)
+  * `--download` forces the installation script `bootstrap.py` to download and install automatically also the databases needed by *FusionCatcher* (if this is not used the databases needed by *FusionCatcher* will not be installed and the user will have to build/install them manually later)
 
-In case that there are several Python versions installed already then it is possible to point which one to use for installation and running **FusionCatcher**, as following (no required databases and indexes are installed automatically in this example):
+In case that there are several Python versions installed already then it is possible to point which one to use for installation and running *FusionCatcher*, as following (no required databases and indexes are installed automatically in this example):
 ```
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py
 
 /some/other/python bootstrap.py
 ```
 
-In case that one wants to install **`FusionCatcher`** here **`/some/directory/fusioncatcher/`**, then this shall be run (no required databases and indexes are installed automatically in this example):
+In case that one wants to install *FusionCatcher* here `/some/directory/fusioncatcher/`, then this shall be run (no required databases and indexes are installed automatically in this example):
 ```
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py
 
 /your/favourite/python bootstrap.py --prefix=/some/directory/
 ```
 
-In case that one wants to install **`FusionCatcher`** and download the databases directly and build locally the indexes, then this shall be run:
+In case that one wants to install *FusionCatcher* and download the databases directly and build locally the indexes, then this shall be run:
 ```
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --build
 ```
 
-This is an example of automatic installation of **FusionCatcher** and the required databases and indexes (which are downloaded instead of being built locally) while all the questions asked by the installation script are answered automatically with YES (WARNING: this might overwrite files/directories):
+This is an example of automatic installation of *FusionCatcher* and the required databases and indexes (which are downloaded instead of being built locally) while all the questions asked by the installation script are answered automatically with YES (WARNING: this might overwrite files/directories):
 ```
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download -y
 ```
 
-In case that one has the admin/root rights then it is possible to install **FusionCatcher** as following (no required databases and indexes are installed automatically in this example):
+In case that one has the admin/root rights then it is possible to install *FusionCatcher* as following (no required databases and indexes are installed automatically in this example):
 ```
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py
 sudo python bootstrap.py
@@ -162,7 +162,7 @@ Please, do not forget to build/download the organism data after this is done run
 
 ## 4.2 - Manual installation
 
-This is an example (or one of the many ways) for installing **FusionCatcher** on a **Ubuntu Linux 12.04/14.04 64-bit system** and the **FusionCatcher** and its dependencies are installed in **`/apps`**.
+This is an example (or one of the many ways) for installing *FusionCatcher* on a **Ubuntu Linux 12.04/14.04 64-bit system** and the *FusionCatcher* and its dependencies are installed in `/apps`.
 
   * check that Python 2.6.X or 2.7.X is installed and working properly! If not then install it together with its development environment and other (probably) needed dependencies (required):
   ```
@@ -188,18 +188,18 @@ This is an example (or one of the many ways) for installing **FusionCatcher** on
   sudo zypper in zlib-devel
   ```
   
-  * installing **`BioPython`** (required):
+  * installing **BioPython** (required):
   ```
   sudo apt-get install python-numpy
   sudo apt-get install python-biopython
   ```
   
-  * installing Python module **`xlrd`** (optional):
+  * installing Python module **xlrd** (optional):
   ```
   sudo apt-get install python-xlrd
   ```
   
-  * installing Python module **`openpyxl`** (optional):
+  * installing Python module **openpyxl** (optional):
   ```
   sudo apt-get install python-openpyxl
   ```
@@ -226,7 +226,7 @@ This is an example (or one of the many ways) for installing **FusionCatcher** on
   ln -s bowtie2-2.2.5-linux-x86_64 bowtie2
   ```
   
-  * installing **BLAT** version 0.35 (optional but **strongly** recommended; if **BLAT** is not installed please use option '--skip-blat' in order to let know **FusionCatcher** that it should not use it)
+  * installing **BLAT** version 0.35 (optional but **strongly** recommended; if **BLAT** is not installed please use option '--skip-blat' in order to let know *FusionCatcher* that it should not use it)
   ```
   cd /apps/fusioncatcher/tools
   mkdir blat_v0.35
@@ -339,7 +339,7 @@ This is an example (or one of the many ways) for installing **FusionCatcher** on
   ln -s picard-tools-1.119 picard
   ```
   
-  * installing **FusionCatcher** version 0.99.4c (required)
+  * installing *FusionCatcher* version 0.99.4c (required)
   ```
   cd /apps/fusioncatcher
   wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4c.zip
@@ -366,8 +366,8 @@ This is an example (or one of the many ways) for installing **FusionCatcher** on
   ln -s $(pwd)/DEPENDENCIES ../DEPENDENCIES
   ```
   
-  * specify the paths to the above tools such that **FusionCatcher** can find them. There are two choices.
-   * *Choice A*: Edit the **FusionCatcher** configuration file **`configuration.cfg`** (type: **`nano /apps/fusioncatcher/etc/configuration.cfg`** at command line) and make sure that the **FusionCatcher**'s configuration file **'configuration.cfg'** looks like this:
+  * specify the paths to the above tools such that *FusionCatcher* can find them. There are two choices.
+   * *Choice A*: Edit the *FusionCatcher* configuration file `configuration.cfg` (type: `nano /apps/fusioncatcher/etc/configuration.cfg` at command line) and make sure that the *FusionCatcher*'s configuration file **'configuration.cfg'** looks like this:
    ```
    [paths]
    python = /usr/bin/
@@ -396,7 +396,7 @@ This is an example (or one of the many ways) for installing **FusionCatcher** on
    fusioncatcher = 0.99.4c beta
    ```
    
-   * *Choice B*: Add the paths for the needed tools to the `PATH` variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) and add the following lines at the end:
+   * *Choice B*: Add the paths for the needed tools to the `PATH` variable by editing, for example, the `.bashrc` file (type: `nano ~/.bashrc` at command line) and add the following lines at the end:
    ```
    export PATH=/apps/fusioncatcher/bin:$PATH
    export PATH=/apps/fusioncatcher/tools/bowtie:$PATH
@@ -416,12 +416,12 @@ This is an example (or one of the many ways) for installing **FusionCatcher** on
    export PATH=/apps/fusioncatcher/tools/picard/:$PATH
    ```
    
-   > *Note 1*: If a different version of Python is used/needed by **FusionCatcher** than the standard **`/usr/bin/env python`** then also please make sure that that specific version of Python is added to the **`PATH`** variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) or add the following lines at the end:
+   > *Note 1*: If a different version of Python is used/needed by *FusionCatcher* than the standard `/usr/bin/env python` then also please make sure that that specific version of Python is added to the **`PATH`** variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) or add the following lines at the end:
    ```
    export PATH=/some/other/version/of/python:$PATH
    ```
    
-   > *Note 2*: In some cases it might not be enough to change the Python's path in **`.bashrc`** file, like for example the case when **FusionCatcher** is run on a server which defaults to another Python than one used to install **FusionCatcher**. In this case it is required that one changes all the [shebangs](http://en.wikipedia.org/wiki/Shebang_(Unix)) of the all Python scripts which belong to **FusionCatcher**. In case that one uses the Python which has the following Python executable path **`/some/other/python`** than this can be done like this (it changes in place **`/usr/bin/env python`** into **`/some/other/python`** in all `/apps/fusioncatcher/bin/*.py`):
+   > *Note 2*: In some cases it might not be enough to change the Python's path in `.bashrc` file, like for example the case when *FusionCatcher* is run on a server which defaults to another Python than one used to install *FusionCatcher*. In this case it is required that one changes all the [shebangs](http://en.wikipedia.org/wiki/Shebang_(Unix)) of the all Python scripts which belong to *FusionCatcher*. In case that one uses the Python which has the following Python executable path `/some/other/python` than this can be done like this (it changes in place `/usr/bin/env python` into `/some/other/python` in all `/apps/fusioncatcher/bin/*.py`):
    ```
    sed -i 's/\/usr\/bin\/env\ python/\/some\/other\/python/g' /apps/fusioncatcher/bin/*.py
    ```
@@ -439,7 +439,7 @@ This is an example (or one of the many ways) for installing **FusionCatcher** on
    ln -s ensembl_v80 current
    ```
    
-   * Using `fusioncatcher-build` -- It will takes several hours (e.g. 5-10 hours) and it depends highly on the bandwidth of your internet connection. One may find out what Ensembl database version is available at [www.ensembl.org] and what version has been downloaded by looking to the last three lines printed on the screen by **`fusioncatcher-build`**.
+   * Using `fusioncatcher-build` -- It will takes several hours (e.g. 5-10 hours) and it depends highly on the bandwidth of your internet connection. One may find out what Ensembl database version is available at [www.ensembl.org] and what version has been downloaded by looking to the last three lines printed on the screen by `fusioncatcher-build`.
    ```
    mkdir -p /apps/fusioncatcher/data/ensembl_v80
    cd /apps/fusioncatcher/data/ensembl_v80
@@ -452,7 +452,7 @@ This is an example (or one of the many ways) for installing **FusionCatcher** on
 
 ## 4.3 - Semi-automatic installation
 
-This is an example of semi-automatic installation of **FusionCatcher** (and it is installed here: `/some/server/apps/fusioncatcher`). This may be used when **FusionCatcher** should be installed on a computer without internet connection. Shortly, in this case all the software dependencies and indexes of databases need to be downloaded separately on another computer which has internet connection and from there they should be copied/moved to the computer without internet connection. Here are the steps for achieving these:
+This is an example of semi-automatic installation of *FusionCatcher* (and it is installed here: `/some/server/apps/fusioncatcher`). This may be used when *FusionCatcher* should be installed on a computer without internet connection. Shortly, in this case all the software dependencies and indexes of databases need to be downloaded separately on another computer which has internet connection and from there they should be copied/moved to the computer without internet connection. Here are the steps for achieving these:
 
   * on computer A (which has internet connection):
    * create locally a folder named, for example, `fuscat`:
@@ -469,18 +469,18 @@ This is an example of semi-automatic installation of **FusionCatcher** (and it i
     python bootstrap.py --list-dependencies
     ...
     ```
-   * copy/move (manually) the folder `fuscat` and all its content to computer B (which does not have internet connection) where one intends to install **FusionCatcher**
-  * on the computer B (which does not have internet connection), where one intends to install **FusionCatcher**:
+   * copy/move (manually) the folder `fuscat` and all its content to computer B (which does not have internet connection) where one intends to install *FusionCatcher*
+  * on the computer B (which does not have internet connection), where one intends to install *FusionCatcher*:
    * go to the folder `fuscat` and make sure that the downloaded files do **not** have their permissions set as executables (this might confuse bootstrap.py)
     ```
     cd fuscat
     chmod -x *
     ```
-   * start the installing process of **FusionCatcher** using `bootstrap.py` (if one wishes to use another version of Python, like for example having the path `/some/other/python` then below please replace `python` with `/some/other/python`)
+   * start the installing process of *FusionCatcher* using `bootstrap.py` (if one wishes to use another version of Python, like for example having the path `/some/other/python` then below please replace `python` with `/some/other/python`)
     ```
     python bootstrap.py --local .
     ```
-   * for installing the pre-built index files for human, please run (or take a look for instructions to) `mega.sh` (it should be in `bin` directory where **FusionCatcher** has been installed)
+   * for installing the pre-built index files for human, please run (or take a look for instructions to) `mega.sh` (it should be in `bin` directory where *FusionCatcher* has been installed)
    * for installing the pre-built index files for other organisms than human please, use `fusioncatcher-build` according tot the manual
 
 For more information regarding the installation settings and possibilities, run:
@@ -494,7 +494,7 @@ This test works only when human organism.
 
 ### 4.4.1 - Automatic
 
-Here are the steps for testing the installation of **FusionCatcher** using human genome.
+Here are the steps for testing the installation of *FusionCatcher* using human genome.
 ```
 cd ~
 /apps/fusioncatcher/test/test.sh
@@ -503,7 +503,7 @@ Afterwards a message will be shown at console if the installation test went fine
 
 ### 4.4.1 - Manual
 
-Here are the steps for testing the installation of **FusionCatcher** using human genome.
+Here are the steps for testing the installation of *FusionCatcher* using human genome.
 
 ```
 mkdir ~/test
@@ -528,33 +528,33 @@ This dataset contains a very small set of short reads covering 12 already known 
 
 This is an example of finding fusion genes in the BT474 cell line using the public available RNA-seq data (from SRA archive):
   * download the publicly available RNA-seq data for BT-474 tumor breast cell line published in article **H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011.** http://genomebiology.com/2011/12/1/R6/
-  ```
-  mkdir -p ~/bt474
-  cd ~/bt474
-  wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
-  wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064439/SRR064439.sra
-  ```
-  * run **FusionCatcher** (it takes around ~2.5 hours)
-  ```
-  /apps/fusioncatcher/bin/fusioncatcher \
-  -d /apps/fusioncatcher/data/current/ \
-  -i ~/bt474/ \
-  -o ~/bt474_fusions/
-  ```
+   ```
+   mkdir -p ~/bt474
+   cd ~/bt474
+   wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
+   wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064439/SRR064439.sra
+   ```
+  * run *FusionCatcher* (it takes around ~2.5 hours)
+   ```
+   /apps/fusioncatcher/bin/fusioncatcher \
+   -d /apps/fusioncatcher/data/current/ \
+   -i ~/bt474/ \
+   -o ~/bt474_fusions/
+   ```
   * if the run was successful then there should be the (non-empty) files (for more information see [here](Manual#6.2_-_Output_data.md)):
+    ```
+    ~/bt474_fusions/final-list_candidate_fusion_genes.txt
+    ~/bt474_fusions/preliminary-list_candidate_fusion_genes.txt
+    ~/bt474_fusions/supporting-reads_gene-fusions_BOWTIE.zip
+    ~/bt474_fusions/supporting-reads_gene-fusions_BLAT.zip
+    ~/bt474_fusions/supporting-reads_gene-fusions_STAR.zip
+    ~/bt474_fusions/info.txt
+    ~/bt474_fusions/fusioncatcher.log
    ```
-   ~/bt474_fusions/final-list_candidate_fusion_genes.txt
-   ~/bt474_fusions/preliminary-list_candidate_fusion_genes.txt
-   ~/bt474_fusions/supporting-reads_gene-fusions_BOWTIE.zip
-   ~/bt474_fusions/supporting-reads_gene-fusions_BLAT.zip
-   ~/bt474_fusions/supporting-reads_gene-fusions_STAR.zip
-   ~/bt474_fusions/info.txt
-   ~/bt474_fusions/fusioncatcher.log
-  ```
   and the file
-   ```
-   ~/bt474_fusions/final-list_candidate_fusion_genes.txt
-   ```
+    ```
+    ~/bt474_fusions/final-list_candidate_fusion_genes.txt
+    ```
   should look like [this](fusionsBT474.md) and almost all of them have been published here:
    * S. Kangaspeska, S. Hultsch, H. Edgren, D. Nicorici, A. Murumägi, O.P. Kallioniemi, Reanalysis of RNA-sequencing data reveals several additional fusion genes with multiple isoforms, PLOS One, Oct. 2012. http://dx.plos.org/10.1371/journal.pone.0048745
    * H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011. http://genomebiology.com/2011/12/1/R6
@@ -568,15 +568,15 @@ cd ~/bodymap
 wget http://sourceforge.net/projects/fusioncatcher/files/examples/illumina-bodymap2.txt
 fusioncatcher-batch.py -i illumina-bodymap2.txt -o results
 ```
-The input file for `fusioncatcher-batch.py` is a text tab-separated file with two columns and 16 lines (one line for each organ from Illumina Body Map 2.0). The first column contains the URLs for the input FASTQ files and the second column (which is optional) contains the name of the organ (which will be used to create a output directory later where the results will be). Therefore, **FusionCatcher** will be run automatically 16 times by the `fusioncatcher-batch.py`.
+The input file for `fusioncatcher-batch.py` is a text tab-separated file with two columns and 16 lines (one line for each organ from Illumina Body Map 2.0). The first column contains the URLs for the input FASTQ files and the second column (which is optional) contains the name of the organ (which will be used to create a output directory later where the results will be). Therefore, *FusionCatcher* will be run automatically 16 times by the `fusioncatcher-batch.py`.
 
 The fusion genes found in *Illumina Body Map 2.0* could be used later, for example, as a list of known false positives when looking for fusion genes in diseased/tumor samples.
 
 ## 4.7 - Matched normal sample
 
-In case that there is available RNA-seq data from a tumor sample and its match normal sample then the somatic mode of **`FusionCatcher`** may be used.  By default **`FusionCatcher`** is using a background list of fusion genes which have been found previously in normal healthy samples (e.g. Illumina BodyMap2 , etc.).
+In case that there is available RNA-seq data from a tumor sample and its match normal sample then the somatic mode of *FusionCatcher* may be used.  By default *FusionCatcher* is using a background list of fusion genes which have been found previously in normal healthy samples (e.g. Illumina BodyMap2 , etc.).
 
-For example, lets assume that (i) the BT-474 is the rumor sample from here, and (ii) the matched normal samples if the healthy breast sample from here.  In this case, in order to find the somatic fusion genes in the BT-474 (that are the fusion genes which are found in BT-474 and are not found in the healthy sample) **`FusionCatcher`** should be run as follows:
+For example, lets assume that (i) the BT-474 is the rumor sample from here, and (ii) the matched normal samples if the healthy breast sample from here.  In this case, in order to find the somatic fusion genes in the BT-474 (that are the fusion genes which are found in BT-474 and are not found in the healthy sample) *FusionCatcher* should be run as follows:
 
 ```
 mkdir -p ~/bt474
@@ -599,7 +599,7 @@ fusioncatcher.py
 
 The somatic fusion genes for BT-474 will be found in `~/results/bt474/final-list_candidate_fusion_genes.txt` file. The fusion genes which marked as **matched-normal** (see column 3 and for more see [Table 2](Manual#6.2_-_Output_data.md)) in BT-474 (that is `~/results/bt474/final-list_candidate_fusion_genes.txt` file) have been found also in the healthy sample also and most likely they are not somatic.
 
-In case that there are several tumor samples and their matched healthy samples then batch mode of **`FusionCatcher`** may be used, as follows:
+In case that there are several tumor samples and their matched healthy samples then batch mode of *FusionCatcher* may be used, as follows:
 ```
 fusioncatcher-batch.py
 --input /some/path/tumor-file.txt
@@ -634,7 +634,7 @@ For a fully automatic installation (including the required indexes of databases)
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py && python bootstrap.py --download
 ```
 
-In case of a manual installation, first please check that (i) the required dependencies are installed, and (ii) download the source files of **`FusionCatcher`**, like for example:
+In case of a manual installation, first please check that (i) the required dependencies are installed, and (ii) download the source files of *FusionCatcher*, like for example:
 ```
 wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4c.zip 
 unzip fusioncatcher_v0.99.4c.zip
@@ -647,12 +647,12 @@ For an example of:
 
 ## 5.2 - Organism's build data
 
-First, it is needed to download data or build the necessary files/indexes for running the **FusionCatcher**. This process should be done once for every single organism or every time when the [Ensembl](http://www.ensembl.org) database is updated.
+First, it is needed to download data or build the necessary files/indexes for running the *FusionCatcher*. This process should be done once for every single organism or every time when the [Ensembl](http://www.ensembl.org) database is updated.
 
 
 ### 5.2.1 - Direct download of human build data
 
-Here, in this example, the necessary data is downloaded and necessary files/indexes for the **human genome** are downloaded in the directory **`/some/human/data/ensembl_v80/`** which will be used later.
+Here, in this example, the necessary data is downloaded and necessary files/indexes for the **human genome** are downloaded in the directory `/some/human/data/ensembl_v80/` which will be used later.
 
 ```
 mkdir -p /some/human/data/
@@ -669,7 +669,7 @@ If this works then it is not necessary to start building yourself the build data
 
 ### 5.2.2 - Building yourself the organism's build data
 
-Here, in this example, the necessary data is downloaded and necessary files/indexes are built for the **human genome** in the directory **`/some/human/data/directory/`** which will be used later.
+Here, in this example, the necessary data is downloaded and necessary files/indexes are built for the **human genome** in the directory `/some/human/data/directory/` which will be used later.
 ```
 fusioncatcher-build -g homo_sapiens -o /some/human/data/directory/
 ```
@@ -706,7 +706,7 @@ For mouse genome, one has
 fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
 ```
 
-**NOTE**: **FusionCatcher** version 0.99.4c needs a newer **build data** than the previous version (that is 0.99.4b) of 'fusioncatcher-build'.
+**NOTE**: *FusionCatcher* version 0.99.4c needs a newer **build data** than the previous version (that is 0.99.4b) of 'fusioncatcher-build'.
 
 ---
 
@@ -721,16 +721,16 @@ fusioncatcher \
 -o /some/output/directory/
 ```
 where:
-  * **`/some/human/data/directory/`** - contains the data and files generated by **`fusioncatcher-build`** (see [Get data](Manual#5.2_-_Organism's_build_data.md) section)
-  * **`/some/input/directory/containing/fastq/files/`** - contains the input FASTQ (or SRA if NCBI SRA toolkit is installed) files (and not any other type of files which are not do not contain sequecing data, e.g. readme.txt)
-  * **`/some/output/directory/`** - contains output files (for more information see [here](Manual#6.2_-_Output_data.md)):
-    * **`final-list_candidate_fusion_genes.txt`**
-    * **`preliminary-list_candidate_fusion_genes.txt`**
-    * **`supporting-reads_gene-fusions_BOWTIE.zip`**
-    * **`supporting-reads_gene-fusions_BLAT.zip`**
-    * **`supporting-reads_gene-fusions_STAR.zip`**
-    * **`info.txt`**
-    * **`fusioncatcher.log`**
+  * `/some/human/data/directory/` - contains the data and files generated by `fusioncatcher-build` (see [Get data](Manual#5.2_-_Organism's_build_data.md) section)
+  * `/some/input/directory/containing/fastq/files/` - contains the input FASTQ (or SRA if NCBI SRA toolkit is installed) files (and not any other type of files which are not do not contain sequecing data, e.g. readme.txt)
+  * `/some/output/directory/` - contains output files (for more information see [here](Manual#6.2_-_Output_data.md)):
+    * `final-list_candidate_fusion_genes.txt`
+    * `preliminary-list_candidate_fusion_genes.txt`
+    * `supporting-reads_gene-fusions_BOWTIE.zip`
+    * `supporting-reads_gene-fusions_BLAT.zip`
+    * `supporting-reads_gene-fusions_STAR.zip`
+    * `info.txt`
+    * `fusioncatcher.log`
 
 Searching for fusion genes in a rat organism, one has:
 ```
@@ -761,14 +761,14 @@ All types of raw FASTQ files produced by the Illumina Solexa and Illumina HiSeq 
   * contain **paired-end** reads, and
   * paired FASTQ files should be synchronized (i.e. reads which for a pair should be on the same line number if both FASTQ files).
   * paired-end reads which follow the suggested Illumina's sample preparation protocol, that is the two read-mates are: (i) from opposite strands, and (ii) opposite directions to one another (in other words, in order to 'bring' a read and its mate-read on the same strand then one needs to perform reverse-complement operation on only one of them)
-  * paired-end reads shall come from a **stranded** (i.e. strand-specific) or **unstranded** sample preparation protocol (both are supported by **FusionCatcher**)!
+  * paired-end reads shall come from a **stranded** (i.e. strand-specific) or **unstranded** sample preparation protocol (both are supported by *FusionCatcher*)!
 
 
 It is **highly recommended** that:
   * the input FASTQ files contain the **raw** reads generated by the Illumina sequencers **without any additional trimming** (i.e. all reads from all files shall have the same length), and
-  * every single input FASTQ file contains reads from only and only **one** sample/replicate (i.e. **do not concatenate** in one big FASTQ file several other FASTQ files; just give the input all FASTQ files and **FusionCatcher** will do the concatenation).
+  * every single input FASTQ file contains reads from only and only **one** sample/replicate (i.e. **do not concatenate** in one big FASTQ file several other FASTQ files; just give the input all FASTQ files and *FusionCatcher* will do the concatenation).
 
-**FusionCatcher** will automatically pre-process the input reads, as follows:
+*FusionCatcher* will automatically pre-process the input reads, as follows:
   * trimming 3' end of the reads based on quality scores (default Q5),
   * removing automatically the adapter from the reads (it predicts the adapter sequence based on the reads which form a pair and also overlap and the non-overlapping parts are the predicted adapters),
   * trimming the poly A/C/G/T tails,
@@ -796,30 +796,30 @@ The following files are accepted/used as input:
   * `*.sra`
 and the `zip` and `gz` archives should contain only one file.
 
-**FusionCatcher** also accepts as input also URLs (it shall start with ftp:// or http://), like for example
+*FusionCatcher* also accepts as input also URLs (it shall start with ftp:// or http://), like for example
 ```
 fusioncatcher -i ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR030/ERR030872/ERR030872_1.fastq.gz,ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR030/ERR030872/ERR030872_2.fastq.gz -o thyroid
 ```
 
-The FASTQ input files should be the ones generated by the Illumina platform without any kind of additional processing/filtering/trimming. **FusionCatcher** is doing its own filtering (automatically identifies and trims the adapters, trimming if needed, quality filtering of reads, removal of rRNA reads, etc.).
+The FASTQ input files should be the ones generated by the Illumina platform without any kind of additional processing/filtering/trimming. *FusionCatcher* is doing its own filtering (automatically identifies and trims the adapters, trimming if needed, quality filtering of reads, removal of rRNA reads, etc.).
 
-**FusionCatcher** is using the file names of the input files in order to figure out which files are paired (which contains ´[R1](https://code.google.com/p/FusionCatcher/source/detail?r=1)´ reads and which contains the corresponding ´[R2](https://code.google.com/p/FusionCatcher/source/detail?r=2)´ reads). For this **FusionCatcher** is ordering alphabetically the file names (found in a input directory) and it considers that the first two form a pair, the next two are forming a pair and so on. Shortly, here the first two files, the next two files and so on should be synchronized. For example, considering the following input files:
+*FusionCatcher* is using the file names of the input files in order to figure out which files are paired (which contains ´[R1](https://code.google.com/p/FusionCatcher/source/detail?r=1)´ reads and which contains the corresponding ´[R2](https://code.google.com/p/FusionCatcher/source/detail?r=2)´ reads). For this *FusionCatcher* is ordering alphabetically the file names (found in a input directory) and it considers that the first two form a pair, the next two are forming a pair and so on. Shortly, here the first two files, the next two files and so on should be synchronized. For example, considering the following input files:
 ```
 L002_R1.fastq.gz
 L002_R2.fastq.gz
 L003_R1.fastq.gz
 L003_R2.fastq.gz
 ```
-**FusionCatcher** would automatically figure out correctly that the first two files form a pair and the next two would form another pair.
+*FusionCatcher* would automatically figure out correctly that the first two files form a pair and the next two would form another pair.
 
-There are cases when ordering alphabetically the input file names would make **FusionCatcher** to pair wrongly the input files (i.e. the input FASTQ files are not synchronized). In this kind of cases, renaming the input files such that they fit this rule helps. For example, considering the following input files (where the file containing ´[R1](https://code.google.com/p/FusionCatcher/source/detail?r=1)´ reads is split into two files and the file containing ´[R2](https://code.google.com/p/FusionCatcher/source/detail?r=2)´ reads is split into another two files):
+There are cases when ordering alphabetically the input file names would make *FusionCatcher* to pair wrongly the input files (i.e. the input FASTQ files are not synchronized). In this kind of cases, renaming the input files such that they fit this rule helps. For example, considering the following input files (where the file containing ´[R1](https://code.google.com/p/FusionCatcher/source/detail?r=1)´ reads is split into two files and the file containing ´[R2](https://code.google.com/p/FusionCatcher/source/detail?r=2)´ reads is split into another two files):
 ```
 L002_R1_01.fastq.gz
 L002_R1_02.fastq.gz
 L002_R2_01.fastq.gz
 L002_R2_02.fastq.gz
 ```
-**FusionCatcher** would automatically figure out **wrongly** that the first two files form a pair and the next two would form another pair. In this case, renaming the files like this
+*FusionCatcher* would automatically figure out **wrongly** that the first two files form a pair and the next two would form another pair. In this case, renaming the files like this
 ```
 mv L002_R1_01.fastq.gz 01_L002_R1_01.fastq.gz 
 mv L002_R1_02.fastq.gz 03_L002_R1_02.fastq.gz 
@@ -833,7 +833,7 @@ would give this alphabetically order list:
 03_L002_R1_02.fastq.gz
 04_L002_R2_02.fastq.gz
 ```
-and with this input files **FusionCatcher** would work correctly. Another way, around this would be to give the input files separated by comma (in the correct order and no blanks before and after the comma), like this
+and with this input files *FusionCatcher* would work correctly. Another way, around this would be to give the input files separated by comma (in the correct order and no blanks before and after the comma), like this
 ```
 fusioncatcher -i L002_R1_01.fastq.gz,L002_R2_01.fastq.gz,L002_R1_02.fastq.gz,L002_R2_02.fastq.gz 
 ```
@@ -873,15 +873,15 @@ For example, this is **NOT** a valid input:
 
 **NOTE:**
   * In case that a directory is given as input, one shall make sure that the input directory does not contain files which do not contain reads sequences (e.g. readme.txt, info.txt, etc.)!
-  * Please, let **FusionCatcher** _do_ the the concatenation of several FASTQ files (i.e. just put all the FASTQ files into one folder and give that folder as input to **FusionCatcher**) and do NOT do concatenate the FASTQ files yourself (e.g. using `cat`). This is because most likely different FASTQ files might have:
-    * different adapter sequences (**FusionCatcher** is expecting that there are only one type of adapter, exactly like it comes directly from the Illumina sequencers),
+  * Please, let *FusionCatcher* _do_ the the concatenation of several FASTQ files (i.e. just put all the FASTQ files into one folder and give that folder as input to *FusionCatcher*) and do NOT do concatenate the FASTQ files yourself (e.g. using `cat`). This is because most likely different FASTQ files might have:
+    * different adapter sequences (*FusionCatcher* is expecting that there are only one type of adapter, exactly like it comes directly from the Illumina sequencers),
     * different fragment sizes, and
     * different read lengths.
   * **DO NOT POOL** samples from different cell lines or from different patients! Run FusionCatcher separately with one sample at the time! It is ok the pool together the samples, which come from the (i) same cell line, or (ii) from the same patient (but still do not concatenate yourself the FASTQ files and let FusionCatcher do it for you)!
 
 ## 6.2 - Output data
 
-**FusionCatcher** produces a list of candidate fusion genes using the given input data. It is recommended that this list of candidate of fusion genes is further validated in the wet-lab using for example PCR/FISH experiments.
+*FusionCatcher* produces a list of candidate fusion genes using the given input data. It is recommended that this list of candidate of fusion genes is further validated in the wet-lab using for example PCR/FISH experiments.
 
 The output files are:
   * **`final-list_candidate_fusion_genes.txt`** - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3c the coordinates of fusion genes are given here for human genome using **only** assembly **hg38/GRCh38**; See [Table 1](Manual#6.2_-_Output_data.md) for columns' descriptions;
@@ -935,7 +935,7 @@ Table 2 - The description of columns of file `preliminary-list_candidate-fusion-
 | **Fusion\_gene\_symbol\_1** | Gene symbol of the 5' end fusion partner |
 | **Fusion\_gene\_symbol\_2** | Gene symbol of the 3' end fusion partner |
 | **Fusion\_description** | Type of the fusion gene (see the Table 3) |
-| **Analysis\_status** | If a fusion gene is considered a false positive is labeled as **skipped** and it is not used further to find its junction sequence and point. If a fusion gene is considered that it might be a real fusion gene then it is labeled as **further\_analysis** and **FusionCatcher** will try to finds its junction sequence and junction point|
+| **Analysis\_status** | If a fusion gene is considered a false positive is labeled as **skipped** and it is not used further to find its junction sequence and point. If a fusion gene is considered that it might be a real fusion gene then it is labeled as **further\_analysis** and *FusionCatcher* will try to finds its junction sequence and junction point|
 | **Counts\_of\_common\_mapping\_reads** | Count of reads mapping simultaneously on both genes which form the fusion gene. This is an indication how similar are the DNA/RNA sequences of the genes forming the fusion gene (i.e. what is their homology because highly homologous genes tend to appear show as candidate fusion genes). In case of completely different sequences of the genes involved in forming a fusion gene then here it is expected to have the value zero. |
 
 
@@ -1042,7 +1042,7 @@ If one uses the `--visualization-sam` command line option of the *FusionCatcher*
 The files with names ending in **`_reads.sam`** (please note, that they still needed to be converted to BAM, coordiante sorted and indexed first) may be used further for visualization of the candidate fusion genes using [UCSC Genome Browser](http://genome.ucsc.edu/), [IGV (Integrative Genome Viewer)](http://www.broadinstitute.org/igv/) or any other viewer/browser which supports the [SAM](http://samtools.github.io/hts-specs/SAMv1.pdf) format.
 
 #### 6.3.3.2 - Manual method
-Here is an rough example of manually aligning the supporting reads (that is named as `supporting_reads.fq` in the below example; the FASTQ files needed here are the files ending in **`_reads.fq`** from the ZIP archives **`supporting-reads_gene-fusions_*.zip`** produced by **FusionCatcher**) using different aligners.
+Here is an rough example of manually aligning the supporting reads (that is named as `supporting_reads.fq` in the below example; the FASTQ files needed here are the files ending in **`_reads.fq`** from the ZIP archives **`supporting-reads_gene-fusions_*.zip`** produced by *FusionCatcher*) using different aligners.
   * [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) aligner (where **`your_choice_of_genome_bowtie2_index`** may be for human, for example [this](ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19.zip))
    * alignment done ignoring the paired-end information (i.e. like single reads):
     ```
@@ -1110,13 +1110,13 @@ samtools index fusion_genes.sorted.bam
 Further, the files `fusion_genes.sorted.bam` and `fusion_genes.sorted.bam.bai` may be used with your favourite NGS visualizer!
 
 ### 6.3.4 - Chimera `R/BioConductor` package
-For visualization of fusion genes found by **FusionCatcher** one may use also the `R/BioConductor` package [Chimera](http://www.bioconductor.org/packages/release/bioc/html/chimera.html), which supports **FusionCatcher**.
+For visualization of fusion genes found by *FusionCatcher* one may use also the `R/BioConductor` package [Chimera](http://www.bioconductor.org/packages/release/bioc/html/chimera.html), which supports *FusionCatcher*.
 
 ## 6.4 - Examples
 
 ### 6.4.1 - Example 1
 
-Here, is an example of how **FusionCatcher** can be used to search for fusion genes in human RNA-seq sample where:
+Here, is an example of how *FusionCatcher* can be used to search for fusion genes in human RNA-seq sample where:
   1. any distance at chromosomal level between the candidate fusion genes is acceptable, **and**
   1. the candidate fusion genes are allowed to be readthroughs (i.e. the genes forming a fusion gene maybe adjacent on the chromosome)
   1. the candidate fusion genes are not allowed to be less the 1000 bp apart on the same strand
@@ -1130,7 +1130,7 @@ fusioncatcher \
 
 ### 6.4.2 - Example 2
 
-Here, is an example of how **FusionCatcher** can be used to search for fusion genes in human RNA-seq sample where:
+Here, is an example of how *FusionCatcher* can be used to search for fusion genes in human RNA-seq sample where:
   1. any distance at chromosomal level between the candidate fusion genes is acceptable, **and**
   1. the candidate fusion genes are **not** allowed to be readthroughs (i.e. there is still at least one known gene situated one the same strand in between the genes which form the candidate fusion gene)
   1. the candidate fusion genes are not allowed to be less the 1000 bp apart on the same strand
@@ -1154,11 +1154,11 @@ fusioncatcher \
 
 ## 7.1 - Bowtie
 
-By default, **FusionCatcher** its the Bowtie aligner for finding candidate fusion genes. This approach relies heavily on good is the annotation data for the given organism in the Ensembl database. If, for example, a gene is not annotated well and has several exons which are not annotated in the Ensembl database and if one of these exons is the one involved in the fusion point then this fusion gene will not be found by using only the Bowtie aligner. In order to find also the fusion genes where the the junction point is in the middle of exons or introns, `*FusionCatcher*` is using by default the BLAT, and STAR aligners in addition to Bowtie aligner. The command line options '`--skip-blat`','`--skip-star`', '`--skip-bowtie2`', or '`--skip-bwa`' should be used in order to specify what aligners should not be used. The command line option '`--aligners`' specifies which aligners should be used by default. For example, '`--aligners=blat,star,bowtie2,bwa`' forces **FusionCatcher** too use all aligners for finding fusion genes
+By default, *FusionCatcher* its the Bowtie aligner for finding candidate fusion genes. This approach relies heavily on good is the annotation data for the given organism in the Ensembl database. If, for example, a gene is not annotated well and has several exons which are not annotated in the Ensembl database and if one of these exons is the one involved in the fusion point then this fusion gene will not be found by using only the Bowtie aligner. In order to find also the fusion genes where the the junction point is in the middle of exons or introns, `*FusionCatcher*` is using by default the BLAT, and STAR aligners in addition to Bowtie aligner. The command line options '`--skip-blat`','`--skip-star`', '`--skip-bowtie2`', or '`--skip-bwa`' should be used in order to specify what aligners should not be used. The command line option '`--aligners`' specifies which aligners should be used by default. For example, '`--aligners=blat,star,bowtie2,bwa`' forces *FusionCatcher* too use all aligners for finding fusion genes
 
 ## 7.2 - Bowtie and Blat
 
-The use of Bowtie and Blat aligners is the **default** approach of **FusionCatcher** for finding fusion genes.
+The use of Bowtie and Blat aligners is the **default** approach of *FusionCatcher* for finding fusion genes.
 
 In order not to use this approach the command line option '`--skip-blat`' should be added, as following:
 
@@ -1170,11 +1170,11 @@ fusioncatcher \
 --skip-blat
 ```
 
-Please, read the license of Blat aligner before using this approach in order to see if you may use Blat! **FusionCatcher** will use Blat aligner when using this approach!
+Please, read the license of Blat aligner before using this approach in order to see if you may use Blat! *FusionCatcher* will use Blat aligner when using this approach!
 
 ## 7.3 - Bowtie and STAR
 
-The use of Bowtie and STAR aligners is the **default** approach of **FusionCatcher** for finding fusion genes.
+The use of Bowtie and STAR aligners is the **default** approach of *FusionCatcher* for finding fusion genes.
 
 In order not to use this approach the command line option '`--skip-star`' should be added, as following:
 
@@ -1188,7 +1188,7 @@ fusioncatcher \
 
 ## 7.4 - Bowtie and Bowtie2
 
-The use of Bowtie and Bowtie2 aligners is **not** the **default** approach of **FusionCatcher** for finding fusion genes.
+The use of Bowtie and Bowtie2 aligners is **not** the **default** approach of *FusionCatcher* for finding fusion genes.
 
 In order not to use this approach the command line option '`--skip-bowtie2`' should be added, as following:
 
@@ -1212,7 +1212,7 @@ fusioncatcher \
 
 ## 7.5 - Bowtie and BWA
 
-The use of Bowtie and BWA aligners is **not** the **default** approach of **FusionCatcher** for finding fusion genes.
+The use of Bowtie and BWA aligners is **not** the **default** approach of *FusionCatcher* for finding fusion genes.
 
 In order not to use this approach the command line option '`--skip-bowtie2`' should be added, as following:
 
@@ -1796,7 +1796,7 @@ tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
 
 
 # 9 - DATA BUILDER - fusioncatcher-build
-It downloads the necessary data for a given organism from the Ensembl database and it builds the necessary files/indexes which are needed to running **FusionCatcher**.
+It downloads the necessary data for a given organism from the Ensembl database and it builds the necessary files/indexes which are needed to running *FusionCatcher*.
 ## 9.1 - Command line
 ```
 fusioncatcher-build [options]
@@ -1888,7 +1888,7 @@ The main goal of `FusionCatcher` is to find **somatic** (and/or pathogenic) fusi
   * candidate fusion gene is composed of a gene and its pseudogene, or
   * candidate fusion gene is composed of a gene and its paralog gene, or
   * candidate fusion gene is composed of a gene and a miRNA gene (but a gene which contains miRNA genes are not skipped), or
-  * candidate fusion gene is composed of two genes which have a very sequence similarity (i.e. **FusionCatcher** is computing its homology score), or
+  * candidate fusion gene is composed of two genes which have a very sequence similarity (i.e. *FusionCatcher* is computing its homology score), or
   * candidate fusion gene is known to be found in samples from healthy persons (using the 16 organs RNA-seq data from the Illumina BodyMap2), or
   * candidate fusion gene is in one of the known databases of fusion genes found in healthy persons, i.e. ChimerDB2, CACG, and ConjoinG.
 
@@ -1898,24 +1898,24 @@ The main goal of `FusionCatcher` is to find **somatic** (and/or pathogenic) fusi
 ---
 
 # 11 - Comparisons to other tools
-When performing comparisons where **FusionCatcher** is compared with other gene fusions finder we **always recommend strongly to use the default/recommended parameters** for **FusionCatcher**.
+When performing comparisons where *FusionCatcher* is compared with other gene fusions finder we **always recommend strongly to use the default/recommended parameters** for *FusionCatcher*.
 
 <font color='red'>
 The performance of <b>FusionCatcher</b> is decreased drastically, when using other parameters than the default/recommended ones! Especially <b>do not change</b> the defaults for: <code>--5keep, --anchor-fusion, --reads-fusion, --pairs-fusion, --pairs-fusion2</code>! The default parameters should work just fine for input reads which have the size range between 35 bp to 250 bp.<br>
 </font>
 
-Also, when comparing the fusion genes found by **FusionCatcher** with fusion genes found by other tools one needs to keep in mind that **FusionCatcher** is a **SOMATIC** fusion gene finder and **NOT** a (general) fusion gene finder. This means that if a fusion gene is already known to exist in healthy individuals (from public literature or from our internal RNA-seq database of healthy sample) then that fusion gene will be skipped by **FusionCatcher** and it will not be reported at all! An example is the well known fusion gene TTTY15-USP9Y which is known to be found in healthy individuals (see [here](http://www.sciencedirect.com/science/article/pii/S0002944015001996)) and which **FusionCatcher** will skip it and will not report it on purpose because **it is not a somatic fusion gene**!
+Also, when comparing the fusion genes found by *FusionCatcher* with fusion genes found by other tools one needs to keep in mind that *FusionCatcher* is a **SOMATIC** fusion gene finder and **NOT** a (general) fusion gene finder. This means that if a fusion gene is already known to exist in healthy individuals (from public literature or from our internal RNA-seq database of healthy sample) then that fusion gene will be skipped by *FusionCatcher* and it will not be reported at all! An example is the well known fusion gene TTTY15-USP9Y which is known to be found in healthy individuals (see [here](http://www.sciencedirect.com/science/article/pii/S0002944015001996)) and which *FusionCatcher* will skip it and will not report it on purpose because **it is not a somatic fusion gene**!
 
-Also, when one is running **FusionCatcher** on some synthetic/simulated RNA-seq datasets which contain a set of random/ad-hoc fusion genes which are created randomly and without any biological support (for example, that fusion gene has never been reported in the literature to exist in a diseased patient), there most likely **FusionCatcher** will detect that these **random/ad-hoc** fusion genes are not fitting the already known biological knowledge (e.g. ad-hoc/random fusion gene might have been reported already to exist in healthy patients, or ad-hoc/random fusion is between a gene its paralog/homolog/pseudogene) and will skip them and will not report them even if it finds them. Therefore we strongly recommend not to run **FusionCatcher** on synthetic/simulated RNA-seq dataset which are known to contain fusion genes which are **not** somatic fusion genes.
+Also, when one is running *FusionCatcher* on some synthetic/simulated RNA-seq datasets which contain a set of random/ad-hoc fusion genes which are created randomly and without any biological support (for example, that fusion gene has never been reported in the literature to exist in a diseased patient), there most likely *FusionCatcher* will detect that these **random/ad-hoc** fusion genes are not fitting the already known biological knowledge (e.g. ad-hoc/random fusion gene might have been reported already to exist in healthy patients, or ad-hoc/random fusion is between a gene its paralog/homolog/pseudogene) and will skip them and will not report them even if it finds them. Therefore we strongly recommend not to run *FusionCatcher* on synthetic/simulated RNA-seq dataset which are known to contain fusion genes which are **not** somatic fusion genes.
 
 
 
 ---
 
 # 12 - License
-**FusionCatcher**'s code is released under [GNU GPL version 3 license](http://www.gnu.org/copyleft/gpl.html). **FusionCatcher** is using third-party tools and databases. The user is responsible to obtain licenses for the third-party tools and databases which are used by **FusionCatcher**.
+*FusionCatcher*'s code is released under [GNU GPL version 3 license](http://www.gnu.org/copyleft/gpl.html). *FusionCatcher* is using third-party tools and databases. The user is responsible to obtain licenses for the third-party tools and databases which are used by *FusionCatcher*.
 
-**Most** (but not all) of the third-party tools and databases used by **FusionCatcher** are (i) free to use, or (ii) are released under GPL/MIT-type licenses. The most notable exception here of which we are aware is BLAT's aligner license, which requires one to buy a license when BLAT is used in commercial environment (please, see for more [here](http://www.kentinformatics.com/contact-us.html)). In case that one does not wish to use BLAT aligner then it is still possible to use **FusionCatcher** for finding fusion genes, by telling **FusionCatcher** not to use BLAT aligner but instead to use the BOWTIE2 aligner (BLAT is used by default and BOWTIE2 is not used by default), as following:
+**Most** (but not all) of the third-party tools and databases used by *FusionCatcher* are (i) free to use, or (ii) are released under GPL/MIT-type licenses. The most notable exception here of which we are aware is BLAT's aligner license, which requires one to buy a license when BLAT is used in commercial environment (please, see for more [here](http://www.kentinformatics.com/contact-us.html)). In case that one does not wish to use BLAT aligner then it is still possible to use *FusionCatcher* for finding fusion genes, by telling *FusionCatcher* not to use BLAT aligner but instead to use the BOWTIE2 aligner (BLAT is used by default and BOWTIE2 is not used by default), as following:
 
 ```
 /apps/fusioncatcher/bin/fusioncatcher \
@@ -1927,7 +1927,7 @@ Also, when one is running **FusionCatcher** on some synthetic/simulated RNA-seq 
 ---
 
 # 13 - Citing
-If you use **FusionCatcher**, please cite:
+If you use *FusionCatcher*, please cite:
 
 D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi, S. Virtanen, O. Kilkku, **FusionCatcher – a tool for finding somatic fusion genes in paired-end RNA-sequencing data**, bioRxiv, Nov. 2014, [DOI:10.1101/011650](http://biorxiv.org/content/early/2014/11/19/011650)
 
@@ -1937,20 +1937,20 @@ D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi,
 # 14 - Reporting Bugs
 
 Please, when reporting bugs include also the following files:
-  * "fusioncatcher.log" (this contains just a list of the commands executed by **`FusionCatcher`**), and
-  * "info.txt" (this contains info: regarding the version of **`FusionCatcher`** and tools used, statistics about input FASTQ files, counts of found reads, etc.)
-which were generated by **`FusionCatcher`** during the run.
+  * "fusioncatcher.log" (this contains just a list of the commands executed by *FusionCatcher*), and
+  * "info.txt" (this contains info: regarding the version of *FusionCatcher* and tools used, statistics about input FASTQ files, counts of found reads, etc.)
+which were generated by *FusionCatcher* during the run.
 
-**NOTE**: Giving only step number where the error has appeared is not enough because the step numbers depend on the input type (e.g. raw FASTQ file, ZIP compressed FASTQ file, SRA file, etc.) and command line options used to run **`FusionCatcher`** (e.g. some command line option skip some steps). The step numbers are used by **`FusionCatcher`** for being able to re-start from the last step which was executed successfully last time in case that last time the run ended prematurely due to reasons which didn't depend on **`FusionCatcher`** (e.g. server crashed).
+**NOTE**: Giving only step number where the error has appeared is not enough because the step numbers depend on the input type (e.g. raw FASTQ file, ZIP compressed FASTQ file, SRA file, etc.) and command line options used to run *FusionCatcher* (e.g. some command line option skip some steps). The step numbers are used by *FusionCatcher* for being able to re-start from the last step which was executed successfully last time in case that last time the run ended prematurely due to reasons which didn't depend on *FusionCatcher* (e.g. server crashed).
 
 
 ---
 
 # 13 - NOTES
   * <font color='red'>The performance of <b>FusionCatcher</b> is decreased drastically, when using other parameters than the default/recommended ones! Especially <b>do not change</b> the defaults for: <code>--5keep, --anchor-fusion, --reads-fusion, --pairs-fusion, --pairs-fusion2</code>! The default parameters should work just fine for input reads which have the size range between 35 bp to 250 bp.</font>
-  * **`fusioncatcher-build`** takes several hours to run and it depends on the local internet connection speed. It needs to be run only once!
-  * **FusionCatcher** can be run many times using the same data produced by the **`fusioncatcher-build`**;
-  * Ensembl version 80 was found to work fine with **FusionCatcher** (June 2015);
-  * **FusionCatcher** and **`fusioncatcher-build`** restart automatically from the point where have been interrupted at the previous run.
-  * **FusionCatcher** by default is focusing on finding fusion genes specific to diseased/tumor/cancer samples. That means that **FusionCatcher** will skip the fusion genes which are already known to exist in healthy samples. If one wishes to find fusion genes in healthy samples then we suggest other fusion finders to be used.
-  * **FusionCatcher** is able to find fusion genes **also** without using BLAT aligner but in this case we recommend to user BOWTIE2 aligner (which is not used by default) also in order to compensate!
+  * `fusioncatcher-build` takes several hours to run and it depends on the local internet connection speed. It needs to be run only once!
+  * *FusionCatcher* can be run many times using the same data produced by the `fusioncatcher-build`;
+  * Ensembl version 80 was found to work fine with *FusionCatcher* (June 2015);
+  * *FusionCatcher* and `fusioncatcher-build` restart automatically from the point where have been interrupted at the previous run.
+  * *FusionCatcher* by default is focusing on finding fusion genes specific to diseased/tumor/cancer samples. That means that *FusionCatcher* will skip the fusion genes which are already known to exist in healthy samples. If one wishes to find fusion genes in healthy samples then we suggest other fusion finders to be used.
+  * *FusionCatcher* is able to find fusion genes **also** without using BLAT aligner but in this case we recommend to user BOWTIE2 aligner (which is not used by default) also in order to compensate!
