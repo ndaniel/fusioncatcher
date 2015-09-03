@@ -895,14 +895,14 @@ The output files are:
   * **`info.txt`** - information regarding genome version, Ensembl database version, versions of tools used, read counts, etc.;
   * **`fusioncatcher.log`** -  log of the entire run (e.g. all commands/programs which have been run, command line arguments used, running time for each command, etc.).
 
-<font color='red'>
-FusionCatcher reports:<br>
-<ul><li><b>multiple times</b> (up to four times) <b>exactly the same candidate fusion gene</b>, which has exactly the same fusion points/junction (i.e. FusionCatcher will output separately the fusions found for each of its four aligners/methods such that it is easy to see what method was used to find a fusion gene)<br>
-</li><li><a href='http://www.ncbi.nlm.nih.gov/pubmed/23340173'>reciprocal fusion genes</a> if they are found (e.g. geneA-geneB and also geneB-geneA)<br>
-</li><li>every alternative splicing event found for each fusion gene (i.e. alternative fusion isoforms of the same fusion gene)<br>
-</font></li></ul>
 
-**Table 1** - The description of columns of file **`final-list_candidate-fusion-genes.txt`**
+FusionCatcher reports:
+ * **multiple times** (up to four times) exactly the same candidate fusion gene, which has exactly the same fusion points/junction (i.e. FusionCatcher will output separately the fusions found for each of its four aligners/methods such that it is easy to see what method was used to find a fusion gene)
+ * [reciprocal fusion genes](href='http://www.ncbi.nlm.nih.gov/pubmed/23340173) if they are found (e.g. geneA-geneB and also geneB-geneA)
+ * every alternative splicing event found for each fusion gene (i.e. alternative fusion isoforms of the same fusion gene)
+
+
+Table 1 - The description of columns of file `final-list_candidate-fusion-genes.txt`
 
 | **Column** | **Description** |
 |:-----------|:----------------|
@@ -925,7 +925,8 @@ FusionCatcher reports:<br>
 | **Predicted\_fused\_transcripts** | All possible known fused transcripts in format ENSEMBL-TRANSCRIPT-1:POSITION-1/ENSEMBLE-TRANSCRIPT-B:POSITION-2, where are fused the sequence 1:POSITION-1 of transcript ENSEMBL-TRANSCRIPT-1 with sequence POSITION-2:END of transcript ENSEMBL-TRANSCRIPT-2 |
 | **Predicted\_fused\_proteins** | Predicted amino acid sequences of all possible fused proteins |
 
-**Table 2** - The description of columns of file **`preliminary-list_candidate-fusion-genes.txt`**
+Table 2 - The description of columns of file `preliminary-list_candidate-fusion-genes.txt`
+
 | **Column** | **Description** |
 |:-----------|:----------------|
 | **Fusion\_gene\_1** | Ensembl gene id of the 5' end fusion partner |
@@ -938,7 +939,8 @@ FusionCatcher reports:<br>
 | **Counts\_of\_common\_mapping\_reads** | Count of reads mapping simultaneously on both genes which form the fusion gene. This is an indication how similar are the DNA/RNA sequences of the genes forming the fusion gene (i.e. what is their homology because highly homologous genes tend to appear show as candidate fusion genes). In case of completely different sequences of the genes involved in forming a fusion gene then here it is expected to have the value zero. |
 
 
-**Table 3** - The labels used to mark fusion genes (i.e. column `Fusion_description` from Tables 1 and 2) in files **`final-list_candidate-fusion-genes.txt`** and **`preliminary-list_candidate-fusion-genes.txt`**
+Table 3 - The labels used to mark fusion genes (i.e. column `Fusion_description` from Tables 1 and 2) in files `final-list_candidate-fusion-genes.txt` and `preliminary-list_candidate-fusion-genes.txt`
+
 | **Fusion\_description** | **Description** |
 |:------------------------|:----------------|
 | **antisense**           | one or both genes is a gene coding for [antisense RNA](http://en.wikipedia.org/wiki/Antisense_RNA)|
@@ -999,7 +1001,7 @@ FusionCatcher reports:<br>
 
 
 ## 6.3 - Visualization
-**FusionCatcher** outputs also the zipped FASTA files containing the reads which support the found candidate fusions genes. The files are:
+*FusionCatcher* outputs also the zipped FASTA files containing the reads which support the found candidate fusions genes. The files are:
   * **`supporting-reads_gene-fusions_BOWTIE.zip`**,
   * **`supporting-reads_gene-fusions_BLAT.zip`**,
   * **`supporting-reads_gene-fusions_STAR.zip`**,
@@ -1007,8 +1009,8 @@ FusionCatcher reports:<br>
   * **`supporting-reads_gene-fusions_BWA.zip`**.
 
 The reads which support the:
-  * junction of the candidate fusion have their name ending with **`_supports_fusion_junction`**, and
-  * candidate fusion (i.e. one reads map on one gene and the paired-read maps on the other fusion gene) have their name ending with **`_supports_fusion_pair`**.
+  * junction of the candidate fusion have their name ending with `_supports_fusion_junction`, and
+  * candidate fusion (i.e. one reads map on one gene and the paired-read maps on the other fusion gene) have their name ending with `_supports_fusion_pair`.
 
 These supporting reads (given as FASTA and FASTQ files) may be used for further visualization purposes. For example, one may use these supporting reads and align them himself/herself using his/her favourite:
   * aligner (e.g. `Bowtie/Bowtie2/TopHat/STAR/GSNAP/etc.`),
@@ -1020,23 +1022,23 @@ These supporting reads (given as FASTA and FASTQ files) may be used for further 
 For example, the sequences of supporting reads for a given candidate fusion gene may be visualized using [UCSC Genome Browser](http://genome.ucsc.edu/) by aligning them using the [UCSC Genome Browser](http://genome.ucsc.edu/)'s  BLAT aligner (i.e. copy and paste the reads here: [BLAT tool of UCSC Genome Browser](http://genome.ucsc.edu/cgi-bin/hgBlat?command=start) --> click the button **Submit** --> navigate into the [UCSC Genome Browser](http://genome.ucsc.edu/) to the genes that form the fusion genes). Also zooming out several times gives better view here.
 
 ### 6.3.2 - PSL format
-If one uses the `--blat-visualization` command line option of the **FusionCatcher** then the BLAT alignment of the supporting reads will be done automatically by the **FusionCatcher** and the results are saved as [PSL](http://genome.ucsc.edu/FAQ/FAQformat.html#format2) files with names that are ending with **`_reads.psl`** in the:
-  * **`supporting-reads_gene-fusions_BOWTIE.zip`**,
-  * **`supporting-reads_gene-fusions_BLAT.zip`**,
-  * **`supporting-reads_gene-fusions_STAR.zip`**, and
-  * **`supporting-reads_gene-fusions_BOWTIE2.zip`**, and
-  * **`supporting-reads_gene-fusions_BWA.zip`**.
-The files with names ending in **`_reads.psl`** may be used further for visualization of the candidate fusion genes using [UCSC Genome Browser](http://genome.ucsc.edu/), [IGV (Integrative Genome Viewer)](http://www.broadinstitute.org/igv/) or any other viewer/browser which supports the [PSL](http://genome.ucsc.edu/FAQ/FAQformat.html#format2) format.
+If one uses the `--blat-visualization` command line option of the *FusionCatcher* then the BLAT alignment of the supporting reads will be done automatically by the *FusionCatcher* and the results are saved as [PSL](http://genome.ucsc.edu/FAQ/FAQformat.html#format2) files with names that are ending with **`_reads.psl`** in the:
+  * `supporting-reads_gene-fusions_BOWTIE.zip`,
+  * `supporting-reads_gene-fusions_BLAT.zip`,
+  * `supporting-reads_gene-fusions_STAR.zip`, and
+  * `supporting-reads_gene-fusions_BOWTIE2.zip`, and
+  * `supporting-reads_gene-fusions_BWA.zip`.
+The files with names ending in `_reads.psl` may be used further for visualization of the candidate fusion genes using [UCSC Genome Browser](http://genome.ucsc.edu/), [IGV (Integrative Genome Viewer)](http://www.broadinstitute.org/igv/) or any other viewer/browser which supports the [PSL](http://genome.ucsc.edu/FAQ/FAQformat.html#format2) format.
 
 ### 6.3.3 - SAM format
 
 #### 6.3.3.1 - Automatic method
-If one uses the `--visualization-sam` command line option of the **FusionCatcher** then the BOWTIE2 alignment of the supporting reads will be done automatically by the **FusionCatcher** and the results are saved as [SAM](http://samtools.github.io/hts-specs/SAMv1.pdf) files with names that are ending with **`_reads.sam`** in the:
-  * **`supporting-reads_gene-fusions_BOWTIE.zip`**,
-  * **`supporting-reads_gene-fusions_BLAT.zip`**,
-  * **`supporting-reads_gene-fusions_STAR.zip`**,
-  * **`supporting-reads_gene-fusions_BOWTIE2.zip`**, and
-  * **`supporting-reads_gene-fusions_BWA.zip`**.
+If one uses the `--visualization-sam` command line option of the *FusionCatcher* then the BOWTIE2 alignment of the supporting reads will be done automatically by the *FusionCatcher* and the results are saved as [SAM](http://samtools.github.io/hts-specs/SAMv1.pdf) files with names that are ending with `_reads.sam` in the:
+  * `supporting-reads_gene-fusions_BOWTIE.zip`,
+  * `supporting-reads_gene-fusions_BLAT.zip`,
+  * `supporting-reads_gene-fusions_STAR.zip`,
+  * `supporting-reads_gene-fusions_BOWTIE2.zip`, and
+  * `supporting-reads_gene-fusions_BWA.zip`.
 The files with names ending in **`_reads.sam`** (please note, that they still needed to be converted to BAM, coordiante sorted and indexed first) may be used further for visualization of the candidate fusion genes using [UCSC Genome Browser](http://genome.ucsc.edu/), [IGV (Integrative Genome Viewer)](http://www.broadinstitute.org/igv/) or any other viewer/browser which supports the [SAM](http://samtools.github.io/hts-specs/SAMv1.pdf) format.
 
 #### 6.3.3.2 - Manual method
