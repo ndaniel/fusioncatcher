@@ -6,13 +6,12 @@
 5. [Installation](#installation)
 6. [Usage](#usage)
 7. [Aligners](#aligners)
-8. [fusioncatcher script](#fusioncatcher-script)
-9. [fusioncatcher-build script](#fusioncatcher-build-script)
-10. [Methods](#methods)
-11. [Comparisons to other tools](#comparisons-to-other-tools)
-12. [License](#license)
-13. [Citing](#citing)
-14. [Reporting bugs](#reporting-bugs)
+8. [Command line options](#command-line-options)
+9. [Methods](#methods)
+10. [Comparisons to other tools](#comparisons-to-other-tools)
+11. [License](#license)
+12. [Citing](#citing)
+13. [Reporting bugs](#reporting-bugs)
 
 ---
 
@@ -1247,13 +1246,15 @@ fusioncatcher \
 --aligners blat,star,bwa
 ```
 
-# fusioncatcher script
-It searchers for fusion genes and/or translocations in RNA-seq data (paired-end reads FASTQ files produced by Illumina next-generation sequencing platforms like Illumina Solexa and Illumina `HiSeq`) in diseased samples.
-## 8.1 - Command line
+---
+# Command line options
+
+## fusioncatcher
+It searchers for fusion genes and/or translocations in RNA-seq data (paired-end reads FASTQ files produced by Illumina next-generation sequencing platforms like Illumina Solexa and Illumina `HiSeq`) in diseased samples. Its command line is:
 ```
 fusioncatcher [options]
 ```
-## 8.2 - Options
+and the command line options are:
 ```
   -i INPUT_FILENAME, --input=INPUT_FILENAME
                         The input file(s) or directory. The files should be in
@@ -1805,16 +1806,12 @@ tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
 
 ```
 
----
-
-
-# fusioncatcher-build script
-It downloads the necessary data for a given organism from the Ensembl database and it builds the necessary files/indexes which are needed to running *FusionCatcher*.
-## 9.1 - Command line
+## fusioncatcher-build
+It downloads the necessary data for a given organism from the Ensembl database and it builds the necessary files/indexes which are needed to running *FusionCatcher*. Its command line is:
 ```
 fusioncatcher-build [options]
 ```
-## 9.2 - Options
+and the command line options are:
 ```
   -o OUTPUT_DIRECTORY, --output=OUTPUT_DIRECTORY
                         The output directory where all the outputs files  and
