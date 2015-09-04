@@ -416,7 +416,7 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
    export PATH=/apps/fusioncatcher/tools/picard/:$PATH
    ```
    
-   > *Note 1*: If a different version of Python is used/needed by *FusionCatcher* than the standard `/usr/bin/env python` then also please make sure that that specific version of Python is added to the **`PATH`** variable by editing, for example, the **`.bashrc`** file (type: **`nano ~/.bashrc`** at command line) or add the following lines at the end:
+   > *Note 1*: If a different version of Python is used/needed by *FusionCatcher* than the standard `/usr/bin/env python` then also please make sure that that specific version of Python is added to the `PATH` variable by editing, for example, the `.bashrc` file (type: `nano ~/.bashrc` at command line) or add the following lines at the end:
    ```
    export PATH=/some/other/version/of/python:$PATH
    ```
@@ -884,16 +884,16 @@ For example, this is **NOT** a valid input:
 *FusionCatcher* produces a list of candidate fusion genes using the given input data. It is recommended that this list of candidate of fusion genes is further validated in the wet-lab using for example PCR/FISH experiments.
 
 The output files are:
-  * **`final-list_candidate_fusion_genes.txt`** - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3c the coordinates of fusion genes are given here for human genome using **only** assembly **hg38/GRCh38**; See [Table 1](Manual#6.2_-_Output_data.md) for columns' descriptions;
-  * **`final-list_candidate_fusion_genes.GRCh37.txt`** - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3d the coordinates of fusion genes are given here for human genome using assembly **hg19/GRCh37**; See [Table 1](Manual#6.2_-_Output_data.md) for columns' descriptions;
-  * **`preliminary-list_candidate_fusion_genes.txt`** - preliminary list of candidates fusion genes which is used further to find the final list of candidate fusion genes (it contains the candidate fusion genes without their junction sequence and point); See [Table 2](Manual#6.2_-_Output_data.md) for columns' descriptions;
-  * **`supporting-reads_gene-fusions_BOWTIE.zip`** - sequences of short reads supporting the newly found candidate fusion genes found using only and exclusively the Bowtie aligner;
-  * **`supporting-reads_gene-fusions_BLAT.zip`** - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and Blat aligners;
-  * **`supporting-reads_gene-fusions_STAR.zip`** - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and STAR aligners;
-  * **`supporting-reads_gene-fusions_BOWTIE2.zip`** - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and Bowtie2 aligners;
-  * **`supporting-reads_gene-fusions_BWA.zip`** - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and BWA aligners;
-  * **`info.txt`** - information regarding genome version, Ensembl database version, versions of tools used, read counts, etc.;
-  * **`fusioncatcher.log`** -  log of the entire run (e.g. all commands/programs which have been run, command line arguments used, running time for each command, etc.).
+  * `final-list_candidate_fusion_genes.txt` - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3c the coordinates of fusion genes are given here for human genome using **only** assembly **hg38/GRCh38**; See [Table 1](Manual#6.2_-_Output_data.md) for columns' descriptions;
+  * `final-list_candidate_fusion_genes.GRCh37.txt` - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3d the coordinates of fusion genes are given here for human genome using assembly **hg19/GRCh37**; See [Table 1](Manual#6.2_-_Output_data.md) for columns' descriptions;
+  * `preliminary-list_candidate_fusion_genes.txt` - preliminary list of candidates fusion genes which is used further to find the final list of candidate fusion genes (it contains the candidate fusion genes without their junction sequence and point); See [Table 2](Manual#6.2_-_Output_data.md) for columns' descriptions;
+  * `supporting-reads_gene-fusions_BOWTIE.zip` - sequences of short reads supporting the newly found candidate fusion genes found using only and exclusively the Bowtie aligner;
+  * `supporting-reads_gene-fusions_BLAT.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and Blat aligners;
+  * `supporting-reads_gene-fusions_STAR.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and STAR aligners;
+  * `supporting-reads_gene-fusions_BOWTIE2.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and Bowtie2 aligners;
+  * `supporting-reads_gene-fusions_BWA.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and BWA aligners;
+  * `info.txt` - information regarding genome version, Ensembl database version, versions of tools used, read counts, etc.;
+  * `fusioncatcher.log` -  log of the entire run (e.g. all commands/programs which have been run, command line arguments used, running time for each command, etc.).
 
 
 FusionCatcher reports:
@@ -902,7 +902,7 @@ FusionCatcher reports:
  * every alternative splicing event found for each fusion gene (i.e. alternative fusion isoforms of the same fusion gene)
 
 
-Table 1 - The description of columns of file `final-list_candidate-fusion-genes.txt`
+Table 1 - Description of columns of file `final-list_candidate-fusion-genes.txt`
 
 | **Column** | **Description** |
 |:-----------|:----------------|
@@ -925,7 +925,7 @@ Table 1 - The description of columns of file `final-list_candidate-fusion-genes.
 | **Predicted\_fused\_transcripts** | All possible known fused transcripts in format ENSEMBL-TRANSCRIPT-1:POSITION-1/ENSEMBLE-TRANSCRIPT-B:POSITION-2, where are fused the sequence 1:POSITION-1 of transcript ENSEMBL-TRANSCRIPT-1 with sequence POSITION-2:END of transcript ENSEMBL-TRANSCRIPT-2 |
 | **Predicted\_fused\_proteins** | Predicted amino acid sequences of all possible fused proteins |
 
-Table 2 - The description of columns of file `preliminary-list_candidate-fusion-genes.txt`
+Table 2 - Description of columns of file `preliminary-list_candidate-fusion-genes.txt`
 
 | **Column** | **Description** |
 |:-----------|:----------------|
@@ -939,31 +939,31 @@ Table 2 - The description of columns of file `preliminary-list_candidate-fusion-
 | **Counts\_of\_common\_mapping\_reads** | Count of reads mapping simultaneously on both genes which form the fusion gene. This is an indication how similar are the DNA/RNA sequences of the genes forming the fusion gene (i.e. what is their homology because highly homologous genes tend to appear show as candidate fusion genes). In case of completely different sequences of the genes involved in forming a fusion gene then here it is expected to have the value zero. |
 
 
-Table 3 - The labels used to mark fusion genes (i.e. column `Fusion_description` from Tables 1 and 2) in files `final-list_candidate-fusion-genes.txt` and `preliminary-list_candidate-fusion-genes.txt`
+Table 3 - Labels used to mark fusion genes (i.e. column `Fusion_description` from Tables 1 and 2) in files `final-list_candidate-fusion-genes.txt` and `preliminary-list_candidate-fusion-genes.txt`
 
 | **Fusion\_description** | **Description** |
 |:------------------------|:----------------|
 | **antisense**           | one or both genes is a gene coding for [antisense RNA](http://en.wikipedia.org/wiki/Antisense_RNA)|
-| **banned**              | fusion gene is on a list of known false positive fusion genes. These were found with very strong supporting data in healthy samples (i.e. it showed up in file final-list\_candidate\_fusion\_genes.txt). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
-| **bodymap2**            | fusion gene is on a list of known false positive fusion genes. It has been found in healthy human samples collected from 16 organs from  [Illumina BodyMap2 RNA-seq database](http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
+| **banned**              | fusion gene is on a list of known false positive fusion genes. These were found with very strong supporting data in healthy samples (i.e. it showed up in file final-list\_candidate\_fusion\_genes.txt). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **bodymap2**            | fusion gene is on a list of known false positive fusion genes. It has been found in healthy human samples collected from 16 organs from  [Illumina BodyMap2 RNA-seq database](http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
 | **cell\_lines**         | known fusion gene from paper: C. Klijn et al., A comprehensive transcriptional portrait of human cancer cell lines, Nature Biotechnology, Dec. 2014, [DOI:10.1038/nbt.3080](http://dx.doi.org/10.1038/nbt.3080) |
 | **chimerdb2**           | known fusion gene from the [ChimerDB](http://ercsb.ewha.ac.kr/FusionGene/) database (please use ChimerDB2 database for more information regarding the fusion gene) |
-| **conjoing**            | known conjoined genes (that is fusion genes found in samples from healthy patients) from the [ConjoinG](http://metasystems.riken.jp/conjoing/) database (please use ConjoinG database for more information regarding the fusion gene). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive in case that one looks for fusion genes specific to a disease.</i> </font> |
+| **conjoing**            | known conjoined genes (that is fusion genes found in samples from healthy patients) from the [ConjoinG](http://metasystems.riken.jp/conjoing/) database (please use ConjoinG database for more information regarding the fusion gene). *A candidate fusion gene having this label has a very high probability of being a false positive in case that one looks for fusion genes specific to a disease.* |
 | **cosmic**              | known fusion gene from the [COSMIC](http://cancer.sanger.ac.uk/cancergenome/projects/cosmic/) database (please use COSMIC database for more information regarding the fusion gene) |
-| **cacg**                | known conjoined genes (that is fusion genes found in samples from healthy patients) from the [CACG](http://cgc.kribb.re.kr/map/) database (please see CACG database for more information). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive in case that one looks for fusion genes specific to a disease.</i> </font>|
+| **cacg**                | known conjoined genes (that is fusion genes found in samples from healthy patients) from the [CACG](http://cgc.kribb.re.kr/map/) database (please see CACG database for more information). *A candidate fusion gene having this label has a very high probability of being a false positive in case that one looks for fusion genes specific to a disease.*|
 | **cgp**                 | known fusion gene from the [CGP](http://www.sanger.ac.uk/genetics/CGP/Census/) database (please use CGP database for more information regarding the fusion gene) |
-| **cta\_gene**           | one gene or both genes is CTA gene (that is that the gene name starts with **CTA-**). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
-| **ctb\_gene**           | one gene or both genes is CTB gene (that is that the gene name starts with **CTB-**). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
-| **ctc\_gene**           | one gene or both genes is CTC gene (that is that the gene name starts with **CTC-**). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
-| **ctd\_gene**           | one gene or both genes is CTD gene (that is that the gene name starts with **CTD-**). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
-| **distance1000bp**      | both genes are on the same strand and they are less than 1 000 bp apart. <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
-| **distance10kbp**       | both genes are on the same strand and they are less than 10 000 bp apart. <font color='red'><i>A candidate fusion gene having this label has a higher probability than expected of being a false positive.</i></font>|
-| **distance100kbp**      | both genes are on the same strand and they are less than 100 000 bp apart. <font color='red'><i>A candidate fusion gene having this label has a higher probability than expected of being a false positive.</i></font>|
-| **duplicates**          | both genes involved in the fusion gene are [paralog](http://en.wikipedia.org/wiki/Paralog#Paralogy) for each other. For more see [Duplicated Genes Database (DGD) database](http://dgd.genouest.org/) . <font color='red'><i>A candidate fusion gene having this label has a higher probability than expected of being a false positive.</i></font>|
-| **ensembl\_fully\_overlapping** | the genes forming the fusion gene are fully overlapping according to Ensembl database. <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i> </font> |
-| **ucsc\_fully\_overlapping** | the genes forming the fusion gene are fully overlapping according to UCSC database. <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i> </font> |
-| **refseq\_fully\_overlapping** | the genes forming the fusion gene are fully overlapping according to RefSeq NCBI database. <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i> </font> |
-| **healthy**             | fusion gene has been seen in a healthy sample. These have been found in healthy samples but the support for them is less strong (i.e. paired reads were found to map on both genes but no fusion junction was found) than in the case of **banned** label (i.e. it showed up in file preliminary-list\_candidate\_fusion\_genes.txt). Also genes which have some degree of sequence similarity may show up marked like this.<font color='red'><i>A candidate fusion gene having this label has a small probability of being a false positive in case that one looks for fusion genes specific to a disease.</i></font> |
+| **cta\_gene**           | one gene or both genes is CTA gene (that is that the gene name starts with **CTA-**). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **ctb\_gene**           | one gene or both genes is CTB gene (that is that the gene name starts with **CTB-**). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **ctc\_gene**           | one gene or both genes is CTC gene (that is that the gene name starts with **CTC-**). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **ctd\_gene**           | one gene or both genes is CTD gene (that is that the gene name starts with **CTD-**). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **distance1000bp**      | both genes are on the same strand and they are less than 1 000 bp apart. *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **distance10kbp**       | both genes are on the same strand and they are less than 10 000 bp apart. *A candidate fusion gene having this label has a higher probability than expected of being a false positive.* |
+| **distance100kbp**      | both genes are on the same strand and they are less than 100 000 bp apart. *A candidate fusion gene having this label has a higher probability than expected of being a false positive.* |
+| **duplicates**          | both genes involved in the fusion gene are [paralog](http://en.wikipedia.org/wiki/Paralog#Paralogy) for each other. For more see [Duplicated Genes Database (DGD) database](http://dgd.genouest.org/) . *A candidate fusion gene having this label has a higher probability than expected of being a false positive.* |
+| **ensembl\_fully\_overlapping** | the genes forming the fusion gene are fully overlapping according to Ensembl database. *A candidate fusion gene having this label has a very high probability of being a false positive.*|
+| **ucsc\_fully\_overlapping** | the genes forming the fusion gene are fully overlapping according to UCSC database. *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **refseq\_fully\_overlapping** | the genes forming the fusion gene are fully overlapping according to RefSeq NCBI database. *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **healthy**             | fusion gene has been seen in a healthy sample. These have been found in healthy samples but the support for them is less strong (i.e. paired reads were found to map on both genes but no fusion junction was found) than in the case of **banned** label (i.e. it showed up in file preliminary-list\_candidate\_fusion\_genes.txt). Also genes which have some degree of sequence similarity may show up marked like this.*A candidate fusion gene having this label has a small probability of being a false positive in case that one looks for fusion genes specific to a disease.* |
 | **known\_fusion**       | fusion gene which has been previously reported or published in scientific articles/reports/books/abstracts/databases indexed by [Google](http://www.google.com/), [Google Scholar](http://scholar.google.com/), [PubMed](http://www.ncbi.nlm.nih.gov/pubmed), etc. This label has only the role to answer with YES or NO the question "has ever before a given (candidate) fusion gene been published or reported?". This label does not have in anyway the role to provide the original references to the original scientific articles/reports/books/abstracts/databases for a given fusion gene. |
 | **matched-normal**      | candidate fusion gene (which is supported by paired reads mapping on both genes and also by reads mapping on the junction point) was found also in the matched normal sample given as input to the command line option '--normal' |
 | **partial-matched-normal** | candidate fusion gene (which is supported by paired reads mapping on both genes **but** _no_ reads were found which map on the junction point) was found also in the matched normal sample given as input to the command line option '--normal'. This is much weaker than **matched-normal**. |
@@ -971,27 +971,27 @@ Table 3 - The labels used to mark fusion genes (i.e. column `Fusion_description`
 | **lincrna**             | one or both genes is a [lincRNA](http://en.wikipedia.org/wiki/Long_non-coding_RNA) |
 | **metazoa**             | one or both genes is a metazoa\_srp gene [Metazia\_srp](http://www.genecards.org/index.php?path=/Search/keyword/metazoa_srp) |
 | **mirna**               | one or both genes is a [miRNA](http://en.wikipedia.org/wiki/MicroRNA) |
-| **mt**                  | one or both genes are situated on [mitochondrion](http://en.wikipedia.org/wiki/Mitochondrion). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
+| **mt**                  | one or both genes are situated on [mitochondrion](http://en.wikipedia.org/wiki/Mitochondrion). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
 | **non\_tumor\_cells**   | fusion gene which has been previously reported/found in non-tumor cell lines, like for example HEK293. This are considered as non-somatic mutation and therefore they are skipped and not reported. |
 | **no\_protein\_product** | one or both genes have no known protein product |
 | **oncogene**            | one gene or both genes are a known [oncogene](http://en.wikipedia.org/wiki/Oncogene) |
-| **pair\_pseudo\_genes** | one gene is the other's [pseudogene](http://en.wikipedia.org/wiki/Pseudogene). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
-| **paralogs**            | both genes involved in the fusion gene are  [paralog](http://en.wikipedia.org/wiki/Paralog#Paralogy) for each other (most likely this is a false positive fusion gene). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
-| **ensembl\_partially\_overlapping** | the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the Ensembl database. <font color='red'><i>A candidate fusion gene having this label has a good probability of being a false positive.</i> </font> |
-| **ucsc\_partially\_overlapping** | the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the UCSC database.  <font color='red'><i>A candidate fusion gene having this label has a good probability of being a false positive.</i> </font> |
-| **refseq\_partially\_overlapping** | the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the RefSeq NCBI. <font color='red'><i>A candidate fusion gene having this label has a good probability of being a false positive.</i> </font> |
+| **pair\_pseudo\_genes** | one gene is the other's [pseudogene](http://en.wikipedia.org/wiki/Pseudogene). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **paralogs**            | both genes involved in the fusion gene are  [paralog](http://en.wikipedia.org/wiki/Paralog#Paralogy) for each other (most likely this is a false positive fusion gene). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **ensembl\_partially\_overlapping** | the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the Ensembl database. *A candidate fusion gene having this label has a good probability of being a false positive.</i> </font> |
+| **ucsc\_partially\_overlapping** | the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the UCSC database.  *A candidate fusion gene having this label has a good probability of being a false positive.</i> </font> |
+| **refseq\_partially\_overlapping** | the genes forming the fusion gene are partially overlapping (on same strand or on different strands) according the RefSeq NCBI. *A candidate fusion gene having this label has a good probability of being a false positive.</i> </font> |
 | **pseudogene**          | one or both of the genes is a [pseudogene](http://en.wikipedia.org/wiki/Pseudogene) |
-| **readthrough**         | the fusion gene is a readthrough event (that is both genes forming the fusion are on the same strand and there is no known gene situated in between); Please notice, that many of readthrough fusion genes might be false positive fusion genes due to errors in Ensembl database annotation (for example, one gene is annotated in Ensembl database as two separate genes). <font color='red'><i>A candidate fusion gene having this label has a high probability of being a false positive.</i></font> |
+| **readthrough**         | the fusion gene is a readthrough event (that is both genes forming the fusion are on the same strand and there is no known gene situated in between); Please notice, that many of readthrough fusion genes might be false positive fusion genes due to errors in Ensembl database annotation (for example, one gene is annotated in Ensembl database as two separate genes). *A candidate fusion gene having this label has a high probability of being a false positive.* |
 | **ribosomal\_protein**  | one or both gene is a gene encoding for [ribosomal protein](http://en.wikipedia.org/wiki/Ribosomal_protein) |
-| **rp11\_gene**          | one gene or both genes is RP11 gene (that is that the gene name starts with **RP11-**). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
-| **rp\_gene**            | one gene or both genes is RP?? gene (that is that the gene name starts with **RP??-**) where ? is a digit. <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
-| **rrna**                | one or both genes is a [rRNA](http://en.wikipedia.org/wiki/Ribosomal_RNA).  <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font>|
-| **ensembl\_same\_strand\_overlapping** | the genes forming the fusion gene are fully/partially overlapping and are both on the same strand according to Ensembl database. <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive (this is most likely and alternative splicing event).</i> </font> |
-| **ucsc\_same\_strand\_overlapping** | the genes forming the fusion gene are fully/partially overlapping and are both on the same strand according to UCSC database. <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive (this is most likely and alternative splicing event).</i> </font> |
-| **refseq\_same\_strand\_overlapping** | the genes forming the fusion gene are fully/partially overlapping and are both on the same strand according to RefSeq NCBI database. <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive (this is most likely and alternative splicing event).</i> </font> |
-| **short\_distance**     | both genes are on the same strand and they are less than X bp apart, where X is set using the option '--dist-fusion' and by default it is 200 000 bp. <font color='red'><i>A candidate fusion gene having this label has a higher probability than expected of being a false positive.</i></font> |
-| **similar\_reads**      | both genes have the same reads which map simultaneously on both of them (this is an indicator of how similar are the sequences of both genes; ideally this should be zero or as close to zero as possible for a real fusion). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
-| **similar\_symbols**    | both genes have the same or very similar gene names (for example: RP11ADF.1 and RP11ADF.2). <font color='red'><i>A candidate fusion gene having this label has a very high probability of being a false positive.</i></font> |
+| **rp11\_gene**          | one gene or both genes is RP11 gene (that is that the gene name starts with **RP11-**). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **rp\_gene**            | one gene or both genes is RP?? gene (that is that the gene name starts with **RP??-**) where ? is a digit. *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **rrna**                | one or both genes is a [rRNA](http://en.wikipedia.org/wiki/Ribosomal_RNA).  *A candidate fusion gene having this label has a very high probability of being a false positive.*|
+| **ensembl\_same\_strand\_overlapping** | the genes forming the fusion gene are fully/partially overlapping and are both on the same strand according to Ensembl database. *A candidate fusion gene having this label has a very high probability of being a false positive (this is most likely and alternative splicing event).</i> </font> |
+| **ucsc\_same\_strand\_overlapping** | the genes forming the fusion gene are fully/partially overlapping and are both on the same strand according to UCSC database. *A candidate fusion gene having this label has a very high probability of being a false positive (this is most likely and alternative splicing event).</i> </font> |
+| **refseq\_same\_strand\_overlapping** | the genes forming the fusion gene are fully/partially overlapping and are both on the same strand according to RefSeq NCBI database. *A candidate fusion gene having this label has a very high probability of being a false positive (this is most likely and alternative splicing event).</i> </font> |
+| **short\_distance**     | both genes are on the same strand and they are less than X bp apart, where X is set using the option '--dist-fusion' and by default it is 200 000 bp. *A candidate fusion gene having this label has a higher probability than expected of being a false positive.* |
+| **similar\_reads**      | both genes have the same reads which map simultaneously on both of them (this is an indicator of how similar are the sequences of both genes; ideally this should be zero or as close to zero as possible for a real fusion). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **similar\_symbols**    | both genes have the same or very similar gene names (for example: RP11ADF.1 and RP11ADF.2). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
 | **snorna**              | one or both genes is a [snoRNA](http://en.wikipedia.org/wiki/Small_nucleolar_RNA) |
 | **snrna**               | one or both genes is a [snRNA](http://en.wikipedia.org/wiki/Small_nuclear_RNA) |
 | **tcga**                | known fusion gene from the [TCGA](https://tcga-data.nci.nih.gov/tcga/) database (please use Google for more information regarding the fusion gene) |
@@ -1002,11 +1002,11 @@ Table 3 - The labels used to mark fusion genes (i.e. column `Fusion_description`
 
 ## 6.3 - Visualization
 *FusionCatcher* outputs also the zipped FASTA files containing the reads which support the found candidate fusions genes. The files are:
-  * **`supporting-reads_gene-fusions_BOWTIE.zip`**,
-  * **`supporting-reads_gene-fusions_BLAT.zip`**,
-  * **`supporting-reads_gene-fusions_STAR.zip`**,
-  * **`supporting-reads_gene-fusions_BOWTIE2.zip`**, and
-  * **`supporting-reads_gene-fusions_BWA.zip`**.
+  * `supporting-reads_gene-fusions_BOWTIE.zip`,
+  * `supporting-reads_gene-fusions_BLAT.zip`,
+  * `supporting-reads_gene-fusions_STAR.zip`,
+  * `supporting-reads_gene-fusions_BOWTIE2.zip`, and
+  * `supporting-reads_gene-fusions_BWA.zip`.
 
 The reads which support the:
   * junction of the candidate fusion have their name ending with `_supports_fusion_junction`, and
@@ -1022,7 +1022,7 @@ These supporting reads (given as FASTA and FASTQ files) may be used for further 
 For example, the sequences of supporting reads for a given candidate fusion gene may be visualized using [UCSC Genome Browser](http://genome.ucsc.edu/) by aligning them using the [UCSC Genome Browser](http://genome.ucsc.edu/)'s  BLAT aligner (i.e. copy and paste the reads here: [BLAT tool of UCSC Genome Browser](http://genome.ucsc.edu/cgi-bin/hgBlat?command=start) --> click the button **Submit** --> navigate into the [UCSC Genome Browser](http://genome.ucsc.edu/) to the genes that form the fusion genes). Also zooming out several times gives better view here.
 
 ### 6.3.2 - PSL format
-If one uses the `--blat-visualization` command line option of the *FusionCatcher* then the BLAT alignment of the supporting reads will be done automatically by the *FusionCatcher* and the results are saved as [PSL](http://genome.ucsc.edu/FAQ/FAQformat.html#format2) files with names that are ending with **`_reads.psl`** in the:
+If one uses the `--blat-visualization` command line option of the *FusionCatcher* then the BLAT alignment of the supporting reads will be done automatically by the *FusionCatcher* and the results are saved as [PSL](http://genome.ucsc.edu/FAQ/FAQformat.html#format2) files with names that are ending with `_reads.psl` in the:
   * `supporting-reads_gene-fusions_BOWTIE.zip`,
   * `supporting-reads_gene-fusions_BLAT.zip`,
   * `supporting-reads_gene-fusions_STAR.zip`, and
@@ -1039,11 +1039,11 @@ If one uses the `--visualization-sam` command line option of the *FusionCatcher*
   * `supporting-reads_gene-fusions_STAR.zip`,
   * `supporting-reads_gene-fusions_BOWTIE2.zip`, and
   * `supporting-reads_gene-fusions_BWA.zip`.
-The files with names ending in **`_reads.sam`** (please note, that they still needed to be converted to BAM, coordiante sorted and indexed first) may be used further for visualization of the candidate fusion genes using [UCSC Genome Browser](http://genome.ucsc.edu/), [IGV (Integrative Genome Viewer)](http://www.broadinstitute.org/igv/) or any other viewer/browser which supports the [SAM](http://samtools.github.io/hts-specs/SAMv1.pdf) format.
+The files with names ending in `_reads.sam` (please note, that they still needed to be converted to BAM, coordiante sorted and indexed first) may be used further for visualization of the candidate fusion genes using [UCSC Genome Browser](http://genome.ucsc.edu/), [IGV (Integrative Genome Viewer)](http://www.broadinstitute.org/igv/) or any other viewer/browser which supports the [SAM](http://samtools.github.io/hts-specs/SAMv1.pdf) format.
 
 #### 6.3.3.2 - Manual method
-Here is an rough example of manually aligning the supporting reads (that is named as `supporting_reads.fq` in the below example; the FASTQ files needed here are the files ending in **`_reads.fq`** from the ZIP archives **`supporting-reads_gene-fusions_*.zip`** produced by *FusionCatcher*) using different aligners.
-  * [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) aligner (where **`your_choice_of_genome_bowtie2_index`** may be for human, for example [this](ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19.zip))
+Here is an rough example of manually aligning the supporting reads (that is named as `supporting_reads.fq` in the below example; the FASTQ files needed here are the files ending in `_reads.fq` from the ZIP archives `supporting-reads_gene-fusions_*.zip` produced by *FusionCatcher*) using different aligners.
+  * [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) aligner (where `your_choice_of_genome_bowtie2_index` may be for human, for example [this](ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19.zip))
    * alignment done ignoring the paired-end information (i.e. like single reads):
     ```
 bowtie2 \
@@ -1075,7 +1075,7 @@ samtools view -bS fusion_genes.sam | samtools sort - fusion_genes.sorted
 
 samtools index fusion_genes.sorted.bam
     ```
-  * [STAR](http://github.com/alexdobin/STAR) aligner (where **`your_choice_of_genome_star_index`** should be built according to the [STAR Manual](http://github.com/alexdobin/STAR/tree/master/doc))
+  * [STAR](http://github.com/alexdobin/STAR) aligner (where `your_choice_of_genome_star_index` should be built according to the [STAR Manual](http://github.com/alexdobin/STAR/tree/master/doc))
    * alignment done ignoring the paired-end information (i.e. like single reads):
     ```
 STAR \
