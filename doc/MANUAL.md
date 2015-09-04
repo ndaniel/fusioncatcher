@@ -1,10 +1,23 @@
-
-
+# Table of Contents
+1. [Introduction](#introduction)
+2. [Hardware requirements](#hardware-requirements)
+3. [Dependencies](dependencies)
+4. [Examples](#examples)
+5. [Installation](#installation)
+6. [Usage](#usage)
+7. [Aligners](#aligners)
+8. [fusioncatcher](#fusioncatcher)
+9. [fusioncatcher-build](#fusioncatcher-build)
+10. [Methods](#methods)
+11. [Comparisons to other tools](#comparisons-to-other-tools)
+12. [License](#license)
+13. [Citing](#citing)
+14. [Reporting bugs](#reporting-bugs)
 
 ---
 
 
-# 1 - INTRODUCTION
+# INTRODUCTION
 
 *FusionCatcher* searchers for **somatic** novel/known **fusion genes**, **translocations** and/or **chimeras** in RNA-seq data (stranded/unstranded  **paired-end/single-end** reads FASTQ files produced by Illumina next-generation sequencing platforms like Illumina Solexa/`HiSeq`/`NextSeq`/`MiSeq`) from _diseased_ samples.
 
@@ -39,7 +52,7 @@ The aims of *FusionCatcher* are:
 ---
 
 
-# 2 - HARDWARE REQUIREMENTS
+# HARDWARE REQUIREMENTS
 
 For running *FusionCatcher* it is needed a computer with:
   * 64-bit `*NIX` environment
@@ -51,7 +64,7 @@ For running *FusionCatcher* it is needed a computer with:
 ---
 
 
-# 3 - DEPENDENCIES
+# DEPENDENCIES
 
 ## 3.1 - Required dependencies
   * **Linux/Unix** 64-bit (e.g. Ubuntu version 12.04/14.04 or newer)
@@ -108,7 +121,7 @@ These are used (downloaded and parsed) automatically by *FusionCatcher*:
 ---
 
 
-# 4 - EXAMPLES
+# EXAMPLES
 
 ## 4.1 - Automatic installation
 
@@ -625,7 +638,7 @@ NOTE: **DO NOT POOL** the samples from all these cell lines. **DO NOT** give at 
 ---
 
 
-# 5 - INSTALLATION
+# INSTALLATION
 
 ## 5.1 - Getting executables
 
@@ -711,7 +724,7 @@ fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
 ---
 
 
-# 6 - USAGE
+# USAGE
 
 Searching for fusion genes in a human organism, one has:
 ```
@@ -1150,7 +1163,7 @@ fusioncatcher \
 ---
 
 
-# 7 - ALIGNERS
+# ALIGNERS
 
 ## 7.1 - Bowtie
 
@@ -1234,7 +1247,7 @@ fusioncatcher \
 --aligners blat,star,bwa
 ```
 
-# 8 - GENE FUSION FINDER - fusioncatcher
+# fusioncatcher
 It searchers for fusion genes and/or translocations in RNA-seq data (paired-end reads FASTQ files produced by Illumina next-generation sequencing platforms like Illumina Solexa and Illumina `HiSeq`) in diseased samples.
 ## 8.1 - Command line
 ```
@@ -1795,7 +1808,7 @@ tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
 ---
 
 
-# 9 - DATA BUILDER - fusioncatcher-build
+# fusioncatcher-build
 It downloads the necessary data for a given organism from the Ensembl database and it builds the necessary files/indexes which are needed to running *FusionCatcher*.
 ## 9.1 - Command line
 ```
@@ -1876,7 +1889,7 @@ fusioncatcher-build [options]
 
 ---
 
-# 10 - Methods
+# Methods
 
 The main goal of `FusionCatcher` is to find **somatic** (and/or pathogenic) fusion genes in RNA-seq data.
 
@@ -1897,12 +1910,12 @@ The main goal of `FusionCatcher` is to find **somatic** (and/or pathogenic) fusi
 
 ---
 
-# 11 - Comparisons to other tools
+# Comparisons to other tools
 When performing comparisons where *FusionCatcher* is compared with other gene fusions finder we **always recommend strongly to use the default/recommended parameters** for *FusionCatcher*.
 
-<font color='red'>
-The performance of <b>FusionCatcher</b> is decreased drastically, when using other parameters than the default/recommended ones! Especially <b>do not change</b> the defaults for: <code>--5keep, --anchor-fusion, --reads-fusion, --pairs-fusion, --pairs-fusion2</code>! The default parameters should work just fine for input reads which have the size range between 35 bp to 250 bp.<br>
-</font>
+
+The performance of *FusionCatcher* is decreased drastically, when using other parameters than the default/recommended ones! Especially <b>do not change</b> the defaults for: <code>--5keep, --anchor-fusion, --reads-fusion, --pairs-fusion, --pairs-fusion2</code>! The default parameters should work just fine for input reads which have the size range between 35 bp to 250 bp.
+
 
 Also, when comparing the fusion genes found by *FusionCatcher* with fusion genes found by other tools one needs to keep in mind that *FusionCatcher* is a **SOMATIC** fusion gene finder and **NOT** a (general) fusion gene finder. This means that if a fusion gene is already known to exist in healthy individuals (from public literature or from our internal RNA-seq database of healthy sample) then that fusion gene will be skipped by *FusionCatcher* and it will not be reported at all! An example is the well known fusion gene TTTY15-USP9Y which is known to be found in healthy individuals (see [here](http://www.sciencedirect.com/science/article/pii/S0002944015001996)) and which *FusionCatcher* will skip it and will not report it on purpose because **it is not a somatic fusion gene**!
 
@@ -1912,7 +1925,7 @@ Also, when one is running *FusionCatcher* on some synthetic/simulated RNA-seq da
 
 ---
 
-# 12 - License
+# License
 *FusionCatcher*'s code is released under [GNU GPL version 3 license](http://www.gnu.org/copyleft/gpl.html). *FusionCatcher* is using third-party tools and databases. The user is responsible to obtain licenses for the third-party tools and databases which are used by *FusionCatcher*.
 
 **Most** (but not all) of the third-party tools and databases used by *FusionCatcher* are (i) free to use, or (ii) are released under GPL/MIT-type licenses. The most notable exception here of which we are aware is BLAT's aligner license, which requires one to buy a license when BLAT is used in commercial environment (please, see for more [here](http://www.kentinformatics.com/contact-us.html)). In case that one does not wish to use BLAT aligner then it is still possible to use *FusionCatcher* for finding fusion genes, by telling *FusionCatcher* not to use BLAT aligner but instead to use the BOWTIE2 aligner (BLAT is used by default and BOWTIE2 is not used by default), as following:
@@ -1926,7 +1939,7 @@ Also, when one is running *FusionCatcher* on some synthetic/simulated RNA-seq da
 
 ---
 
-# 13 - Citing
+# Citing
 If you use *FusionCatcher*, please cite:
 
 D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi, S. Virtanen, O. Kilkku, **FusionCatcher – a tool for finding somatic fusion genes in paired-end RNA-sequencing data**, bioRxiv, Nov. 2014, [DOI:10.1101/011650](http://biorxiv.org/content/early/2014/11/19/011650)
@@ -1934,7 +1947,7 @@ D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi,
 
 ---
 
-# 14 - Reporting Bugs
+# Reporting Bugs
 
 Please, when reporting bugs include also the following files:
   * "fusioncatcher.log" (this contains just a list of the commands executed by *FusionCatcher*), and
@@ -1946,7 +1959,7 @@ which were generated by *FusionCatcher* during the run.
 
 ---
 
-# 13 - NOTES
+# NOTES
   * <font color='red'>The performance of <b>FusionCatcher</b> is decreased drastically, when using other parameters than the default/recommended ones! Especially <b>do not change</b> the defaults for: <code>--5keep, --anchor-fusion, --reads-fusion, --pairs-fusion, --pairs-fusion2</code>! The default parameters should work just fine for input reads which have the size range between 35 bp to 250 bp.</font>
   * `fusioncatcher-build` takes several hours to run and it depends on the local internet connection speed. It needs to be run only once!
   * *FusionCatcher* can be run many times using the same data produced by the `fusioncatcher-build`;
