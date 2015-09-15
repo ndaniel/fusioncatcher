@@ -1,5 +1,5 @@
 # Table of Contents
-1. [Introduction](#1.-introduction)
+1. [Introduction](#1--introduction)
 2. [Hardware requirements and dependencies](#2.-hardware-requirements-and-dependencies)
 3. [FusionCatcher in scientific articles](#3.-fusioncatcher-in-scientific-articles)
 4. [Installation and usage examples](#4.-installation-and-usage-examples)
