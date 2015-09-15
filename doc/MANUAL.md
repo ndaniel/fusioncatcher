@@ -11,7 +11,7 @@
 10. [Comparisons to other tools](#10.-comparisons-to-other-tools)
 11. [License](#11.-license)
 12. [Citing](#12.-citing)
-13. [Reporting bugs](#13--reporting-bugs)
+13. [Reporting bugs](#13---reporting-bugs)
 
 ---
 
@@ -1941,7 +1941,7 @@ D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi,
 
 ---
 
-# 13  Reporting Bugs
+# 13 - Reporting Bugs
 
 Please, when reporting bugs include also the following files:
   * "fusioncatcher.log" (this contains just a list of the commands executed by *FusionCatcher*), and
