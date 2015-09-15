@@ -1,7 +1,7 @@
 Version Release History for FusionCatcher
 =========================================
 
-Version 0.99.4c beta - September 15, 2015
+Version 0.99.4d beta - September 15, 2015
 -----------------------------------------
  * added support for Ensembl version 81 and human genome GRCh38.p3/hg38.p3
  * fixed bug where input reads longer than 130 bp would produce very large number of 

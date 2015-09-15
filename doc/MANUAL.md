@@ -1,17 +1,17 @@
 # Table of Contents
-1. [Introduction](#introduction)
-2. [Hardware requirements and dependencies](#hardware-requirements-and-dependencies)
-3. [FusionCatcher in scientific articles](#fusioncatcher-in-scientific-articles)
-4. [Installation and usage examples](#installation-and-usage-examples)
-5. [Installation](#installation)
-6. [Usage](#usage)
-7. [Aligners](#aligners)
-8. [Command line options](#command-line-options)
-9. [Methods](#methods)
-10. [Comparisons to other tools](#comparisons-to-other-tools)
-11. [License](#license)
-12. [Citing](#citing)
-13. [Reporting bugs](#reporting-bugs)
+1. [Introduction](#1.-introduction)
+2. [Hardware requirements and dependencies](#2.-hardware-requirements-and-dependencies)
+3. [FusionCatcher in scientific articles](#3.-fusioncatcher-in-scientific-articles)
+4. [Installation and usage examples](#4.-installation-and-usage-examples)
+5. [Installation](#5.-installation)
+6. [Usage](#6.-usage)
+7. [Aligners](#7.-aligners)
+8. [Command line options](#8.-command-line-options)
+9. [Methods](#9.-methods)
+10. [Comparisons to other tools](#10.-comparisons-to-other-tools)
+11. [License](#11.-license)
+12. [Citing](#12.-citing)
+13. [Reporting bugs](#13.-reporting-bugs)
 
 ---
 
@@ -27,7 +27,7 @@ The aims of *FusionCatcher* are:
   * to be as automatic as possible (i.e. the *FusionCatcher* will choose automatically the best parameters in order to find candidate somatic fusion genes, e.g. finding automatically the adapters, quality trimming of reads, building the exon-exon junctions automatically based on the length of the reads given as input, etc. while giving also full control to expert users) while providing the best possible detection rate for finding somatic fusion genes (with a very low rate of false positives but a very good sensitivity).
 
 *FusionCatcher* supports:
-  * as input FASTQ and/or SRA file types (paired-end reads from stranded or strand-specific experiments),
+  * as input FASTQ and/or SRA file types (paired-end reads from stranded or strand-specific experiments, single-end reads when they are longer than 130bp),
   * five different methods (using Bowtie aligner and optionally BLAT, STAR, BOWTIE2, BWA aligners) for finding new fusion genes **BUT** by default only Bowtie, Blat, and STAR aligners will be used,
   * several eukaryotic organisms (which are in [Ensembl database](http://www.ensembl.org/index.html)), like for example, human, rat, mouse, dog, etc.
 
@@ -634,7 +634,7 @@ NOTE: **DO NOT POOL** the samples from all these cell lines. **DO NOT** give at 
 ---
 
 
-# INSTALLATION
+# 5. INSTALLATION
 
 ## 5.1 - Getting executables
 
@@ -720,7 +720,7 @@ fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
 ---
 
 
-# USAGE
+# 6. USAGE
 
 Searching for fusion genes in a human organism, one has:
 ```
@@ -1159,7 +1159,7 @@ fusioncatcher \
 ---
 
 
-# ALIGNERS
+# 7. ALIGNERS
 
 ## 7.1 - Bowtie
 
@@ -1244,7 +1244,7 @@ fusioncatcher \
 ```
 
 ---
-# Command line options
+# 8. Command line options
 
 ## fusioncatcher
 It searchers for fusion genes and/or translocations in RNA-seq data (paired-end reads FASTQ files produced by Illumina next-generation sequencing platforms like Illumina Solexa and Illumina `HiSeq`) in diseased samples. Its command line is:
@@ -1883,7 +1883,7 @@ and the command line options are:
 
 ---
 
-# Methods
+# 9. Methods
 
 The main goal of *FusionCatcher* is to find **somatic** (and/or pathogenic) fusion genes in RNA-seq data.
 
@@ -1904,7 +1904,7 @@ The main goal of *FusionCatcher* is to find **somatic** (and/or pathogenic) fusi
 
 ---
 
-# Comparisons to other tools
+# 10. Comparisons to other tools
 When performing comparisons where *FusionCatcher* is compared with other gene fusions finder we **always recommend strongly to use the default/recommended parameters** for *FusionCatcher*.
 
 
@@ -1919,7 +1919,7 @@ Also, when one is running *FusionCatcher* on some synthetic/simulated RNA-seq da
 
 ---
 
-# License
+# 11. License
 *FusionCatcher*'s code is released under [GNU GPL version 3 license](http://www.gnu.org/copyleft/gpl.html). *FusionCatcher* is using third-party tools and databases. The user is responsible to obtain licenses for the third-party tools and databases which are used by *FusionCatcher*.
 
 **Most** (but not all) of the third-party tools and databases used by *FusionCatcher* are (i) free to use, or (ii) are released under GPL/MIT-type licenses. The most notable exception here of which we are aware is BLAT's aligner license, which requires one to buy a license when BLAT is used in commercial environment (please, see for more [here](http://www.kentinformatics.com/contact-us.html)). In case that one does not wish to use BLAT aligner then it is still possible to use *FusionCatcher* for finding fusion genes, by telling *FusionCatcher* not to use BLAT aligner but instead to use the BOWTIE2 aligner (BLAT is used by default and BOWTIE2 is not used by default), as following:
@@ -1933,7 +1933,7 @@ Also, when one is running *FusionCatcher* on some synthetic/simulated RNA-seq da
 
 ---
 
-# Citing
+# 12. Citing
 If you use *FusionCatcher*, please cite:
 
 D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi, S. Virtanen, O. Kilkku, **FusionCatcher – a tool for finding somatic fusion genes in paired-end RNA-sequencing data**, bioRxiv, Nov. 2014, [DOI:10.1101/011650](http://biorxiv.org/content/early/2014/11/19/011650)
@@ -1941,7 +1941,7 @@ D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi,
 
 ---
 
-# Reporting Bugs
+# 13. Reporting Bugs
 
 Please, when reporting bugs include also the following files:
   * "fusioncatcher.log" (this contains just a list of the commands executed by *FusionCatcher*), and
