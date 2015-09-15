@@ -147,7 +147,7 @@ if __name__=='__main__':
 
     usage="%prog [options]"
     description="""It takes a FASTQ file and converts all nucleotides with low quality score 'B' to ambigous nucleotide N."""
-    version="%prog 0.12 beta              Author: Daniel Nicorici, E-mail: Daniel.Nicorici@gmail.com"
+    version="%prog 0.14 beta              Author: Daniel Nicorici, E-mail: Daniel.Nicorici@gmail.com"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -214,7 +214,7 @@ if __name__=='__main__':
     if options.sanger:
         b = '#'
     c = options.replacement
-    ttable = string.maketrans('URYMKWSBDHVN-','TACAGACCAAAAA')
+    ttable = string.maketrans('URYMKWSBDHVN-.TGCA','TACAGACCAAAAAATGCA')
     if options.ambiguous:
         if options.find:
             for reads in reads_from_fastq_file(options.input_filename):

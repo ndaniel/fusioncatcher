@@ -103,7 +103,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 0.99.4c beta"
+    version = "%prog 0.99.4d beta"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -353,6 +353,11 @@ if __name__ == '__main__':
         "<http://biopython.org/>) is installed (or if 'configuration.cfg' file "+
         "is set up correctly)!"))
 
+    job.add('printf',kind='program')
+    job.add('"%s"' % (options.organism.lower()), kind='parameter')
+    job.add('>',outdir('organism.txt'),kind='output')
+    job.run()
+
     job.add('get_genome.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.ftp_ensembl,kind='parameter')
@@ -404,27 +409,6 @@ if __name__ == '__main__':
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('genes_symbols.txt'),kind='output',command_line='no')
     job.run()
-
-    if options.organism == 'homo_sapiens':
-        job.add('cut',kind='program')
-        job.add('-f1,2',kind='parameter')
-        job.add('',outdir('genes_symbols.txt'),kind='input')
-        job.add('|',kind='parameter')
-        job.add('grep',kind='parameter')
-        job.add('','"\tIG[K|L|H|J]"',kind='parameter')
-        job.add('|',kind='parameter')
-        job.add('cut',kind='parameter')
-        job.add('-f1',kind='parameter')
-        job.add('|',kind='parameter')
-        job.add('uniq',kind='parameter')
-        job.add('>',outdir('ig_loci.txt'),kind='output')
-        job.run()
-
-    else:
-        job.add('echo',kind='program')
-        job.add('-n','""',kind='parameter')
-        job.add('>',outdir('ig_loci.txt'),kind='output')
-        job.run()
 
     job.add('get_genes_descriptions.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
@@ -491,6 +475,13 @@ if __name__ == '__main__':
     job.add('',outdir('refseq_genes.txt'),kind='output',command_line='no')
     job.run()
 
+    job.add('get_refseq_ensembl.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--server',options.web_ensembl,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('refseq_ids.txt'),kind='output',command_line='no')
+    job.run()
+
     job.add('get_gencode.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
 #    job.add('--server',options.ftp_ucsc,kind='parameter')
@@ -521,7 +512,7 @@ if __name__ == '__main__':
                 "command line option '--skip-database hla'! This database is optional."))
     else:
         job.add('printf',kind='program')
-        job.add('">mock-hla\nACGTGGGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"', kind='parameter')
+        job.add('">mock-hla\nACGTGGGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"', kind='parameter')
         job.add('>',outdir('hla.fa'),kind='output')
         job.run()
 
@@ -543,7 +534,7 @@ if __name__ == '__main__':
     job.add('',outdir('ensembl-1_same_strand_overlapping_genes.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('remove_custom_transcript.py',kind='program')
+    job.add('remove_custom_feature.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('exons.txt'),kind='output',command_line='no')
@@ -587,10 +578,24 @@ if __name__ == '__main__':
     job.add('>',outdir('ensembl_same_strand_overlapping_genes.dif'),kind='output')
     job.run()
 
+
+    if options.organism == 'homo_sapiens':
+        job.add('printf',kind='program')
+        job.add('"ENSG00000047932\tENSG00000047936\nENSG00000134853\tENSG00000145216\n"',kind='parameter') # GOPC-ROS1 & FIP1L1-PDGFRA
+        job.add('>',outdir('extra_overlapping-genes.txt'),kind='output')
+        job.run()
+    else:
+        job.add('echo',kind='program')
+        job.add('-n','""',kind='parameter')
+        job.add('>',outdir('extra_overlapping-genes.txt'),kind='output')
+        job.run()
+
+
     job.add('cat',kind='program')
     job.add('',outdir('ensembl_same_strand_overlapping_genes.dif'),kind='input',temp_path='yes')
     job.add('',outdir('ensembl_partially_overlapping_genes.dif'),kind='input',temp_path='yes')
     job.add('',outdir('ensembl_fully_overlapping_genes.dif'),kind='input',temp_path='yes')
+    job.add('',outdir('extra_overlapping-genes.txt'),kind='input',temp_path='yes')
     job.add('|',kind='parameter')
     job.add('LC_ALL=C',kind='parameter')
     job.add('sort',kind='parameter')
@@ -598,7 +603,6 @@ if __name__ == '__main__':
     job.add('uniq',kind='parameter')
     job.add('>',outdir('ensembl_removed-overlapping-genes.txt'),kind='output')
     job.run()
-
 
 
     job.add('generate_overlapping_genes.py',kind='program')
@@ -696,6 +700,94 @@ if __name__ == '__main__':
     job.add('uniq',kind='parameter')
     job.add('>',outdir('ensembl_overlapping_genes.txt'),kind='output')
     job.run()
+
+    if options.organism == 'homo_sapiens':
+        job.add('cut',kind='program')
+        job.add('-f1,2',kind='parameter')
+        job.add('',outdir('genes_symbols.txt'),kind='input')
+        job.add('|',kind='parameter')
+        job.add('grep',kind='parameter')
+        job.add('','"\tIG[K|L|H|J]"',kind='parameter')
+        job.add('|',kind='parameter')
+        job.add('cut',kind='parameter')
+        job.add('-f1',kind='parameter')
+        job.add('|',kind='parameter')
+        job.add('uniq',kind='parameter')
+        job.add('>',outdir('ig_loci.txt'),kind='output')
+        job.run()
+
+    else:
+        job.add('echo',kind='program')
+        job.add('-n','""',kind='parameter')
+        job.add('>',outdir('ig_loci.txt'),kind='output')
+        job.run()
+
+    if options.organism == 'homo_sapiens':
+        job.add('grep',kind='program')
+        job.add('-i',kind='parameter')
+        job.add('-e','"\tEPOR"',kind='parameter')
+        job.add('-e','"\tCRLF2"',kind='parameter')
+        job.add('-e','"\tADRBK1"',kind='parameter')
+        job.add('-e','"\tBCL1"',kind='parameter')
+        job.add('-e','"\tBCL10"',kind='parameter')
+        job.add('-e','"\tBCL11A"',kind='parameter')
+        job.add('-e','"\tBCL2"',kind='parameter')
+        job.add('-e','"\tBCL3"',kind='parameter')
+        job.add('-e','"\tBCL5"',kind='parameter')
+        job.add('-e','"\tBCL6"',kind='parameter')
+        job.add('-e','"\tBCL8"',kind='parameter')
+        job.add('-e','"\tBCL9"',kind='parameter')
+        job.add('-e','"\tC14ORF49"',kind='parameter')
+        job.add('-e','"\tCCND1"',kind='parameter')
+        job.add('-e','"\tCCND2"',kind='parameter')
+        job.add('-e','"\tCCND3"',kind='parameter')
+        job.add('-e','"\tCDK6"',kind='parameter')
+        job.add('-e','"\tCEBPA"',kind='parameter')
+        job.add('-e','"\tCEBPB"',kind='parameter')
+        job.add('-e','"\tCEBPD"',kind='parameter')
+        job.add('-e','"\tCEBPE"',kind='parameter')
+        job.add('-e','"\tCEBPG"',kind='parameter')
+        job.add('-e','"\tCSF2RA"',kind='parameter')
+        job.add('-e','"\tDDX6"',kind='parameter')
+        job.add('-e','"\tDEGS2"',kind='parameter')
+        job.add('-e','"\tERBB2"',kind='parameter')
+        job.add('-e','"\tERVWE1"',kind='parameter')
+        job.add('-e','"\tETV6"',kind='parameter')
+        job.add('-e','"\tFCGR2B"',kind='parameter')
+        job.add('-e','"\tFCRL4"',kind='parameter')
+        job.add('-e','"\tFGFR3"',kind='parameter')
+        job.add('-e','"\tFOXP1"',kind='parameter')
+        job.add('-e','"\tIRTA1"',kind='parameter')
+        job.add('-e','"\tLAPTM5"',kind='parameter')
+        job.add('-e','"\tLHX4"',kind='parameter')
+        job.add('-e','"\tMAF"',kind='parameter')
+        job.add('-e','"\tMAFB"',kind='parameter')
+        job.add('-e','"\tMALT1"',kind='parameter')
+        job.add('-e','"\tMMSET"',kind='parameter')
+        job.add('-e','"\tMUC1"',kind='parameter')
+        job.add('-e','"\tMYC"',kind='parameter')
+        job.add('-e','"\tNFKB2"',kind='parameter')
+        job.add('-e','"\tPAFAH1B2"',kind='parameter')
+        job.add('-e','"\tPAX5"',kind='parameter')
+        job.add('-e','"\tPCSK7"',kind='parameter')
+        job.add('-e','"\tRHOH"',kind='parameter')
+        job.add('-e','"\tSPIB"',kind='parameter')
+        job.add('-e','"\tWHSC1"',kind='parameter')
+        job.add('-e','"\tWWOX"',kind='parameter')
+        job.add('',outdir('genes_symbols.txt'),kind='input')
+        job.add('|',kind='parameter')
+        job.add('cut',kind='parameter')
+        job.add('-f1',kind='parameter')
+        job.add('|',kind='parameter')
+        job.add('uniq',kind='parameter')
+        job.add('>',outdir('eporcrlf2.txt'),kind='output')
+        job.run()
+
+    else:
+        job.add('echo',kind='program')
+        job.add('-n','""',kind='parameter')
+        job.add('>',outdir('eporcrlf2.txt'),kind='output')
+        job.run()
 
 #    if options.organism == 'homo_sapiens':
 #        job.add('enlarge_genes.py',kind='program')

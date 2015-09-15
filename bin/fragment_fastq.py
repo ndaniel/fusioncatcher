@@ -55,7 +55,7 @@ import errno
 import gzip
 import math
 
-ttable = string.maketrans("ACGTYRSWKMBDHV-","TGCARYSWMKVHDB-") # global
+ttable = string.maketrans("ACGTYRSWKMBDHV-.","TGCARYSWMKVHDB-N") # global
 empty_read = ['@N123\n','N\n','+\n','I\n'] # global
 
 #
@@ -203,6 +203,7 @@ def fragment_fastq(
         step_size = 60,
         threshold_size_read = 0,
         anchors = 1,
+        wiggle_end = 20,
         skip = 0,
         trim_n = False,
         verbose = False,
@@ -225,20 +226,22 @@ def fragment_fastq(
     
     fq1 = open(output_file_1,"w")
     fq2 = None
-    if output_file_2 != '-':
+    if output_file_2 and output_file_2 != '-':
         fq2 = open(output_file_2,"w")
     
     t1 = []
     t2 = []
     zn = 0
-    z = [(0,0)]
+    z = []
     
     digits = 2
     limit_digits = 10**digits - 1
     
     get_reads = None
-    if input_file_2 == "-":
+    single = False
+    if input_file_2 and input_file_2 == "-":
         get_reads = reads_from_single_fastq_file(input_file_1,anchor_size=window_size-step)
+        single = True
     else:
         get_reads = reads_from_paired_fastq_file(input_file_1,input_file_2)
         
@@ -268,11 +271,12 @@ def fragment_fastq(
             continue
             
 
+        rr1 = []
         if n1 > threshold:
             if n1 != zn:
                 zn = n1
                 y1 = range(window,n1,step)
-                if (not y1) or y1[-1] != n1:
+                if (not y1) or single or n1 - y1[-1] >= wiggle_end: #y1[-1] != n1:
                     y1.append(n1)
                 x1 = [i-window if i-window > -1 else 0 for i in y1]
                 z = zip(x1,y1)
@@ -281,12 +285,12 @@ def fragment_fastq(
         else:
             rr1 = [(s1,q1)]
 
-        
+        rr2 = []
         if n2 > threshold:
             if n2 != zn:
                 zn = n2
                 y2 = range(window,n2,step)
-                if (not y2) or y2[-1] != n2:
+                if (not y2) or single or n2 - y2[-1] >= wiggle_end: #y2[-1] != n2:
                     y2.append(n2)
                 x2 = [i-window if i-window > -1 else 0 for i in y2]
                 z = zip(x2,y2)
@@ -473,7 +477,14 @@ Email: Daniel.Nicorici@gmail.com
                       type = "int",
                       dest = "skip_short",
                       default = 0,
-                      help = """The paire-end where both reads are shorter than this will be filtered out.""")
+                      help = """The paired-end where both reads are shorter than this will be filtered out. Default is '%default'.""")
+
+    parser.add_option("-e","--wiggle-end",
+                      action = "store",
+                      type = "int",
+                      dest = "wiggle_end",
+                      default = 20,
+                      help = """The last fragment will not be generated if it overlaps with the previous generated fragment and the non-overlapping segment is strictly shorter than this threshold. This applies only for paired-end reads. Default is '%default'.""")
 
     parser.add_option("-n","--trim-n",
                       action = "store_true",
@@ -516,6 +527,7 @@ Email: Daniel.Nicorici@gmail.com
         options.step_size,
         options.threshold_size_read,
         options.anchors,
+        options.wiggle_end,
         options.skip_short,
         options.trim_n,
         options.verbose

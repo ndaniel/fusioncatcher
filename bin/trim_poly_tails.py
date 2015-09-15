@@ -254,9 +254,9 @@ if __name__ == '__main__':
             h = False
             caracter1 = ss[-1:]
             caracter2 = ss[0:1]
-            if caracter2 and ss.startswith(poly[caracter2]):
+            if caracter2 and ss.startswith(poly.get(caracter2,'---')):
                 h = True
-            elif caracter1 and ss.endswith(poly[caracter1]):
+            elif caracter1 and ss.endswith(poly.get(caracter1,'---')):
                 h = True
 #            for k in poly_keys:
 #                if ss.startswith(poly[k]) or ss.endswith(poly[k]):
@@ -282,9 +282,9 @@ if __name__ == '__main__':
             h2 = False
             caracter1 = ss[-1:]
             caracter2 = ss[0:1]
-            if caracter2 and ss.startswith(poly[caracter2]):
+            if caracter2 and ss.startswith(poly.get(caracter2,'---')):
                 (ts,tq,h1) = trim_poly_5_end(ts, tq, caracter2, no_repeats = options.repeats)
-            if caracter1 and ss.endswith(poly[caracter1]):
+            if caracter1 and ss.endswith(poly.get(caracter1,'---')):
                 (ts,tq,h2) = trim_poly_3_end(ts, tq, caracter1, no_repeats = options.repeats)
             if h1 or h2:
                 h = True

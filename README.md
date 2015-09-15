@@ -62,3 +62,4 @@ Citing
 D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi,
 S. Virtanen, O. Kilkku, FusionCatcher – a tool for finding somatic fusion genes
 in paired-end RNA-sequencing data, bioRxiv, Nov. 2014, [DOI:10.1101/011650](http://dx.doi.org/10.1101/011650)
+

@@ -2,9 +2,9 @@ Required dependencies:
  - Linux 64-bit (e.g. Ubuntu 12.04/14.04 or newer) with a minimum of 24 GB RAM
  - Python version 2.7.x (>=2.6.0 and < 3.0 is fine)
  - BioPython version 1.65 (>=1.50 is fine)
- - Bowtie 64-bit version 1.1.1  http://bowtie-bio.sourceforge.net/index.shtml
- - Bowtie2 64-bit version 2.2.5  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
- - STAR version 2.4.1d <http://github.com/alexdobin/STAR/releases>
+ - Bowtie 64-bit version 1.1.2  http://bowtie-bio.sourceforge.net/index.shtml
+ - Bowtie2 64-bit version 2.2.6  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
+ - STAR version 2.4.2a <http://github.com/alexdobin/STAR/releases>
  - SEQTK version 1.0-r68e-dirty  http://github.com/ndaniel/seqtk
  - BWA version 0.7.12  <http://sourceforge.net/projects/bio-bwa/>
 
@@ -44,3 +44,6 @@ Genomic Databases (used automatically by FusionCatcher):
 - NCBI database <http://www.ncbi.nlm.nih.gov/>
 - DGD database <http://dgd.genouest.org/>
 - Illumina BodyMap2 RNA-seq database <http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/>
+
+
+

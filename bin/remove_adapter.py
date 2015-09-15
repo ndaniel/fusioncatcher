@@ -57,7 +57,7 @@ import shutil
 import errno
 import gzip
 
-ttable = string.maketrans("ACGTYRSWKMBDHV-","TGCARYSWMKVHDB-") # global
+ttable = string.maketrans("ACGTYRSWKMBDHV-.","TGCARYSWMKVHDB-.") # global
 empty_read = ['@N123\n','N\n','+\n','I\n'] # global
 
 #
@@ -451,14 +451,14 @@ def fast_alignment(sa, sb, overlap = 13, wiggle = 2, adpt5 = "", adpt3 = ""):
 
         mis5 = -1
         if adpt5:
-            mis5 = len([1 for ix in xrange(len_adpt5) if lib+ix<na and adpt5[ix] != sa[lib+ix] and sa[lib+ix] != 'N'])
+            mis5 = len([1 for ix in xrange(len_adpt5) if lib+ix<na and adpt5[ix] != sa[lib+ix] and sa[lib+ix] != 'N' and sa[lib+ix] != '.'])
             if float(float(mis5) / float(len_adpt5)) <= float(cut_mis_adapt):
                 # trim the read
                 trim_a = lib
 
         mis3 = -1
         if adpt3:
-            mis3 = len([1 for ix in xrange(len_adpt3) if s-len_adpt3 + ix>-1 and adpt3[ix] != sb[s-len_adpt3 + ix] and sb[s-len_adpt3 + ix] != 'N'])
+            mis3 = len([1 for ix in xrange(len_adpt3) if s-len_adpt3 + ix>-1 and adpt3[ix] != sb[s-len_adpt3 + ix] and sb[s-len_adpt3 + ix] != 'N' and sb[s-len_adpt3 + ix] != '.'])
             if float(mis3) / float(len_adpt3) <= float(cut_mis_adapt):
                 # trim the read
                 trim_b = s
@@ -717,10 +717,10 @@ def trim_tail_n(s,q,count = 1):
     if s:
         n = len(s)
         if n != 1:
-            ts = s.rstrip('N')
+            ts = s.rstrip('N').rstrip('.')
             m = len(ts)
             r = n - m
-            ts = ts.lstrip('N')
+            ts = ts.lstrip('N').rstrip('.')
             l = m - len(ts)
 
             if l+r >= count:

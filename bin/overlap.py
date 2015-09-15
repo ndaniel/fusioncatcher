@@ -51,7 +51,7 @@ import string
 import gzip
 import gc
 
-ttable = string.maketrans("ACGTYRSWKMBDHV-","TGCARYSWMKVHDB-")
+ttable = string.maketrans("ACGTYRSWKMBDHV-.","TGCARYSWMKVHDB-.")
 
 def dnaReverseComplement(seq):
     #seq = seq.upper()
@@ -208,7 +208,7 @@ def fast_alignment5(sa, sb, n, positions, wiggle = 2):
     xb = ""
     for (pa,pb) in positions:
         z = sa[pa:pb]
-        if z.find('N') != -1:
+        if z.find('N') != -1 or z.find('.') != -1:
             continue
         p = sb.find(z,wiggle,-wiggle)
         if p != -1:
@@ -235,7 +235,7 @@ def fast_alignment3(sa, sb, n, positions, wiggle = 2):
     xb = ""
     for (pa,pb) in positions:
         z = sb[pa:pb]
-        if z.find('N') != -1:
+        if z.find('N') != -1 or z.find('.') != -1:
             continue
         p = sa.find(z,wiggle,-wiggle)
         if p != -1:

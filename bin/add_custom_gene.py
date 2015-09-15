@@ -251,7 +251,7 @@ if __name__ == '__main__':
     #
     list_genes = []
 
-    print "Add/change the human genes which have mistakes or are missing from the Ensembl database..."
+    print "Add/change/correct the genes which have errors or are missing from the Ensembl database..."
 
     file(os.path.join(options.output_directory,"custom_genes.txt"),"w").write('')
     file(os.path.join(options.output_directory,"custom_genes.bed"),"w").write('')
@@ -262,7 +262,7 @@ if __name__ == '__main__':
     # take the a gene id and see how it starts
     head = database[1]
     m = len(head)
-    if head.startswith("ENSG"):
+    if head.startswith("ENS"):
         u = []
         for e in head:
             if e.isdigit():
@@ -450,7 +450,20 @@ if __name__ == '__main__':
                     exon_id = 'ENSE09000000006',
                     exon_number = '1',
                     start = '1115000', # 54378500
-                    end = '1220000', # 1267000 #1393000
+                    end = '1250000', #'1220000', # 1267000 #1393000
+                    chrom = 'X',
+                    strand = '-1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000300006',
+                    gene_symbol = 'CRLF2', # stjude
+                    gene_id = 'ENSG00000205755',
+                    transcript_id = 'ENST09000300006',
+                    exon_id = 'ENSE09000300006',
+                    exon_number = '1',
+                    start = '1232040', 
+                    end = '1232227', 
                     chrom = 'X',
                     strand = '-1'
                 )
@@ -463,11 +476,12 @@ if __name__ == '__main__':
                     transcript_id = 'ENST09000000007',
                     exon_id = 'ENSE09000000007',
                     exon_number = '1',
-                    start = '1220001', #'1213300'
+                    start = '1250001', #'1220001', #'1213300'
                     end = '1322000', # 54380200
                     chrom = 'X',
                     strand = '1'
                 )
+                
 
                 # coordinates valid only for GRCh38
                 add(outdir = options.output_directory,
@@ -1065,6 +1079,100 @@ if __name__ == '__main__':
                     chrom = '7',
                     strand = '-1'
                 )
+
+
+
+                # transcript 1 - exon 2/2 -- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001100',
+                    gene_symbol = 'IGH_locus_(q)', # stjude 
+                    gene_id = 'ENSG09000001100',
+                    transcript_id = 'ENST09000001100',
+                    exon_id = 'ENSE09000001101',
+                    exon_number = '1',
+                    start = '105855906', #
+                    end =   '105863198', #
+                    chrom = '14',
+                    strand = '-1',
+                    
+                    start_tr = '105855906',
+                    end_tr = '105863198',
+                    start_ex = '105863258', #
+                    end_ex =   '105863198' #
+                )
+
+                # transcript 1 - exon 1/2-- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001100',
+                    gene_symbol = 'IGH_locus_(q)', # stjude 
+                    gene_id = 'ENSG09000001100',
+                    transcript_id = 'ENST09000001100',
+                    exon_id = 'ENSE09000001100',
+                    exon_number = '2',
+                    start = '105855906', #
+                    end =   '105863198', #
+                    chrom = '14',
+                    strand = '-1',
+
+                    start_tr = '105855906',
+                    end_tr = '105863198',
+                    start_ex = '105855906', #
+                    end_ex =   '105856217' #
+                )
+
+                # transcript 1 - exon 1/2-- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001200',
+                    gene_symbol = 'IGH_locus_(p)', # stjude 
+                    gene_id = 'ENSG09000001200',
+                    transcript_id = 'ENST09000001200',
+                    exon_id = 'ENSE09000001200',
+                    exon_number = '1',
+                    start = '105855906', #
+                    end =   '105863198', #
+                    chrom = '14',
+                    strand = '1',
+
+                    start_tr = '105855906',
+                    end_tr = '105863198',
+                    start_ex = '105855906', #
+                    end_ex =   '105856217' #
+                )
+
+                # transcript 1 - exon 2/2 -- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001200',
+                    gene_symbol = 'IGH_locus_(p)', # stjude 
+                    gene_id = 'ENSG09000001200',
+                    transcript_id = 'ENST09000001200',
+                    exon_id = 'ENSE09000001201',
+                    exon_number = '2',
+                    start = '105855906', #
+                    end =   '105863198', #
+                    chrom = '14',
+                    strand = '1',
+                    
+                    start_tr = '105855906',
+                    end_tr = '105863198',
+                    start_ex = '105863258', #
+                    end_ex =   '105863198' #
+                )
+
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001210',
+                    gene_symbol = 'RORC', #
+                    gene_id = 'ENSG00000143365',
+                    transcript_id = 'ENST09000001210',
+                    exon_id = 'ENSE09000001210',
+                    exon_number = '1',
+                    start = '151806071',
+                    end =   '151831872', #
+                    chrom = '1',
+                    strand = '-1'
+                )
+
+
 
             else:
                 print >>sys.stderr,"WARNING: Cannot identify correctly the human genome version!",d[0]

@@ -127,7 +127,7 @@ class lines_to_file:
         self.close()
 
 ##################
-def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, size_buffer = 2*(10**9)):
+def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, gap = 0, size_buffer = 2*(10**9)):
 
     data1 = lines_to_file(f_out_1)
     data2 = lines_to_file(f_out_2)
@@ -184,13 +184,29 @@ def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, size_buffer = 2*(10*
             if not v:
                 continue
             v = list(v)
-            if len(v) == 1:
-                cut = v[0]
-                w = read[0][:-1]
-                data1.add_line("%s__00a\n%s\n+\n%s\n" % (w,read[1][0:cut+1],read[2][0:cut+1]))
-                data2.add_line("%s__00b\n%s+\n%s" % (w,read[1][cut+1:],read[2][cut+1:]))
+            i = 0
+            if gap:
+                for cut in v:
+                    if cut+1-gap > 14:
+                        w = read[0][:-1]+'__'+int2str(i)
+                        r1a = read[1][0:cut+1-gap]
+                        r2a = read[2][0:cut+1-gap]
+                        r1b = read[1][cut+1:]
+                        r2b = read[2][cut+1:]
+                        data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
+                        data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
+                        i = i + 1
+
+                    if len(read[1])-(cut+1+gap) > 14:
+                        w = read[0][:-1]+'__'+int2str(i)
+                        r1b = read[1][cut+1+gap:]
+                        r2b = read[2][cut+1+gap:]
+                        r1a = read[1][0:cut+1]
+                        r2a = read[2][0:cut+1]
+                        data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
+                        data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
+                        i = i + 1
             else:
-                i = 0
                 for cut in v:
                     w = read[0][:-1]+'__'+int2str(i)
                     data1.add_line("%sa\n%s\n+\n%s\n" % (w,read[1][0:cut+1],read[2][0:cut+1]))
@@ -209,7 +225,7 @@ if __name__ == '__main__':
     usage="%prog [options]"
     description="""Given a list of short read names and cut position, it will extracts them from
 an input FASTQ file and split each read into two (paired) reads in two separate FASTQ files."""
-    version="%prog 0.15 beta"
+    version="%prog 0.16 beta"
 
     parser=optparse.OptionParser(usage=usage,description=description,version=version)
 
@@ -244,6 +260,12 @@ an input FASTQ file and split each read into two (paired) reads in two separate 
                       dest = "wiggle",
                       help="""The size of the wiggle for the cut. If it is 0 then a read is cut into one paired-reads. If it is 1 then a read is cut into 3 paired-reads. Default is %default.""")
 
+    parser.add_option("--gap-size",
+                      action = "store",
+                      type = "int",
+                      default = 0,
+                      dest = "gap",
+                      help="""The size of the gap for the cut. Default is %default.""")
 
 
     parser.add_option("--buffer-size",
@@ -279,6 +301,7 @@ an input FASTQ file and split each read into two (paired) reads in two separate 
                 options.output_filename_1,
                 options.output_filename_2,
                 options.wiggle,
+                options.gap,
                 options.bucket)
 
 #

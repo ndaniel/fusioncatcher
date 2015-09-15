@@ -170,10 +170,17 @@ if __name__ == '__main__':
 
     (first_dir,first_file) = os.path.split(new_list_files[0])
     info = first_file.split('.dna.chromosome.')[0].split('.')
+    gv = ""
+    if info:
+        ni = len(info)
+        if ni == 2:
+            gv = info[1]
+        elif ni > 2:
+            gv = '.'.join(info[1:])
     txt = [
     "Ensembl database version: "+ftp_path.split('/')[2].replace('release-','')+"\n",
     "Organism: "+info[0].replace('_',' ')+"\n",
-    "Genome version: "+info[-1]+"\n"
+    "Genome version: "+gv+"\n"
     ]
     file(os.path.join(options.output_directory,'version.txt'),'w').writelines(txt)
     # file: version_ensembl.txt

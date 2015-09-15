@@ -492,7 +492,8 @@ synonym = {
 'AC096579.7':'AC096579.13',
 'AK125726':'KIAA1257',
 'AC138031.1':'RPL23AP45',
-'AL672183.2':'RPL23AP25'
+'AL672183.2':'RPL23AP25',
+'AC090627.1':'THRA1/BTR'
 }
 
 # see here for more: http://www.genenames.org/genefamilies/TR#TRG

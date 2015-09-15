@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
         list_files = ftp.nlst()
 
-        list_files = [el for el in list_files if el.lower().startswith(options.organism.lower()) and el.lower().endswith('.gtf.gz') ]
+        list_files = [el for el in list_files if el.lower().startswith(options.organism.lower()) and el.lower().endswith('.gtf.gz') and el.lower().find('abinitio') == -1]
         if len(list_files)!=1:
             print "Too many files or too few were found!"
             print list_files
