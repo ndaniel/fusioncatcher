@@ -550,7 +550,6 @@ This is an example of finding fusion genes in the BT474 cell line using the publ
    -d /apps/fusioncatcher/data/current/ \
    -i ~/bt474/ \
    -o ~/bt474_fusions/
-   
    ```
    
   * if the run was successful then there should be the (non-empty) files (for more information see [here](Manual#6.2_-_Output_data.md)):
