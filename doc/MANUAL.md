@@ -542,14 +542,14 @@ This is an example of finding fusion genes in the BT474 cell line using the publ
    cd ~/bt474
    wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
    wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064439/SRR064439.sra
-   
    ```
-  * run *FusionCatcher* (it takes around ~2.5 hours)
+  * run *FusionCatcher* (it takes around ~2.5 hours):
    ```
    /apps/fusioncatcher/bin/fusioncatcher \
    -d /apps/fusioncatcher/data/current/ \
    -i ~/bt474/ \
    -o ~/bt474_fusions/
+   
    ```
   * if the run was successful then there should be the (non-empty) files (for more information see [here](Manual#6.2_-_Output_data.md)):
    ```
