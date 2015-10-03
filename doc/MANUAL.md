@@ -568,7 +568,7 @@ This is an example of finding fusion genes in the BT474 cell line using the publ
   ~/bt474_fusions/final-list_candidate_fusion_genes.txt
   ```
   
-  should look like [this](fusionsBT474.md) and almost all of them have been published here:
+  should contain almost all fusion genes which have been published here:
    * S. Kangaspeska, S. Hultsch, H. Edgren, D. Nicorici, A. Murumägi, O.P. Kallioniemi, Reanalysis of RNA-sequencing data reveals several additional fusion genes with multiple isoforms, PLOS One, Oct. 2012. http://dx.plos.org/10.1371/journal.pone.0048745
    * H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011. http://genomebiology.com/2011/12/1/R6
 
