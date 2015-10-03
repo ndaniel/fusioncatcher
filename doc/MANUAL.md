@@ -119,7 +119,7 @@ These are used (downloaded and parsed) automatically by *FusionCatcher*:
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
 
-## 4.1 - Automatic installation
+## 4.1 - Automatic installation {#automaticc-installation}
 
 This is an example of automatic installation of *FusionCatcher* (and it is installed here "~/fusioncatcher" if these are run in your home directory) and the required databases and indexes (which are downloaded instead of being built locally):
 ```
@@ -169,7 +169,7 @@ bootstrap.py --help
 Please, do not forget to build/download the organism data after this is done running (please notice the last lines displayed by `bootstrap.py` after it finished running and execute the commands suggested there, e.g. use `download.sh`)!
 
 
-## 4.2 - Manual installation
+## 4.2 - Manual installation {#manual-installation}
 
 This is an example (or one of the many ways) for installing *FusionCatcher* on a **Ubuntu Linux 12.04/14.04 64-bit system** and the *FusionCatcher* and its dependencies are installed in `/apps`.
 
