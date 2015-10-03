@@ -543,6 +543,7 @@ This is an example of finding fusion genes in the BT474 cell line using the publ
    wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
    wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064439/SRR064439.sra
    ```
+   
   * run *FusionCatcher* (it takes around ~2.5 hours):
    ```
    /apps/fusioncatcher/bin/fusioncatcher \
@@ -551,6 +552,7 @@ This is an example of finding fusion genes in the BT474 cell line using the publ
    -o ~/bt474_fusions/
    
    ```
+   
   * if the run was successful then there should be the (non-empty) files (for more information see [here](Manual#6.2_-_Output_data.md)):
    ```
    ~/bt474_fusions/final-list_candidate_fusion_genes.txt
@@ -558,13 +560,15 @@ This is an example of finding fusion genes in the BT474 cell line using the publ
    ~/bt474_fusions/supporting-reads_gene-fusions_BOWTIE.zip
    ~/bt474_fusions/supporting-reads_gene-fusions_BLAT.zip
    ~/bt474_fusions/supporting-reads_gene-fusions_STAR.zip
-  ~/bt474_fusions/info.txt
-  ~/bt474_fusions/fusioncatcher.log
+   ~/bt474_fusions/info.txt
+   ~/bt474_fusions/fusioncatcher.log
   ```
+  
   and the file
   ```
   ~/bt474_fusions/final-list_candidate_fusion_genes.txt
   ```
+  
   should look like [this](fusionsBT474.md) and almost all of them have been published here:
    * S. Kangaspeska, S. Hultsch, H. Edgren, D. Nicorici, A. Murumägi, O.P. Kallioniemi, Reanalysis of RNA-sequencing data reveals several additional fusion genes with multiple isoforms, PLOS One, Oct. 2012. http://dx.plos.org/10.1371/journal.pone.0048745
    * H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011. http://genomebiology.com/2011/12/1/R6
