@@ -536,13 +536,13 @@ This dataset contains a very small set of short reads covering 12 already known 
 ## 4.5 - Breast cancer cell line
 
 This is an example of finding fusion genes in the BT474 cell line using the public available RNA-seq data (from SRA archive):
-  * download the publicly available RNA-seq data for BT-474 tumor breast cell line published in article **H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011.** http://genomebiology.com/2011/12/1/R6/
-  ```
-  mkdir -p ~/bt474
-  cd ~/bt474
-  wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
-  wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064439/SRR064439.sra
-  ```
+  * download the publicly available RNA-seq data for BT-474 tumor breast cell line published in article **H. Edgren, A. Murumagi, S. Kangaspeska, D. Nicorici, V. Hongisto, K. Kleivi, I.H. Rye, S. Nyberg, M. Wolf, A.L. Borresen-Dale, O.P. Kallioniemi, Identification of fusion genes in breast cancer by paired-end RNA-sequencing, Genome Biology, Vol. 12, Jan. 2011** http://genomebiology.com/2011/12/1/R6/
+   ```
+   mkdir -p ~/bt474
+   cd ~/bt474
+   wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064438/SRR064438.sra
+   wget http://ftp-private.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/SRR/SRR064/SRR064439/SRR064439.sra
+   ```
   * run *FusionCatcher* (it takes around ~2.5 hours)
   ```
   /apps/fusioncatcher/bin/fusioncatcher \
