@@ -10,8 +10,9 @@ Download / Install / Update / Upgrade [FusionCatcher](http://github.com/ndaniel/
 
 Use this one-line command:
 
-    wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download
-
+```
+wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download
+```
 
 Description
 -----------
