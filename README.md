@@ -10,7 +10,7 @@ Download / Install / Update / Upgrade [FusionCatcher](http://github.com/ndaniel/
 
 Use this one-line command:
 
-```
+```bash
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download
 ```
 
