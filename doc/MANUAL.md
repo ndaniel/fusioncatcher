@@ -113,8 +113,9 @@ These are used (downloaded and parsed) automatically by *FusionCatcher*:
   * J.H. Luo, S. Liu, Z.H. Zuo, R. Chen, G.C. Tseng, Y.P. Yu, **Discovery and Classification of Fusion Transcripts in Prostate Cancer and Normal Prostate Tissue**, The American Journal of Pathology, May 2015, http://dx.doi.org/10.1016/j.ajpath.2015.03.008
   * T. Meissner, K.M. Fisch, L. Gioia, **OncoRep: an n-of-1 reporting tool to support genome-guided treatment for breast cancer patients using RNA-sequencing**, BMC Medical Genomics, May 2015, http://dx.doi.org/10.1186/s12920-015-0095-z
   * S. Torkildsen, L. Gorunova, K. Beiske, G.E. Tjonnfjord, S. Heim, I. Panagopoulos, **Novel ZEB2-BCL11B Fusion Gene Identified by RNA-Sequencing in Acute Myeloid Leukemia with t(2;14)(q22;q32)**, PLOS One, July 2015, http://dx.doi.org/10.1371/journal.pone.0132736
-  * M. Cieslik, R. Chugh, Y.M. Wu, M. Wu, C. Brennan, R. Lonigro, F. Su, R. Wang, J. Siddiqui, R. Mehra, X. Cao, D. Lucas, A.M. Chinnaiyan. D. Robinson, **The use of exome capture RNA-seq for highly degraded RNA with application to clinical cancer sequencing**, Genome Research, August 2015, http://dx.doi.org/10.1101/gr.189621.115
-
+  * M. Cieslik, R. Chugh, Y.M. Wu, M. Wu, C. Brennan, R. Lonigro, F. Su, R. Wang, J. Siddiqui, R. Mehra, X. Cao, D. Lucas, A.M. Chinnaiyan, D. Robinson, **The use of exome capture RNA-seq for highly degraded RNA with application to clinical cancer sequencing**, Genome Research, August 2015, http://dx.doi.org/10.1101/gr.189621.115
+  * E.P. Simon, C.A. Freije, B.A. Farber, G. Lalazar, D.G. Darcy, J.N. Honeyman, R. Chiaroni-Clarke, B.D. Dill, H. Molina, Umesh K. Bhanot, Michael P. La Quaglia, B.R. Rosenberg, S.M. Simon, **Transcriptomic characterization of fibrolamellar hepatocellular carcinoma**, PNAS, October 2015, http://dx.doi.org/10.1073/pnas.1424894112 
+  * 
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
