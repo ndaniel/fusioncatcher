@@ -115,7 +115,7 @@ These are used (downloaded and parsed) automatically by *FusionCatcher*:
   * S. Torkildsen, L. Gorunova, K. Beiske, G.E. Tjonnfjord, S. Heim, I. Panagopoulos, **Novel ZEB2-BCL11B Fusion Gene Identified by RNA-Sequencing in Acute Myeloid Leukemia with t(2;14)(q22;q32)**, PLOS One, July 2015, http://dx.doi.org/10.1371/journal.pone.0132736
   * M. Cieslik, R. Chugh, Y.M. Wu, M. Wu, C. Brennan, R. Lonigro, F. Su, R. Wang, J. Siddiqui, R. Mehra, X. Cao, D. Lucas, A.M. Chinnaiyan, D. Robinson, **The use of exome capture RNA-seq for highly degraded RNA with application to clinical cancer sequencing**, Genome Research, August 2015, http://dx.doi.org/10.1101/gr.189621.115
   * E.P. Simon, C.A. Freije, B.A. Farber, G. Lalazar, D.G. Darcy, J.N. Honeyman, R. Chiaroni-Clark, B.D. Dill, H. Molina, U.K. Bhanot, M.P. La Quaglia, B.R. Rosenberg, S.M. Simon, **Transcriptomic characterization of fibrolamellar hepatocellular carcinoma**, PNAS, October 2015, http://dx.doi.org/10.1073/pnas.1424894112 
-
+  * Y. Marincevic-Zuniga, V. Zachariadis, L. Cavelier, A. Castor, G. Barbany, E. Forestier, L. Fogelstrand, M. Heyman, J. Abrahamsson, G. Lonnerholm, A. Nordgren, A.C. Syvanen, J. Nordlund, **PAX5-ESRRB is a recurrent fusion gene in B-cell precursor pediatric acute lymphoblastic leukemia**, Haematologica, October 2015, http://dx.doi.org/10.3324/haematol.2015.132332
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
