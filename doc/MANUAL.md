@@ -909,7 +909,7 @@ The output files are:
   * `supporting-reads_gene-fusions_STAR.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and STAR aligners;
   * `supporting-reads_gene-fusions_BOWTIE2.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and Bowtie2 aligners;
   * `supporting-reads_gene-fusions_BWA.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and BWA aligners;`
-  * `viruses_bacteria_phages.txt` - (non-zero) reads counts for each virus/bacteria/phage found
+  * `viruses_bacteria_phages.txt` - (non-zero) reads counts for each virus/bacteria/phage from NCBI database  ftp://ftp.ncbi.nlm.nih.gov/genomes/Viruses/ 
   * `info.txt` - information regarding genome version, Ensembl database version, versions of tools used, read counts, etc.;
   * `fusioncatcher.log` -  log of the entire run (e.g. all commands/programs which have been run, command line arguments used, running time for each command, etc.).
 
