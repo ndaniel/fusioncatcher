@@ -49,11 +49,16 @@ import symbols
 def remove(outdir,
            gene_id = '*',
            transcript_id = '*',
-           exon_id = '*'):
+           exon_id = '*',
+           log=None):
 
     # Note:
     # - this initially was made only for transcript_id and therefore transcript_id has the highest priority here
     # - when exon_id is used then also transcript_id needs to be specified
+
+    if log:
+        log = file(log,'a')
+        log.write("%s\t%s\t%s\n" % (gene_id,transcript_id,exon_id))
 
     headex = dict([(line.rstrip('\r\n'),i) for i,line in enumerate(file(os.path.join(outdir,'exons_header.txt'),'r').readlines()) if line.rstrip('\r\n')])
     exons = [line.rstrip('\r\n').split('\t') for line in file(os.path.join(outdir,'exons.txt'),'r').readlines() if line.rstrip('\r\n')]
@@ -86,6 +91,7 @@ def remove(outdir,
             print " - Found gene %s in 'exons' database!" % (gene_id,)
             file(os.path.join(outdir,'exons.txt'),'w').writelines(['\t'.join(line)+'\n' for line in exons])
 
+
         n = len(genes)
         genes = [line for line in genes if line[gidg] != gene_id]
         m = len(genes)
@@ -94,6 +100,7 @@ def remove(outdir,
         else:
             print " - Found gene %s in 'genes' database!" % (gene_id,)
             file(os.path.join(outdir,'genes.txt'),'w').writelines(['\t'.join(line)+'\n' for line in genes])
+
 
         # remove it from the GTF file also
         gtf = [line for line in file(os.path.join(outdir,'organism.gtf'),'r').readlines()]
@@ -171,7 +178,8 @@ def remove(outdir,
         else:
             print >>sys.stderr, "WARNING: %s transcript not found!" % (transcript_id,)
 
-
+    if log:
+        log.close()
 
 
 if __name__ == '__main__':
@@ -217,6 +225,8 @@ if __name__ == '__main__':
     #
     #
 
+    log_file = os.path.join(options.output_directory,'removed_features.txt')
+    
     print "Remove genes/transcripts/exons which are wrongly annotated in Ensembl database..."
 
     if options.transcripts:
@@ -225,17 +235,13 @@ if __name__ == '__main__':
             remove(options.output_directory,g)
 
     if options.organism.lower() == 'homo_sapiens':
-        remove(options.output_directory,transcript_id="ENST00000467125") # ENST00000467125 is listed as GOPC, but is actually the GOPC-ROS1
-        remove(options.output_directory,transcript_id="ENST00000507166") # ENST00000507166 is listed as FIP1L1 but is really the FIP1L1-PDGFRA
-        remove(options.output_directory,transcript_id="ENST00000621209") # ENST00000621209 is listed as CEL but is really the CEL-CELP
-        remove(options.output_directory,transcript_id="ENST00000562663") # ENST00000562663 is listed as RGL3, but most likely is EPOR (it overlaps EPOR)
-        remove(options.output_directory,transcript_id="ENST00000563726") # ENST00000563726 is listed as RGL3, but most likely is EPOR (it overlaps EPOR)
-        #remove(options.output_directory,transcript_id="ENST00000356578") # ENST00000356578 is listed as INS-IGF2, but it overlaps IGF2
-        #remove(options.output_directory,transcript_id="ENST00000397270") # ENST00000397270 is listed as INS-IGF2, but it overlaps INS
-        #remove(options.output_directory,transcript_id="ENST00000476874") # ENST00000476874 is listed as INS-IGF2, but it overlaps INS
-        #remove(options.output_directory,transcript_id="ENST00000481781") # ENST00000481781 is listed as INS-IGF2, but it overlaps INS
-        remove(options.output_directory,gene_id="ENSG00000129965") # remove gene INS-IGF2
-
+        remove(options.output_directory,transcript_id="ENST00000467125",log=log_file) # ENST00000467125 is listed as GOPC, but is actually the GOPC-ROS1
+        remove(options.output_directory,transcript_id="ENST00000507166",log=log_file) # ENST00000507166 is listed as FIP1L1 but is really the FIP1L1-PDGFRA
+        remove(options.output_directory,transcript_id="ENST00000621209",log=log_file) # ENST00000621209 is listed as CEL but is really the CEL-CELP
+        remove(options.output_directory,transcript_id="ENST00000562663",log=log_file) # ENST00000562663 is listed as RGL3, but most likely is EPOR (it overlaps EPOR)
+        remove(options.output_directory,transcript_id="ENST00000563726",log=log_file) # ENST00000563726 is listed as RGL3, but most likely is EPOR (it overlaps EPOR)
+        remove(options.output_directory,gene_id="ENSG00000129965",log=log_file) # remove gene INS-IGF2
+        remove(options.output_directory,transcript_id="ENST00000628281",log=log_file) # ENST00000563726 is listed as PIGU, but most likely is PIGU-NCOA6 (it overlaps NCOA6)
 
         
         

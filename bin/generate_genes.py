@@ -157,7 +157,7 @@ if __name__ == '__main__':
     for record in Bio.SeqIO.parse(open(options.input_genome_fasta, "rU"), "fasta") :
         reid = record.id
         lerese = len(record.seq)
-        print 'chromosome %s has length %d' % (reid, lerese)
+        print '  * chromosome %s has length %d' % (reid, lerese)
         chrome.append("%s\t%s\n" % (reid,str(lerese)))
         if record.id in dc:
             s = record.seq
@@ -171,5 +171,5 @@ if __name__ == '__main__':
             genes = []
     output_handle.close()
 
-    file(os.path.join(options.output_directory,'chromosomes_information.txt'),'w').writelines(chrome)
+    #file(os.path.join(options.output_directory,'chromosomes_information.txt'),'w').writelines(chrome)
     #

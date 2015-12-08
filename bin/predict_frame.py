@@ -59,7 +59,7 @@ amino_acids = 'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'
 codon_table = dict(zip(codons, amino_acids))
 
 def dna2prot(seq):
-    seq = seq.strip().upper()
+    seq = seq.strip().upper().replace('N','A')
     prot = ''
 
     for i in xrange(0,len(seq),3):

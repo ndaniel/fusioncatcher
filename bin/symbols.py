@@ -183,6 +183,7 @@ synonym = {
 'BX648577':'FLJ27352',
 'NSD3':'WHSC1L1',
 'NPM':'NPM1',
+'TK14':'FGFR2_',
 'ASPL':'ASPSCR1',
 'AFX':'FOXO4',
 'EIAF':'ETV4',
@@ -493,7 +494,9 @@ synonym = {
 'AK125726':'KIAA1257',
 'AC138031.1':'RPL23AP45',
 'AL672183.2':'RPL23AP25',
-'AC090627.1':'THRA1/BTR'
+'AC090627.1':'THRA1/BTR',
+'STBD1':'FAM47E-STBD1',
+'KIAA0660':'G3BP2'
 }
 
 # see here for more: http://www.genenames.org/genefamilies/TR#TRG

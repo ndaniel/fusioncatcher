@@ -483,7 +483,7 @@ Email: Daniel.Nicorici@gmail.com
                       action = "store",
                       type = "int",
                       dest = "wiggle_end",
-                      default = 20,
+                      default = 16,
                       help = """The last fragment will not be generated if it overlaps with the previous generated fragment and the non-overlapping segment is strictly shorter than this threshold. This applies only for paired-end reads. Default is '%default'.""")
 
     parser.add_option("-n","--trim-n",

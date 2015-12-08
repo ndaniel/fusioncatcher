@@ -47,13 +47,36 @@ import optparse
 import gc
 import shutil
 import gzip
+import string
 #import tempfile
 
 
+ttable = string.maketrans("ACGTYRSWKMBDHV-.","TGCARYSWMKVHDB-.") # global
+#
+#
+#
+def reversecomplement(seq):
+    #seq = seq.upper()
+    #seq = seq.rstrip('\r\n').translate(ttable)
+    return seq.rstrip('\r\n').translate(ttable)[::-1]
+
+#
+#
+#
+def reverse(seq):
+    #seq = seq.upper()
+    return seq.rstrip('\r\n')[::-1]
+
+#
+#
+#
 def int2str(x,n=2):
     x = str(x)
     return '0' * int(n - len(x)) + x
 
+#
+#
+#
 def reads_from_fastq_file(f_name,size_read_buffer=10**8):
     fid = None
     if f_name == '-':
@@ -127,7 +150,7 @@ class lines_to_file:
         self.close()
 
 ##################
-def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, gap = 0, size_buffer = 2*(10**9)):
+def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, gap = 0, anchor = 15, replace_solexa_ids = "", rc = False, size_buffer = 2*(10**9)):
 
     data1 = lines_to_file(f_out_1)
     data2 = lines_to_file(f_out_2)
@@ -146,10 +169,10 @@ def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, gap = 0, size_buffer
             try:
                 lines = fid.readlines(sb)
             except MemoryError:
-                print "Warning: Not enough free memory (it needed %d)!!! Trying again with a 50% smaller buffer..." % (sb,)
+                print >>sys.stderr,"Warning: Not enough free memory (it needed %d)!!! Trying again with a 50% smaller buffer..." % (sb,)
                 sb = int(sb / 2)
                 if sb < 10000000:
-                    print "Error: Not enough free memory (it needed %d)!!! Giving up..." % (sb,)
+                    print >>sys.stderr,"Error: Not enough free memory (it needed %d)!!! Giving up..." % (sb,)
                     os.system("free -m")
                     sys.exit(1)
                 err = True
@@ -178,6 +201,8 @@ def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, gap = 0, size_buffer
                 r[k].add(w+wig)
         reads = r
         gc.enable()
+        am1 = anchor - 1
+        am2 = anchor - 2
 
         for read in reads_from_fastq_file(f_in):
             v = reads.get(read[0][1:].rstrip('\r\n'),None)
@@ -185,33 +210,70 @@ def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, gap = 0, size_buffer
                 continue
             v = list(v)
             i = 0
-            if gap:
-                for cut in v:
-                    if cut+1-gap > 14:
-                        w = read[0][:-1]+'__'+int2str(i)
-                        r1a = read[1][0:cut+1-gap]
-                        r2a = read[2][0:cut+1-gap]
-                        r1b = read[1][cut+1:]
-                        r2b = read[2][cut+1:]
-                        data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
-                        data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
-                        i = i + 1
+            unique = set()
+            if gap != 0:
+                for agap in xrange(1,gap+1):
+                    for cut in v:
 
-                    if len(read[1])-(cut+1+gap) > 14:
-                        w = read[0][:-1]+'__'+int2str(i)
-                        r1b = read[1][cut+1+gap:]
-                        r2b = read[2][cut+1+gap:]
-                        r1a = read[1][0:cut+1]
-                        r2a = read[2][0:cut+1]
-                        data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
-                        data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
-                        i = i + 1
+                        if cut+1-agap > anchor - 1:
+                            k1 = cut+1-agap
+                            k2 = cut+1
+                            if (k1,k2) not in unique:
+                                if replace_solexa_ids:
+                                    w = read[0][:-1].replace("/",replace_solexa_ids,1)+'__'+int2str(i)
+                                else:
+                                    w = read[0][:-1]+'__'+int2str(i)
+                                r1a = read[1][0:cut+1-agap]
+                                r2a = read[2][0:cut+1-agap]
+                                r1b = read[1][cut+1:]
+                                r2b = read[2][cut+1:]
+
+                                if len(r1a) > am1 and len(r1b) > am2:
+                                    data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
+                                    if rc:
+                                        data2.add_line("%sb\n%s\n+\n%s\n" % (w,reversecomplement(r1b),reverse(r2b)))
+                                    else:
+                                        data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
+                                    i = i + 1
+                                    unique.add((k1,k2))
+
+                        if len(read[1])-(cut+1+agap) > anchor - 1:
+                            k1 = cut+1
+                            k2 = cut+1+agap
+                            if (k1,k2) not in unique:
+                                if replace_solexa_ids:
+                                    w = read[0][:-1].replace("/",replace_solexa_ids,1)+'__'+int2str(i)
+                                else:
+                                    w = read[0][:-1]+'__'+int2str(i)
+                                r1a = read[1][0:cut+1]
+                                r2a = read[2][0:cut+1]
+                                r1b = read[1][cut+1+agap:]
+                                r2b = read[2][cut+1+agap:]
+                                if len(r1a) > am1 and len(r1b) > am2:
+                                    data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
+                                    if rc:
+                                        data2.add_line("%sb\n%s\n+\n%s\n" % (w,reversecomplement(r1b),reverse(r2b)))
+                                    else:
+                                        data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
+                                    i = i + 1
+                                    unique.add((k1,k2))
             else:
                 for cut in v:
-                    w = read[0][:-1]+'__'+int2str(i)
-                    data1.add_line("%sa\n%s\n+\n%s\n" % (w,read[1][0:cut+1],read[2][0:cut+1]))
-                    data2.add_line("%sb\n%s+\n%s" % (w,read[1][cut+1:],read[2][cut+1:]))
-                    i = i + 1
+                    if replace_solexa_ids:
+                        w = read[0][:-1].replace("/",replace_solexa_ids,1)+'__'+int2str(i)
+                    else:
+                        w = read[0][:-1]+'__'+int2str(i)
+                    r1a = read[1][0:cut+1]
+                    r2a = read[2][0:cut+1]
+                    r1b = read[1][cut+1:]
+                    r2b = read[2][cut+1:]
+                    if len(r1a) > am1 and len(r1b) > am2:
+                        data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
+                        if rc:
+                            data2.add_line("%sb\n%s\n+\n%s\n" % (w,reversecomplement(r1b),reverse(r2b)))
+                        else:
+                            data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
+                        i = i + 1
     data1.close()
     data2.close()
     fid.close()
@@ -225,7 +287,7 @@ if __name__ == '__main__':
     usage="%prog [options]"
     description="""Given a list of short read names and cut position, it will extracts them from
 an input FASTQ file and split each read into two (paired) reads in two separate FASTQ files."""
-    version="%prog 0.16 beta"
+    version="%prog 0.19 beta"
 
     parser=optparse.OptionParser(usage=usage,description=description,version=version)
 
@@ -253,6 +315,7 @@ an input FASTQ file and split each read into two (paired) reads in two separate 
                       dest="output_filename_2",
                       help="""The output FASTQ file where is the second part of the reads (on forward strand).""")
 
+
     parser.add_option("--wiggle-size",
                       action = "store",
                       type = "int",
@@ -267,6 +330,20 @@ an input FASTQ file and split each read into two (paired) reads in two separate 
                       dest = "gap",
                       help="""The size of the gap for the cut. Default is %default.""")
 
+    parser.add_option("--anchor-size",
+                      action = "store",
+                      type = "int",
+                      default = 15,
+                      dest = "anchor",
+                      help="""The minimum size of the anchor (for a mapped read which is splited). Default is %default.""")
+
+
+    parser.add_option("--replace-solexa-ids",
+                      action = "store",
+                      type = "string",
+                      dest = "replace_solexa_ids",
+                      help = """In the reads ids the '/' from '/1' and '/2' will be replaced with the string given here.""")
+
 
     parser.add_option("--buffer-size",
                       action = "store",
@@ -275,6 +352,11 @@ an input FASTQ file and split each read into two (paired) reads in two separate 
                       dest = "bucket",
                       help="""The size of the buffer used for keeping the list of reads ids (given by --list). Default is %default.""")
 
+    parser.add_option("--output-2-rc",
+                      action = "store_true",
+                      default = False,
+                      dest = "reverse_complement",
+                      help="""The Fastq file specified by '--output-2' will be reverse-complemented. Default is %default.""")
 
 #    parser.add_option("--tmp_dir",
 #                  action="store",
@@ -302,6 +384,9 @@ an input FASTQ file and split each read into two (paired) reads in two separate 
                 options.output_filename_2,
                 options.wiggle,
                 options.gap,
+                options.anchor,
+                options.replace_solexa_ids if options.replace_solexa_ids else "",
+                options.reverse_complement,
                 options.bucket)
 
 #

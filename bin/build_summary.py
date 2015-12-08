@@ -65,6 +65,11 @@ if __name__ == '__main__':
                       dest = "input_filename",
                       help = """The input report containg detailed information about fusion genes found.""")
 
+    parser.add_option("--viruses","-u",
+                      action = "store",
+                      type = "string",
+                      dest = "input_viruses_filename",
+                      help = """The input report containg detailed information about viruses/bacteria/found found.""")
 
     parser.add_option("--output","-o",
                       action = "store",
@@ -85,8 +90,21 @@ if __name__ == '__main__':
         parser.error("One of the arguments has not been specified.")
         sys.exit(1)
 
+
+    top_virus = ''
+    if options.input_viruses_filename:
+        viruses = [line.rstrip("\r\n").strip().split(" ") for line in file(options.input_viruses_filename,'r') if line.rstrip("\r\n")]
+        viruses.pop(0)
+        if viruses:
+            top_virus = [v[1] for v in viruses if v[1].find('virus') != -1 ]
+            if top_virus:
+                top_virus = top_virus[0].split("|_")[1]
+                top_virus = top_virus.replace(",_complete_genome","").replace("_complete_genome","").replace("_complete_wild_type_genome","").replace("_"," ")
+
     data = [line.upper().rstrip("\r\n").split("\t") for line in file(options.input_filename,'r').readlines() if line.rstrip("\r\n")]
     header = data.pop(0)
+
+
 
     if data:
         fusions_genes = set()
@@ -113,7 +131,7 @@ if __name__ == '__main__':
         for r in data:
             f1 = "%s--%s" % (r[1],r[0])
             f2 = "%s--%s" % (r[0],r[1])
-            if r[2].lower().find('known_fusion') != -1 or r[2].lower().find('tcga') != -1 or r[2].lower().find('cell_lines') != -1 or r[2].lower().find('prostates') != -1:
+            if r[2].lower().find('known_fusion') != -1 or r[2].lower().find('tcga') != -1 or r[2].lower().find('cosmic') != -1 or r[2].lower().find('cell_lines') != -1 or r[2].lower().find('prostates') != -1:
                 known.add(f1)
                 known.add(f2)
 
@@ -122,7 +140,7 @@ if __name__ == '__main__':
         for r in data:
             f1 = "%s--%s" % (r[1],r[0])
             f2 = "%s--%s" % (r[0],r[1])
-            if r[2].lower().find('healthy') != -1 or r[2].lower().find('banned') != -1 or r[2].lower().find('overlap') != -1 :
+            if r[2].lower().find('healthy') != -1 or r[2].lower().find('gtex') != -1 or r[2].lower().find('conjoing') != -1 or r[2].lower().find('hpa') != -1 or r[2].lower().find('banned') != -1 or r[2].lower().find('overlap') != -1 :
                 questionable.add(f1)
                 questionable.add(f2)
 
@@ -152,6 +170,8 @@ if __name__ == '__main__':
         results = []
         results.append("Very short summary of found candidate fusion genes\n")
         results.append("==================================================\n\n")
+        if top_virus:
+            results.append("The input sample contains sequencing reads mapping on '%s'.\n\n" % (top_virus,))
         results.append("Found %d fusion gene(s), which are as follows:\n" % (len(fusions_genes),))
         for line in found:
             label = []
@@ -170,7 +190,7 @@ if __name__ == '__main__':
             results.append("  * %s%s\n" % (line,label))
         results.append("\nFound %d fusion transcript(s).\n\n" % (len(fusions_transcripts),))
 
-        results.append("For more information regarding these candidate fusions, see text file 'final-list_candidate-fusion-genes.txt'.\n")
+        results.append("For more detailed information regarding these candidate fusions, see text file 'final-list_candidate-fusion-genes.txt'.\n")
 
         file(options.output_filename,"w").writelines(results)
     else:

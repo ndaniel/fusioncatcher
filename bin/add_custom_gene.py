@@ -64,6 +64,12 @@ def add(outdir,
         end_ex = ''
         ):
 
+    chrom_lens = dict([line.rstrip("\r\n").split("\t") for line in file(os.path.join(outdir,"chromosomes_lengths.txt"),"r") if line.rstrip('\r\n')])
+    crlen = int(chrom_lens.get(chrom,'0'))
+    if crlen < int(end) or crlen < int(start):
+        print >>sys.stderr,"ERROR: The given coordinates of the gene are longer than the known length of the chromosome!"
+        sys.exit(1)
+
     # get genes data
     g = [line.rstrip("\r\n").split("\t") for line in file(os.path.join(outdir,"genes.txt"),"r").readlines() if line.rstrip("\r\n")]
     gid = [(el[0], el[1], el[2], el[3], el[4]) for el in g if el[0] == gene_id]
@@ -145,7 +151,7 @@ def add(outdir,
             print "  * Gene %s (%s), transcript %s, exon %s are already in the database and they will NOT be added again!" % (gene_id,gene_symbol,transcript_id,exon_id)
         elif et: 
             print "  * New exon %s added for already present gene %s (%s) and transcript %s." % (exon_id,gene_id,gene_symbol,transcript_id)
-            file(os.path.join(outdir,'custom_genes.bed'),'a').write('%s\t%s\t%s\t%s\t%s\t%s\n' %(chrom,start_ex,end_ex,'%s-%s-%s-%s-%s' % (gene_symbol,gene_id,transcript_id,exon_id,exon_number),'0','+' if strand == '1' else '-'))
+            file(os.path.join(outdir,'custom_genes.bed'),'a').write('chr%s\t%s\t%s\t%s\t%s\t%s\n' %(chrom,start_ex,end_ex,'%s-%s-%s-%s-%s' % (gene_symbol,gene_id,transcript_id,exon_id,exon_number),'0','+' if strand == '1' else '-'))
             file(os.path.join(outdir,'exons.txt'),'a').write(
                 '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' % (
                     protein_id,
@@ -190,8 +196,8 @@ def add(outdir,
                         chrom] )
                 e = e_rest + e_target
                 file(os.path.join(outdir,'exons.txt'),'w').writelines(['\t'.join(line)+'\n' for line in e])
-                file(os.path.join(outdir,'custom_genes.bed'),'a').write('%s\t%s\t%s\t%s\t%s\t%s\n' %(chrom,start,end,'%s-%s-%s-%s' % (gene_symbol,gene_id,transcript_id,exon_id),'0','+' if strand == '1' else '-'))
-                file(os.path.join(outdir,'custom_genes.bed'),'a').write('%s\t%s\t%s\t%s\t%s\t%s\n' %(chrom,start_ex,end_ex,'%s-%s-%s-%s-%s' % (gene_symbol,gene_id,transcript_id,exon_id,exon_number),'0','+' if strand == '1' else '-'))
+                file(os.path.join(outdir,'custom_genes.bed'),'a').write('chr%s\t%s\t%s\t%s\t%s\t%s\n' %(chrom,start,end,'%s-%s-%s-%s' % (gene_symbol,gene_id,transcript_id,exon_id),'0','+' if strand == '1' else '-'))
+                file(os.path.join(outdir,'custom_genes.bed'),'a').write('chr%s\t%s\t%s\t%s\t%s\t%s\n' %(chrom,start_ex,end_ex,'%s-%s-%s-%s-%s' % (gene_symbol,gene_id,transcript_id,exon_id,exon_number),'0','+' if strand == '1' else '-'))
             else:
                 print "  * Gene %s (%s) does NOT require changes in the entire database! New transcript %s and new exon %s added for this gene!" % (gene_id,gene_symbol,transcript_id,exon_id)
                 file(os.path.join(outdir,'exons.txt'),'a').write(
@@ -209,7 +215,7 @@ def add(outdir,
                         end_tr,
                         strand,
                         chrom))
-                file(os.path.join(outdir,'custom_genes.bed'),'a').write('%s\t%s\t%s\t%s\t%s\t%s\n' %(chrom,start_ex,end_ex,'%s-%s-%s-%s-%s' % (gene_symbol,gene_id,transcript_id,exon_id,exon_number),'0','+' if strand == '1' else '-'))
+                file(os.path.join(outdir,'custom_genes.bed'),'a').write('chr%s\t%s\t%s\t%s\t%s\t%s\n' %(chrom,start_ex,end_ex,'%s-%s-%s-%s-%s' % (gene_symbol,gene_id,transcript_id,exon_id,exon_number),'0','+' if strand == '1' else '-'))
     print ""
     list_genes.append(gene_id)
 
@@ -219,7 +225,7 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = """Add the custom human genes which are missing from the Ensembl database."""
-    version = "%prog 0.15 beta"
+    version = "%prog 0.16 beta"
 
     parser = optparse.OptionParser(usage=usage,description=description,version=version)
 
@@ -256,6 +262,7 @@ if __name__ == '__main__':
     file(os.path.join(options.output_directory,"custom_genes.txt"),"w").write('')
     file(os.path.join(options.output_directory,"custom_genes.bed"),"w").write('')
     file(os.path.join(options.output_directory,"custom_genes_mark.txt"),"w").write('')
+    file(os.path.join(options.output_directory,"custom_transcripts_mark.txt"),"w").write('')
     
     database_filename = os.path.join(options.output_directory,"exons.txt")
     database = file(database_filename,'r').readline().rstrip('\r\n').split('\t')
@@ -279,6 +286,7 @@ if __name__ == '__main__':
         head_e7 = head[:-1]+"E07"
         head_e9 = head[:-1]+"E09"
         file(os.path.join(options.output_directory,"custom_genes_mark.txt"),"w").write(head_g9)
+        file(os.path.join(options.output_directory,"custom_transcripts_mark.txt"),"w").write(head_t9+'\n'+head_t7)
     else:
         print "Error: unknown Ensembl Id!",head
         sys.exit(1)
@@ -1085,56 +1093,57 @@ if __name__ == '__main__':
                 # transcript 1 - exon 2/2 -- IGHM
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000001100',
-                    gene_symbol = 'IGH_locus_(q)', # stjude 
-                    gene_id = 'ENSG09000001100',
+                    gene_symbol = 'IGH_locus_(h)', # stjude 
+                    gene_id = 'ENSG09000001014',
                     transcript_id = 'ENST09000001100',
                     exon_id = 'ENSE09000001101',
                     exon_number = '1',
-                    start = '105855906', #
-                    end =   '105863198', #
+                    start = '105778001', #
+                    end =   '106000000', #
                     chrom = '14',
                     strand = '-1',
                     
-                    start_tr = '105855906',
-                    end_tr = '105863198',
-                    start_ex = '105863258', #
-                    end_ex =   '105863198' #
+                    start_tr   = '105855906',
+                    end_tr     = '105863400',
+                    start_ex = '105863198', #
+                    end_ex =   '105863400' #
                 )
 
                 # transcript 1 - exon 1/2-- IGHM
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000001100',
-                    gene_symbol = 'IGH_locus_(q)', # stjude 
-                    gene_id = 'ENSG09000001100',
+                    gene_symbol = 'IGH_locus_(h)', # stjude 
+                    gene_id = 'ENSG09000001014',
                     transcript_id = 'ENST09000001100',
                     exon_id = 'ENSE09000001100',
                     exon_number = '2',
-                    start = '105855906', #
-                    end =   '105863198', #
+                    start = '105778001', #
+                    end =   '106000000', #
                     chrom = '14',
                     strand = '-1',
 
                     start_tr = '105855906',
-                    end_tr = '105863198',
+                    end_tr   = '105863400',
                     start_ex = '105855906', #
                     end_ex =   '105856217' #
                 )
 
+
                 # transcript 1 - exon 1/2-- IGHM
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000001200',
-                    gene_symbol = 'IGH_locus_(p)', # stjude 
-                    gene_id = 'ENSG09000001200',
+                    gene_symbol = 'IGH_locus_(b)', # stjude 
+                    gene_id = 'ENSG09000000014',
                     transcript_id = 'ENST09000001200',
                     exon_id = 'ENSE09000001200',
                     exon_number = '1',
-                    start = '105855906', #
-                    end =   '105863198', #
+                    start = '105778001', #
+                    end =   '106000000', #
                     chrom = '14',
                     strand = '1',
 
                     start_tr = '105855906',
-                    end_tr = '105863198',
+                    end_tr =   '105863400',
                     start_ex = '105855906', #
                     end_ex =   '105856217' #
                 )
@@ -1142,22 +1151,100 @@ if __name__ == '__main__':
                 # transcript 1 - exon 2/2 -- IGHM
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000001200',
-                    gene_symbol = 'IGH_locus_(p)', # stjude 
-                    gene_id = 'ENSG09000001200',
+                    gene_symbol = 'IGH_locus_(b)', # stjude 
+                    gene_id = 'ENSG09000000014',
                     transcript_id = 'ENST09000001200',
                     exon_id = 'ENSE09000001201',
                     exon_number = '2',
-                    start = '105855906', #
-                    end =   '105863198', #
+                    start = '105778001', #
+                    end =   '106000000', #
                     chrom = '14',
                     strand = '1',
                     
                     start_tr = '105855906',
-                    end_tr = '105863198',
-                    start_ex = '105863258', #
-                    end_ex =   '105863198' #
+                    end_tr =   '105863400',
+                    start_ex = '105863198', #
+                    end_ex  = '105863400', #
+
                 )
 
+
+                # transcript 2 - exon 1/4-- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001202',
+                    gene_symbol = 'IGH_locus_(b)', # stjude 
+                    gene_id = 'ENSG09000000014',
+                    transcript_id = 'ENST09000001202',
+                    exon_id = 'ENSE09000001202',
+                    exon_number = '1',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '1',
+
+                    start_tr = '105855906',
+                    end_tr =   '105863400',
+                    start_ex = '105855906', #
+                    end_ex =   '105856217' #
+                )
+
+                # transcript 2 - exon 2/4 -- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001202',
+                    gene_symbol = 'IGH_locus_(b)', # stjude 
+                    gene_id = 'ENSG09000000014',
+                    transcript_id = 'ENST09000001202',
+                    exon_id = 'ENSE09000001203',
+                    exon_number = '2',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '1',
+                    
+                    start_tr = '105855906',
+                    end_tr =   '105863400',
+                    start_ex = '105863198', #
+                    end_ex  = '105863240', #
+                )
+
+
+                # transcript 2 - exon 3/4 -- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001202',
+                    gene_symbol = 'IGH_locus_(b)', # stjude 
+                    gene_id = 'ENSG09000000014',
+                    transcript_id = 'ENST09000001202',
+                    exon_id = 'ENSE09000001204',
+                    exon_number = '3',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '1',
+                    
+                    start_tr = '105855906',
+                    end_tr =   '105863400',
+                    start_ex = '105863212', # rs74454466 --> -/ACC
+                    end_ex  = '105863214', #
+                )
+
+                # transcript 2 - exon 4/4 -- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001202',
+                    gene_symbol = 'IGH_locus_(b)', # stjude 
+                    gene_id = 'ENSG09000000014',
+                    transcript_id = 'ENST09000001202',
+                    exon_id = 'ENSE09000001205',
+                    exon_number = '4',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '1',
+                    
+                    start_tr = '105855906',
+                    end_tr =   '105863400',
+                    start_ex = '105863244', #
+                    end_ex  = '105863400', #
+                )
 
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000001210',
@@ -1172,6 +1259,123 @@ if __name__ == '__main__':
                     strand = '-1'
                 )
 
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001250',
+                    gene_symbol = 'ALK', #
+                    gene_id = 'ENSG00000171094',
+                    transcript_id = 'ENST09000001250',
+                    exon_id = 'ENSE09000001250',
+                    exon_number = '1',
+                    start = '29192770',
+                    end =   '30000000', #
+                    chrom = '2',
+                    strand = '-1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001251',
+                    gene_symbol = 'NPM1', #
+                    gene_id = 'ENSG00000181163',
+                    transcript_id = 'ENST09000001251',
+                    exon_id = 'ENSE09000001251',
+                    exon_number = '1',
+                    start = '171380000',
+                    end =   '171415000', #
+                    chrom = '5',
+                    strand = '1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001252',
+                    gene_symbol = 'FGFR1', #
+                    gene_id = 'ENSG00000077782',
+                    transcript_id = 'ENST09000001252',
+                    exon_id = 'ENSE09000001252',
+                    exon_number = '1',
+                    start = '38411000',
+                    end =   '38495000', #
+                    chrom = '8',
+                    strand = '-1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001253',
+                    gene_symbol = 'FGFR2', #
+                    gene_id = 'ENSG00000066468',
+                    transcript_id = 'ENST09000001253',
+                    exon_id = 'ENSE09000001253',
+                    exon_number = '1',
+                    start = '121451000',
+                    end =   '121650000', #
+                    chrom = '10',
+                    strand = '-1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001254',
+                    gene_symbol = 'FGFR3', #
+                    gene_id = 'ENSG00000068078',
+                    transcript_id = 'ENST09000001254',
+                    exon_id = 'ENSE09000001254',
+                    exon_number = '1',
+                    start = '1790000',
+                    end =   '1810000', #
+                    chrom = '4',
+                    strand = '1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001255',
+                    gene_symbol = 'FGFR4', #
+                    gene_id = 'ENSG00000160867',
+                    transcript_id = 'ENST09000001255',
+                    exon_id = 'ENSE09000001255',
+                    exon_number = '1',
+                    start = '177085000',
+                    end =   '177100000', #
+                    chrom = '5',
+                    strand = '1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001256',
+                    gene_symbol = 'RET', #
+                    gene_id = 'ENSG00000165731',
+                    transcript_id = 'ENST09000001256',
+                    exon_id = 'ENSE09000001256',
+                    exon_number = '1',
+                    start = '43043000',
+                    end =   '43135000', #
+                    chrom = '10',
+                    strand = '1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001257',
+                    gene_symbol = 'MYC', #
+                    gene_id = 'ENSG00000136997',
+                    transcript_id = 'ENST09000001257',
+                    exon_id = 'ENSE09000001257',
+                    exon_number = '1',
+                    start = '127735000',
+                    end =   '127744000', #
+                    chrom = '8',
+                    strand = '1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001258',
+                    gene_symbol = 'EML4', #
+                    gene_id = 'ENSG00000143924',
+                    transcript_id = 'ENST09000001258',
+                    exon_id = 'ENSE09000001258',
+                    exon_number = '1',
+                    start = '42168000', # chr2:42169350-42332548
+                    end =   '42333460', # chr2:42168000-42333460
+                    chrom = '2',
+                    strand = '1'
+                )
 
 
             else:

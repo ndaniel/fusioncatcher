@@ -71,14 +71,14 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = """It enlarges the genes slightly in the Ensembl annotation database. The enlargement is done only where is possible, for example the genes which overlaps each other will be skipped from enlarging)."""
-    version = "%prog 0.11 beta"
+    version = "%prog 0.15 beta"
 
     parser = optparse.OptionParser(
         usage = usage,
         description = description,
         version = version)
 
-    parser.add_option("--enlargement-size","-s",
+    parser.add_option("--enlargement-size","-e",
                       action = "store",
                       type = "int",
                       dest = "size",
@@ -88,7 +88,7 @@ if __name__ == '__main__':
                              "will be added to the 5' end and a second one to "+
                              "the 3' end. Default is '%default'.")
 
-    parser.add_option("--genes","-e",
+    parser.add_option("--genes","-g",
                       action = "store",
                       type = "string",
                       dest = "genes",
@@ -100,13 +100,21 @@ if __name__ == '__main__':
                              "then no gene will be enlarged!")
 
 
-    parser.add_option("--gene-length","-l",
+    parser.add_option("--full-cover","-l",
                       action = "store",
                       type = "int",
                       dest = "gene_length",
                       default = 1000,
                       help = "Genes having their lengths strictly less than this will have the enlargment done as one continuous region. "+
                              "For the rest of genes two regions will be added at the 5'end and 3'end of the gene. Default is '%default'.")
+
+    parser.add_option("--gene-short","-s",
+                      action = "store",
+                      type = "int",
+                      dest = "gene_short",
+                      default = 200,
+                      help = "Genes having their lengths strictly less than this will be skipped from the enlargement. "+
+                             "Default is '%default'.")
 
 
     parser.add_option("--output","-o",
@@ -135,45 +143,58 @@ if __name__ == '__main__':
     size = options.size
     gene_length = options.gene_length
 
+    chrom_lens = dict([line.rstrip("\r\n").split("\t") for line in file(os.path.join(options.output_directory,"chromosomes_lengths.txt"),"r") if line.rstrip('\r\n')])
+
     database_filename = os.path.join(options.output_directory,"exons.txt")
 
-    col = [
-           'protein',
-           'gene',
-           'transcript',
-           'exon',
-           'exon_start',
-           'exon_end',
-           'exon_number',
-           'gene_start',
-           'gene_end',
-           'transcript_start',
-           'transcript_end',
-           'strand',
-           'chrom']
+#    col = [
+#           'protein',
+#           'gene',
+#           'transcript',
+#           'exon',
+#           'exon_start',
+#           'exon_end',
+#           'exon_number',
+#           'gene_start',
+#           'gene_end',
+#           'transcript_start',
+#           'transcript_end',
+#           'strand',
+#           'chrom']
+    col = [line.rstrip('\r\n') for line in file(os.path.join(options.output_directory,"exons_header.txt"),'r') if line.rstrip('\r\n')]
     col = dict([ (e,i) for i,e in enumerate(col)])
+    cr = col['chromosome_name']
+    start = col['start_position']
+    end = col['end_position']
+    gene = col['ensembl_gene_id']
+    transcript = col['ensembl_transcript_id']
+    strand = col['strand']
 
     database = [line.rstrip('\r\n').split('\t') for line in file(database_filename,'r').readlines() if line.rstrip("\r\n")]
+    database = [line for line in database if abs(int(line[start]) - int(line[end])) > options.gene_short]
 
     database = sorted(database, key = lambda x: (x[1],x[2],int(x[6])) )
 
-    cr = col['chrom']
-    start = col['gene_start']
-    end = col['gene_end']
-    gene = col['gene']
-    strand = col['strand']
     chrom = sorted(set([line[cr] for line in database]))
     strands = sorted(set([line[strand] for line in database]))
 
     target = set()
     if options.genes:
         target = set([line.rstrip("\r\n") for line in file(options.genes,"r") if line.rstrip("\r\n")])
-        print "Found %d genes to be enlarged!" % (len(target),)
+        print "Found %d genes in the database for enlargemend process!" % (len(target),)
 
+    print "Generating the custom gene mark..."
     # take the a gene id and see how it starts
+    custom_gene_head = file(os.path.join(options.output_directory,'custom_genes_mark.txt'),'r').readline()
+    custom_gene_head = custom_gene_head.strip()
+    custom_transcript_head = custom_gene_head.replace("G09","T09")
+    custom_protein_head = custom_gene_head.replace("G09","P09")
+    if not custom_gene_head:
+        print >>sys.stderr,"ERROR: no custom gene mark found!"
+        sys.exit(1)
     head = database[0][1]
     m = len(head)
-    if head.startswith("ENSG"):
+    if head.startswith("ENS"):
         u = []
         for e in head:
             if e.isdigit():
@@ -191,11 +212,11 @@ if __name__ == '__main__':
         head_e9 = head[:-1]+"E09"
         #file(os.path.join(options.output_directory,"custom_genes_mark.txt"),"w").write(head_g9)
     else:
-        print "Error: unknown Ensembl Id!"
+        print "ERROR: unknown Ensembl Id!"
         sys.exit(1)
 
     if options.genes and (not target):
-        print "Exiting gracefully without doing any enlargement! This is ok!"
+        print "WARNNING: Exiting gracefully without doing any enlargement (because the target geens is empty)! This is ok!"
         sys.exit(0)
 
 
@@ -204,11 +225,12 @@ if __name__ == '__main__':
     pads_all = []
     for c in chrom:
         print " * Processing chromosome",c
+        crlen = int(chrom_lens.get(c,'0'))
 #        for st in strands: # not a good idea
 #            print " * processing strand",st
 #            data = set([(line[gene],int(line[start]),int(line[end])) for line in database if line[cr] == c and line[strand] == st])
         if options.genes: # filter out the ENSG09
-            data = set([(line[gene],int(line[start]),int(line[end])) for line in database if line[cr] == c and (not line[gene].startswith(head_g9))])
+            data = set([(line[gene],int(line[start]),int(line[end])) for line in database if line[cr] == c and (not line[gene].startswith(head_g9)) and (not line[gene].startswith(custom_gene_head))])
         else: # if not then keep all of them
             data = set([(line[gene],int(line[start]),int(line[end])) for line in database if line[cr] == c])
         data = sorted(data, key = lambda x: (x[1],x[2],x[0]) )
@@ -221,7 +243,10 @@ if __name__ == '__main__':
                 x = 1
             pads.append((data[0][0],x,data[0][1]))
             # last
-            pads.append((data[-1][0],data[-1][2],data[-1][2]+size))
+            x = data[-1][2] + size
+            if x > crlen:
+                x = crlen
+            pads.append((data[-1][0],data[-1][2],x))
 
         for i in xrange(n-1):
             #print " *",data[i][0],data[i][1],data[i][2]
@@ -246,9 +271,15 @@ if __name__ == '__main__':
                     a2 = data[i][2] + size
                     b1 = data[j][1] - size
                     b2 = data[j][1]
+                    
+                    if a2 > crlen:
+                        a2 = crlen
+                    if b1 < 1:
+                        b1 = 1
+                    
                     if a2 > b1:
                         if data[i][2] > data[j][1]:
-                            print "UPS!",data[i],data[j]
+                            print >>sys.stderr,"UPS!",data[i],data[j]
                             sys.exit(1)
                         else:
                             d = (data[i][2] + data[j][1])/2
@@ -257,9 +288,9 @@ if __name__ == '__main__':
                     if a2 > a1 and b1 < b2:
                         #print " *",data[j][0],data[j][1],data[j][2]
                         if a1 > data[j][1] or a2 > data[j][1]:
-                            print "Error: Something wrong with",data[i],"new:",a1,a2
+                            print >>sys.stderr,"Error: Something wrong with",data[i],"new:",a1,a2
                         if b1 < data[i][2] or b2 < data[i][2]:
-                            print "Error: Something wrong with",data[j],"new:",b1,b2
+                            print >>sys.stderr,"Error: Something wrong with",data[j],"new:",b1,b2
                         pads.append((data[i][0],a1,a2))
                         pads.append((data[j][0],b1,b2))
 #                            if data[i][0] in ("ENSG00000187266","ENSG00000173928") or data[j][0] in ("ENSG00000187266","ENSG00000173928"):
@@ -269,7 +300,7 @@ if __name__ == '__main__':
 #                                print " * original",data[j][0],data[j][1],data[j][2]
 #                                print " * new",data[j][0],b1,b2
                     break
-        print "  *",len(pads),"enlargements for",len(pads)/2,"gene out of",len(data),"genes"
+        print "    -",len(pads),"enlargements for",len(pads)/2,"gene out of",len(data),"genes"
         if pads:
             pads_all.extend(pads)
 
@@ -291,7 +322,16 @@ if __name__ == '__main__':
         #print ge
         #raw_input()
         g = ge[0][gene]
-        t = [1 for el in ge if el[0].startswith(head_p7) or el[0].startswith(head_p9)] # do not touch the ones which are already manually modified (which are marked by having a protein which starts with ENSG09 or ENSG07)
+#        t = [1 for el in ge if el[0].startswith(head_p7) or el[0].startswith(head_p9) or el[0].startswith(custom_protein_head)] # do not touch the ones which are already manually modified (which are marked by having a protein which starts with ENSG09 or ENSG07)
+        t = False # do not touch the ones which are already manually modified (which are marked by having a protein which starts with ENSG09 or ENSG07)
+        for el in ge:
+            if el[0].startswith(head_p7) or el[0].startswith(head_p9) or el[0].startswith(custom_protein_head):
+                t = True
+                break
+#        if t:
+#            t = True
+#        else:
+#            t = False
         r = False
         if target:
             if g in target:
@@ -389,12 +429,32 @@ if __name__ == '__main__':
         else:
             data.extend(ge)
 
-    print "TOTAL:",w,"genes enlarged!"
-    print "TOTAL:",z,"additions!"
+    print "TOTAL:",w,"genes enlarged and",z,"additions!"
 
+    print "Validating newly introduced and modified genes' coordinates..."
+    # test that all corrdinates are positive and below the length of the chromosomes
+    for line in data:
+        cl = int(chrom_lens.get(line[cr],'0'))
+        ls = int(line[start])
+        if ls < 1 or ls > cl:
+            print >>sys.stderr,"ERROR: invalid gene coordinates found!",line
+            sys.exit(1)
+        le = int(line[end])
+        if le < 1 or le > cl:
+            print >>sys.stderr,"ERROR: invalid gene coordinates found!",line
+            sys.exit(1)
+    print "  - Done."
+
+    print "Writing results..."
     file(os.path.join(options.output_directory,"exons.txt"),"w").writelines(['\t'.join(line)+'\n' for line in data])
     x = set(['\t'.join((line[gene],line[end],line[start],line[strand],line[cr]))+'\n' for line in data])
     file(os.path.join(options.output_directory,"genes.txt"),"w").writelines(sorted(x))
+
+    print "Writing results also in BED foramt..."
+    # convert BED to UCSC format 
+    bed = zip(*bed)
+    bed[0] = ["chr"+line if line != 'MT' else "chrM" for line in bed[0]]
+    bed = zip(*bed)
     file(os.path.join(options.output_directory,"enlarged_genes.bed"),"w").writelines(['\t'.join(line)+'\n' for line in bed])
 
 

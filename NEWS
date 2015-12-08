@@ -1,6 +1,17 @@
 Version Release History for FusionCatcher
 =========================================
 
+Version 0.99.4e beta - December 8, 2015
+-----------------------------------------
+ * added support for Ensembl version 82
+ * increased sensitivity for fusion genes which involve IGH loci
+ * added support for database of candidate gene fusions found in healthy human RNA-seq samples from 27 different tissues http://www.mcponline.org/content/13/2/397
+ * added support for GTEx database (with help of FusionAnnotator)
+ * fixed a bug which was introducing a large runtime-slowdown when candidate IGH translocations are found
+ * fixed several minor bugs
+ * updated manual
+
+
 Version 0.99.4d beta - September 15, 2015
 -----------------------------------------
  * added support for Ensembl version 81 and human genome GRCh38.p3/hg38.p3

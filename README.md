@@ -10,8 +10,9 @@ Download / Install / Update / Upgrade [FusionCatcher](http://github.com/ndaniel/
 
 Use this one-line command:
 
-    wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download
-
+```bash
+wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download
+```
 
 Description
 -----------
@@ -49,7 +50,8 @@ A detailed manual is available [here](doc/MANUAL.md).
 
 Forum
 -----
-A forum for FusionCatcher is available at [Google Groups](http://groups.google.com/d/forum/fusioncatcher).
+A forum for FusionCatcher is available at 
+[Google Groups](http://groups.google.com/d/forum/fusioncatcher).
 
 
 Release history
@@ -61,5 +63,6 @@ Citing
 ------
 D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi,
 S. Virtanen, O. Kilkku, FusionCatcher – a tool for finding somatic fusion genes
-in paired-end RNA-sequencing data, bioRxiv, Nov. 2014, [DOI:10.1101/011650](http://dx.doi.org/10.1101/011650)
+in paired-end RNA-sequencing data, bioRxiv, Nov. 2014, 
+[DOI:10.1101/011650](http://dx.doi.org/10.1101/011650)
 

@@ -264,7 +264,7 @@ if __name__ == '__main__':
         ens = g[id]
         for e in ens:
             for s in symbols:
-                synonyms.append("%s\t%s\n" %(e,s.replace("'","")))
+                synonyms.append("%s\t%s\n" %(e,s.upper().replace("'","")))
     file(os.path.join(options.output_directory,'synonyms.txt'),'w').writelines(synonyms)
     #
     for f in files.values():

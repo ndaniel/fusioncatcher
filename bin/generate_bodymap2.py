@@ -3778,8 +3778,18 @@ if __name__ == '__main__':
         ['NFIB','IGK@'],
         ['RP11-1166P10.8','IGH@'],
         ['TNS1','IGK@'],
-        ['UGT2B4','UGT2B26P']
-
+        ['UGT2B4','UGT2B26P'],
+        ['HSPB6','PLIN4'],
+        ['APLP2','HLA@'],
+        ['BTBD1','SPP1'],
+        ['CD99','KANK2'],
+        ['GSN','TIMP3'],
+        ['IGF2','MYH11'],
+        ['IGF2R','IGFBP4'],
+        ['IGFBP5','NFIX'],
+        ['PHGDH','SCD'],
+        ['SVEP1','TIMP3']
+        
 ]
 
 

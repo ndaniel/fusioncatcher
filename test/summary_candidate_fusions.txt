@@ -11,10 +11,10 @@ Found 12 fusion gene(s), which are as follows:
   * ETV6--NTRK3  (already known fusion)
   * EWSR1--FLI1  (already known fusion)
   * BRD4--NUTM1  (already known fusion)
+  * EML4--ALK  (already known fusion)
   * EWSR1--ATF1  (already known fusion)
   * CD74--ROS1  (already known fusion)
-  * EML4--ALK  (already known fusion)
 
 Found 16 fusion transcript(s).
 
-For more information regarding these candidate fusions, see text file 'final-list_candidate-fusion-genes.txt'.
+For more detailed information regarding these candidate fusions, see text file 'final-list_candidate-fusion-genes.txt'.

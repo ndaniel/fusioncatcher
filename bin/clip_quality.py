@@ -47,7 +47,7 @@ import gc
 import shutil
 import multiprocessing
 import itertools
-
+import gzip
 
 #
 #
@@ -88,7 +88,13 @@ def readfq(fp): # this is a generator function
 #
 #
 def fastq(file_name, size_buffer = 10**8):
-    fid = open(file_name,'r')
+    fid = None
+    if file_name == '-':
+        fid = sys.stdin
+    elif file_name.lower().endswith('.gz'):
+        fid = gzip.open(file_name,'r')
+    else:
+        fid = open(file_name,'r')
     while True:
         lines = fid.readlines(10**8)
         if not lines:
@@ -106,11 +112,14 @@ class tofastq:
     def __init__(self, file_name, size_buffer = 10**8):
         self.file_name = file_name
         if file_name:
-            if os.path.isfile(file_name) or os.path.islink(file_name):
-                os.remove(file_name)
-            elif os.path.isdir(file_name):
-                os.rmtree(file_name)
-            self.file_handle = open(file_name,'w')
+            if file_name == '-':
+                self.file_handle = sys.stdout
+            else:
+                if os.path.isfile(file_name) or os.path.islink(file_name):
+                    os.remove(file_name)
+                elif os.path.isdir(file_name):
+                    os.rmtree(file_name)
+                self.file_handle = open(file_name,'w')
         self.size_buffer = size_buffer
         self.data = []
         self.size = 0
@@ -136,6 +145,7 @@ class tofastq:
 
     def __del__(self):
         self.close()
+
 
 def low(quality,score,window_length):
     """
@@ -246,7 +256,7 @@ def clip(
     if cpus == 0:
         cpus = multiprocessing.cpu_count()
     if verbose:
-        print "Using",cpus,"process(es)..."
+        print >> sys.stderr,"Using",cpus,"process(es)..."
 
     # in case the pool.imap does not work use itertools.imap instead
 
@@ -277,7 +287,7 @@ def clip(
     if p != 0:
         t ="%.5f %% reads clipped due to low quality (less or equal than Q%d) at 3' end (%d out of %d)!" % ((100*float(f)/float(p)),quality_score,f,p)
     if verbose:
-        print t
+        print >> sys.stderr,t
     if file_log:
         file(file_log,'w').write(t+'\n')
 

@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
         list_files = ftp.nlst()
 
-        list_files = [el for el in list_files if el.lower().startswith(options.organism.lower()) and el.lower().endswith('.gtf.gz') and el.lower().find('abinitio') == -1]
+        list_files = [el for el in list_files if el.lower().startswith(options.organism.lower()) and el.lower().endswith('.gtf.gz') and el.lower().find('abinitio') == -1 and el.lower().find('.chr.') == -1 and el.lower().find('.chr_') == -1]
         if len(list_files)!=1:
             print "Too many files or too few were found!"
             print list_files
@@ -145,7 +145,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
 
-    f=gzip.open(os.path.join(options.output_directory,filename), 'rb')
+    f = gzip.open(os.path.join(options.output_directory,filename), 'rb')
     file_content=f.read()
     f.close()
     temp_file = os.path.join(options.output_directory,'temp_organism.gtf')
@@ -161,6 +161,8 @@ if __name__ == '__main__':
     if options.filter:
         data = [line for line in file(temp_file,'r').readlines() if line.startswith("#") or (line.split("\t",1)[0].upper() in chromosomes)]
         file(os.path.join(options.output_directory,"organism.gtf"),"w").writelines(data)
+        data = [line for line in file(temp_file,'r').readlines() if line.startswith("#") or (line.split("\t",1)[0].upper() not in chromosomes)]
+        file(os.path.join(options.output_directory,"organism_leftovers.gtf"),"w").writelines(data)
         os.remove(temp_file)
     else:
         os.rename(temp_file,os.path.join(options.output_directory,"organism.gtf"))

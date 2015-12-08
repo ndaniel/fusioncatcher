@@ -103,7 +103,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 0.99.4d beta"
+    version = "%prog 0.99.4e beta"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -196,7 +196,14 @@ if __name__ == '__main__':
                              "<http://users.soe.ucsc.edu/~kent/src/>. "+
                              "Default is '%default'.")
 
-    choices = ('cosmic','conjoing','chimerdb2','ticdb','cgp','cacg','hla')
+    parser.add_option("--enlarge-genes",
+                      action = "store_true",
+                      dest = "enlarge_genes",
+                      default = False,
+                      help = "If it is set then the genes are enlarged (i.e. their introns include also in the transcriptome). "+
+                             "Default is '%default'.")
+
+    choices = ('cosmic','conjoing','chimerdb2','ticdb','cgp','cacg')
     parser.add_option("--skip-database",
                       action = "store",
                       type = "string",
@@ -368,6 +375,12 @@ if __name__ == '__main__':
     job.add('',outdir('mt.fa'),kind='output',command_line='no')
     job.run()
 
+    job.add('generate_chrom_lens.py',kind='program')
+    job.add('--input_genome',outdir('genome.fa'),kind='output')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('chromosomes_lengths.txt'),kind='output',command_line='no')
+    job.run()
+
     job.add('get_gtf.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.ftp_ensembl,kind='parameter')
@@ -416,6 +429,15 @@ if __name__ == '__main__':
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('descriptions.txt'),kind='output',command_line='no')
     job.run()
+
+    if options.organism == 'homo_sapiens':
+        job.add('sed',kind='program')
+        job.add('-i',kind='parameter')
+        job.add("""'s/glyceraldehyde-3-phosphate\ dehydrogenase/glyceraldehyde\ 3\ phosphate\ dehydrogenase/g'""",kind='parameter')
+        job.add('',outdir('descriptions.txt'),kind='output',checksum='no')
+        job.run()
+
+
 
     job.add('get_exons_positions.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
@@ -501,20 +523,20 @@ if __name__ == '__main__':
         job.run()
 
 
-    if 'hla' not in skip_database:
-        job.add('get_hla.py',kind='program')
-        job.add('--organism',options.organism,kind='parameter')
-        job.add('--output',out_dir,kind='output',checksum='no')
-        job.add('',outdir('hla.fa'),kind='output',command_line='no')
-        job.run()
-        job.run(error_message = ("If this steps fails to run for whatever reason "+
-                "then it can be skipped by re-running fusioncatcher-build with "+
-                "command line option '--skip-database hla'! This database is optional."))
-    else:
-        job.add('printf',kind='program')
-        job.add('">mock-hla\nACGTGGGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"', kind='parameter')
-        job.add('>',outdir('hla.fa'),kind='output')
-        job.run()
+#    if 'hla' not in skip_database:
+#        job.add('get_hla.py',kind='program')
+#        job.add('--organism',options.organism,kind='parameter')
+#        job.add('--output',out_dir,kind='output',checksum='no')
+#        job.add('',outdir('hla.fa'),kind='output',command_line='no')
+#        job.run()
+#        job.run(error_message = ("If this steps fails to run for whatever reason "+
+#                "then it can be skipped by re-running fusioncatcher-build with "+
+#                "command line option '--skip-database hla'! This database is optional."))
+#    else:
+#        job.add('printf',kind='program')
+#        job.add('">mock-hla\nACGTGGG%sA\n"' % (500*'A',), kind='parameter')
+#        job.add('>',outdir('hla.fa'),kind='output')
+#        job.run()
 
     # adds some missing genes to Ensembl Database
     job.add('add_custom_gene.py',kind='program')
@@ -695,6 +717,7 @@ if __name__ == '__main__':
     job.add('',outdir('ensembl_partially_overlapping_genes.txt'),kind='input')
     job.add('',outdir('ensembl_fully_overlapping_genes.txt'),kind='input')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
     job.add('sort',kind='parameter')
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
@@ -712,6 +735,9 @@ if __name__ == '__main__':
         job.add('cut',kind='parameter')
         job.add('-f1',kind='parameter')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
+        job.add('sort',kind='parameter')
+        job.add('|',kind='parameter')
         job.add('uniq',kind='parameter')
         job.add('>',outdir('ig_loci.txt'),kind='output')
         job.run()
@@ -720,84 +746,38 @@ if __name__ == '__main__':
         job.add('echo',kind='program')
         job.add('-n','""',kind='parameter')
         job.add('>',outdir('ig_loci.txt'),kind='output')
-        job.run()
-
-    if options.organism == 'homo_sapiens':
-        job.add('grep',kind='program')
-        job.add('-i',kind='parameter')
-        job.add('-e','"\tEPOR"',kind='parameter')
-        job.add('-e','"\tCRLF2"',kind='parameter')
-        job.add('-e','"\tADRBK1"',kind='parameter')
-        job.add('-e','"\tBCL1"',kind='parameter')
-        job.add('-e','"\tBCL10"',kind='parameter')
-        job.add('-e','"\tBCL11A"',kind='parameter')
-        job.add('-e','"\tBCL2"',kind='parameter')
-        job.add('-e','"\tBCL3"',kind='parameter')
-        job.add('-e','"\tBCL5"',kind='parameter')
-        job.add('-e','"\tBCL6"',kind='parameter')
-        job.add('-e','"\tBCL8"',kind='parameter')
-        job.add('-e','"\tBCL9"',kind='parameter')
-        job.add('-e','"\tC14ORF49"',kind='parameter')
-        job.add('-e','"\tCCND1"',kind='parameter')
-        job.add('-e','"\tCCND2"',kind='parameter')
-        job.add('-e','"\tCCND3"',kind='parameter')
-        job.add('-e','"\tCDK6"',kind='parameter')
-        job.add('-e','"\tCEBPA"',kind='parameter')
-        job.add('-e','"\tCEBPB"',kind='parameter')
-        job.add('-e','"\tCEBPD"',kind='parameter')
-        job.add('-e','"\tCEBPE"',kind='parameter')
-        job.add('-e','"\tCEBPG"',kind='parameter')
-        job.add('-e','"\tCSF2RA"',kind='parameter')
-        job.add('-e','"\tDDX6"',kind='parameter')
-        job.add('-e','"\tDEGS2"',kind='parameter')
-        job.add('-e','"\tERBB2"',kind='parameter')
-        job.add('-e','"\tERVWE1"',kind='parameter')
-        job.add('-e','"\tETV6"',kind='parameter')
-        job.add('-e','"\tFCGR2B"',kind='parameter')
-        job.add('-e','"\tFCRL4"',kind='parameter')
-        job.add('-e','"\tFGFR3"',kind='parameter')
-        job.add('-e','"\tFOXP1"',kind='parameter')
-        job.add('-e','"\tIRTA1"',kind='parameter')
-        job.add('-e','"\tLAPTM5"',kind='parameter')
-        job.add('-e','"\tLHX4"',kind='parameter')
-        job.add('-e','"\tMAF"',kind='parameter')
-        job.add('-e','"\tMAFB"',kind='parameter')
-        job.add('-e','"\tMALT1"',kind='parameter')
-        job.add('-e','"\tMMSET"',kind='parameter')
-        job.add('-e','"\tMUC1"',kind='parameter')
-        job.add('-e','"\tMYC"',kind='parameter')
-        job.add('-e','"\tNFKB2"',kind='parameter')
-        job.add('-e','"\tPAFAH1B2"',kind='parameter')
-        job.add('-e','"\tPAX5"',kind='parameter')
-        job.add('-e','"\tPCSK7"',kind='parameter')
-        job.add('-e','"\tRHOH"',kind='parameter')
-        job.add('-e','"\tSPIB"',kind='parameter')
-        job.add('-e','"\tWHSC1"',kind='parameter')
-        job.add('-e','"\tWWOX"',kind='parameter')
-        job.add('',outdir('genes_symbols.txt'),kind='input')
-        job.add('|',kind='parameter')
-        job.add('cut',kind='parameter')
-        job.add('-f1',kind='parameter')
-        job.add('|',kind='parameter')
-        job.add('uniq',kind='parameter')
-        job.add('>',outdir('eporcrlf2.txt'),kind='output')
-        job.run()
-
-    else:
-        job.add('echo',kind='program')
-        job.add('-n','""',kind='parameter')
-        job.add('>',outdir('eporcrlf2.txt'),kind='output')
         job.run()
 
 #    if options.organism == 'homo_sapiens':
-#        job.add('enlarge_genes.py',kind='program')
-#        job.add('--enlargement-size','500000',kind='parameter') # 5000
-#        #job.add('--gene-length','1000',kind='parameter')
-#        job.add('--genes',outdir('ig_loci.txt'),kind='input') # enlarge only IG loci
-#        job.add('--output',out_dir,kind='output',checksum='no')
-#        job.add('',outdir('exons.txt'),kind='output',command_line='no')
-#        job.add('',outdir('genes.txt'),kind='output',command_line='no')
+#        job.add('grep',kind='program')
+#        job.add('-i',kind='parameter')
+#        job.add('-e','"\tEPOR"',kind='parameter')
+#        job.add('-e','"\tCRLF2"',kind='parameter')
+#        job.add('',outdir('genes_symbols.txt'),kind='input')
+#        job.add('|',kind='parameter')
+#        job.add('cut',kind='parameter')
+#        job.add('-f1',kind='parameter')
+#        job.add('|',kind='parameter')
+#        job.add('uniq',kind='parameter')
+#        job.add('>',outdir('eporcrlf2.txt'),kind='output')
 #        job.run()
+
+#    else:
+#        job.add('echo',kind='program')
+#        job.add('-n','""',kind='parameter')
+#        job.add('>',outdir('eporcrlf2.txt'),kind='output')
+#        job.run()
+
+    if options.enlarge_genes:
+        job.add('enlarge_genes.py',kind='program')
+        job.add('--enlargement-size','5000',kind='parameter') # 5000
+        job.add('--full-cover','10000000',kind='parameter')
+        job.add('--gene-short','250',kind='parameter')
+        #job.add('--genes',outdir('ig_loci.txt'),kind='input') # enlarge only IG loci
+        job.add('--output',out_dir,kind='output',checksum='no')
+        job.add('',outdir('exons.txt'),kind='output',command_line='no')
+        job.add('',outdir('genes.txt'),kind='output',command_line='no')
+        job.run()
 
 
     job.add('generate_rrna_unit.py',kind='program')
@@ -865,6 +845,13 @@ if __name__ == '__main__':
     job.add('',outdir('bodymap2.txt'),kind='output',command_line='no')
     job.run()
 
+    job.add('generate_hpa.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('--skip-filter-overlap',out_dir,kind='parameter')
+    job.add('',outdir('hpa.txt'),kind='output',command_line='no')
+    job.run()
+
     job.add('generate_known.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
@@ -887,6 +874,9 @@ if __name__ == '__main__':
     job.add('--ignore-case','HLA-',kind='parameter')
     job.add('',outdir('genes_symbols.txt'),kind='input')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('hla_1.txt'),kind='output')
     job.run()
@@ -895,14 +885,25 @@ if __name__ == '__main__':
     job.add('--ignore-case','HLA-',kind='parameter')
     job.add('',outdir('synonyms.txt'),kind='input')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('hla_2.txt'),kind='output')
     job.run()
 
-    job.add('concatenate.py',kind='program')
-    job.add('',outdir('hla_1.txt'),kind='input')
-    job.add('',outdir('hla_2.txt'),kind='input')
-    job.add('',outdir('hla_12.txt'),kind='output')
+    job.add('cat',kind='program')
+    job.add('',outdir('hla_1.txt'),kind='input',temp_path='yes')
+    job.add('',outdir('hla_2.txt'),kind='input',temp_path='yes')
+    job.add('|',kind='parameter')
+    job.add('cut',kind='parameter')
+    job.add('-f1,1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('uniq',kind='parameter')
+    job.add('>',outdir('hla.txt'),kind='output')
     job.run()
 
     job.add('cut',kind='program')
@@ -915,6 +916,9 @@ if __name__ == '__main__':
     job.add('|',kind='parameter')
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('pseudogenes.txt'),kind='output')
@@ -931,6 +935,9 @@ if __name__ == '__main__':
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('antisenses.txt'),kind='output')
     job.run()
@@ -945,6 +952,9 @@ if __name__ == '__main__':
     job.add('|',kind='parameter')
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('rrnas.txt'),kind='output')
@@ -961,6 +971,9 @@ if __name__ == '__main__':
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('trnas.txt'),kind='output')
     job.run()
@@ -974,6 +987,9 @@ if __name__ == '__main__':
     job.add('|',kind='parameter')
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('mt.txt'),kind='output')
@@ -989,6 +1005,9 @@ if __name__ == '__main__':
     job.add('|',kind='parameter')
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('lincrnas.txt'),kind='output')
@@ -1025,6 +1044,9 @@ if __name__ == '__main__':
     job.add('cat',kind='program')
     job.add('',outdir('temp.txt'),kind='input',temp_path='yes')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('mirnas.txt'),kind='output')
     job.run()
@@ -1058,6 +1080,9 @@ if __name__ == '__main__':
     job.run()
     job.add('cat',kind='program')
     job.add('',outdir('temp.txt'),kind='input',temp_path='yes')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('snrnas.txt'),kind='output')
@@ -1093,6 +1118,9 @@ if __name__ == '__main__':
     job.add('cat',kind='program')
     job.add('',outdir('temp.txt'),kind='input',temp_path='yes')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('snornas.txt'),kind='output')
     job.run()
@@ -1123,6 +1151,9 @@ if __name__ == '__main__':
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('7skrnas.txt'),kind='output')
     job.run()
@@ -1141,6 +1172,9 @@ if __name__ == '__main__':
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('ribosomal_proteins.txt'),kind='output')
     job.run()
@@ -1156,6 +1190,9 @@ if __name__ == '__main__':
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('oncogenes.txt'),kind='output')
     job.run()
@@ -1169,6 +1206,9 @@ if __name__ == '__main__':
     job.add('|',kind='parameter')
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('rp11.txt'),kind='output')
@@ -1185,6 +1225,9 @@ if __name__ == '__main__':
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('metazoa.txt'),kind='output')
     job.run()
@@ -1198,6 +1241,9 @@ if __name__ == '__main__':
     job.add('|',kind='parameter')
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('cta.txt'),kind='output')
@@ -1213,6 +1259,9 @@ if __name__ == '__main__':
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('ctb.txt'),kind='output')
     job.run()
@@ -1226,6 +1275,9 @@ if __name__ == '__main__':
     job.add('|',kind='parameter')
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('ctd.txt'),kind='output')
@@ -1241,6 +1293,9 @@ if __name__ == '__main__':
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('ctc.txt'),kind='output')
     job.run()
@@ -1255,6 +1310,9 @@ if __name__ == '__main__':
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('rp.txt'),kind='output')
     job.run()
@@ -1268,23 +1326,23 @@ if __name__ == '__main__':
     job.add('',outdir('transcripts.fa'),kind='output',command_line='no')
     job.run()
 
-    job.add('extract_transcripts.py',kind='program')
-    job.add('--input_genes',outdir('hla_12.txt'),kind='input')
-    job.add('--input_transcriptome',outdir('transcripts.fa'),kind='input')
-    job.add('--output',outdir('hla_2.fa'),kind='output')
-    job.run()
+#    job.add('extract_transcripts.py',kind='program')
+#    job.add('--input_genes',outdir('hla_12.txt'),kind='input')
+#    job.add('--input_transcriptome',outdir('transcripts.fa'),kind='input')
+#    job.add('--output',outdir('hla_2.fa'),kind='output')
+#    job.run()
 
-    job.add('concatenate.py',kind='program')
-    job.add('',outdir('hla.fa'),kind='input')
-    job.add('',outdir('hla_2.fa'),kind='input')
-    job.add('',outdir('hla_12.fa'),kind='output')
-    job.run()
+#    job.add('concatenate.py',kind='program')
+#    job.add('',outdir('hla.fa'),kind='input')
+#    job.add('',outdir('hla_2.fa'),kind='input')
+#    job.add('',outdir('hla_12.fa'),kind='output')
+#    job.run()
 
-    job.add('sed',kind='program') # replace blanks with underscores
-    job.add("'s/ /_/g'",kind='parameter')
-    job.add('',outdir('hla_12.fa'),kind='input')
-    job.add('>',outdir('hla-noblanks.fa'),kind='output')
-    job.run()
+#    job.add('sed',kind='program') # replace blanks with underscores
+#    job.add("'s/ /_/g'",kind='parameter')
+#    job.add('',outdir('hla_12.fa'),kind='input')
+#    job.add('>',outdir('hla-noblanks.fa'),kind='output')
+#    job.run()
 
     if 'cosmic' not in skip_database:
         job.add('get_cosmic.py',kind='program')
@@ -1327,6 +1385,24 @@ if __name__ == '__main__':
         job.run(error_message = ("If this steps fails to run for whatever reason "+
                 "then it can be skipped by re-running fusioncatcher-build with "+
                 "command line option '--skip-database conjoing'! This database is optional."))
+                
+        job.add('grep',kind='program')
+        job.add('-v',kind='parameter')
+        job.add("'ENSG00000047932\tENSG00000047936'",kind='parameter') # remove GOPC--ROS1
+        job.add('',outdir('conjoing.txt'),kind='input')
+        job.add('|',kind='parameter')
+        job.add('grep',kind='parameter')
+        job.add('-v',kind='parameter')
+        job.add("'ENSG00000134853\tENSG00000145216'",kind='parameter') # remove PDGFRA--FIP1L1
+        job.add('>',outdir('conjoing_.txt'),kind='output')
+        job.run()
+
+        job.add('mv',kind='program')
+        job.add('',outdir('conjoing_.txt'),kind='output')
+        job.add('',outdir('conjoing.txt'),kind='output')
+        job.run()
+
+
     elif job.run():
         file(outdir('conjoing.txt'),'w').write('')
 
@@ -1358,6 +1434,11 @@ if __name__ == '__main__':
     job.add('',outdir('dgd.txt'),kind='output',command_line='no')
     job.run()
 
+    job.add('get_gtex.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('gtex.txt'),kind='output',command_line='no')
+    job.run()
 
     job.add('concatenate.py',kind='program')
     job.add('',outdir('trna.fa'),kind='input')
@@ -1405,15 +1486,15 @@ if __name__ == '__main__':
 
 
 
-    job.add('bowtie-build',kind='program')
-    job.add('-f',kind='parameter')
-    job.add('--quiet',kind='parameter')
-#    job.add('--ntoa',kind='parameter')
-    job.add('--offrate','1',kind='parameter')
-    job.add('--ftabchars','7',kind='parameter')
-    job.add('',outdir('hla-noblanks.fa'),kind='input')
-    job.add('',outdir('hla_index/'),kind='output')
-    job.run(error_message = bowtie_error)
+#    job.add('bowtie-build',kind='program')
+#    job.add('-f',kind='parameter')
+#    job.add('--quiet',kind='parameter')
+##    job.add('--ntoa',kind='parameter')
+#    job.add('--offrate','1',kind='parameter')
+#    job.add('--ftabchars','7',kind='parameter')
+#    job.add('',outdir('hla-noblanks.fa'),kind='input')
+#    job.add('',outdir('hla_index/'),kind='output')
+#    job.run(error_message = bowtie_error)
 
 
     job.add('bowtie-build',kind='program')
@@ -1490,7 +1571,7 @@ if __name__ == '__main__':
     job.clean(outdir('hla.fa'))
     job.clean(outdir('hla-noblanks.fa'))
     job.clean(outdir('hla_2.fa'))
-    job.clean(outdir('hla_12.fa'))
+#    job.clean(outdir('hla_12.fa'))
     job.clean(outdir('hla_1.txt'))
     job.clean(outdir('hla_2.txt'))
     job.clean(outdir('hla_12.txt'))

@@ -212,6 +212,15 @@ a candidate list of fusion genes (where short reads have been aligned using BLAT
                       default=17,
                       help="""The threshold for the minimum length of the read overlap over the fusion point (i.e. overhang/anchor). Default is '%default'.""")
 
+
+    parser.add_option("--separator",
+                      action="store",
+                      type="string",
+                      dest="separator",
+                      default="*",
+                      help="""The separator string to be used for marking the breakpoint in the fusion junction.""")
+
+
     parser.add_option("--output",
                       action="store",
                       type="string",
@@ -416,7 +425,7 @@ a candidate list of fusion genes (where short reads have been aligned using BLAT
                 e1flank = e1 - flank
                 if e1flank < 0:
                     e1flank = 0
-                fs = '%s*%s' % (myseq[e1flank:e1],myseq[s2-1:s2-1+flank])
+                fs = '%s%s%s' % (myseq[e1flank:e1],options.separator,myseq[s2-1:s2-1+flank])
 
         t = [gene_1,                 # 0
              gene[gene_1]['hugo'],   # 1

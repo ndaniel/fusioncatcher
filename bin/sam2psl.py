@@ -535,7 +535,7 @@ def blocks(cigar, ig = 0, use_cigar_13 = True):
 
 
 #########################
-def get_psl(sam, lens, use_cigar_13=True):
+def get_psl(sam, lens, use_cigar_13=True , replace_string = ''):
     # USE_CIGAR_13 - If True then the input CIGAR string is in format 1.4 then it will be converted into format 1.3
     #cig, qSize, tSize, tStart, strand):
     # returns PSL coordinates
@@ -562,7 +562,7 @@ def get_psl(sam, lens, use_cigar_13=True):
             # reference name
             psl[psl_tName] = sam[sam_RNAME]
             # read name
-            psl[psl_qName] = sam[sam_QNAME]
+            psl[psl_qName] = sam[sam_QNAME].replace(replace_string,'/',1) if replace_string else sam[sam_QNAME]
 
             # strand
             psl[psl_strand] = "-" if int(sam[sam_FLAG]) & 0x10  else '+'
@@ -585,8 +585,10 @@ def get_psl(sam, lens, use_cigar_13=True):
             psl[psl_tNumInsert] = insert_ref_count
             psl[psl_tBaseInsert] = insert_ref
 
-            # extract the mismatches from SAM (using tak NM:i)
-            tag_nm_i = [e.lower().partition("nm:i:")[2] for e in sam[sam_TAG:] if e.lower().startswith('nm:i:')]
+            # extract the mismatches from SAM (using tag NM:i)
+            tag_nm_i = [e.partition("NM:i:")[2] for e in sam[sam_TAG:] if e.startswith('NM:i:')] # NM is mismatches per reads
+            if not tag_nm_i:
+                tag_nm_i = [e.partition("nM:i:")[2] for e in sam[sam_TAG:] if e.startswith('nM:i:')] # nM is not good because but is better than nothing because it is mismatches per fragment and not per read!
             tag_nm_i = int(tag_nm_i[0]) if tag_nm_i else 0
             #print >>sys.stderr,"tag NM:i:",tag_nm_i
 
@@ -664,7 +666,7 @@ def getlines(a_filename):
     fin.close()
 
 ############################
-def sam2psl(file_in,file_ou, use_cigar_13 = True):
+def sam2psl(file_in,file_ou, use_cigar_13 = True,replace_string = ''):
     # It converts a SAM file to PSL file
     # USE_CIGAR_13 - If True then the input CIGAR string is in format 1.4 then it will be converted into format 1.3
     fou = None
@@ -678,6 +680,7 @@ def sam2psl(file_in,file_ou, use_cigar_13 = True):
     psl_empty_line = ['0']*21
     # processing
     i = 0
+    size_lines = 10**6
     lengths = None
     for line in getlines(file_in):
         if i == 0:
@@ -685,14 +688,14 @@ def sam2psl(file_in,file_ou, use_cigar_13 = True):
             i = i + 1
             continue
         i = i + 1
-        temp = get_psl(line,lengths, use_cigar_13)
+        temp = get_psl(line,lengths, use_cigar_13, replace_string)
         # saving
         if temp:
             psl.append('\t'.join(temp)+'\n')
             #print >>sys.stderr, '\t'.join(line)
             #print >>sys.stderr, '\t'.join(temp)
             #print >>sys.stderr, "-----------------------------------------------"
-            if i > 10**6:
+            if i > size_lines:
                 fou.writelines(psl)
                 psl = []
     if psl:
@@ -706,7 +709,7 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = """It takes as input a file in SAM format and it converts into a PSL format file."""
-    version = "%prog 0.11 beta"
+    version = "%prog 0.12 beta"
 
     parser = optparse.OptionParser(usage = usage, description = description, version = version)
 
@@ -725,6 +728,12 @@ if __name__ == '__main__':
                       "first converted into CIGAR string, which is described in SAM version 1.3, "+
                       "(i.e. there are no 'X' and '=' which are replaced with 'M') and afterwards into PSL format. "+
                       "Default is '%default'.")
+
+    parser.add_option("--replace-read-ids","-r",
+                      action = "store",
+                      type = "string",
+                      dest = "replace_reads_ids",
+                      help = """In the reads ids (also known as query name in PSL) the string specified here will be replaced with '/' (which is used in Solexa for /1 and /2).""")
 
     parser.add_option("--output","-o",
                       action="store",
@@ -745,5 +754,10 @@ if __name__ == '__main__':
 
 
     # running
-    sam2psl(options.input_filename, options.output_filename, use_cigar_13 = (not options.skip_conversion_cigar_13))
+    sam2psl(
+        options.input_filename,
+        options.output_filename, 
+        use_cigar_13 = (not options.skip_conversion_cigar_13),
+        replace_string = options.replace_reads_ids if options.replace_reads_ids else ''
+        )
     #

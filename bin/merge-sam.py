@@ -223,6 +223,35 @@ References:
 """
 
 """
+Flag        Chr     Description
+0x0001      p       the read is paired in sequencing
+0x0002      P       the read is mapped in a proper pair
+0x0004      u       the query sequence itself is unmapped
+0x0008      U       the mate is unmapped
+0x0010      r       strand of the query (1 for reverse) => SEQ being reverse complemented
+0x0020      R       strand of the mate
+0x0040      1       the read is the first read in a pair
+0x0080      2       the read is the second read in a pair
+0x0100      s       the alignment is not primary
+0x0200      f       the read fails platform/vendor quality checks
+0x0400      d       the read is either a PCR or an optical duplicate
+
+1 0x1 template having multiple segments in sequencing
+2 0x2 each segment properly aligned according to the aligner
+4 0x4 segment unmapped
+8 0x8 next segment in the template unmapped
+16 0x10 SEQ being reverse complemented
+32 0x20 SEQ of the next segment in the template being reverse complemented
+64 0x40 the first segment in the template
+128 0x80 the last segment in the template
+256 0x100 secondary alignment
+512 0x200 not passing filters, such as platform/vendor quality controls
+1024 0x400 PCR or optical duplicate
+2048 0x800 supplementary alignment
+
+"""
+
+"""
 
 Example of SAM input:
 =====================
@@ -298,7 +327,7 @@ sam_TAG = 11
 dna = "a"*10000
 
 ############################
-def merge_sam(file_in, file_ou):
+def merge_sam(file_in, file_ou, fr = False, mismatches = 10000, mismatches20 = 10000, short = 20):
     # It merges consecutive lines which represent one read
 
     fin = None
@@ -315,7 +344,7 @@ def merge_sam(file_in, file_ou):
 
     data = []
     size = 10**6
-    last = ['_']
+    last = ['_','1']
     limit = 10**5
     while True:
         lines = fin.readlines(size)
@@ -327,41 +356,58 @@ def merge_sam(file_in, file_ou):
                 data.append(line)
             else:
                 temp = line.split("\t")
-                if last[sam_QNAME][:-1] != temp[sam_QNAME][:-1] or last[sam_QNAME][-1:] == temp[sam_QNAME][-1:]:
+                ilastflag = int(last[sam_FLAG])
+                itempflag = int(temp[sam_FLAG])
+                proper_pair = ( itempflag & 0x02 ) and ( itempflag & 0x01 )
+                if not proper_pair:
+                    last = ['_','1']
+                    continue
+                # mismatches
+                tag_nm_i = [e.partition("NM:i:")[2] for e in temp[sam_TAG:] if e.startswith('NM:i:')] # NM is mismatches per reads
+                tag_nm_i = int(tag_nm_i[0]) if tag_nm_i else 0
+                if (tag_nm_i > mismatches) or (len(temp[sam_SEQ]) < short+1 and tag_nm_i > mismatches20):
+                    last = ['_','1']
+                    continue
+                        
+                sa = False if ilastflag & 0x10 else True
+                sb = False if itempflag & 0x10 else True
+                if last[sam_QNAME][:-1] != temp[sam_QNAME][:-1] or (ilastflag & itempflag & 0xC0) or (fr and sa == sb) or (fr == False and sa != sb ):# test that they form a pair #or last[sam_QNAME][-1:] == temp[sam_QNAME][-1:]:
                     last = temp
                 else:
-                    sa = "-" if int(last[sam_FLAG]) & 0x10 else "+"
-                    sb = "-" if int(temp[sam_FLAG]) & 0x10 else "+"
-                    if sa != sb:
-                        last = temp
+                    #if temp[sam_QNAME][-1:].endswith("a"):
+                    #    (last,temp) = (temp,last)
+                    if itempflag & 0x40: # test if it is first in pair
+                        (last,temp) = (temp,last) # last is always first in pair
+                        (ilastflag,itempflag) = (itempflag,ilastflag) # last is always first in pair
+                        (sa,sb) = (sb,sa)
+
+
+                    la = len(last[sam_SEQ])
+                    lb = len(temp[sam_SEQ])
+
+                    if sa: #sa == "+": # forward strand
+                        last[sam_CIGAR] = last[sam_CIGAR] + str(lb)+"H"
+                        temp[sam_CIGAR] = str(la)+"H" + temp[sam_CIGAR]
                     else:
-                        if temp[sam_QNAME][-1:] == "a":
-                            (last,temp) = (temp,last)
+                        last[sam_CIGAR] = str(lb)+"H" + last[sam_CIGAR]
+                        temp[sam_CIGAR] = temp[sam_CIGAR] + str(la)+"H"
+                    if fr:
+                       temp[sam_FLAG] = str(itempflag ^ 0x10) # move it on opposite strand (it flips the bit)
 
-                        la = len(last[sam_SEQ])
-                        lb = len(temp[sam_SEQ])
+                    last[sam_QNAME] = last[sam_QNAME][:-1]
+                    temp[sam_QNAME] = temp[sam_QNAME][:-1]
 
-                        if sa == "+":
-                            last[sam_CIGAR] = last[sam_CIGAR] + str(lb)+"H"
-                            temp[sam_CIGAR] = str(la)+"H" + temp[sam_CIGAR]
-                        else:
-                            last[sam_CIGAR] = str(lb)+"H" + last[sam_CIGAR]
-                            temp[sam_CIGAR] = temp[sam_CIGAR] + str(la)+"H"
-
-                        last[sam_QNAME] = last[sam_QNAME][:-1]
-                        temp[sam_QNAME] = temp[sam_QNAME][:-1]
-
-                        #last[sam_QNAME] = last[sam_QNAME].partition("__")[0]
-                        #temp[sam_QNAME] = temp[sam_QNAME].partition("__")[0]
+                    #last[sam_QNAME] = last[sam_QNAME].partition("__")[0]
+                    #temp[sam_QNAME] = temp[sam_QNAME].partition("__")[0]
 
 
-                        data.append("\t".join(last))
-                        data.append("\t".join(temp))
+                    data.append("\t".join(last))
+                    data.append("\t".join(temp))
 
-                        if len(data) > limit:
-                            fou.writelines(data)
-                            data = []
-                        last = ['_']
+                    if len(data) > limit:
+                        fou.writelines(data)
+                        data = []
+                    last = ['_','1']
     if data:
         fou.writelines(data)
     fin.close()
@@ -374,7 +420,7 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = """It corrects the consecutives lines, which represent the same read, such that they look like read which has been split."""
-    version = "%prog 0.11 beta"
+    version = "%prog 0.14 beta"
 
     parser = optparse.OptionParser(usage = usage, description = description, version = version)
 
@@ -391,6 +437,36 @@ if __name__ == '__main__':
                       help="""The output file in SAM format.""")
 
 
+    parser.add_option("--forward-reverse","-x",
+                      action = "store_true",
+                      dest = "fr",
+                      default = False,
+                      help = """By default a proper pair is considered the one where both reads which form a pair are on the same strand (e.g. output of 'bowtie --ff'). If this is set then a proper pair is considered when both reads are mapping on opposite strands. Default is '%default'.""")
+
+
+    parser.add_option("--mismatches-long","-m",
+                      action = "store",
+                      type = "int",
+                      dest = "mismatches",
+                      default = 10000,
+                      help = """Maximum number of mismatches accepted per read for read sequences strictly longer than the value specified by '--short'. If the number of mismatches in the input read is strictly larger than this number of mismaches given here then the read is filtered out. Default is '%default'.""")
+
+
+    parser.add_option("--mismatches-short","-M",
+                      action = "store",
+                      type = "int",
+                      dest = "mismatches20",
+                      default = 10000,
+                      help = """Maximum number of mismatches accepted per read for read sequences shorter than (including) the value specified by '--short'. If the number of mismatches in the input read is strictly larger than this number of mismaches given here then the read is filtered out. Default is '%default'.""")
+
+    parser.add_option("--short","-s",
+                      action = "store",
+                      type = "int",
+                      dest = "short",
+                      default = 20,
+                      help = """This value is used to define the upper limit of a 'short' read, for specifying the mismatches. Default is '%default'.""")
+
+
 
     (options,args) = parser.parse_args()
 
@@ -403,5 +479,11 @@ if __name__ == '__main__':
 
 
     # running
-    merge_sam(options.input_filename, options.output_filename)
+    merge_sam(
+        options.input_filename, 
+        options.output_filename, 
+        fr = options.fr, 
+        mismatches = options.mismatches, 
+        mismatches20 = options.mismatches20,
+        short = options.short)
     #
