@@ -3,7 +3,7 @@
 2. [Hardware requirements and dependencies](#2---hardware-requirements-and-dependencies)
 3. [FusionCatcher in scientific articles](#3---fusioncatcher-in-scientific-articles)
 4. [Installation and usage examples](#4---installation-and-usage-examples)
-5. [Installation](#5---installation)
+5. [Quick installation](#5---quick-installation)
 6. [Usage](#6---usage)
 7. [Aligners](#7---aligners)
 8. [Command line options](#8---command-line-options)
@@ -641,7 +641,7 @@ NOTE: **DO NOT POOL** the samples from all these cell lines. **DO NOT** give at 
 ---
 
 
-# 5 - INSTALLATION
+# 5 - QUICK INSTALLATION
 
 ## 5.1 - Getting executables
 
