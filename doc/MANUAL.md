@@ -1264,6 +1264,8 @@ fusioncatcher [options]
 ```
 and the command line options are:
 ```
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
   -i INPUT_FILENAME, --input=INPUT_FILENAME
                         The input file(s) or directory. The files should be in
                         FASTQ or SRA format and may be or not compressed using
@@ -1312,10 +1314,11 @@ and the command line options are:
                         'tmp' in the output directory specified with '--
                         output'.
   -p PROCESSES, --threads=PROCESSES
-                        Number or processes to be used for running Bowtie,
-                        BLAT, STAR, BOWTIE2 and other tools/programs. By
-                        default the number of processes is chosen to be equal
-                        to the number of found CPUs. Default is '4'.
+                        Number or processes/threads to be used for running
+                        Bowtie, BLAT, STAR, BOWTIE2 and other tools/programs.
+                        By default the number of processes is chosen to be
+                        equal to the number of found CPUs. By default no more
+                        than 16 processes will be used.Default is '4'.
   --config=CONFIGURATION_FILENAME
                         Configuration file containing the paths to external
                         tools (e.g. Bowtie, Blat, fastq-dump.) in case that
@@ -1417,17 +1420,18 @@ and the command line options are:
     --mismatches-filtering=FILTER_MISMATCHES
                         Maximum number of mapping mismatches used for
                         filtering the reads. Default is '2'.
-    -s SPANNING_PAIRS, --pairs-fusion=SPANNING_PAIRS
-                        The minimum number of paired-end reads which support a
-                        candidate fusion gene and which will be considered for
-                        further analysis.  It is given separated by commas for
-                        each of the aligners: BOWTIE, BLAT, STAR, BOWTIE2, BWA
-                        (in this order). Default is '3,3,3,3,3'.
     --top-pairs-fusion=SPANNING_PAIRS_COUNT
                         If the '--pairs-fusion' selects more than N
                         preliminary candidate fusion genes then only the first
                         N will be considered for further analysis. N is set
                         here. Default is '10000'.
+    -s SPANNING_PAIRS, --pairs-fusion=SPANNING_PAIRS
+                        The minimum number of (encompassing) paired-end reads
+                        which support a candidate fusion gene and which will
+                        be considered for further analysis.  It is given
+                        separated by commas for each of the aligners: BOWTIE,
+                        BLAT, STAR, BOWTIE2, BWA (in this order). Default is
+                        '3,3,3,3,3'.
     -r SPANNING_READS, --reads-fusion=SPANNING_READS
                         The minimum number of reads which support a candidate
                         fusion gene that is the minimum number of reads which
@@ -1463,18 +1467,19 @@ and the command line options are:
                         distance100kbp, distance10kbp, duplicates,
                         ensembl_fully_overlapping,
                         ensembl_partially_overlapping,
-                        ensembl_same_strand_overlapping,
+                        ensembl_same_strand_overlapping, fragments,
                         gencode_fully_overlapping,
                         gencode_partially_overlapping,
-                        gencode_same_strand_overlapping, healthy, lincrna,
-                        metazoa, mirna, mt, non_tumor_cells, removed,
+                        gencode_same_strand_overlapping, gtex, healthy, hla,
+                        hpa, lincrna, metazoa, mirna, mt, non_tumor_cells,
                         pair_pseudo_genes, paralogs, pseudogene,
                         refseq_fully_overlapping,
                         refseq_partially_overlapping,
-                        refseq_same_strand_overlapping, ribosomal_protein,
-                        rp11_gene, rp_gene, rrna, short_distance,
-                        similar_reads, similar_symbols, snorna, snrna, trna,
-                        ucsc_fully_overlapping, ucsc_partially_overlapping,
+                        refseq_same_strand_overlapping, removed,
+                        ribosomal_protein, rp11_gene, rp_gene, rrna,
+                        short_distance, similar_reads, similar_symbols,
+                        snorna, snrna, trna, ucsc_fully_overlapping,
+                        ucsc_partially_overlapping,
                         ucsc_same_strand_overlapping, yrna]. 'short_distance'
                         is used for labeling the candidate fusion genes which
                         do meet the criteria specified with '--min-dist-
@@ -1482,11 +1487,11 @@ and the command line options are:
                         should comma separated. Default is '7skrna,ambiguous,b
                         anned,bodymap2,conjoing,cta_gene,ctb_gene,ctc_gene,ctd
                         _gene,distance1000bp,ensembl_fully_overlapping,ensembl
-                        _same_strand_overlapping,healthy,metazoa,mirna,mt,non_
-tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
-                        ly_overlapping,refseq_same_strand_overlapping,removed,
-                        rp11_gene,rp_gene,rrna,similar_reads,similar_symbols,s
-                        norna,snrna,trna,yrna'.
+                        _same_strand_overlapping,fragments,healthy,hla,hpa,met
+                        azoa,mirna,mt,non_tumor_cells,pair_pseudo_genes,paralo
+                        gs,refseq_fully_overlapping,refseq_same_strand_overlap
+                        ping,removed,rp11_gene,rp_gene,rrna,similar_reads,simi
+                        lar_symbols,snorna,snrna,trna,yrna'.
     -B BIOTYPES_MORE, --filter-fusion-add=BIOTYPES_MORE
                         Any label of fusion genes specified here will be
                         appended to the list given to '--filter-fusion'. This
@@ -1515,6 +1520,10 @@ tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
                         analysis is done. This information is used for
                         filtering out candidate fusion genes which are
                         homologous. Default is '1.25e-05'.
+    --filter-str=FILTER_STR
+                        If specified to 0 then it skips filtering out the
+                        reads which contain STR (short tandem repeats).
+                        Default is '2.1'.
     --visualization-psl
                         If it is set then the pipeline will use the BLAT
                         aligner for aligning the reads which support the newly
@@ -1528,16 +1537,16 @@ tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
                         still wants to use it, then one should run this
                         'faToTwoBit genome.fa genome.2bit -noMask') in
                         'fusioncatcher/data/current/'.  Instead it is
-                        recommended to use '--visualization-sam'. Default is
-                        'False'.
+                        recommended to use '--visualization-sam'. This will be
+                        deprecated in the future. Default is 'False'.
     --visualization-sam
                         If it is set then the pipeline will use the BOWTIE2
                         aligner for aligning the reads which support the newly
                         found candidate fusion genes. Default is 'False'.
     -M, --assembly      If used then the reads found to support the newly
                         found candidate fusion genes are assembled using
-                        VELVET <http://www.ebi.ac.uk/~zerbino/velvet/>.
-                        Default is 'False'.
+                        VELVET <http://www.ebi.ac.uk/~zerbino/velvet/>. This
+                        will be deprecated in the future. Default is 'False'.
 
   Bioinformatics sonication (for input reads longer than 130bp only):
     --sonication=SONICATION
@@ -1554,18 +1563,8 @@ tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
   Reads filtering/processing options:
     --skip-filter-mt    If specified then it skips filtering out the reads
                         which map on the mitochondrion. Default is 'False'.
-    --skip-filter-phix174
-                        If specified then it skips filtering out the reads
-                        which map on the 'Enterobacteria phage phiX174'
-                        genome. Default is 'False'.
-    --skip-filter-hla   If specified then it filters out the reads which map
-                        on the HLA (histocompatibility) genes. Default is
-                        'False'.
     --skip-filter-vir   If specified then it skips filtering out the reads
                         which map on known genomes of viruses. Default is
-                        'False'.
-    --skip-filter-str   If specified then it skips filtering out the reads
-                        which contain STR (short tandem repeats). Default is
                         'False'.
     --skip-filter-b     If specified then it skips filtering out the reads
                         with B quality scores (i.e. low quality) which are a
@@ -1663,12 +1662,6 @@ tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
                         aligner and all options and methods which make use of
                         STAR will be disabled. STAR aligner is used by
                         default. Default is 'False'.
-    --skip-star-bowtie  If it is set then the pipeline will NOT use the BOWTIE
-                        aligner within the the usage of STAR aligner. By
-                        default it is tried to rescue STAR's partially mapped
-                        reads by runing again BOWTIE aligner and stich
-                        together the the partialy mapped reads. Default is
-                        'False'.
     --skip-bowtie2      If it is set then the pipeline will NOT use the
                         BOWTIE2 aligner and all options and methods which make
                         use of BOWTIE2 will be disabled. BOWTIE2 aligner is
@@ -1682,6 +1675,8 @@ tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
                         genome version GRCh38 (which is default) will NOT be
                         reported also using version GRCh37. Default is
                         'False'.
+
+  Size limits for reference FASTA files for aligners:
     --limit-blat=LIMIT_BLAT
                         The maximum limit of the genome's size which BLAT
                         aligner is able to handle.  If the genome is larger
@@ -1701,7 +1696,7 @@ tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
                         smaller pieces such that the aligner can handle them
                         without an error. Default is '30000000'.
     --limit-bwa=LIMIT_BWA
-                        The maximum limit of the genome's size which MWA
+                        The maximum limit of the genome's size which BWA
                         aligner is able to handle.  If the genome is larger
                         than this limit then it will be split automatically in
                         smaller pieces such that the aligner can handle them
@@ -1753,6 +1748,49 @@ tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
                         3 strictly less than this given threshold will be
                         ignored/skipped. If several are given then they should
                         be comma separated.
+
+  Rescue of partially mapped reads:
+    --skip-rescue       By default it is tried to rescue STAR's partially
+                        mapped reads (which includes also gap alignment for
+                        IG@ fusions) by running again BOWTIE aligner and stich
+                        together the the partialy mapped reads. If this is set
+                        then the pipeline will NOT use the BOWTIE aligner
+                        within the the usage of STAR aligner and no rescuing
+                        is done. Default is 'False'.
+    --rescue-wiggle-size=RESCUE_WIGGLE_SIZE
+                        Some wiggle room is allowed in case of gap alignment
+                        of rescued reads. Default is '0'.
+    --rescue-gap-size=RESCUE_GAP_SIZE
+                        Some very small wiggle room is allowed in case of
+                        rescuing the reads alignments. Default is '0'.
+
+  Rescue of partially mapped reads with gap alignment only for IG@ fusions:
+    --ig-gap-size=LENGTH_GAP
+                        In case of IG@ fusions a gap in alignment of reads is
+                        allowed. The maximum length of the gap is specified
+                        here. Default is '18'.
+    --ig-gap-mismatches=MISMATCHES_GAP
+                        Maximum number of mismatches to be allowed for mapping
+                        reads when also a gap is allowed. Default is '6'.
+    --ig-gap-anchor=LENGTH_ANCHOR_GAP
+                        In case of gap alignments, it is the minimum length
+                        which a read should overlap over (or anchor/overhang
+                        for) fusion junction of a candidate fusion gene in
+                        order to be considered for further analysis. Minimum
+                        accepted value is 10 and it should not exceed half of
+                        the length of the longest read from the input data.
+                        Default is '17'.
+    --ig-gap-wiggle-size=GAP_WIGGLE_SIZE
+                        Some wiggle room is allowed in case of gap alignment
+                        of reads. Default is '2'.
+    --ig-gap-skip-extension
+                        If it is set then the pipeline will NOT use the
+                        extended reads wherever is possible for gap alignment.
+                        Default is 'False'.
+    --ig-bowtie         If it is set then the pipeline will use BOWTIE instead
+                        of STAR for gap alignment. Default is 'False'.
+
+  Reporting:
     --focus=FOCUS_FUSIONS
                         It contains a tab separated file text containd two
                         columns with Ensembl gene ids for candidate fusion
@@ -1763,6 +1801,9 @@ tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
                         The sequences of all reads which support the
                         preliminary candidate fusion genes are extracted.
                         Default is 'False'.
+    --long              A slightly longer report for fusion genes will be
+                        generated (i.e. fusions genes will be given per each
+                        aligner used). Default value is 'False'.
 
   SeqTK subseq tool:
     --extract-buffer-size=EXTRACT_BUFFER_SIZE
@@ -1802,15 +1843,15 @@ tumor_cells,pair_pseudo_genes,paralogs,refseq_ful
     --keep              Preserve intermediate files produced during the run.
                         By default, they are deleted upon exit. Default value
                         is 'False'.
+    --keep-preliminary  If it is set then preliminary candidate fusion genes
+                        are kept (i.e. they are not deleted). Default is
+                        'False'.
     --checksums=CHECKSUMS_FILENAME
                         The name of the checksums file. Default value is
                         'checksums.txt'.
     --bowtie-chunkmbs=CHUNKMBS
                         The value to be passed to the '--chunkmbs' command
                         line option of Bowtie aligner. Default is '128'.
-    --long              A slightly longer report for fusion genes will be
-                        generated (i.e. fusions genes will be given per each
-                        aligner used). Default value is 'False'.
 
 ```
 
@@ -1821,6 +1862,8 @@ fusioncatcher-build [options]
 ```
 and the command line options are:
 ```
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
   -o OUTPUT_DIRECTORY, --output=OUTPUT_DIRECTORY
                         The output directory where all the outputs files  and
                         directories will be written.
@@ -1860,12 +1903,15 @@ and the command line options are:
                         information regarding BLAT please see its license:
                         <http://users.soe.ucsc.edu/~kent/src/>. Default is
                         'False'.
+  --enlarge-genes       If it is set then the genes are enlarged (i.e. their
+                        introns include also in the transcriptome). Default is
+                        'False'.
   --skip-database=SKIP_DATABASE
                         If it is set then the pipeline will skip the specified
                         database(s). The choices are ['cosmic','conjoing','chi
-                        merdb2','ticdb','cgp','cacg','hla']. If several
-                        databases should be skipped, then their names shall be
-                        separated by comma. Default is ''.
+                        merdb2','ticdb','cgp','cacg']. If several databases
+                        should be skipped, then their names shall be separated
+                        by comma. Default is ''.
   -s START_STEP, --start=START_STEP
                         It starts executing the workflow from the given step
                         number. This can be used when the pipeline has
@@ -1888,6 +1934,7 @@ and the command line options are:
   -u CHECKSUMS_FILENAME, --checksums=CHECKSUMS_FILENAME
                         The name of the checksums file. This is intended to be
                         used for debugging. Default value is 'checksums.txt'.
+
 
 ```
 
