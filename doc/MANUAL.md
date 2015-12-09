@@ -741,7 +741,6 @@ where:
   * `/some/input/directory/containing/fastq/files/` - contains the input FASTQ (or SRA if NCBI SRA toolkit is installed) files (and not any other type of files which are not do not contain sequecing data, e.g. readme.txt)
   * `/some/output/directory/` - contains output files (for more information see [here](#output-data)):
     * `final-list_candidate_fusion_genes.txt`
-    * `preliminary-list_candidate_fusion_genes.txt`
     * `supporting-reads_gene-fusions_BOWTIE.zip`
     * `supporting-reads_gene-fusions_BLAT.zip`
     * `supporting-reads_gene-fusions_STAR.zip`
@@ -903,7 +902,6 @@ For example, this is **NOT** a valid input:
 The output files are:
   * `final-list_candidate_fusion_genes.txt` - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3c the coordinates of fusion genes are given here for human genome using **only** assembly **hg38/GRCh38**; See [Table 1](#output-data) for columns' descriptions;
   * `final-list_candidate_fusion_genes.GRCh37.txt` - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3d the coordinates of fusion genes are given here for human genome using assembly **hg19/GRCh37**; See [Table 1](#output-data) for columns' descriptions;
-  * `preliminary-list_candidate_fusion_genes.txt` - preliminary list of candidates fusion genes which is used further to find the final list of candidate fusion genes (it contains the candidate fusion genes without their junction sequence and point); See [Table 2](#output-data) for columns' descriptions;
   * `supporting-reads_gene-fusions_BOWTIE.zip` - sequences of short reads supporting the newly found candidate fusion genes found using only and exclusively the Bowtie aligner;
   * `supporting-reads_gene-fusions_BLAT.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and Blat aligners;
   * `supporting-reads_gene-fusions_STAR.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and STAR aligners;
@@ -943,21 +941,7 @@ Table 1 - Description of columns of file `final-list_candidate-fusion-genes.txt`
 | **Predicted\_fused\_transcripts** | All possible known fused transcripts in format ENSEMBL-TRANSCRIPT-1:POSITION-1/ENSEMBLE-TRANSCRIPT-B:POSITION-2, where are fused the sequence 1:POSITION-1 of transcript ENSEMBL-TRANSCRIPT-1 with sequence POSITION-2:END of transcript ENSEMBL-TRANSCRIPT-2 |
 | **Predicted\_fused\_proteins** | Predicted amino acid sequences of all possible fused proteins |
 
-Table 2 - Description of columns of file `preliminary-list_candidate-fusion-genes.txt`
-
-| **Column** | **Description** |
-|:-----------|:----------------|
-| **Fusion\_gene\_1** | Ensembl gene id of the 5' end fusion partner |
-| **Fusion\_gene\_2** | Ensembl gene id of the 3' end fusion partner |
-| **Count\_paired-end\_reads** | Count of pair-end reads supporting the fusion |
-| **Fusion\_gene\_symbol\_1** | Gene symbol of the 5' end fusion partner |
-| **Fusion\_gene\_symbol\_2** | Gene symbol of the 3' end fusion partner |
-| **Fusion\_description** | Type of the fusion gene (see the Table 3) |
-| **Analysis\_status** | If a fusion gene is considered a false positive is labeled as **skipped** and it is not used further to find its junction sequence and point. If a fusion gene is considered that it might be a real fusion gene then it is labeled as **further\_analysis** and *FusionCatcher* will try to finds its junction sequence and junction point|
-| **Counts\_of\_common\_mapping\_reads** | Count of reads mapping simultaneously on both genes which form the fusion gene. This is an indication how similar are the DNA/RNA sequences of the genes forming the fusion gene (i.e. what is their homology because highly homologous genes tend to appear show as candidate fusion genes). In case of completely different sequences of the genes involved in forming a fusion gene then here it is expected to have the value zero. |
-
-
-Table 3 - Labels used to mark fusion genes (i.e. column `Fusion_description` from Tables 1 and 2) in files `final-list_candidate-fusion-genes.txt` and `preliminary-list_candidate-fusion-genes.txt`
+Table 3 - Labels used to mark fusion genes (i.e. column `Fusion_description` from Table 1) in files `final-list_candidate-fusion-genes.txt` and `preliminary-list_candidate-fusion-genes.txt`
 
 | **Fusion\_description** | **Description** |
 |:------------------------|:----------------|
