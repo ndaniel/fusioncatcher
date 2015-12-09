@@ -107,9 +107,9 @@ if __name__ == "__main__":
                                             el!='--normal' and
                                             el!='-o')]
         if head.endswith('fusioncatcher-batch.py'):
-            newcmds.insert(0,head.replace('fusioncatcher-batch.py','fusioncatcher.py'))
+            newcmds.insert(0,head.replace('fusioncatcher-batch.py','fusioncatcher.py --keep-preliminary'))
         else:
-            newcmds.insert(0,head.replace('fusioncatcher-batch','fusioncatcher.py'))
+            newcmds.insert(0,head.replace('fusioncatcher-batch','fusioncatcher.py --keep-preliminary'))
         if xin and os.path.isdir(xin):
             # input is a directory and contains subdirectories, one subdirectory is one sample
             dirs = sorted([el for el in os.listdir(xin) if os.path.isdir(os.path.join(xin,el)) and not el.startswith('.')])

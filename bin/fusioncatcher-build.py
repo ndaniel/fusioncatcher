@@ -1385,22 +1385,23 @@ if __name__ == '__main__':
         job.run(error_message = ("If this steps fails to run for whatever reason "+
                 "then it can be skipped by re-running fusioncatcher-build with "+
                 "command line option '--skip-database conjoing'! This database is optional."))
-                
-        job.add('grep',kind='program')
-        job.add('-v',kind='parameter')
-        job.add("'ENSG00000047932\tENSG00000047936'",kind='parameter') # remove GOPC--ROS1
-        job.add('',outdir('conjoing.txt'),kind='input')
-        job.add('|',kind='parameter')
-        job.add('grep',kind='parameter')
-        job.add('-v',kind='parameter')
-        job.add("'ENSG00000134853\tENSG00000145216'",kind='parameter') # remove PDGFRA--FIP1L1
-        job.add('>',outdir('conjoing_.txt'),kind='output')
-        job.run()
 
-        job.add('mv',kind='program')
-        job.add('',outdir('conjoing_.txt'),kind='output')
-        job.add('',outdir('conjoing.txt'),kind='output')
-        job.run()
+        if options.organism == 'homo_sapiens':
+            job.add('grep',kind='program')
+            job.add('-v',kind='parameter')
+            job.add("'ENSG00000047932\tENSG00000047936'",kind='parameter') # remove GOPC--ROS1
+            job.add('',outdir('conjoing.txt'),kind='input')
+            job.add('|',kind='parameter')
+            job.add('grep',kind='parameter')
+            job.add('-v',kind='parameter')
+            job.add("'ENSG00000134853\tENSG00000145216'",kind='parameter') # remove PDGFRA--FIP1L1
+            job.add('>',outdir('conjoing_.txt'),kind='output')
+            job.run()
+
+            job.add('mv',kind='program')
+            job.add('',outdir('conjoing_.txt'),kind='output')
+            job.add('',outdir('conjoing.txt'),kind='output')
+            job.run()
 
 
     elif job.run():

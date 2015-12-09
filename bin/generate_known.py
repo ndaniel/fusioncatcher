@@ -5318,7 +5318,6 @@ if __name__ == '__main__':
         ['TUT1','ZNF564'],
         ['TXNDC11','ZC3H7A'],
         ['TYK2','ZNF340'],
-        ['TYW1','TYW1B'],
         ['UBQLN4','ZSWIM4'],
         ['UBR4','ZFP37'],
         ['UBR5','ZNF423'],

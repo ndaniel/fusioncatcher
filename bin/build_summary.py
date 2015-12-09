@@ -197,6 +197,8 @@ if __name__ == '__main__':
         results = []
         results.append("Very short summary of found candidate fusion genes\n")
         results.append("==================================================\n\n")
+        if top_virus:
+            results.append("The input sample contains sequencing reads mapping on '%s'.\n\n" % (top_virus,))
         results.append("No fusion genes found.\n\n")
         results.append("No fusion transcripts found.\n")
 

@@ -1395,6 +1395,13 @@ if __name__ == "__main__":
                              "By default, they are deleted upon exit. "+
                              "Default value is '%default'.")
 
+    group.add_option("--keep-preliminary",
+                      action = "store_true",
+                      dest = "keep_preliminary",
+                      default = False,
+                      help = "If it is set then preliminary candidate fusion genes are kept (i.e. they are not deleted). "+
+                             "Default is '%default'.")
+
     group.add_option("--checksums",
                       action = "store",
                       type = "string",
@@ -9322,7 +9329,7 @@ if __name__ == "__main__":
                 "Preliminary list of candidate fusion genes:",
                 "==========================================="],
          bottom = "\n\n\n",
-         temp_path = temp_flag)
+         temp_path = temp_flag if not options.keep_preliminary else 'no')
 
 
     #

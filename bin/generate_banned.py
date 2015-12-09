@@ -6403,9 +6403,10 @@ if __name__ == '__main__':
         ['ZNF674','ZNF93'],
         ['ZNF674','ZSCAN30'],
         ['ZNF708','ZNF738'],
-        ['ZNF761','ZNF765']
-        
-        
+        ['ZNF761','ZNF765'],
+        ['GAMT','PPP2R5B'],
+        ['KIAA0922','DAD1'],
+        ['TYW1','TYW1B']
         
         
         

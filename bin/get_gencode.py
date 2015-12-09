@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
             list_files = [el.replace("release_","") for el in list_files if el.lower().startswith('release_')]
             if options.organism.lower() == 'homo_sapiens':
-                list_files = sorted([int(el) for el in list_files if el.isdigit()])
+                list_files = sorted([int(el) for el in list_files if el.isdigit() and el != '24']) # new "and el!='24'" because is something wrong with release_24
             else:
                 list_files = sorted(list_files)
             version = str(list_files[-1])
