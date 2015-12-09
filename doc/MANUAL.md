@@ -558,7 +558,6 @@ This is an example of finding fusion genes in the BT474 cell line using the publ
   * if the run was successful then there should be the (non-empty) files (for more information see [here](#output-data)):
    ```
    ~/bt474_fusions/final-list_candidate_fusion_genes.txt
-   ~/bt474_fusions/preliminary-list_candidate_fusion_genes.txt
    ~/bt474_fusions/supporting-reads_gene-fusions_BOWTIE.zip
    ~/bt474_fusions/supporting-reads_gene-fusions_BLAT.zip
    ~/bt474_fusions/supporting-reads_gene-fusions_STAR.zip
@@ -941,7 +940,7 @@ Table 1 - Description of columns of file `final-list_candidate-fusion-genes.txt`
 | **Predicted\_fused\_transcripts** | All possible known fused transcripts in format ENSEMBL-TRANSCRIPT-1:POSITION-1/ENSEMBLE-TRANSCRIPT-B:POSITION-2, where are fused the sequence 1:POSITION-1 of transcript ENSEMBL-TRANSCRIPT-1 with sequence POSITION-2:END of transcript ENSEMBL-TRANSCRIPT-2 |
 | **Predicted\_fused\_proteins** | Predicted amino acid sequences of all possible fused proteins |
 
-Table 3 - Labels used to mark fusion genes (i.e. column `Fusion_description` from Table 1) in files `final-list_candidate-fusion-genes.txt` and `preliminary-list_candidate-fusion-genes.txt`
+Table 3 - Labels used to mark fusion genes (i.e. column `Fusion_description` from Table 1) in file `final-list_candidate-fusion-genes.txt`
 
 | **Fusion\_description** | **Description** |
 |:------------------------|:----------------|
@@ -966,7 +965,7 @@ Table 3 - Labels used to mark fusion genes (i.e. column `Fusion_description` fro
 | **ucsc\_fully\_overlapping** | the genes forming the fusion gene are fully overlapping according to UCSC database. *A candidate fusion gene having this label has a very high probability of being a false positive.* |
 | **refseq\_fully\_overlapping** | the genes forming the fusion gene are fully overlapping according to RefSeq NCBI database. *A candidate fusion gene having this label has a very high probability of being a false positive.* |
 | **gtex**             | fusion gene has been seen in a healthy sample. It has been found in [GTEx database](http://www.gtexportal.org/home/) of healthy tissues (thru [FusionAnnotator](https://github.com/FusionAnnotator/FusionAnnotator)). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
-| **healthy**             | fusion gene has been seen in a healthy sample. These have been found in healthy samples but the support for them is less strong (i.e. paired reads were found to map on both genes but no fusion junction was found) than in the case of **banned** label (i.e. it showed up in file preliminary-list\_candidate\_fusion\_genes.txt). Also genes which have some degree of sequence similarity may show up marked like this.*A candidate fusion gene having this label has a small probability of being a false positive in case that one looks for fusion genes specific to a disease.* |
+| **healthy**             | fusion gene has been seen in a healthy sample. These have been found in healthy samples but the support for them is less strong (i.e. paired reads were found to map on both genes but no fusion junction was found) than in the case of **banned** label (i.e. it showed up in file preliminary list of candidate fusion genes). Also genes which have some degree of sequence similarity may show up marked like this.*A candidate fusion gene having this label has a small probability of being a false positive in case that one looks for fusion genes specific to a disease.* |
 | **hpa**             | fusion gene has been seen in a healthy sample. It has been found in [RNA-seq database of 27 healthy tissues](http://dx.doi.org/10.1074/mcp.M113.035600). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
 | **known\_fusion**       | fusion gene which has been previously reported or published in scientific articles/reports/books/abstracts/databases indexed by [Google](http://www.google.com/), [Google Scholar](http://scholar.google.com/), [PubMed](http://www.ncbi.nlm.nih.gov/pubmed), etc. This label has only the role to answer with YES or NO the question "has ever before a given (candidate) fusion gene been published or reported?". This label does not have in anyway the role to provide the original references to the original scientific articles/reports/books/abstracts/databases for a given fusion gene. |
 | **matched-normal**      | candidate fusion gene (which is supported by paired reads mapping on both genes and also by reads mapping on the junction point) was found also in the matched normal sample given as input to the command line option '--normal' |
