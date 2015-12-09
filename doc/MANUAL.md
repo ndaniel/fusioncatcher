@@ -612,7 +612,7 @@ fusioncatcher.py
 --output ~/results/
 ```
 
-The somatic fusion genes for BT-474 will be found in `~/results/bt474/final-list_candidate_fusion_genes.txt` file. The fusion genes which marked as **matched-normal** (see column 3 and for more see [Table 2](#output-data)) in BT-474 (that is `~/results/bt474/final-list_candidate_fusion_genes.txt` file) have been found also in the healthy sample also and most likely they are not somatic.
+The somatic fusion genes for BT-474 will be found in `~/results/bt474/final-list_candidate_fusion_genes.txt` file. The fusion genes which marked as **matched-normal** (see column 3) in BT-474 (that is `~/results/bt474/final-list_candidate_fusion_genes.txt` file) have been found also in the healthy sample also and most likely they are not somatic.
 
 In case that there are several tumor samples and their matched healthy samples then batch mode of *FusionCatcher* may be used, as follows:
 ```
@@ -934,13 +934,13 @@ Table 1 - Description of columns of file `final-list_candidate-fusion-genes.txt`
 | **Longest\_anchor\_found** | Longest anchor (hangover) found among the unique reads mapping on the fusion junction |
 | **Fusion\_finding\_method** | Aligning method used for mapping the reads and finding the fusion genes. Here are two methods used which are: (i) **BOWTIE** = only Bowtie aligner is used for mapping the reads on the genome and exon-exon fusion junctions, (ii) **BOWTIE+BLAT** = Bowtie aligner is used for mapping reads on the genome and BLAT is used for mapping reads for finding the fusion junction,  (iii) **BOWTIE+STAR** = Bowtie aligner is used for mapping reads on the genome and STAR is used for mapping reads for finding the fusion junction, (iv) **BOWTIE+BOWTIE2** = Bowtie aligner is used for mapping reads on the genome and Bowtie2 is used for mapping reads for finding the fusion junction, and (v) **BOWTIE+BWA** = Bowtie aligner is used for mapping reads on the genome and Bowtie2 is used for mapping reads for finding the fusion junction. |
 | **Fusion\_sequence** | The inferred fusion junction (the asterisk sign marks the junction point) |
-| **Fusion\_description** | Type of the fusion gene (see the Table 3) |
+| **Fusion\_description** | Type of the fusion gene (see the Table 2) |
 | **Counts\_of\_common\_mapping\_reads** | Count of reads mapping simultaneously on both genes which form the fusion gene. This is an indication how similar are the DNA/RNA sequences of the genes forming the fusion gene (i.e. what is their homology because highly homologous genes tend to appear show as candidate fusion genes). In case of completely different sequences of the genes involved in forming a fusion gene then here it is expected to have the value zero. |
 | **Predicted\_effect** | Predicted effect of the candidate fusion gene using the annotation from Ensembl database. This is shown in format **effect\_gene\_1**/**effect\_gene\_2**, where the possible values for effect\_gene\_1 or effect\_gene\_2 are: **intergenic**, **intronic**, **exonic(no-known-CDS)**, **UTR**, **CDS(not-reliable-start-or-end)**, **CDS(truncated)**, or **CDS(complete)**. In case that the fusion junction for both genes is within their CDS (coding sequence) then only the values **in-frame** or **out-of-frame** will be shown. |
 | **Predicted\_fused\_transcripts** | All possible known fused transcripts in format ENSEMBL-TRANSCRIPT-1:POSITION-1/ENSEMBLE-TRANSCRIPT-B:POSITION-2, where are fused the sequence 1:POSITION-1 of transcript ENSEMBL-TRANSCRIPT-1 with sequence POSITION-2:END of transcript ENSEMBL-TRANSCRIPT-2 |
 | **Predicted\_fused\_proteins** | Predicted amino acid sequences of all possible fused proteins |
 
-Table 3 - Labels used to mark fusion genes (i.e. column `Fusion_description` from Table 1) in file `final-list_candidate-fusion-genes.txt`
+Table 2 - Labels used to mark fusion genes (i.e. column `Fusion_description` from Table 1) in file `final-list_candidate-fusion-genes.txt`
 
 | **Fusion\_description** | **Description** |
 |:------------------------|:----------------|
