@@ -940,7 +940,7 @@ Table 1 - Description of columns of file `final-list_candidate-fusion-genes.txt`
 | **Predicted\_fused\_transcripts** | All possible known fused transcripts in format ENSEMBL-TRANSCRIPT-1:POSITION-1/ENSEMBLE-TRANSCRIPT-B:POSITION-2, where are fused the sequence 1:POSITION-1 of transcript ENSEMBL-TRANSCRIPT-1 with sequence POSITION-2:END of transcript ENSEMBL-TRANSCRIPT-2 |
 | **Predicted\_fused\_proteins** | Predicted amino acid sequences of all possible fused proteins |
 
-Table 2 - Labels used to mark fusion genes (i.e. column `Fusion_description` from Table 1) in file `final-list_candidate-fusion-genes.txt`
+Table 2 - Labels used to describe the found fusion genes (column *Fusion\_ description* in file `final-list_candidate-fusion-genes.txt`)
 
 | **Fusion\_description** | **Description** |
 |:------------------------|:----------------|
