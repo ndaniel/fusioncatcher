@@ -917,7 +917,7 @@ FusionCatcher reports:
  * every alternative splicing event found for each fusion gene (i.e. alternative fusion isoforms of the same fusion gene)
 
 
-Table 1 - Description of columns of file `final-list_candidate-fusion-genes.txt`
+Table 1 - Columns description for file `final-list_candidate-fusion-genes.txt`
 
 | **Column** | **Description** |
 |:-----------|:----------------|
@@ -940,11 +940,12 @@ Table 1 - Description of columns of file `final-list_candidate-fusion-genes.txt`
 | **Predicted\_fused\_transcripts** | All possible known fused transcripts in format ENSEMBL-TRANSCRIPT-1:POSITION-1/ENSEMBLE-TRANSCRIPT-B:POSITION-2, where are fused the sequence 1:POSITION-1 of transcript ENSEMBL-TRANSCRIPT-1 with sequence POSITION-2:END of transcript ENSEMBL-TRANSCRIPT-2 |
 | **Predicted\_fused\_proteins** | Predicted amino acid sequences of all possible fused proteins |
 
-Table 2 - Labels used to describe the found fusion genes (column *Fusion\_ description* in file `final-list_candidate-fusion-genes.txt`)
+Table 2 - Labels used to describe the found fusion genes (column *Fusion\_ description* from file `final-list_candidate-fusion-genes.txt`)
 
 | **Fusion\_description** | **Description** |
 |:------------------------|:----------------|
 | **antisense**           | one or both genes is a gene coding for [antisense RNA](http://en.wikipedia.org/wiki/Antisense_RNA)|
+| **adjacent**           | both genes forming the fusion are adjacent on the genome (i.e. same strand and there is no other genes situated between them on the same strand)|
 | **banned**              | fusion gene is on a list of known false positive fusion genes. These were found with very strong supporting data in healthy samples (i.e. it showed up in file final-list\_candidate\_fusion\_genes.txt). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
 | **bodymap2**            | fusion gene is on a list of known false positive fusion genes. It has been found in healthy human samples collected from 16 organs from  [Illumina BodyMap2 RNA-seq database](http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
 | **cell\_lines**         | known fusion gene from paper: C. Klijn et al., A comprehensive transcriptional portrait of human cancer cell lines, Nature Biotechnology, Dec. 2014, [DOI:10.1038/nbt.3080](http://dx.doi.org/10.1038/nbt.3080) |
@@ -967,7 +968,7 @@ Table 2 - Labels used to describe the found fusion genes (column *Fusion\_ descr
 | **gtex**             | fusion gene has been seen in a healthy sample. It has been found in [GTEx database](http://www.gtexportal.org/home/) of healthy tissues (thru [FusionAnnotator](https://github.com/FusionAnnotator/FusionAnnotator)). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
 | **healthy**             | fusion gene has been seen in a healthy sample. These have been found in healthy samples but the support for them is less strong (i.e. paired reads were found to map on both genes but no fusion junction was found) than in the case of **banned** label (i.e. it showed up in file preliminary list of candidate fusion genes). Also genes which have some degree of sequence similarity may show up marked like this.*A candidate fusion gene having this label has a small probability of being a false positive in case that one looks for fusion genes specific to a disease.* |
 | **hpa**             | fusion gene has been seen in a healthy sample. It has been found in [RNA-seq database of 27 healthy tissues](http://dx.doi.org/10.1074/mcp.M113.035600). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
-| **known\_fusion**       | fusion gene which has been previously reported or published in scientific articles/reports/books/abstracts/databases indexed by [Google](http://www.google.com/), [Google Scholar](http://scholar.google.com/), [PubMed](http://www.ncbi.nlm.nih.gov/pubmed), etc. This label has only the role to answer with YES or NO the question "has ever before a given (candidate) fusion gene been published or reported?". This label does not have in anyway the role to provide the original references to the original scientific articles/reports/books/abstracts/databases for a given fusion gene. |
+| **known**       | fusion gene which has been previously reported or published in scientific articles/reports/books/abstracts/databases indexed by [Google](http://www.google.com/), [Google Scholar](http://scholar.google.com/), [PubMed](http://www.ncbi.nlm.nih.gov/pubmed), etc. This label has only the role to answer with YES or NO the question "has ever before a given (candidate) fusion gene been published or reported?". This label does not have in anyway the role to provide the original references to the original scientific articles/reports/books/abstracts/databases for a given fusion gene. |
 | **matched-normal**      | candidate fusion gene (which is supported by paired reads mapping on both genes and also by reads mapping on the junction point) was found also in the matched normal sample given as input to the command line option '--normal' |
 | **partial-matched-normal** | candidate fusion gene (which is supported by paired reads mapping on both genes **but** _no_ reads were found which map on the junction point) was found also in the matched normal sample given as input to the command line option '--normal'. This is much weaker than **matched-normal**. |
 | **prostates**           | known fusion gene found in 150 prostate tumors RNAs from paper: D. Robison et al, Integrative Clinical Genomics of Advanced Prostate Cancer, Cell, Vol. 161, May 2015, http://dx.doi.org/10.1016/j.cell.2015.05.001 |
