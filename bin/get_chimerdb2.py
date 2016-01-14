@@ -11,7 +11,7 @@ from sheets named PubMed, SangerCGP, OMIM, Milteman from the file:
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -112,6 +112,8 @@ PubMed as source) from ChimerDB 2.0 database."""
     #http://ercsb.ewha.ac.kr/FusionGene/document/PO_down.xls
     url = '/FusionGene/document/PO_down.xls'
 
+    headers = { 'User-Agent' : 'Mozilla/5.0' }
+
     if options.organism.lower() == 'homo_sapiens':
 
         file(os.path.join(options.output_directory,'version.txt'),'a').writelines(['ChimerDB database version: 2.0\n'])
@@ -120,7 +122,8 @@ PubMed as source) from ChimerDB 2.0 database."""
 
         sem = True
         try:
-            d = urllib2.urlopen('%s%s' % (options.server,url))
+            req = urllib2.Request('%s%s' % (options.server,url), headers=headers)
+            d = urllib2.urlopen(req)
             file(tmp_file,'w').write(d.read())
         except:
             sem = False

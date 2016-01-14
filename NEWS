@@ -1,6 +1,16 @@
 Version Release History for FusionCatcher
 =========================================
 
+Version 0.99.5a beta - January 15, 2016
+---------------------------------------
+ * added support for Ensembl version 83 and human genome GRCh38.p5
+ * fixed a bug which affected the sensitivity of finding fusions which involve IGH loci
+ * default number of threads/CPUs to be used can now be set also by configuration file 'fusioncatcher/etc/configuration.cfg'
+ * added to the installation test the IGH@-MALT1 fusion
+ * added support for STAR v2.5.0c aligner
+ * fixed several minor bugs
+ * updated manual
+
 Version 0.99.4e beta - December 8, 2015
 -----------------------------------------
  * added support for Ensembl version 82

@@ -14,7 +14,7 @@ Required dependencies:
 - BioPython version 1.65 (>=1.50 is fine)
 - Bowtie 64-bit version 1.1.2  <http://bowtie-bio.sourceforge.net/index.shtml>
 - Bowtie2 64-bit version 2.2.6  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
-- STAR version 2.4.2a <http://github.com/alexdobin/STAR>
+- STAR version 2.5.0c <http://github.com/alexdobin/STAR>
 - BWA version 0.7.12  <http://sourceforge.net/projects/bio-bwa>
 - SEQTK version 1.0-r82b-dirty  <http://github.com/ndaniel/seqtk>
 
@@ -56,7 +56,7 @@ Genomic Databases (used/installed automatically by FusionCatcher):
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -99,8 +99,6 @@ import math
 import configuration
 
 
-cpu_count = multiprocessing.cpu_count()
-cpu_count = cpu_count if cpu_count < 17 else 16
 
 # for sort in linux
 locale.setlocale(locale.LC_ALL, 'C')
@@ -249,16 +247,16 @@ usage = "%prog [options]"
 epilog = ("\n" +
          "Author: Daniel Nicorici \n" +
          "Email: Daniel.Nicorici@gmail.com \n" +
-         "Copyright (c) 2009-2015, Daniel Nicorici \n " +
+         "Copyright (c) 2009-2016, Daniel Nicorici \n " +
          "\n")
 
-description = ("FusionCatcher searches for novel gene fusions in RNA-seq \n"+
-               "paired-end reads data produced by the Illumina sequencing \n"+
+description = ("FusionCatcher searches for novel and known somatic gene fusions in RNA-seq \n"+
+               "paired-end/single-end reads data produced by the Illumina sequencing \n"+
                "platforms (like for example: Illumina HiSeq 2500, \n"+
                "Illumina HiSeq 2000, Illumina HiSeq X, Illumina NextSeq 500, \n"+
-               "Illumina GAIIx, Illumina GAII, Illumina MiSeq). \n")
+               "Illumina GAIIx, Illumina GAII, Illumina MiSeq, Illumina MiniSeq). \n")
 
-version = "%prog 0.99.4e beta"
+version = "%prog 0.99.5a beta"
 
 
 if __name__ == "__main__":
@@ -354,11 +352,13 @@ if __name__ == "__main__":
                       action = "store",
                       type = "int",
                       dest = "processes",
-                      default = cpu_count,
-                      help = "Number or processes/threads to be used for running Bowtie, "+
+                      default = 0,
+                      help = "Number or processes/threads to be used for running SORT, Bowtie, "+
                              "BLAT, STAR, BOWTIE2 and other tools/programs. "+
-                             "By default the number of processes is chosen to "+
-                             "be equal to the number of found CPUs. By default no more than 16 processes will be used."+
+                             "If it is 0 (as it is by default) then the number of processes/threads will be "+
+                             "read first from 'fusioncatcher/etc/configuration.cfg' file. If even there it is still set to 0 then "+
+                             "'min(number-of-CPUs-found,16)' processes will be used. Setting number of threads in 'fusioncatcher/etc/configuration.cfg' "+
+                             "might be usefull in situations where one server is shared between several users and in order to limit FusionCatcher using all the CPUs/resources."+
                              "Default is '%default'. ")
 
     parser.add_option("--config",
@@ -1619,6 +1619,14 @@ if __name__ == "__main__":
             print >>sys.stderr,"................................................................................"
             sys.exit(1)
 
+    if not options.processes:
+        p = confs.get("THREADS",None)
+        if p:
+            options.processes = int(p)
+    if not options.processes:
+        options.processes = multiprocessing.cpu_count()
+        options.processes = options.processes if options.processes < 17 else 16
+
     #
     # DIRECTORIES
     #
@@ -2199,6 +2207,7 @@ if __name__ == "__main__":
             "Please, also read its commercial "+
             "license <http://www.kentinformatics.com/> if this applies in your case!"))
 
+    star25 = False
     if not options.skip_star:
         # save version of BLAT used to analyze the data
         job.add('printf',kind='program')
@@ -2217,8 +2226,10 @@ if __name__ == "__main__":
 
         os.system("STAR --version > '%s'" % (outdir('star_version.txt'),))
         last_line = file(outdir('star_version.txt'),'r').readline().lower().rstrip("\r\n")
-        #correct_version = 'star_2.5.0a'
-        correct_version = 'star_2.4.2a'
+        correct_version = 'star_2.5.0c'
+        #correct_version = 'star_2.4.2a'
+        if correct_version.lower().startswith('star_2.5'):
+            star25 = True
         if last_line != correct_version:
             job.close()
             print >>sys.stderr,"\n\n\nERROR: Wrong version of STAR found! It should be '%s'.\n" % (correct_version,)
@@ -3165,9 +3176,10 @@ if __name__ == "__main__":
     info(job,
          fromfile = outdir('log_counts_original_reads.txt'),
          tofile = info_file,
-         top = ["Total counts of all original reads (after the reads marked by Illumina as bad have been removed):",
-                "-------------------------------------------------------------------------------------------------"],
-         bottom = "\n\n\n",
+         top = ["------------------------------------------------------------------------------------------------------",
+                "Total counts of all input/original reads (reads marked by Illumina as bad are not included here):",
+                "------------------------------------------------------------------------------------------------------"],
+         bottom = "\n------------------------------------------------------------------------------------------------------\n\n",
          temp_path = temp_flag)
 #    job.add('printf',kind='program')
 #    job.add(('"\nTotal Reads Counts (after the reads marked by Illumina as bad have been removed):\n'+
@@ -4835,7 +4847,7 @@ if __name__ == "__main__":
     # label fusion genes -- known fusions
     job.add('label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_25.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','known_fusion',kind='parameter')
+    job.add('--label','known',kind='parameter')
     job.add('--filter_gene_pairs',datadir('known.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_26.txt'),kind='output')
     job.run()
@@ -5156,7 +5168,7 @@ if __name__ == "__main__":
     else:
         job.add('--skip_labels',options.biotypes,kind='parameter') # skips the fusion genes candidates which are labeled
     if not options.skip_known_fusions:
-        job.add('--allowed_labels','known_fusion,cosmic,ticdb,cgp',kind='parameter') # it allows the known fusions to be considered for further analysis
+        job.add('--allowed_labels','known,cosmic,ticdb,cgp',kind='parameter') # it allows the known fusions to be considered for further analysis
     if options.focus_fusions:
         job.add('--further_labels','focus',kind='parameter') # it allows the focus fusion genes to pass even when they are under the threshold
     job.add('--output',outdir('candidate_fusion-genes_exon-exon.txt'),kind='output')
@@ -5177,7 +5189,7 @@ if __name__ == "__main__":
     job.add('',outdir('candidate_fusion-genes_further.txt'),kind='input')
     job.add('|',kind='parameter')
     job.add('grep',kind='parameter')
-    job.add('"known_fusion"',kind='parameter')
+    job.add('"known"',kind='parameter')
     job.add('|',kind='parameter')
     job.add('grep',kind='parameter')
     job.add('"further_analysis"',kind='parameter')
@@ -7177,6 +7189,8 @@ if __name__ == "__main__":
                         job.add('--genomeChrBinNbits',genomechrbinnbits,kind='parameter')
                         job.add('--genomeSAindexNbases',genomesaindexnbases,kind='parameter')
                         job.add('--runMode','genomeGenerate',kind='parameter')
+                        if star25:
+                            job.add('--genomeSuffixLengthMax','10000',kind='parameter') # for STAR 2.5.x
                         job.add('--runThreadN',options.processes,kind='parameter',checksum='no')
                         job.add('--genomeDir',gd,kind='output')
                         job.add('--genomeFastaFiles',part,kind='input')
@@ -7209,7 +7223,8 @@ if __name__ == "__main__":
                         job.add('--runThreadN',options.processes,kind='parameter',checksum='no')
                         job.add('--seedSearchStartLmax',length_anchor_star,kind='parameter') # 20 # default is: 50
                         job.add('--alignSJoverhangMin',length_anchor_star-1,kind='parameter') # 9 # default is 5? # NEW in v0.99.4b
-                        #job.add('--alignSJstitchMismatchNmax','5 -1 5 5',kind='parameter')# default is: 0 -1 0 0 # added in STAR 2.5.0a
+                        if star25:
+                            job.add('--alignSJstitchMismatchNmax','5 -1 5 5',kind='parameter')# default is: 0 -1 0 0 # added in STAR 2.5.x
                         job.add('--outSJfilterOverhangMin','10 10 10 10',kind='parameter')# default is: 30 12 12 12 ("non-canonical motifs","GT/AG"motif,"GC/AG"motif,"AT/AC"motif)
                         job.add('--outSJfilterCountUniqueMin','1 1 1 1',kind='parameter')# default is: 3 1 1 1
                         job.add('--outSJfilterCountTotalMin','1 1 1 1',kind='parameter')# default is: 3 1 1 1
@@ -7571,6 +7586,8 @@ if __name__ == "__main__":
                                         job.add('--genomeSAindexNbases',genomesaindexnbases2,kind='parameter')
                                         job.add('--runMode','genomeGenerate',kind='parameter')
                                         job.add('--runThreadN',options.processes,kind='parameter',checksum='no')
+                                        if star25:
+                                            job.add('--genomeSuffixLengthMax','10000',kind='parameter') # for STAR 2.5.x
                                         job.add('--genomeDir',outdir('gene-gene-bowtie_star2.'+str(i)+'/'),kind='output')
                                         job.add('--genomeFastaFiles',gda,kind='input',temp_path=temp_flag)
                                         job.add('--outFileNamePrefix',outdir('gene-gene-bowtie_star2_results.'+str(i)+'/'),kind='output',temp_path=temp_flag)
@@ -7591,6 +7608,8 @@ if __name__ == "__main__":
                                         job.add('--genomeDir',outdir('gene-gene-bowtie_star2.'+str(i)+'/'),kind='input',temp_path=temp_flag)
                                         job.add('--runThreadN',options.processes,kind='parameter',checksum='no')
                                         job.add('--seedSearchStartLmax',length_anchor_star,kind='parameter')# default is: 50
+                                        if star25:
+                                            job.add('--alignSJstitchMismatchNmax','5 -1 5 5',kind='parameter')# default is: 0 -1 0 0 # added in STAR 2.5.x
                                         job.add('--limitOutSAMoneReadBytes','100000000',kind='parameter')
                                         job.add('--alignTranscriptsPerReadNmax','1000000',kind='parameter') # if this is missing STAR crashes in some cases
                                         job.add('--scoreGap','-10000',kind='parameter')
@@ -7696,6 +7715,8 @@ if __name__ == "__main__":
                     job.add('--genomeSAindexNbases',genomesaindexnbases,kind='parameter')
                     job.add('--runMode','genomeGenerate',kind='parameter')
                     job.add('--runThreadN',options.processes,kind='parameter',checksum='no')
+                    if star25:
+                        job.add('--genomeSuffixLengthMax','10000',kind='parameter') # for STAR 2.5.x
                     job.add('--genomeDir',outdir('gene-gene-star/'),kind='output')
                     job.add('--genomeFastaFiles',outdir('gene-gene.fa'),kind='input')
                     job.add('--outFileNamePrefix',outdir('gene-gene-star-results/'),kind='output')
@@ -7729,7 +7750,8 @@ if __name__ == "__main__":
                     job.add('--runThreadN',options.processes,kind='parameter',checksum='no')
                     job.add('--seedSearchStartLmax',length_anchor_star,kind='parameter')# default is: 50
                     job.add('--alignSJoverhangMin',length_anchor_star-1,kind='parameter') #9 # default is 5? # NEW in v0.99.4b
-                    #job.add('--alignSJstitchMismatchNmax','5 -1 5 5',kind='parameter')# default is: 0 -1 0 0 # added in STAR 2.5.0a
+                    if star25:
+                        job.add('--alignSJstitchMismatchNmax','5 -1 5 5',kind='parameter')# default is: 0 -1 0 0 # added in STAR 2.5.0a
                     job.add('--outSJfilterOverhangMin','10 10 10 10',kind='parameter')# default is: 30 12 12 12 ("non-canonical motifs","GT/AG"motif,"GC/AG"motif,"AT/AC"motif)
                     job.add('--outSJfilterCountUniqueMin','1 1 1 1',kind='parameter')# default is: 3 1 1 1
                     job.add('--outSJfilterCountTotalMin','1 1 1 1',kind='parameter')# default is: 3 1 1 1
@@ -8137,6 +8159,8 @@ if __name__ == "__main__":
                                     job.add('--genomeChrBinNbits',genomechrbinnbits2,kind='parameter')
                                     job.add('--genomeSAindexNbases',genomesaindexnbases2,kind='parameter')
                                     job.add('--runMode','genomeGenerate',kind='parameter')
+                                    if star25:
+                                        job.add('--genomeSuffixLengthMax','10000',kind='parameter') # for STAR 2.5.x
                                     job.add('--runThreadN',options.processes,kind='parameter',checksum='no')
                                     job.add('--genomeDir',outdir('gene-gene-bowtie_star2/'),kind='output')
                                     job.add('--genomeFastaFiles',outdir('gene-gene-bowtie_star.fa'),kind='input',temp_path=temp_flag)
@@ -8155,6 +8179,8 @@ if __name__ == "__main__":
                                     job.add('--outFilterMatchNminOverLread','0.80',kind='parameter')
                                     job.add('--outFilterScoreMinOverLread','0.80',kind='parameter')  # NEW in v0.99.4b
                                     job.add('--alignSplicedMateMapLminOverLmate','0.80',kind='parameter') # NEW in v0.99.4b
+                                    if star25:
+                                        job.add('--alignSJstitchMismatchNmax','5 -1 5 5',kind='parameter')# default is: 0 -1 0 0 # added in STAR 2.5.x
                                     job.add('--genomeDir',outdir('gene-gene-bowtie_star2/'),kind='input',temp_path=temp_flag)
                                     job.add('--runThreadN',options.processes,kind='parameter',checksum='no')
                                     job.add('--seedSearchStartLmax',length_anchor_star,kind='parameter')# default is: 50
@@ -9307,6 +9333,11 @@ if __name__ == "__main__":
     job.add('--viruses',outdir('viruses_bacteria_phages.txt'),kind='input')
     job.add('--output',outdir('summary_candidate_fusions.txt'),kind='output')
     job.run()
+
+    job.link(datadir('final-list_candidate-fusion-genes.caption.md.txt'),
+             outdir('final-list_candidate-fusion-genes.caption.md.txt'),
+             temp_path = 'no',
+             kind = 'copy')
 
     if not options.skip_conversion_grch37:
         human = [line for line in file(datadir('version.txt'),'r').readlines() if line.lower().find('homo sapiens')!=-1 or line.lower().find('grch38')!=-1]

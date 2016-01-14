@@ -8,7 +8,7 @@ It downloads the lastest known fusion genes the Cancer Genome Project
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -121,6 +121,8 @@ if __name__ == '__main__':
     tmp_file = 'temp_cgp.xls'
     tmp2_file = 'temp_cgp.tsv'
 
+    headers = { 'User-Agent' : 'Mozilla/5.0' }
+
     # http://www.sanger.ac.uk/genetics/CGP/Census/Table_1_full_2012-03-15.xls
     #url = '/genetics/CGP/Census/Table_1_full_2012-03-15.xls'
     #url = "/cancergenome/assets/cancer_gene_census.xls"
@@ -138,7 +140,8 @@ if __name__ == '__main__':
         else:
             print "Downloading the known fusion genes from the CGP database!"
             try:
-                da1 = urllib2.urlopen('%s%s' % (options.server,url))
+                req = urllib2.Request('%s%s' % (options.server,url), headers=headers)
+                da1 = urllib2.urlopen(req)
                 file(tmp_file,'w').write(da1.read())
             except:
                 print >>sys.stderr, "Warning: Cannot access '%s%s'! The output file will be empty!" % (options.server,url)
@@ -148,7 +151,8 @@ if __name__ == '__main__':
             tmp2_file = options.tsv2_filename
         else:
             try:
-                da2 = urllib2.urlopen('%s%s' % (options.server,url2))
+                req = urllib2.Request('%s%s' % (options.server,url2), headers=headers)
+                da2 = urllib2.urlopen(req)
                 file(tmp2_file,'w').write(da2.read())
             except:
                 print >>sys.stderr, "Warning: Cannot access '%s%s'! The output file will be empty!" % (options.server,url2)

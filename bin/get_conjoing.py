@@ -10,7 +10,7 @@ from the file:
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -116,6 +116,8 @@ if __name__ == '__main__':
     url2 = '/conjoing/download/SuppTable_ParentGeneDistance.xlsx'
     url3 = '/conjoing/result'
 
+    headers = { 'User-Agent' : 'Mozilla/5.0' }
+
     if options.organism.lower() == 'homo_sapiens':
         today = datetime.date.today()
         file(os.path.join(options.output_directory,'version.txt'),'a').writelines(['ConjoinG database version: %s\n' % (today.strftime("%Y-%m-%d"),)])
@@ -124,21 +126,24 @@ if __name__ == '__main__':
 
         sem = True
         try:
-            d = urllib2.urlopen('%s%s' % (options.server,url))
+            req = urllib2.Request('%s%s' % (options.server,url), headers=headers)
+            d = urllib2.urlopen(req)
             file(tmp_file,'w').write(d.read())
         except:
             sem = False
             print >>sys.stderr, "Warning: Cannot access '%s%s'! The output file will be empty!" % (options.server,url)
 
         try:
-            d = urllib2.urlopen('%s%s' % (options.server,url2))
+            req = urllib2.Request('%s%s' % (options.server,url2), headers=headers)
+            d = urllib2.urlopen(req)
             file(tmp2_file,'w').write(d.read())
         except:
             sem = False
             print >>sys.stderr, "Warning: Cannot access '%s%s'! The output file will be empty!" % (options.server,url2)
 
         try:
-            d = urllib2.urlopen('%s%s' % (options.server,url3))
+            req = urllib2.Request('%s%s' % (options.server,url3), headers=headers)
+            d = urllib2.urlopen(req)
             file(tmp3_file,'w').write(d.read())
         except:
             sem = False

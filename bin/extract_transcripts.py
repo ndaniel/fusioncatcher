@@ -8,7 +8,7 @@ genes ids and it gives the transcript sequences of the given genes as a fasta fi
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

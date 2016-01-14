@@ -9,7 +9,7 @@ FusionCatcher-build downloads and builds the data necessary for FusionCatcher.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -71,6 +71,32 @@ def adir(a_dir):
         a_dir = a_dir + os.sep
     return a_dir
 
+#
+#
+def islink(alink = None):
+    """
+    Wrapper for: os.path.islink()
+    """
+    f = False
+    if alink:
+        alink = alink[:-1] if alink.endswith(os.sep) else alink
+        if os.path.islink(alink):
+            f = True
+    return f
+
+#
+#
+def empty(a_file):
+    f = True
+    if (os.path.isfile(a_file) or islink(a_file)):
+        s = os.path.getsize(a_file)
+        if s < 1000:
+            d = [line for line in file(a_file,'r').readlines() if line.rstrip('\r\n')]
+            if d:
+                f = False
+        else:
+            f = False
+    return f
 
 #
 # command line parsing
@@ -89,7 +115,7 @@ if __name__ == '__main__':
     epilog = ("\n" +
              "Author: Daniel Nicorici \n" +
              "Email: Daniel.Nicorici@gmail.com \n" +
-             "Copyright (c) 2009-2015 Daniel Nicorici \n " +
+             "Copyright (c) 2009-2016 Daniel Nicorici \n " +
              "\n")
 
     description = ("FusionCatcher-build downloads data from Ensembl database and "+
@@ -103,7 +129,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 0.99.4e beta"
+    version = "%prog 0.99.5a beta"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -390,11 +416,11 @@ if __name__ == '__main__':
     job.add('',outdir('organism.gtf'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_phix174.py',kind='program')
-    job.add('--server',options.ftp_ncbi,kind='parameter')
-    job.add('--output',out_dir,kind='output',checksum='no')
-    job.add('',outdir('phix174.fa'),kind='output',command_line='no')
-    job.run()
+#    job.add('get_phix174.py',kind='program')
+#    job.add('--server',options.ftp_ncbi,kind='parameter')
+#    job.add('--output',out_dir,kind='output',checksum='no')
+#    job.add('',outdir('phix174.fa'),kind='output',command_line='no')
+#    job.run()
 
     job.add('get_viruses.py',kind='program')
     job.add('--server',options.ftp_ncbi,kind='parameter')
@@ -774,6 +800,22 @@ if __name__ == '__main__':
         job.add('--full-cover','10000000',kind='parameter')
         job.add('--gene-short','250',kind='parameter')
         #job.add('--genes',outdir('ig_loci.txt'),kind='input') # enlarge only IG loci
+        job.add('--output',out_dir,kind='output',checksum='no')
+        job.add('',outdir('exons.txt'),kind='output',command_line='no')
+        job.add('',outdir('genes.txt'),kind='output',command_line='no')
+        job.run()
+    elif options.organism == 'homo_sapiens':
+        job.add('generate_enlarge.py',kind='program')
+        job.add('--organism',options.organism,kind='parameter')
+        job.add('--output',out_dir,kind='output',checksum='no')
+        job.add('',outdir('enlarge.txt'),kind='output',command_line='no')
+        job.run()
+
+        job.add('enlarge_genes.py',kind='program')
+        job.add('--enlargement-size','5000',kind='parameter') # 5000
+        job.add('--full-cover','10000000',kind='parameter')
+        job.add('--gene-short','250',kind='parameter')
+        job.add('--genes',outdir('enlarge.txt'),kind='input') # enlarge only the targeted genes
         job.add('--output',out_dir,kind='output',checksum='no')
         job.add('',outdir('exons.txt'),kind='output',command_line='no')
         job.add('',outdir('genes.txt'),kind='output',command_line='no')
@@ -1386,7 +1428,7 @@ if __name__ == '__main__':
                 "then it can be skipped by re-running fusioncatcher-build with "+
                 "command line option '--skip-database conjoing'! This database is optional."))
 
-        if options.organism == 'homo_sapiens':
+        if options.organism == 'homo_sapiens' and (not empty(outdir('conjoing.txt'))):
             job.add('grep',kind='program')
             job.add('-v',kind='parameter')
             job.add("'ENSG00000047932\tENSG00000047936'",kind='parameter') # remove GOPC--ROS1
@@ -1457,6 +1499,10 @@ if __name__ == '__main__':
     job.add('',outdir('rtrna.fa'),kind='output')
     job.run()
 
+    job.add('generate_labels_descriptions.py',kind='program')
+    job.add('--output',out_dir,kind='output')
+    job.add('',outdir('final-list_candidate-fusion-genes.caption.md.txt'),kind='output',command_line='no')
+    job.run()
 
 
     bowtie_error = ("Please, check if 'Bowtie' (from <http://bowtie-bio.sourceforge.net/index.shtml>) "+
@@ -1498,15 +1544,15 @@ if __name__ == '__main__':
 #    job.run(error_message = bowtie_error)
 
 
-    job.add('bowtie-build',kind='program')
-    job.add('-f',kind='parameter')
-    job.add('--quiet',kind='parameter')
-#    job.add('--ntoa',kind='parameter')
-    job.add('--offrate','1',kind='parameter')
-    job.add('--ftabchars','7',kind='parameter')
-    job.add('',outdir('phix174.fa'),kind='input')
-    job.add('',outdir('phix174_index/'),kind='output')
-    job.run(error_message = bowtie_error)
+#    job.add('bowtie-build',kind='program')
+#    job.add('-f',kind='parameter')
+#    job.add('--quiet',kind='parameter')
+##    job.add('--ntoa',kind='parameter')
+#    job.add('--offrate','1',kind='parameter')
+#    job.add('--ftabchars','7',kind='parameter')
+#    job.add('',outdir('phix174.fa'),kind='input')
+#    job.add('',outdir('phix174_index/'),kind='output')
+#    job.run(error_message = bowtie_error)
 
     job.add('bowtie-build',kind='program')
     job.add('-f',kind='parameter')

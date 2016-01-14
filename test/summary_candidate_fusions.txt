@@ -1,7 +1,7 @@
 Very short summary of found candidate fusion genes
 ==================================================
 
-Found 12 fusion gene(s), which are as follows:
+Found 13 fusion gene(s), which are as follows:
   * FGFR3--TACC3  (already known fusion)
   * GOPC--ROS1  (already known fusion)
   * FIP1L1--PDGFRA  (already known fusion)
@@ -14,7 +14,8 @@ Found 12 fusion gene(s), which are as follows:
   * EML4--ALK  (already known fusion)
   * EWSR1--ATF1  (already known fusion)
   * CD74--ROS1  (already known fusion)
+  * MALT1--IGH@  (already known fusion)
 
-Found 16 fusion transcript(s).
+Found 17 fusion transcript(s).
 
 For more detailed information regarding these candidate fusions, see text file 'final-list_candidate-fusion-genes.txt'.

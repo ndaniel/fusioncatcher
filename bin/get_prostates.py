@@ -9,7 +9,7 @@ D. Robison et al., Integrative Clinical Genomics of Advanced Prostate Cancer, Ce
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     url = 'http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0092867415005486/1-s2.0-S0092867415005486-mmc4.xlsx/272196/html/S0092867415005486/198196b9ed4de2f80a504687fdfb5126/mmc4.xlsx'
     tmp_file = os.path.join(options.output_directory,'temp_prostates.xls')
 
-
+    headers = { 'User-Agent' : 'Mozilla/5.0' }
 
 
     if options.organism.lower() == 'homo_sapiens':
@@ -136,7 +136,8 @@ if __name__ == '__main__':
         else:
             print "Downloading the known fusion genes from the article..."
             try:
-                da = urllib2.urlopen('%s' % (url,))
+                req = urllib2.Request('%s' % (url,), headers=headers)
+                da = urllib2.urlopen(req)
                 file(tmp_file,'w').write(da.read())
             except:
                 print >>sys.stderr, "Warning: Cannot access '%s'! The output file will be empty!" % (url,)

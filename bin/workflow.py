@@ -12,7 +12,7 @@ external programs using command line.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -395,7 +395,7 @@ class pipeline:
     """
     __version__ = '0.98.3 beta'
     __author__  = 'Daniel Nicorici'
-    __copyright__ = "Copyright 2009-2015, Daniel Nicorici"
+    __copyright__ = "Copyright 2009-2016, Daniel Nicorici"
     __credits__ = ["Henrikki Almusa"]
     __license__ = "GPL v3.0"
     __maintainer__ = "Daniel Nicorici"
@@ -1491,8 +1491,17 @@ class pipeline:
             elif kind == 'soft':
                 linkfrom = _expand(linkfrom)
                 fout = _expand(fout)
-                os.symlink(linkfrom,fout)
-                self.write("Soft linking from:\n'%s'\nto:\n'%s'" % (linkfrom,fout) )
+                fox = False
+                try:
+                    os.symlink(linkfrom,fout)
+                except OSError as er:
+                    self.write("WARNING: Cannot do symbolic links ('%s' and '%s')! Copying will be used instead of symbolic links and this will be very very slow! Please, fix this by testing that it is possible to create symbolic links on this drive/path. [Error number: %s][%s]" % (linkfrom,fout,str(er.errno),str(er)))
+                    shutil.copyfile(linkfrom,fout)
+                    fox = True
+                if fox:
+                    self.write("Copying from:\n'%s'\nto:\n'%s'" % (linkfrom,fout) )
+                else:
+                    self.write("Soft linking from:\n'%s'\nto:\n'%s'" % (linkfrom,fout) )
             elif kind == 'hard':
                 if os.path.isdir(linkfrom):
                     shutil.copytree(linkfrom,fout)

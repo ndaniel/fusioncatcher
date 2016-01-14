@@ -7,7 +7,7 @@ Add the custom human genes which are missing from the Ensembl database.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -1377,6 +1377,19 @@ if __name__ == '__main__':
                     strand = '1'
                 )
 
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001260',
+                    gene_symbol = 'MALT1', # near MALT1
+                    gene_id = 'ENSG00000172175',
+                    transcript_id = 'ENST09000001260',
+                    exon_id = 'ENSE09000001260',
+                    exon_number = '1',
+                    start = '58650000', #
+                    end =   '58790000', #58754477
+                    chrom = '18',
+                    strand = '1'
+                )
 
             else:
                 print >>sys.stderr,"WARNING: Cannot identify correctly the human genome version!",d[0]

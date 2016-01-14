@@ -9,7 +9,7 @@ from the file: "http://www.unav.es/genetica/allseqs_TICdb.txt".
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -98,6 +98,7 @@ if __name__ == '__main__':
 
     # http://www.unav.es/genetica/allseqs_TICdb.txt
     url = '/genetica/allseqs_TICdb.txt'
+    headers = { 'User-Agent' : 'Mozilla/5.0' }
 
     if options.organism.lower() == 'homo_sapiens':
         today = datetime.date.today()
@@ -106,7 +107,8 @@ if __name__ == '__main__':
         print "Downloading the known fusion genes from TICdb database!"
         sem = True
         try:
-            d = urllib2.urlopen('%s%s' % (options.server,url))
+            req = urllib2.Request('%s%s' % (options.server,url), headers=headers)
+            d = urllib2.urlopen(req)
             file(tmp_file,'w').write(d.read())
         except:
             sem = False

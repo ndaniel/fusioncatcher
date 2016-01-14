@@ -7,7 +7,7 @@ It Reading the configuration file: "configuration.cfg".
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -90,6 +90,12 @@ def _versions(p,c,k,v):
     p[v.upper()] = r
 
 
+def _parameters(p,c,k,v):
+    r = _get_config(c,k,v)
+    if r:
+        r = r.strip()
+    p[v.upper()] = r
+
 def _path(p,c,k,v):
     r = _get_config(c,k,v)
     if r:
@@ -142,6 +148,8 @@ def manage(configuration_filename, skip_python = []):
         _path(CONF,config,"paths","picard")
 
         _versions(CONF,config,"versions","fusioncatcher")
+
+        _parameters(CONF,config,"parameters","threads")
 
     return CONF
 #

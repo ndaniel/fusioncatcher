@@ -9,7 +9,7 @@ It downloads the lastest known fusion genes from COSMIC database
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -117,6 +117,7 @@ if __name__ == '__main__':
     url = '/files/cosmic/current_release/CosmicFusionExport.tsv.gz'
     tmp_file_gz = os.path.join(options.output_directory,'temp_cosmic.tsv.gz')
 
+    headers = { 'User-Agent' : 'Mozilla/5.0' }
 
     if options.organism.lower() == 'homo_sapiens':
         today = datetime.date.today()
@@ -128,7 +129,8 @@ if __name__ == '__main__':
         else:
             print "Downloading the known fusion genes from the COSMIC database..."
             try:
-                da1 = urllib2.urlopen('%s%s' % (options.server,url))
+                req = urllib2.Request('%s%s' % (options.server,url), headers=headers)
+                da1 = urllib2.urlopen(req)
                 file(tmp_file_gz,'w').write(da1.read())
             except:
                 print >>sys.stderr, "Warning: Cannot access '%s%s'! The output file will be empty! Hint: Please, login to http://cancer.sanger.ac.uk using in your browser with your login and password and then re-run this script." % (options.server,url)

@@ -9,7 +9,7 @@ in here and it is manually curated from Illumina BodyMap2 RNA-seq database of sa
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

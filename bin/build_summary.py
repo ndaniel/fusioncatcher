@@ -7,7 +7,7 @@ It produces a very short summary of fusion genes and transcripts found.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -96,10 +96,23 @@ if __name__ == '__main__':
         viruses = [line.rstrip("\r\n").strip().split(" ") for line in file(options.input_viruses_filename,'r') if line.rstrip("\r\n")]
         viruses.pop(0)
         if viruses:
-            top_virus = [v[1] for v in viruses if v[1].find('virus') != -1 ]
-            if top_virus:
-                top_virus = top_virus[0].split("|_")[1]
-                top_virus = top_virus.replace(",_complete_genome","").replace("_complete_genome","").replace("_complete_wild_type_genome","").replace("_"," ")
+            top_virus = [v[1] for v in viruses if v[1].find('virus') != -1 and v[0] != '1']
+            tv = []
+            for e in top_virus:
+                ee = e.split("|_")[1]
+                ee = ee.replace(",_complete_genome","").replace("_complete_genome","").replace("_complete_wild_type_genome","").replace("genome","").replace("complete","").replace("wild","").replace("wild_type","").replace("__","").replace("__","").replace("_"," ")
+                tv.append(ee)
+            if tv:
+                # remove duplicates
+                uniq = set()
+                ntv = []
+                for t in tv:
+                    if t in uniq:
+                        continue
+                    else:
+                        ntv.append(t)
+                        uniq.add(t)
+                top_virus = "', '".join(ntv[0:3]) # just top 3 viruses
 
     data = [line.upper().rstrip("\r\n").split("\t") for line in file(options.input_filename,'r').readlines() if line.rstrip("\r\n")]
     header = data.pop(0)
@@ -131,7 +144,7 @@ if __name__ == '__main__':
         for r in data:
             f1 = "%s--%s" % (r[1],r[0])
             f2 = "%s--%s" % (r[0],r[1])
-            if r[2].lower().find('known_fusion') != -1 or r[2].lower().find('tcga') != -1 or r[2].lower().find('cosmic') != -1 or r[2].lower().find('cell_lines') != -1 or r[2].lower().find('prostates') != -1:
+            if r[2].lower().find('known') != -1 or r[2].lower().find('tcga') != -1 or r[2].lower().find('cosmic') != -1 or r[2].lower().find('cell_lines') != -1 or r[2].lower().find('prostates') != -1:
                 known.add(f1)
                 known.add(f2)
 
@@ -140,7 +153,7 @@ if __name__ == '__main__':
         for r in data:
             f1 = "%s--%s" % (r[1],r[0])
             f2 = "%s--%s" % (r[0],r[1])
-            if r[2].lower().find('healthy') != -1 or r[2].lower().find('gtex') != -1 or r[2].lower().find('conjoing') != -1 or r[2].lower().find('hpa') != -1 or r[2].lower().find('banned') != -1 or r[2].lower().find('overlap') != -1 :
+            if r[2].lower().find('healthy') != -1 or r[2].lower().find('gtex') != -1 or r[2].lower().find('conjoing') != -1 or r[2].lower().find('hpa') != -1 or r[2].lower().find('banned') != -1 or r[2].lower().find('paralogs') != -1 or r[2].lower().find('overlap') != -1 :
                 questionable.add(f1)
                 questionable.add(f2)
 
@@ -171,7 +184,7 @@ if __name__ == '__main__':
         results.append("Very short summary of found candidate fusion genes\n")
         results.append("==================================================\n\n")
         if top_virus:
-            results.append("The input sample contains sequencing reads mapping on '%s'.\n\n" % (top_virus,))
+            results.append("The input sample contains sequencing reads mapping on: '%s'.\n\n" % (top_virus,))
         results.append("Found %d fusion gene(s), which are as follows:\n" % (len(fusions_genes),))
         for line in found:
             label = []

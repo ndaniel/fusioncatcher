@@ -17,8 +17,9 @@ contain a small selection of short reads from:
 [3] EOL-1 acute myeloid leukemia cell line from Cancer Cell Line Encyclopedia,
      http://browser.cghub.ucsc.edu/details/9f787897-3d61-47a8-a94e-fd26b7888cc2/
 
-[4] U-118MG glioblastoma cell line from Cancer Cell Line Encyclopedia,
-     http://browser.cghub.ucsc.edu/details/2a6d6e8f-aabc-4357-9fc8-5cde0e70ac13/
+[4] Homo sapiens isolate case 2 IGH (D2-21)/MALT1 reciprocal breakpoint junction 
+    genomic sequence, Accession GQ406059,
+     http://www.ncbi.nlm.nih.gov/nuccore/GQ406059
 
 These short reads were selected such that they cover 12 already known fusion genes,
 which are:
@@ -32,5 +33,6 @@ which are:
 - CD74-ROS1  (short reads from [1]),
 - HOOK3-RET  (short reads from [1]),
 - EML4-ALK  (short reads from [1]),
-- AKAP9-BRAF  (short reads from [1]), and
-- BRD4-NUT  (short reads from [1]).
+- AKAP9-BRAF  (short reads from [1]),
+- BRD4-NUT  (short reads from [1]), and
+- IGH@-MALT1 (short reads from [5]).

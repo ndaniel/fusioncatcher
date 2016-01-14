@@ -18,7 +18,7 @@ Description
 -----------
 FusionCatcher searches for novel/known somatic fusion genes, translocations, and
 chimeras in RNA-seq data (paired-end or single-end reads from Illumina NGS platforms 
-like Solexa/HiSeq/NextSeq/MiSeq) from diseased samples.
+like Solexa/HiSeq/NextSeq/MiSeq/MiniSeq) from diseased samples.
 
 The aims of FusionCatcher are:
  * very good detection rate for finding candidate somatic fusion
@@ -45,7 +45,7 @@ The aims of FusionCatcher are:
 
 Manual
 ------
-A detailed manual is available [here](doc/MANUAL.md).
+A detailed manual is available [here](doc/manual.md).
 
 
 Forum

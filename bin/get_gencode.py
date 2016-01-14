@@ -8,7 +8,7 @@ It downloads the lastest available genes annotations (chromosomal positions and 
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -128,7 +128,7 @@ if __name__ == '__main__':
 
             list_files = [el.replace("release_","") for el in list_files if el.lower().startswith('release_')]
             if options.organism.lower() == 'homo_sapiens':
-                list_files = sorted([int(el) for el in list_files if el.isdigit() and el != '24']) # new "and el!='24'" because is something wrong with release_24
+                list_files = sorted([int(el) for el in list_files if el.isdigit() ]) # and el != '24' new "and el!='24'" because is something wrong with release_24
             else:
                 list_files = sorted(list_files)
             version = str(list_files[-1])

@@ -4,7 +4,7 @@ Required dependencies:
  - BioPython version 1.65 (>=1.50 is fine)
  - Bowtie 64-bit version 1.1.2  http://bowtie-bio.sourceforge.net/index.shtml
  - Bowtie2 64-bit version 2.2.6  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
- - STAR version 2.4.2a <http://github.com/alexdobin/STAR/releases>
+ - STAR version 2.5.0c <http://github.com/alexdobin/STAR/releases>
  - SEQTK version 1.0-r82b-dirty  <http://github.com/ndaniel/seqtk>
  - BWA version 0.7.12  <http://sourceforge.net/projects/bio-bwa/>
 
@@ -34,7 +34,6 @@ Genomic Databases (used/installed automatically by FusionCatcher):
 - ENSEMBL database <http://www.ensembl.org>
 - COSMIC database <http://cancer.sanger.ac.uk/cancergenome/projects/cosmic/>
 - TICdb database <http://www.unav.es/genetica/TICdb/>
-- IMGT/HLA Database <http://www.ebi.ac.uk/ipd/imgt/hla/>
 - ChimerDB 2.0 database (literature-based annotation)  <http://ercsb.ewha.ac.kr/FusionGene/index.jsp>
 - ConjoinG database <http://metasystems.riken.jp/conjoing/>
 - Cancer Genome Project (CGP) translocations database  <http://www.sanger.ac.uk/genetics/CGP/Census/>

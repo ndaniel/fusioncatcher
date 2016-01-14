@@ -10,7 +10,7 @@ It only needs to have pre-installed:
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2015 Daniel Nicorici
+Copyright (c) 2009-2016 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -149,8 +149,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
 
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4e.zip'
-    FUSIONCATCHER_VERSION = "0.99.4e beta"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.5a.zip'
+    FUSIONCATCHER_VERSION = "0.99.5a beta"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -182,7 +182,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BLAT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/blat/blat'
     # STAR
     STAR_PATH = os.path.join(FUSIONCATCHER_TOOLS,'star')
-    STAR_URL = 'http://github.com/alexdobin/STAR/archive/STAR_2.4.2a.tar.gz'
+    STAR_URL = 'http://github.com/alexdobin/STAR/archive/STAR_2.5.0c.tar.gz'
    # BWA
     BWA_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bwa')
     BWA_URL = 'http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2'
@@ -902,7 +902,7 @@ if __name__ == '__main__':
                   "<http://code.google.com/p/fusioncatcher/>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 0.99.4e beta"
+    version = "%prog 0.99.5a beta"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -995,7 +995,7 @@ if __name__ == '__main__':
 ################################################################################
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "ensembl_v82"
+    v = "ensembl_v83"
     ############################################################################
     # List all dependencies
     ############################################################################
@@ -1423,7 +1423,7 @@ if __name__ == '__main__':
                  exe = "STAR",
                  param = "--version",
                  web = "<https://github.com/alexdobin/STAR>",
-                 versions = ('STAR_2.4.2a',),
+                 versions = ('STAR_2.5.0c',),
                  version_word = 'STAR_',
                  force = options.force_yes,
                  url = STAR_URL,
