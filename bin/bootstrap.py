@@ -182,7 +182,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BLAT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/blat/blat'
     # STAR
     STAR_PATH = os.path.join(FUSIONCATCHER_TOOLS,'star')
-    STAR_URL = 'http://github.com/alexdobin/STAR/archive/STAR_2.5.0c.tar.gz'
+    STAR_URL = 'http://github.com/alexdobin/STAR/archive/2.5.0c.tar.gz'
    # BWA
     BWA_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bwa')
     BWA_URL = 'http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2'
@@ -1707,9 +1707,13 @@ if __name__ == '__main__':
     data.append("parallel = %s\n"%(parallel2,))
     data.append("java = %s\n"%(JAVA_PATH,))
     data.append("\n")
+    data.append("[parameters]\n")
+    data.append("threads = 0\n")
+    data.append("\n")
     data.append("[paths]\n")
     data.append("fusioncatcher = %s\n"%(FUSIONCATCHER_VERSION,))
-
+    data.append("\n")
+    
     file(config_file,'w').writelines(data)
 
     ############################################################################
