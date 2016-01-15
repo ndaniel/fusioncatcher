@@ -388,7 +388,7 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
    blat = /apps/fusioncatcher/tools/blat/
    bowtie2 = /apps/fusioncatcher/tools/bowtie2/
    bwa = /apps/fusioncatcher/tools/bwa/
-   star = /apps/fusioncatcher/tools/star/
+   star = /apps/fusioncatcher/tools/star/source/
    seqtk = /apps/fusioncatcher/tools/seqtk/
    velvet = /apps/fusioncatcher/tools/velvet/
    fatotwobit = /apps/fusioncatcher/tools/blat/
@@ -399,10 +399,13 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
    xlrd = /apps/fusioncatcher/tools/xlrd/
    openpyxl = /apps/fusioncatcher/tools/openpyxl
    lzop = /apps/fusioncatcher/tools/lzop/src/
-   coreutils = /apps/fusioncatcher/tools/coreutils/src
+   coreutils = /apps/fusioncatcher/tools/coreutils/src/
    pigz = /apps/fusioncatcher/tools/pigz/
    samtools = /apps/fusioncatcher/tools/samtools/
    picard = /apps/fusioncatcher/tools/picard/
+   parallel = /appsfusioncatcher/tools/paralell/src/
+   pxz = /apps/fusioncatcher/tools/pxz/
+   java = /usr/bin/
    [parameters]
    threads = 0
    [versions]
@@ -416,7 +419,7 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
    export PATH=/apps/fusioncatcher/tools/bowtie2:$PATH
    export PATH=/apps/fusioncatcher/tools/bwa:$PATH
    export PATH=/apps/fusioncatcher/tools/blat:$PATH
-   export PATH=/apps/fusioncatcher/tools/star:$PATH
+   export PATH=/apps/fusioncatcher/tools/star/source/:$PATH
    export PATH=/apps/fusioncatcher/tools/liftover:$PATH
    export PATH=/apps/fusioncatcher/tools/seqtk:$PATH
    export PATH=/apps/fusioncatcher/tools/sratoolkit/bin:$PATH
