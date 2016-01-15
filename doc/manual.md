@@ -351,12 +351,12 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   ln -s picard-tools-1.119 picard
   ```
   
-  * installing *FusionCatcher* version 0.99.4e (required)
+  * installing *FusionCatcher* version 0.99.5a (required)
   ```
   cd /apps/fusioncatcher
-  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4e.zip
-  unzip fusioncatcher_v0.99.4e.zip
-  cd fusioncatcher_v0.99.4e
+  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.5a.zip
+  unzip fusioncatcher_v0.99.5a.zip
+  cd fusioncatcher_v0.99.5a
   
   rm -rf ../bin
   rm -rf ../etc
@@ -404,8 +404,10 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
    pigz = /apps/fusioncatcher/tools/pigz/
    samtools = /apps/fusioncatcher/tools/samtools/
    picard = /apps/fusioncatcher/tools/picard/
+   [parameters]
+   threads = 0
    [versions]
-   fusioncatcher = 0.99.4e beta
+   fusioncatcher = 0.99.5a beta
    ```
    
    * *Choice B*: Add the paths for the needed tools to the `PATH` variable by editing, for example, the `.bashrc` file (type: `nano ~/.bashrc` at command line) and add the following lines at the end:
@@ -651,8 +653,8 @@ wget http://sf.net/projects/fusioncatcher/files/bootstrap.py && python bootstrap
 
 In case of a manual installation, first please check that (i) the required dependencies are installed, and (ii) download the source files of *FusionCatcher*, like for example:
 ```
-wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.4e.zip 
-unzip fusioncatcher_v0.99.4e.zip
+wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.5a.zip 
+unzip fusioncatcher_v0.99.5a.zip
 ```
 
 For an example of:
@@ -721,7 +723,7 @@ For mouse genome, one has
 fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
 ```
 
-**NOTE**: *FusionCatcher* version 0.99.4e needs a newer **build data** than the previous version (that is 0.99.4e) of 'fusioncatcher-build'.
+**NOTE**: *FusionCatcher* version 0.99.5a needs a newer **build data** than the previous version (that is 0.99.5a) of 'fusioncatcher-build'.
 
 ---
 
