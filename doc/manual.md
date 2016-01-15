@@ -1300,16 +1300,25 @@ and the command line options are:
                         output'.
   -p PROCESSES, --threads=PROCESSES
                         Number or processes/threads to be used for running
-                        Bowtie, BLAT, STAR, BOWTIE2 and other tools/programs.
-                        By default the number of processes is chosen to be
-                        equal to the number of found CPUs. By default no more
-                        than 16 processes will be used.Default is '4'.
+                        SORT, Bowtie, BLAT, STAR, BOWTIE2 and other
+                        tools/programs. If it is 0 (as it is by default) then
+                        the number of processes/threads will be read first
+                        from 'fusioncatcher/etc/configuration.cfg' file. If
+                        even there it is still set to 0 then 'min(number-of-
+                        CPUs-found,16)' processes will be used. Setting number
+                        of threads in 'fusioncatcher/etc/configuration.cfg'
+                        might be usefull in situations where one server is
+                        shared between several users and in order to limit
+                        FusionCatcher using all the CPUs/resources.Default is
+                        '0'.
   --config=CONFIGURATION_FILENAME
                         Configuration file containing the paths to external
                         tools (e.g. Bowtie, Blat, fastq-dump.) in case that
                         they are not specified in PATH variable! Default is '/
-                        apps/fusioncatcher/etc/configuration.cfg,/apps/fusionc
-                        atcher/bin/configuration.cfg'.
+                        apps/ngs/pipelines/rnaseq/fusioncatcher/fc/fusioncatch
+                        er/fusioncatcher_v0.99.5a/etc/configuration.cfg,/apps/
+                        ngs/pipelines/rnaseq/fusioncatcher/fc/fusioncatcher/fu
+                        sioncatcher_v0.99.5a/bin/configuration.cfg'.
   -z, --skip-update-check
                         Skips the automatic routine that contacts the
                         FusionCatcher server to check for a more recent
@@ -1837,7 +1846,6 @@ and the command line options are:
     --bowtie-chunkmbs=CHUNKMBS
                         The value to be passed to the '--chunkmbs' command
                         line option of Bowtie aligner. Default is '128'.
-
 ```
 
 ## fusioncatcher-build
@@ -1855,9 +1863,11 @@ and the command line options are:
   -c CONFIGURATION_FILENAME, --config=CONFIGURATION_FILENAME
                         Configuration file containing the paths to external
                         tools (e.g. Bowtie, etc.) in case that they are not in
-                        PATH! Default is '/apps/fusioncatcher/bin/../etc/confi
-                        guration.cfg,/apps/fusioncatcher/bin/configuration.cfg
-                        '.
+                        PATH! Default is '/apps/ngs/pipelines/rnaseq/fusioncat
+                        cher/fc/fusioncatcher/fusioncatcher_v0.99.5a/bin/../et
+                        c/configuration.cfg,/apps/ngs/pipelines/rnaseq/fusionc
+                        atcher/fc/fusioncatcher/fusioncatcher_v0.99.5a/bin/con
+                        figuration.cfg'.
   -g ORGANISM, --organism=ORGANISM
                         Organism for which the data is downloaded from Ensembl
                         database and built, for example: 'homo_sapiens',
