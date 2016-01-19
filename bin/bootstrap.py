@@ -1697,7 +1697,6 @@ if __name__ == '__main__':
     data.append("biopython = %s\n"%(BIOPYTHON_PATH,))
     data.append("xlrd = %s\n"%(XLRD_PATH,))
     data.append("openpyxl = %s\n"%(OPENPYXL_PATH,))
-
     data.append("lzo = %s\n"%(LZO_PATH,))
     data.append("lzop = %s\n"%(lzop,))
     data.append("coreutils = %s\n"%(coreutils,))
@@ -1710,7 +1709,7 @@ if __name__ == '__main__':
     data.append("[parameters]\n")
     data.append("threads = 0\n")
     data.append("\n")
-    data.append("[paths]\n")
+    data.append("[versions]\n")
     data.append("fusioncatcher = %s\n"%(FUSIONCATCHER_VERSION,))
     data.append("\n")
     
