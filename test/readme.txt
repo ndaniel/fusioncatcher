@@ -24,7 +24,7 @@ contain a small selection of short reads from:
     genomic sequence, Accession GQ406059,
      http://www.ncbi.nlm.nih.gov/nuccore/GQ406059
 
-These short reads were selected such that they cover 12 already known fusion genes,
+These short reads were selected such that they cover 13 already known fusion genes,
 which are:
 - FGFR3-TACC3  (short reads from [2]),
 - FIP1L1-PDGFRA  (short reads from [3]),
