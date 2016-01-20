@@ -1618,15 +1618,25 @@ if __name__ == "__main__":
             print >>sys.stderr,"Please, fix this!"
             print >>sys.stderr,"................................................................................"
             sys.exit(1)
+    else:
+        print >>sys.stderr,"................................................................................"
+        print >>sys.stderr,"ERROR: The version of configuration.cfg file does not contain the version of the fusioncatcher.py!"
+        print >>sys.stderr,"Please, fix this!"
+        print >>sys.stderr,"................................................................................"
+        sys.exit(1)
 
     if not options.processes:
         p = confs.get("THREADS",None)
         if p:
             options.processes = int(p)
-    if not options.processes:
-        options.processes = multiprocessing.cpu_count()
-        options.processes = options.processes if options.processes < 17 else 16
-
+        if not options.processes:
+            options.processes = multiprocessing.cpu_count()
+            options.processes = options.processes if options.processes < 17 else 16
+            
+    if options.processes and options.processes > multiprocessing.cpu_count():
+            options.processes = multiprocessing.cpu_count()
+            
+            
     #
     # DIRECTORIES
     #

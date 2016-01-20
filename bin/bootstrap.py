@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-A bootstrap script to automatically install FusionCatcher <http://code.google.com/p/fusioncatcher/>.
+A bootstrap script to automatically install FusionCatcher <http://github.com/ndaniel/fusioncatcher>.
 It only needs to have pre-installed:
 - Python version >=2.6.0 and < 3.0
 - NumPy <http://pypi.python.org/pypi/numpy>
@@ -80,6 +80,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     global FUSIONCATCHER_TOOLS
     global FUSIONCATCHER_CONFIGURATION
     global FUSIONCATCHER_VERSION
+    global FUSIONCATCHER_THREADS
     global NUMPY_PATH
     global NUMPY_URL
     global BIOPYTHON_PATH
@@ -154,6 +155,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
+    FUSIONCATCHER_THREADS = '0'
     FUSIONCATCHER_TOOLS = expand(FUSIONCATCHER_PATH,'tools')
     FUSIONCATCHER_CONFIGURATION = expand(FUSIONCATCHER_BIN,'..','etc','configuration.cfg')
     # numpy
@@ -899,7 +901,7 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = ("A bootstrap script to automatically install FusionCatcher\n"+
-                  "<http://code.google.com/p/fusioncatcher/>. It only needs\n"+
+                  "<http://github.com/ndaniel/fusioncatcher>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
     version = "%prog 0.99.5a beta"
@@ -1049,7 +1051,7 @@ if __name__ == '__main__':
                exit = False,
                force = options.force_yes)
     if not r:
-        p = expand(raw_input("  Type new path and filename of the Python binary:"))
+        p = expand(raw_input("  Type new path and filename of the Python binary: "))
         print >>sys.stderr,"Now the boostrap.py will be re-launched!"
         x = '"%s" "%s" %s' % (p,expand(__file__),' '.join(sys.argv[1:]))
         xx = os.system(x)
@@ -1090,7 +1092,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     print ""
-    print "Installing FusionCatcher from <http://code.google.com/p/fusioncatcher/>"
+    print "Installing FusionCatcher from <http://github.com/ndaniel/fusioncatcher>"
     print "------------------------------------------------------------------------"
     print ""
 
@@ -1169,8 +1171,23 @@ if __name__ == '__main__':
         FUSIONCATCHER_PATH = expand(options.installation_directory)
         PATHS(exe = PYTHON_EXE, installdir = FUSIONCATCHER_PATH)
     else:
-        p = expand(raw_input("  Type new path:"))
+        p = expand(raw_input("  Type new path: "))
         PATHS(exe = PYTHON_EXE, installdir = p)
+
+    ############################################################################
+    # Number of threads for FusionCatcher
+    ############################################################################
+    print "Default number of threads/CPUs to be used by FusionCatcher (use 0 for using the number of CPUs detected at the runtime): '%s'" % (FUSIONCATCHER_THREADS,)
+    r = accept(question = "  Do you accept?",
+               yes = True,
+               no = False,
+               exit = False,
+               force = options.force_yes)
+    if r:
+        FUSIONCATCHER_THREADS = '0'
+    else:
+        p = raw_input("  Type the new default for number of threads: ")
+        FUSIONCATCHER_THREADS = p
 
     ############################################################################
     # FusionCatcher
@@ -1707,7 +1724,7 @@ if __name__ == '__main__':
     data.append("java = %s\n"%(JAVA_PATH,))
     data.append("\n")
     data.append("[parameters]\n")
-    data.append("threads = 0\n")
+    data.append("threads = %s\n" % (FUSIONCATCHER_THREADS,))
     data.append("\n")
     data.append("[versions]\n")
     data.append("fusioncatcher = %s\n"%(FUSIONCATCHER_VERSION,))
