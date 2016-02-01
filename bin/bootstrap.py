@@ -193,7 +193,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     FATOTWOBIT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/faToTwoBit'
     # SRATOOLKIT
     SRATOOLKIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'sratoolkit')
-    SRATOOLKIT_URL = 'http://ftp-private.ncbi.nlm.nih.gov/sra/sdk/2.5.1/sratoolkit.2.5.1-centos_linux64.tar.gz'
+    SRATOOLKIT_URL = 'http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.5.1/sratoolkit.2.5.1-centos_linux64.tar.gz'
     # VELVET
     VELVET_PATH = os.path.join(FUSIONCATCHER_TOOLS,'velvet')
     VELVET_URL = 'http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz'
