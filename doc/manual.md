@@ -125,11 +125,12 @@ These are used (downloaded and parsed) automatically by *FusionCatcher*:
 
 This is an example of automatic installation of *FusionCatcher* (and it is installed here "~/fusioncatcher" if these are run in your home directory) and the required databases and indexes (which are downloaded instead of being built locally):
 ```
-wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py --download
+wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py -t --download
 ```
 where:
   * `wget http://sf.net/projects/fusioncatcher/files/bootstrap.py` downloads from internet the `bootstrap.py` which is the installation script (it is recommended to use the `boostrap.py` from `ttp://sf.net/projects/fusioncatcher/files/bootstrap.py` because it is more up to date)
   * `python bootstrap.py` runs using `python` the installation script `bootstrap.py` (here one may replace `python` with its own custom installation of python, like for example `/some/other/custom/python`)
+  * `-t` installs the software tools (and their exact version) needed by *FusionCatcher*
   * `--download` forces the installation script `bootstrap.py` to download and install automatically also the databases needed by *FusionCatcher* (if this is not used the databases needed by *FusionCatcher* will not be installed and the user will have to build/install them manually later)
 
 In case that there are several Python versions installed already then it is possible to point which one to use for installation and running *FusionCatcher*, as following (no required databases and indexes are installed automatically in this example):
