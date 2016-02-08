@@ -981,7 +981,9 @@ Table 2 - Labels used to describe the found fusion genes (column *Fusion\_ descr
 | **metazoa**             | one or both genes is a metazoa\_srp gene [Metazia\_srp](http://www.genecards.org/index.php?path=/Search/keyword/metazoa_srp) |
 | **mirna**               | one or both genes is a [miRNA](http://en.wikipedia.org/wiki/MicroRNA) |
 | **mt**                  | one or both genes are situated on [mitochondrion](http://en.wikipedia.org/wiki/Mitochondrion). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
-| **non\_tumor\_cells**   | fusion gene which has been previously reported/found in non-tumor cell lines, like for example HEK293. This are considered as non-somatic mutation and therefore they are skipped and not reported. |
+| **non\_tumor\_cells**   | fusion gene which has been previously reported/found in non-tumor cell lines, like for example HEK293. These are considered as non-somatic mutation and therefore may be skipped and not reported. |
+| **no\_protein\_product** | one or both genes have no known protein product |
+| **non\_cancer\_tissues**   | fusion gene which has been previously reported/found in non-cancer tissues and cell lines in [Babiceanu et al, Recurrent chimeric fusion RNAs in non-cancer tissues and cells, Nucl. Acids Res. 2016](http://nar.oxfordjournals.org/content/early/2016/02/01/nar.gkw032.abstract). These are considered as non-somatic mutation and therefore they may be skipped and not reported. |
 | **no\_protein\_product** | one or both genes have no known protein product |
 | **oncogene**            | one gene or both genes are a known [oncogene](http://en.wikipedia.org/wiki/Oncogene) |
 | **pair\_pseudo\_genes** | one gene is the other's [pseudogene](http://en.wikipedia.org/wiki/Pseudogene). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
