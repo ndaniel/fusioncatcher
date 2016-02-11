@@ -906,6 +906,8 @@ For example, this is **NOT** a valid input:
 The output files are:
   * `final-list_candidate_fusion_genes.txt` - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3c the coordinates of fusion genes are given here for human genome using **only** assembly **hg38/GRCh38**; See [Table 1](#output-data) for columns' descriptions;
   * `final-list_candidate_fusion_genes.GRCh37.txt` - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3d the coordinates of fusion genes are given here for human genome using assembly **hg19/GRCh37**; See [Table 1](#output-data) for columns' descriptions;
+  * `summary_candidate_fusions.txt` - contains an executive summary (meant to be read directly by the medical doctors or biologist) of candidate fusion genes found;
+  * `final-list_candidate_fusion_genes.caption.md.txt` - explains in detail the labels found in column `Fusion_description` of files `final-list_candidate_fusion_genes.txt` and `final-list_candidate_fusion_genes.GRCh37.txt`;
   * `supporting-reads_gene-fusions_BOWTIE.zip` - sequences of short reads supporting the newly found candidate fusion genes found using only and exclusively the Bowtie aligner;
   * `supporting-reads_gene-fusions_BLAT.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and Blat aligners;
   * `supporting-reads_gene-fusions_STAR.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and STAR aligners;
