@@ -563,6 +563,8 @@ This is an example of finding fusion genes in the BT474 cell line using the publ
   * if the run was successful then there should be the (non-empty) files (for more information see [here](#output-data)):
    ```
    ~/bt474_fusions/final-list_candidate_fusion_genes.txt
+   ~/bt474_fusions/summary_candidate_fusions.txt
+   ~/bt474_fusions/viruses_bacteria_phages.txt
    ~/bt474_fusions/supporting-reads_gene-fusions_BOWTIE.zip
    ~/bt474_fusions/supporting-reads_gene-fusions_BLAT.zip
    ~/bt474_fusions/supporting-reads_gene-fusions_STAR.zip
@@ -745,6 +747,7 @@ where:
   * `/some/input/directory/containing/fastq/files/` - contains the input FASTQ (or SRA if NCBI SRA toolkit is installed) files (and not any other type of files which are not do not contain sequecing data, e.g. readme.txt)
   * `/some/output/directory/` - contains output files (for more information see [here](#output-data)):
     * `final-list_candidate_fusion_genes.txt`
+    * `summary_candidate_fusions.txt`
     * `supporting-reads_gene-fusions_BOWTIE.zip`
     * `supporting-reads_gene-fusions_BLAT.zip`
     * `supporting-reads_gene-fusions_STAR.zip`
