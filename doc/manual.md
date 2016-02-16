@@ -116,7 +116,7 @@ These are used (downloaded and parsed) automatically by *FusionCatcher*:
   * E.P. Simon, C.A. Freije, B.A. Farber, G. Lalazar, D.G. Darcy, J.N. Honeyman, R. Chiaroni-Clark, B.D. Dill, H. Molina, U.K. Bhanot, M.P. La Quaglia, B.R. Rosenberg, S.M. Simon, **Transcriptomic characterization of fibrolamellar hepatocellular carcinoma**, PNAS, October 2015, http://dx.doi.org/10.1073/pnas.1424894112 
   * Y. Marincevic-Zuniga, V. Zachariadis, L. Cavelier, A. Castor, G. Barbany, E. Forestier, L. Fogelstrand, M. Heyman, J. Abrahamsson, G. Lonnerholm, A. Nordgren, A.C. Syvanen, J. Nordlund, **PAX5-ESRRB is a recurrent fusion gene in B-cell precursor pediatric acute lymphoblastic leukemia**, Haematologica, October 2015, http://dx.doi.org/10.3324/haematol.2015.132332
   * M. Brenca, S. Rossi, M. Polano, D. Gasparotto, L. Zanatta, D. Racanelli, L. Valori, S. Lamon, A.P. Dei Tos, R. Maestro, **Transcriptome sequencing identifies ETV6-NTRK3 as a gene fusion involved in GIST**, The Journal of Pathology, November 2015, http://dx.doi.org/10.1002/path.4677
-  * Roberts K.G., et al. **High Frequency and Poor Outcome of Ph-like Acute Lymphoblastic Leukemia in Adults**,December 3, 2015; Blood Journal,  Vol. 126, December 2015, http://www.bloodjournal.org/content/126/23/2618
+  * Roberts K.G., et al. **High Frequency and Poor Outcome of Ph-like Acute Lymphoblastic Leukemia in Adults**, Blood Journal, Vol. 126, December 2015, http://www.bloodjournal.org/content/126/23/2618
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
