@@ -1,3 +1,6 @@
+All dependecies listed below (except Linux, Python, and BioPython) may be installed automatically 
+by using 'bootstrap.py' provided here.
+
 Required dependencies:
  - Linux 64-bit (e.g. Ubuntu 12.04/14.04 or newer) with a minimum of 24 GB RAM
  - Python version 2.7.x (>=2.6.0 and < 3.0 is fine)
