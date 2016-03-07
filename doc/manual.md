@@ -118,7 +118,8 @@ These are used (downloaded and parsed) automatically by *FusionCatcher*:
   * M. Brenca, S. Rossi, M. Polano, D. Gasparotto, L. Zanatta, D. Racanelli, L. Valori, S. Lamon, A.P. Dei Tos, R. Maestro, **Transcriptome sequencing identifies ETV6-NTRK3 as a gene fusion involved in GIST**, The Journal of Pathology, November 2015, http://dx.doi.org/10.1002/path.4677
   * Roberts K.G., et al. **High Frequency and Poor Outcome of Ph-like Acute Lymphoblastic Leukemia in Adults**, Blood Journal, Vol. 126, December 2015, http://www.bloodjournal.org/content/126/23/2618
   * Kekeeva T., et al. **Novel fusion transcripts in bladder cancer identified by RNA-seq**, Cancer Letters, Feb. 2016, http://dx.doi.org/10.1016/j.canlet.2016.02.010
-
+  * Panagopoulos I. et al. **Rare MLL-ELL fusion transcripts in childhood acute myeloid leukemia—association with young age and myeloid sarcomas?**, Experimental Hematology & Oncology, Vol. 5, March 2016
+http://dx.doi.org/10.1186/s40164-016-0037-2 
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
