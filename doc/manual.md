@@ -119,7 +119,7 @@ These are used (downloaded and parsed) automatically by *FusionCatcher*:
   * Roberts K.G., et al. **High Frequency and Poor Outcome of Ph-like Acute Lymphoblastic Leukemia in Adults**, Blood Journal, Vol. 126, December 2015, http://www.bloodjournal.org/content/126/23/2618
   * Kekeeva T., et al. **Novel fusion transcripts in bladder cancer identified by RNA-seq**, Cancer Letters, Feb. 2016, http://dx.doi.org/10.1016/j.canlet.2016.02.010
   * Panagopoulos I. et al. **Rare MLL-ELL fusion transcripts in childhood acute myeloid leukemia-association with young age and myeloid sarcomas?**, Experimental Hematology & Oncology, Vol. 5, March 2016, http://dx.doi.org/10.1186/s40164-016-0037-2 
- 
+  * Chang W. et al, **Multi-Dimensional ClinOmics for Precision Therapy of Children and Adolescent Young Adults with Relapsed and Refractory Cancer: A report from the Center for Cancer Research**, Clinical Cancer Research, March 2016, http://dx.doi.org/10.1158/1078-0432.CCR-15-2717
  
 ---
 
