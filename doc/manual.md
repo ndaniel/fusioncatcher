@@ -121,6 +121,8 @@ These are used (downloaded and parsed) automatically by *FusionCatcher*:
   * Panagopoulos I. et al. **Rare MLL-ELL fusion transcripts in childhood acute myeloid leukemia-association with young age and myeloid sarcomas?**, Experimental Hematology & Oncology, Vol. 5, March 2016, http://dx.doi.org/10.1186/s40164-016-0037-2 
   * Chang W. et al, **Multi-Dimensional ClinOmics for Precision Therapy of Children and Adolescent Young Adults with Relapsed and Refractory Cancer: A report from the Center for Cancer Research**, Clinical Cancer Research, March 2016, http://dx.doi.org/10.1158/1078-0432.CCR-15-2717
   * Spans L. et a., **Recurrent MALAT1-GLI1 oncogenic fusion and GLI1 upregulation define a subset of plexiform fibromyxoma**, The Journal of Pathology, April 2016, http://dx.doi.org/10.1002/path.4730
+
+
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
