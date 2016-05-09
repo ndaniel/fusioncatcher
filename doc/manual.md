@@ -46,12 +46,12 @@ For running *FusionCatcher* it is needed a computer with:
 ## 2.1 - Required dependencies
   * **Linux/Unix** 64-bit (e.g. Ubuntu version 12.04/14.04 or newer)
   * **Python** version 2.7.6 (>=2.6.0 and < 3.0 is fine)
-  * **BioPython** version 1.65 (>=1.50 is fine)
+  * **BioPython** version 1.66 (>=1.50 is fine)
   * **Bowtie** 64-bit version 1.1.2 http://bowtie-bio.sourceforge.net/index.shtml
   * **SeqTK** version 1.0-r82b-dirty  http://github.com/ndaniel/seqtk
-  * organism specific  data from [Ensembl](http://www.ensembl.org) database release 83 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed)
-  * **STAR** version 2.5.0c https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases
-  * **BOWTIE2** version 2.2.6 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
+  * organism specific  data from [Ensembl](http://www.ensembl.org) database release 84 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed)
+  * **STAR** version 2.5.1b https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases
+  * **BOWTIE2** version 2.2.9 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
   * **BWA** version 0.7.12 http://sourceforge.net/projects/bio-bwa/
 
 ## 2.2 - Optional dependencies
@@ -61,15 +61,17 @@ These are expected by default to be installed but their use can be disabled by u
   * **BLAT** version 0.35 http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *FusionCatcher* (hint: if you are a non-profit organization you should be fine).
   * **faToTwoBit** http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *FusionCatcher* and `fusioncatcher-build` if one plans to use BLAT as a second (optional) alternative method for finding fusion genes! (required also by option `--blat-visualization`)
 
+Note: If one does not want to install BLAT (whilst installing *FusionCatcher* automatically thru `bootstrap.py`) and also not to use BLAT then `bootstrap.py -b` can be used.
+
 ### 2.2.2 - Nice to have
   * **Velvet** (de novo assembler) version 1.2.10 http://www.ebi.ac.uk/~zerbino/velvet/ . This is needed if one plans to do _de novo_ assembly of the reads which support the candidate fusion genes. (required by option `--assembly` of *FusionCatcher*)
   * **fastq-dump** version 2.3.5 from NCBI SRA Toolkit http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software . This is needed by *FusionCatcher* if one plans to use as input SRA files.
   * Python library **openpyxl** version 1.5.6 http://pypi.python.org/pypi/openpyxl (other versions might work but have not been tested). It is needed by `fusioncatcher-build` for parsing the [ConjoinG](http://metasystems.riken.jp/conjoing/) database.
   * Python library **xlrd** version 0.6.1 http://pypi.python.org/pypi/xlrd (other versions might work but have not been tested). It is needed by `fusioncatcher-build` for parsing the [ChimerDB](http://ercsb.ewha.ac.kr/FusionGene/) database.
-  * **coreutils** version 8.22  http://ftp.gnu.org/gnu/coreutils for a newer version of SORT command which allows the use of several CPUs in parallel, that is '--parallel'  command line options (other older versions might also support this!).
+  * **coreutils** version 8.25  http://ftp.gnu.org/gnu/coreutils for a newer version of SORT command which allows the use of several CPUs in parallel, that is '--parallel'  command line options (other older versions might also support this!).
   * **pigz** version 2.3.1 http://zlib.net/pigz/ for using GZIP on several CPUs in parallel (other older versions might support this).
   * **SAMTools** version 1.19 http://www.htslib.org/
-  * **Picard tools** version 1.119 http://broadinstitute.github.io/picard/
+  * **Picard tools** version 2.2.2 http://broadinstitute.github.io/picard/
 
 
 ## 2.3 - Genomic Databases
@@ -357,12 +359,12 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   ln -s picard-tools-1.119 picard
   ```
   
-  * installing *FusionCatcher* version 0.99.5a (required)
+  * installing *FusionCatcher* version 0.99.6a (required)
   ```
   cd /apps/fusioncatcher
-  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.5a.zip
-  unzip fusioncatcher_v0.99.5a.zip
-  cd fusioncatcher_v0.99.5a
+  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.6a.zip
+  unzip fusioncatcher_v0.99.6a.zip
+  cd fusioncatcher_v0.99.6a
   
   rm -rf ../bin
   rm -rf ../etc
@@ -415,8 +417,9 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
    java = /usr/bin/
    [parameters]
    threads = 0
+   aligners = blat,star
    [versions]
-   fusioncatcher = 0.99.5a beta
+   fusioncatcher = 0.99.6a beta
    ```
    
    * *Choice B*: Add the paths for the needed tools to the `PATH` variable by editing, for example, the `.bashrc` file (type: `nano ~/.bashrc` at command line) and add the following lines at the end:
@@ -449,26 +452,26 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
    sed -i 's/\/usr\/bin\/env\ python/\/some\/other\/python/g' /apps/fusioncatcher/bin/*.py
    ```
   
-  * download/build the human build data from Ensembl database and other databases and build the necessary indexes and files (the latest release of Ensembl data is release 83 as January 2016 when this section was updated last time). There are two alternative ways to get the human **build data**. The recommended way is to use `fusioncatcher-build`.
+  * download/build the human build data from Ensembl database and other databases and build the necessary indexes and files (the latest release of Ensembl data is release 84 as May 2016 when this section was updated last time). There are two alternative ways to get the human **build data**. The recommended way is to use `fusioncatcher-build`.
    * Using direct download
    ```
    mkdir -p /apps/fusioncatcher/data
    cd /apps/fusioncatcher/data
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v83.tar.gz.aa
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v83.tar.gz.ab
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v83.tar.gz.ac
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v83.tar.gz.ad
-   cat ensembl_v83.tar.gz.* | tar xz
-   ln -s ensembl_v83 current
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v84.tar.gz.aa
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v84.tar.gz.ab
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v84.tar.gz.ac
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v84.tar.gz.ad
+   cat ensembl_v84.tar.gz.* | tar xz
+   ln -s ensembl_v84 current
    ```
    
    * Using `fusioncatcher-build` -- It will takes several hours (e.g. 5-10 hours) and it depends highly on the bandwidth of your internet connection. One may find out what Ensembl database version is available at [www.ensembl.org] and what version has been downloaded by looking to the last three lines printed on the screen by `fusioncatcher-build`.
    ```
-   mkdir -p /apps/fusioncatcher/data/ensembl_v83
-   cd /apps/fusioncatcher/data/ensembl_v83
+   mkdir -p /apps/fusioncatcher/data/ensembl_v84
+   cd /apps/fusioncatcher/data/ensembl_v84
    /apps/fusioncatcher/bin/fusioncatcher-build -g homo_sapiens -o .
    cd ..
-   ln -s ensembl_v83 current
+   ln -s ensembl_v84 current
    ```
 
 
@@ -664,8 +667,8 @@ wget http://sf.net/projects/fusioncatcher/files/bootstrap.py && python bootstrap
 
 In case of a manual installation, first please check that (i) the required dependencies are installed, and (ii) download the source files of *FusionCatcher*, like for example:
 ```
-wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.5a.zip 
-unzip fusioncatcher_v0.99.5a.zip
+wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.6a.zip 
+unzip fusioncatcher_v0.99.6a.zip
 ```
 
 For an example of:
@@ -680,17 +683,17 @@ First, it is needed to download data or build the necessary files/indexes for ru
 
 ### 5.2.1 - Direct download of human build data
 
-Here, in this example, the necessary data is downloaded and necessary files/indexes for the **human genome** are downloaded in the directory `/some/human/data/ensembl_v83/` which will be used later.
+Here, in this example, the necessary data is downloaded and necessary files/indexes for the **human genome** are downloaded in the directory `/some/human/data/ensembl_v84/` which will be used later.
 
 ```
 mkdir -p /some/human/data/
 cd /some/human/data/
-wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v83.tar.gz.aa
-wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v83.tar.gz.ab
-wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v83.tar.gz.ac
-wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v83.tar.gz.ad
-cat ensembl_v83.tar.gz.* | tar xz
-ln -s ensembl_v83 current
+wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v84.tar.gz.aa
+wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v84.tar.gz.ab
+wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v84.tar.gz.ac
+wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v84.tar.gz.ad
+cat ensembl_v84.tar.gz.* | tar xz
+ln -s ensembl_v84 current
 ```
 
 If this works then it is not necessary to start building yourself the build data as shown below (which is **only** needed in case that the direct download for some reason does not work or one wishes to use the build data of another organism which is not available for download).
@@ -722,7 +725,7 @@ fusioncatcher-build -g homo_sapiens -o /some/human/data/directory/ --web=asia.en
 ```
 
 
-In case, that it is not possible to use `fusioncatcher-build` for vary reasons (e.g. access to Ensembl website is very slow) then one may directly download the latest **human build data** (generated by `fusioncatcher-build` using Ensembl database release 83) necessary for running *FusionCatcher* from [here](http://sourceforge.net/projects/fusioncatcher/files/data/) (all files are needed and the total size is ~25 GB).
+In case, that it is not possible to use `fusioncatcher-build` for vary reasons (e.g. access to Ensembl website is very slow) then one may directly download the latest **human build data** (generated by `fusioncatcher-build` using Ensembl database release 84) necessary for running *FusionCatcher* from [here](http://sourceforge.net/projects/fusioncatcher/files/data/) (all files are needed and the total size is ~25 GB).
 
 For rat genome, one has
 ```
@@ -734,7 +737,7 @@ For mouse genome, one has
 fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
 ```
 
-**NOTE**: *FusionCatcher* version 0.99.5a needs a newer **build data** than the previous version (that is 0.99.5a) of 'fusioncatcher-build'.
+**NOTE**: *FusionCatcher* version 0.99.6a needs a newer **build data** than the previous version (that is 0.99.5a) of 'fusioncatcher-build'.
 
 ---
 
@@ -1334,9 +1337,9 @@ and the command line options are:
                         tools (e.g. Bowtie, Blat, fastq-dump.) in case that
                         they are not specified in PATH variable! Default is '/
                         apps/ngs/pipelines/rnaseq/fusioncatcher/fc/fusioncatch
-                        er/fusioncatcher_v0.99.5a/etc/configuration.cfg,/apps/
+                        er/fusioncatcher_v0.99.6a/etc/configuration.cfg,/apps/
                         ngs/pipelines/rnaseq/fusioncatcher/fc/fusioncatcher/fu
-                        sioncatcher_v0.99.5a/bin/configuration.cfg'.
+                        sioncatcher_v0.99.6a/bin/configuration.cfg'.
   -z, --skip-update-check
                         Skips the automatic routine that contacts the
                         FusionCatcher server to check for a more recent
@@ -1882,9 +1885,9 @@ and the command line options are:
                         Configuration file containing the paths to external
                         tools (e.g. Bowtie, etc.) in case that they are not in
                         PATH! Default is '/apps/ngs/pipelines/rnaseq/fusioncat
-                        cher/fc/fusioncatcher/fusioncatcher_v0.99.5a/bin/../et
+                        cher/fc/fusioncatcher/fusioncatcher_v0.99.6a/bin/../et
                         c/configuration.cfg,/apps/ngs/pipelines/rnaseq/fusionc
-                        atcher/fc/fusioncatcher/fusioncatcher_v0.99.5a/bin/con
+                        atcher/fc/fusioncatcher/fusioncatcher_v0.99.6a/bin/con
                         figuration.cfg'.
   -g ORGANISM, --organism=ORGANISM
                         Organism for which the data is downloaded from Ensembl
@@ -2029,7 +2032,7 @@ which were generated by *FusionCatcher* during the run.
   * * <font color='red'>The performance of <b>FusionCatcher</b> is decreased drastically, when running <b>FusionCatcher</b> on a subset of the reads. It is not recommended to run <b>FusionCatcher</b> on 20 million paired-reads sampled from a sample. All the reads from the sample shall be given as input to <b>FusionCatcher</b></font>
   * `fusioncatcher-build` takes several hours to run and it depends on the local internet connection speed. It needs to be run only once!
   * *FusionCatcher* can be run many times using the same data produced by the `fusioncatcher-build`;
-  * Ensembl version 83 was found to work fine with *FusionCatcher* as Janury 2016;
+  * Ensembl version 84 was found to work fine with *FusionCatcher* as May 2016;
   * *FusionCatcher* and `fusioncatcher-build` restart automatically from the point where have been interrupted at the previous run.
   * *FusionCatcher* by default is focusing on finding fusion genes specific to diseased/tumor/cancer samples. That means that *FusionCatcher* will skip the fusion genes which are already known to exist in healthy samples. If one wishes to find fusion genes in healthy samples then we suggest other fusion finders to be used.
   * *FusionCatcher* is able to find fusion genes **also** without using BLAT aligner but in this case we recommend to user BOWTIE2 aligner (which is not used by default) also in order to compensate!
