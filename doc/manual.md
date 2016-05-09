@@ -61,11 +61,11 @@ These are expected by default to be installed but their use can be disabled by u
   * **BLAT** version 0.35 http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *FusionCatcher* (hint: if you are a non-profit organization you should be fine).
   * **faToTwoBit** http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *FusionCatcher* and `fusioncatcher-build` if one plans to use BLAT as a second (optional) alternative method for finding fusion genes! (required also by option `--blat-visualization`)
 
-Note: If one does not want to install BLAT (whilst installing *FusionCatcher* automatically thru `bootstrap.py`) and also not to use BLAT then `bootstrap.py -b` can be used.
+Note: If one does not want to install BLAT (whilst installing *FusionCatcher* automatically thru `bootstrap.py`) and also not to use BLAT with *FusionCatcher* then using command line `-b` option of `bootstrap.py` will do that.
 
 ### 2.2.2 - Nice to have
   * **Velvet** (de novo assembler) version 1.2.10 http://www.ebi.ac.uk/~zerbino/velvet/ . This is needed if one plans to do _de novo_ assembly of the reads which support the candidate fusion genes. (required by option `--assembly` of *FusionCatcher*)
-  * **fastq-dump** version 2.3.5 from NCBI SRA Toolkit http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software . This is needed by *FusionCatcher* if one plans to use as input SRA files.
+  * **fastq-dump** version 2.6.2 from NCBI SRA Toolkit http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software . This is needed by *FusionCatcher* if one plans to use as input SRA files.
   * Python library **openpyxl** version 1.5.6 http://pypi.python.org/pypi/openpyxl (other versions might work but have not been tested). It is needed by `fusioncatcher-build` for parsing the [ConjoinG](http://metasystems.riken.jp/conjoing/) database.
   * Python library **xlrd** version 0.6.1 http://pypi.python.org/pypi/xlrd (other versions might work but have not been tested). It is needed by `fusioncatcher-build` for parsing the [ChimerDB](http://ercsb.ewha.ac.kr/FusionGene/) database.
   * **coreutils** version 8.25  http://ftp.gnu.org/gnu/coreutils for a newer version of SORT command which allows the use of several CPUs in parallel, that is '--parallel'  command line options (other older versions might also support this!).
@@ -238,12 +238,12 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   ln -s bowtie-1.1.2 bowtie
   ```
   
-  * installing **Bowtie2** 64-bit version 2.2.6 (required)
+  * installing **Bowtie2** 64-bit version 2.2.9 (required)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.6/bowtie2-2.2.6-linux-x86_64.zip
-  unzip bowtie2-2.2.6-linux-x86_64.zip
-  ln -s bowtie2-2.2.6-linux-x86_64 bowtie2
+  wget http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.9/bowtie2-2.2.9-linux-x86_64.zip
+  unzip bowtie2-2.2.9-linux-x86_64.zip
+  ln -s bowtie2-2.2.9-linux-x86_64 bowtie2
   ```
   
   * installing **BLAT** version 0.35 (optional but **strongly** recommended; if **BLAT** is not installed please use option '--skip-blat' in order to let know *FusionCatcher* that it should not use it)
@@ -261,12 +261,12 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   ln -s blat_v0.35 blat
   ```
   
-  * installing **fastq-dump** version 2.3.5 from **NCBI SRA Toolkit** version 2.3.5 (optional but it is required in case that one wants to test the installation using the example given below)
+  * installing **fastq-dump** version 2.6.2 from **NCBI SRA Toolkit** version 2.6.2 (optional but it is required in case that one wants to test the installation using the example given below)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://ftp-private.ncbi.nlm.nih.gov/sra/sdk/2.3.5/sratoolkit.2.3.5-centos_linux64.tar.gz
-  tar zxvf sratoolkit.2.3.5-centos_linux64.tar.gz
-  ln -s sratoolkit.2.3.5-centos_linux64 sratoolkit
+  wget http://ftp-private.ncbi.nlm.nih.gov/sra/sdk/2.6.2/sratoolkit.2.6.2-centos_linux64.tar.gz
+  tar zxvf sratoolkit.2.6.2-centos_linux64.tar.gz
+  ln -s sratoolkit.2.6.2-centos_linux64 sratoolkit
   ```
   
   * installing **SeqTK** version 1.0-r82b (please note that this is a different development branch than the official development) (required)
@@ -280,12 +280,12 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   ln -s seqtk-1.0-r82b seqtk
   ```
   
-  * installing **STAR** version 2.5.0c (required)
+  * installing **STAR** version 2.5.1b (required)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://github.com/alexdobin/STAR/archive/2.5.0c.tar.gz -O 2.5.0c.tar.gz
-  tar zxvf 2.5.0c.tar.gz
-  cd 2.5.0c
+  wget http://github.com/alexdobin/STAR/archive/2.5.1b.tar.gz -O 2.5.1b.tar.gz
+  tar zxvf 2.5.1b.tar.gz
+  cd 2.5.1b
   cd source
   rm -f STAR
   cp ../bin/Linux_x86_64_static/STAR .
@@ -299,7 +299,7 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   and continue with
   ```
   cd ..
-  ln -s 2.5.0c star
+  ln -s 2.5.1b star
   ```
   
   * installing **Velvet** version 1.2.10 (optional)
@@ -317,16 +317,16 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   sudo apt-get install zlib-dev
   ```
   
-  * installing **coreutils** version 8.22 for a newer version of **sort** command which allows use of several CPUs in parallel, that is the use of `--parallel` command line option (optional)
+  * installing **coreutils** version 8.25 for a newer version of **sort** command which allows use of several CPUs in parallel, that is the use of `--parallel` command line option (optional)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://ftp.gnu.org/gnu/coreutils/coreutils-8.22.tar.xz
-  tar --xz -xvf coreutils-8.22.tar.xz
-  cd coreutils-8.22
+  wget http://ftp.gnu.org/gnu/coreutils/coreutils-8.25.tar.xz
+  tar --xz -xvf coreutils-8.25.tar.xz
+  cd coreutils-8.25
   ./configure
   make
   cd ..
-  ln -s coreutils-8.22 coreutils
+  ln -s coreutils-8.25 coreutils
   ```
   
   * installing **pigz** version 1.2.10 (optional)
@@ -351,12 +351,12 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   ln -s samtools-0.1.19 samtools
   ```
   
-  * installing **Picard tools** version 1.119 (optional)
+  * installing **Picard tools** version 2.2.2 (optional)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip
-  unzip picard-tools-1.119.zip
-  ln -s picard-tools-1.119 picard
+  wget http://github.com/broadinstitute/picard/releases/download/2.2.2/picard-tools-2.2.2.zip
+  unzip picard-tools-2.2.2.zip
+  ln -s picard-tools-2.2.2 picard
   ```
   
   * installing *FusionCatcher* version 0.99.6a (required)
