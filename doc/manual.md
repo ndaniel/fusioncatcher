@@ -47,35 +47,35 @@ For running *FusionCatcher* it is needed a computer with:
   * **Linux/Unix** 64-bit (e.g. Ubuntu version 12.04/14.04 or newer)
   * **Python** version 2.7.6 (>=2.6.0 and < 3.0 is fine)
   * **BioPython** version 1.66 (>=1.50 is fine)
-  * **Bowtie** 64-bit version 1.1.2 http://bowtie-bio.sourceforge.net/index.shtml
-  * **SeqTK** version 1.0-r82b-dirty  http://github.com/ndaniel/seqtk
-  * organism specific  data from [Ensembl](http://www.ensembl.org) database release 84 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed)
-  * **STAR** version 2.5.1b https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases
-  * **BOWTIE2** version 2.2.9 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
-  * **BWA** version 0.7.12 http://sourceforge.net/projects/bio-bwa/
+  * **Bowtie** 64-bit version 1.1.2 http://bowtie-bio.sourceforge.net/index.shtml (will be installed by `boostrap.py`)
+  * **SeqTK** version 1.0-r82b-dirty  http://github.com/ndaniel/seqtk (will be installed by `boostrap.py`)
+  * organism specific  data from [Ensembl](http://www.ensembl.org) database release 84 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed) (will be installed by `boostrap.py`)
+  * **STAR** version 2.5.1b https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases (will be installed by `boostrap.py`)
+  * **BOWTIE2** version 2.2.9 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml (will be installed by `boostrap.py`)
+  * **BWA** version 0.7.12 http://sourceforge.net/projects/bio-bwa/ (will be installed by `boostrap.py`)
 
 ## 2.2 - Optional dependencies
 
 ### 2.2.1 - Strongly recommended
 These are expected by default to be installed but their use can be disabled by using the command line option '--skip-blat'.
-  * **BLAT** version 0.35 http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *FusionCatcher* (hint: if you are a non-profit organization you should be fine).
-  * **faToTwoBit** http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *FusionCatcher* and `fusioncatcher-build` if one plans to use BLAT as a second (optional) alternative method for finding fusion genes! (required also by option `--blat-visualization`)
+  * **BLAT** version 0.35 http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *FusionCatcher* (hint: if you are a non-profit organization you should be fine) (will be installed by `boostrap.py`)
+  * **faToTwoBit** http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *FusionCatcher* and `fusioncatcher-build` if one plans to use BLAT as a second (optional) alternative method for finding fusion genes! (required also by option `--blat-visualization`) (will be installed by `boostrap.py`)
 
 Note: If one does not want to install BLAT (whilst installing *FusionCatcher* automatically thru `bootstrap.py`) and also not to use BLAT with *FusionCatcher* then using command line `-b` option of `bootstrap.py` will do that.
 
 ### 2.2.2 - Nice to have
-  * **Velvet** (de novo assembler) version 1.2.10 http://www.ebi.ac.uk/~zerbino/velvet/ . This is needed if one plans to do _de novo_ assembly of the reads which support the candidate fusion genes. (required by option `--assembly` of *FusionCatcher*)
-  * **fastq-dump** version 2.6.2 from NCBI SRA Toolkit http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software . This is needed by *FusionCatcher* if one plans to use as input SRA files.
+  * **Velvet** (de novo assembler) version 1.2.10 http://www.ebi.ac.uk/~zerbino/velvet/ . This is needed if one plans to do _de novo_ assembly of the reads which support the candidate fusion genes. (required by option `--assembly` of *FusionCatcher*) (will be installed by `boostrap.py`)
+  * **fastq-dump** version 2.6.2 from NCBI SRA Toolkit http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software . This is needed by *FusionCatcher* if one plans to use as input SRA files (will be installed by `boostrap.py`)
   * Python library **openpyxl** version 1.5.6 http://pypi.python.org/pypi/openpyxl (other versions might work but have not been tested). It is needed by `fusioncatcher-build` for parsing the [ConjoinG](http://metasystems.riken.jp/conjoing/) database.
   * Python library **xlrd** version 0.6.1 http://pypi.python.org/pypi/xlrd (other versions might work but have not been tested). It is needed by `fusioncatcher-build` for parsing the [ChimerDB](http://ercsb.ewha.ac.kr/FusionGene/) database.
-  * **coreutils** version 8.25  http://ftp.gnu.org/gnu/coreutils for a newer version of SORT command which allows the use of several CPUs in parallel, that is '--parallel'  command line options (other older versions might also support this!).
-  * **pigz** version 2.3.1 http://zlib.net/pigz/ for using GZIP on several CPUs in parallel (other older versions might support this).
-  * **SAMTools** version 1.19 http://www.htslib.org/
-  * **Picard tools** version 2.2.2 http://broadinstitute.github.io/picard/
+  * **coreutils** version 8.25  http://ftp.gnu.org/gnu/coreutils for a newer version of SORT command which allows the use of several CPUs in parallel, that is '--parallel'  command line options (other older versions might also support this!) (will be installed by `boostrap.py`)
+  * **pigz** version 2.3.1 http://zlib.net/pigz/ for using GZIP on several CPUs in parallel (other older versions might support this) (will be installed by `boostrap.py`)
+  * **SAMTools** version 1.19 http://www.htslib.org/ (will be installed by `boostrap.py`)
+  * **Picard tools** version 2.2.2 http://broadinstitute.github.io/picard/ (will be installed by `boostrap.py`)
 
 
 ## 2.3 - Genomic Databases
-These are used (downloaded and parsed) automatically by *FusionCatcher*:
+These are used (downloaded and parsed) automatically by `boostrap.py` of *FusionCatcher*:
   * **ENSEMBL** database http://www.ensembl.org/ (required)
   * **UCSC** database http://hgdownload.cse.ucsc.edu/downloads.html#human (required)
   * **RefSeq** database (thru **UCSC** database) (required)
@@ -93,7 +93,7 @@ These are used (downloaded and parsed) automatically by *FusionCatcher*:
   * **ENSEMBL** database is used for finding novel/known fusions genes
   * **COSMIC**, **TICdb**, **ChimerDB**, **Cancer Genome Project**, **ConjoinG**, and manual curated fusion gene database are indexed and used further for annotating/labeling the found fusion genes for an easier visualization of **novel** genes (i.e. not published yet) found by *FusionCatcher*. For more information how this is used see [Tables 1,2,3](#output-data).
   * *FusionCatcher* can work just fine and is able to find fusion genes without any of the optional dependencies/tools/programs!
-  * if **BLAT** is not installed (or one does not want to use it) please use option '--skip-blat' in order to let know *FusionCatcher* that it should not use it!
+  * if **BLAT** is not installed (or one does not want to use it) please use option '--skip-blat' in order to let know *FusionCatcher* that it should not use it! Also, specifying that BLAT should be be used can be done by editing manually the line `aligners = blat,star` from file `fusioncatcher/etc/configuration.cfg` (that is remove the `blat` string).
 
 
 ---
@@ -129,7 +129,7 @@ These are used (downloaded and parsed) automatically by *FusionCatcher*:
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
 
-## 4.1 - Automatic installation {#automaticc-installation}
+## 4.1 - Automatic installation {#automatic-installation}
 
 This is an example of automatic installation of *FusionCatcher* (and it is installed here "~/fusioncatcher" if these are run in your home directory) and the required databases and indexes (which are downloaded instead of being built locally):
 ```
@@ -169,6 +169,12 @@ In case that one has the admin/root rights then it is possible to install *Fusio
 ```
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py
 sudo python bootstrap.py
+```
+
+In case that one plans not to use at all BLAT with *FusionCatcher* then add the command line `-b` to the `boostrap.py`, as following:
+
+```
+python bootstrap.py -b
 ```
 
 In case that you do not know which one to use from these examples, please use the first one!
@@ -246,7 +252,7 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   ln -s bowtie2-2.2.9-linux-x86_64 bowtie2
   ```
   
-  * installing **BLAT** version 0.35 (optional but **strongly** recommended; if **BLAT** is not installed please use option '--skip-blat' in order to let know *FusionCatcher* that it should not use it)
+  * installing **BLAT** version 0.35 (optional; if **BLAT** is not installed please use option '--skip-blat' or remove the `blat` string from the `aligners =...` line of file `fusioncatcher/etc/configuration.cfg` in order to let know *FusionCatcher* that it should not use it)
   ```
   cd /apps/fusioncatcher/tools
   mkdir blat_v0.35
@@ -1186,7 +1192,7 @@ By default, *FusionCatcher* its the Bowtie aligner for finding candidate fusion 
 
 The use of Bowtie and Blat aligners is the **default** approach of *FusionCatcher* for finding fusion genes.
 
-In order not to use this approach the command line option '`--skip-blat`' should be added, as following:
+In order not to use this approach the command line option '`--skip-blat`' should be added (or remove the string `blat` from line `aligners` from file `fusioncatcher/etc/configuration.cfg`), as following:
 
 ```
 fusioncatcher \
