@@ -150,6 +150,7 @@ def manage(configuration_filename, skip_python = []):
         _versions(CONF,config,"versions","fusioncatcher")
 
         _parameters(CONF,config,"parameters","threads")
+        _parameters(CONF,config,"parameters","aligners")
 
     return CONF
 #

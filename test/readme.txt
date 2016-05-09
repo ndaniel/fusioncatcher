@@ -1,6 +1,5 @@
 
 The files:
-
 - reads_1.fq.gz
 - reads_2.fq.gz
 
@@ -24,7 +23,19 @@ contain a small selection of short reads from:
     genomic sequence, Accession GQ406059,
      http://www.ncbi.nlm.nih.gov/nuccore/GQ406059
 
-These short reads were selected such that they cover 13 already known fusion genes,
+[6] MUTZ-5 pre-B cell acute lymphoblastic leukemia cell line from Cancer 
+    Cell Line Encyclopedia,
+     http://browser.cghub.ucsc.edu/details/499c83cb-9390-489f-80f8-6a6f9417df82/
+
+[7] NALM-6 pre-B cell acute lymphoblastic leukemia cell line from Cancer 
+    Cell Line Encyclopedia,
+     http://browser.cghub.ucsc.edu/details/b5077268-f161-4708-b9de-3bc5673e8843/
+
+[8] SU-DHL-1 anaplastic large cell lymphoma cell line from Cancer Cell Line 
+    Encyclopedia,
+     http://browser.cghub.ucsc.edu/details/61a94c69-20f1-43e5-a7a8-1f169ed248fa/
+
+These short reads were selected such that they cover 15 already known fusion genes,
 which are:
 - FGFR3-TACC3  (short reads from [2]),
 - FIP1L1-PDGFRA  (short reads from [3]),
@@ -37,5 +48,8 @@ which are:
 - HOOK3-RET  (short reads from [1]),
 - EML4-ALK  (short reads from [1]),
 - AKAP9-BRAF  (short reads from [1]),
-- BRD4-NUT  (short reads from [1]), and
-- IGH@-MALT1 (short reads from [5]).
+- BRD4-NUT  (short reads from [1]), 
+- MALT1-IGH@ (short reads from [5]),
+- IGH@-CRLF2 (short reads from [6]),
+- DUX4-IGH@ (short reads from [7]), and
+- NPM1-ALK (short reads from [8]).

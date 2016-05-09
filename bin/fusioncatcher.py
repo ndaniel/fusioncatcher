@@ -5,53 +5,8 @@
 FusionCatcher
 ==============================================================================
 FusionCatcher searches for novel somatic fusion genes in RNA-seq paired-end
-reads data produced by the Illumina Solexa platforms (for example: Illumina
-HiSeq 2000, GAIIx, GAII).
-
-Required dependencies:
-- Linux 64-bit (e.g. Ubuntu 12.04/14.04 or newer)
-- Python version 2.7.x (>=2.6.0 and < 3.0 is fine)
-- BioPython version 1.65 (>=1.50 is fine)
-- Bowtie 64-bit version 1.1.2  <http://bowtie-bio.sourceforge.net/index.shtml>
-- Bowtie2 64-bit version 2.2.6  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
-- STAR version 2.5.0c <http://github.com/alexdobin/STAR>
-- BWA version 0.7.12  <http://sourceforge.net/projects/bio-bwa>
-- SEQTK version 1.0-r82b-dirty  <http://github.com/ndaniel/seqtk>
-
-Optional dependencies:
-- strongly recommended (expected by default to be installed but their use can
-  be disabled by using the command line option '--skip-blat'):
-   * BLAT version 0.35 <http://users.soe.ucsc.edu/~kent/src/>. Executables are
-     available at <http://hgdownload.cse.ucsc.edu/admin/exe/>. Please, check the
-     license to see if it allows you to run/use it!
-   * faToTwoBit <http://users.soe.ucsc.edu/~kent/src/>. Executables are
-     available at <http://hgdownload.cse.ucsc.edu/admin/exe/>. Please, check the
-     license to see if it allows you to run/use it!
-- nice to have:
-   * Velvet (de novo assembler) version 1.2.10
-     <http://www.ebi.ac.uk/~zerbino/velvet/>
-   * fastq-dump version 2.3.2 from NCBI SRA Toolkit
-     <http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software>
-   * Python library openpyxl <http://pypi.python.org/pypi/openpyxl>
-   * Python library xlrd <http://pypi.python.org/pypi/xlrd>
-   * SAMTools <http://www.htslib.org/>
-
-Genomic Databases (used/installed automatically by FusionCatcher):
-- ENSEMBL database <http://www.ensembl.org>
-- COSMIC database <http://cancer.sanger.ac.uk/cancergenome/projects/cosmic/>
-- TICdb database <http://www.unav.es/genetica/TICdb/>
-- IMGT/HLA Database <http://www.ebi.ac.uk/ipd/imgt/hla/>
-- ChimerDB 2.0 database (literature-based annotation)  <http://ercsb.ewha.ac.kr/FusionGene/index.jsp>
-- ConjoinG database <http://metasystems.riken.jp/conjoing/>
-- Cancer Genome Project (CGP) translocations database  <http://www.sanger.ac.uk/genetics/CGP/Census/>
-- CACG database <http://cgc.kribb.re.kr/map/>
-- UCSC database <http://hgdownload.cse.ucsc.edu/downloads.html#human>
-- RefSeq database (thru UCSC database)
-- Viruses/bacteria/phages NCBI genomes database <ftp://ftp.ncbi.nlm.nih.gov/genomes/Viruses/>
-- DGD database <http://dgd.genouest.org/>
-- Illumina BodyMap2 RNA-seq database <http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/>
-- RNA-seq database of 95 human individuals representing 27 different tissues <https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-1733/>
-
+reads data produced by the Illumina Solexa platforms (for example: 
+Solexa/HiSeq/NextSeq/MiSeq/MiniSeq).
 
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
@@ -166,7 +121,7 @@ def empty(a_file):
     f = True
     if (os.path.isfile(a_file) or islink(a_file)):
         s = os.path.getsize(a_file)
-        if s < 1000:
+        if s < 100:
             d = [line for line in file(a_file,'r').readlines() if line.rstrip('\r\n')]
             if d:
                 f = False
@@ -182,6 +137,37 @@ def delete_file(some_file):
     some_file = some_file[:-1] if some_file.endswith(os.sep) else some_file
     if os.path.isfile(some_file) or islink(some_file):
         os.remove(some_file)
+
+
+#
+#
+#
+def memory(unit='default'):
+    meminfo = {'MemTotal':0,'free':0,'used':0,'unit':'kB','total':0}
+    
+
+    if os.path.isfile('/proc/meminfo'):
+        meminfo = [line.split() for line in file('/proc/meminfo').readlines()]
+        t = meminfo[0][-1].strip()
+        meminfo = dict([(line[0].rstrip(':'),int(line[1])) for line in meminfo])
+        # meminfo['MemTotal']  # e.g. 3921852
+
+        meminfo['free'] = meminfo['MemFree'] + meminfo['Buffers'] + meminfo['Cached']
+        meminfo['used'] = meminfo['MemTotal'] - meminfo['free']
+        meminfo['unit'] = t
+        meminfo['total'] = meminfo['MemTotal']
+        if unit.upper() == 'GB' and t.upper() == 'KB':
+            for k in meminfo.keys():
+                if k != 'unit':
+                    meminfo[k] = float(meminfo[k])/(1024*1024)
+            meminfo['unit'] = 'GB'
+        elif unit.upper() == 'MB' and t.upper() == 'KB':
+            for k in meminfo.keys():
+                if k != 'unit':
+                    meminfo[k] = float(meminfo[k])/1024
+            meminfo['unit'] = 'MB'
+
+    return meminfo
 
 #
 #
@@ -256,7 +242,7 @@ description = ("FusionCatcher searches for novel and known somatic gene fusions 
                "Illumina HiSeq 2000, Illumina HiSeq X, Illumina NextSeq 500, \n"+
                "Illumina GAIIx, Illumina GAII, Illumina MiSeq, Illumina MiniSeq). \n")
 
-version = "%prog 0.99.5a beta"
+version = "%prog 0.99.6a beta"
 
 
 if __name__ == "__main__":
@@ -380,224 +366,141 @@ if __name__ == "__main__":
                              "Default is '%default'. ")
 
 
-    group = optparse.OptionGroup(parser, "Trimming options")
 
-    group.add_option("--5keep","-l",
+    parser.add_option("--5keep","-l",
                       action = "store",
                       type = "int",
                       dest = "trim_3end_keep",
                       default = 60, # 60 # 68
-                      help = "This may be seen as seed length. For Bowtie aligner the reads "+
-                             "longer than '%default' will be trimmed from "+
-                             "their 3-end such that to become exactly '%default' bp long. "+
-                             "Reads shorter than '%default' will not be trimmed. " +
-                             "The trimming priorities are '--5end','--3end','--5keep'. " +
-                             "if several trimming options are used simultaneously. "+
-                             "The trimming is done by default only to the reads used "+
-                             "for BOWTIE aligner but not for BLAT/STAR/BOWTIE2/BWA aligners. In order "+
-                             "to apply the trimming also the reads used by BLAT/STAR/BOWTIE2/BWA aligners "+
-                             "option '--trim-psl' should be used! The trimming of reads for "+
-                             "BLAT/STAR/BOWTIE2/BWA aligners is done using the option '--trim-psl-5keep'. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                             "This may be seen as seed length. For Bowtie aligner the reads "+
+#                             "longer than '%default' will be trimmed from "+
+#                             "their 3-end such that to become exactly '%default' bp long. "+
+#                             "Reads shorter than '%default' will not be trimmed. " +
+#                             "The trimming priorities are '--5end','--3end','--5keep'. " +
+#                             "if several trimming options are used simultaneously. "+
+#                             "The trimming is done by default only to the reads used "+
+#                             "for BOWTIE aligner but not for BLAT/STAR/BOWTIE2/BWA aligners. In order "+
+#                             "to apply the trimming also the reads used by BLAT/STAR/BOWTIE2/BWA aligners "+
+#                             "option '--trim-psl' should be used! The trimming of reads for "+
+#                             "BLAT/STAR/BOWTIE2/BWA aligners is done using the option '--trim-psl-5keep'. "+
+#                             "Default is '%default'."
+                    )
 
-    group.add_option("--5end","-5",
+    parser.add_option("--5end","-5",
                       action = "store",
                       type = "int",
                       dest = "trim_5end",
                       default = 0,
-                      help = "It trims all the reads from their 5-end with the "+
-                             "given size. "+
-                             "The trimming priorities are '--5end','--3end','--5keep'. " +
-                             "if several trimming options are used simultaneously. "+
-                             "The trimming is done by default only to the reads used "+
-                             "for BOWTIE aligner but not for BLAT aligner. In order "+
-                             "to apply the trimming also the reads used by BLAT/STAR/BOWTIE2/BWA aligners "+
-                             "option '--trim-psl' or '--trim-psl-5end' should be used! "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                             "It trims all the reads from their 5-end with the "+
+#                             "given size. "+
+#                             "The trimming priorities are '--5end','--3end','--5keep'. " +
+#                             "if several trimming options are used simultaneously. "+
+#                             "The trimming is done by default only to the reads used "+
+#                             "for BOWTIE aligner but not for BLAT aligner. In order "+
+#                             "to apply the trimming also the reads used by BLAT/STAR/BOWTIE2/BWA aligners "+
+#                             "option '--trim-psl' or '--trim-psl-5end' should be used! "+
+#                             "Default is '%default'."
+                             )
 
-    group.add_option("--3end","-3",
+    parser.add_option("--3end","-3",
                       action = "store",
                       type = "int",
                       dest = "trim_3end",
                       default = 0,
-                      help = "It trims all the reads from their 3-end with the "+
-                             "given size. "+
-                             "The trimming priorities are '--5end','--3end','--5keep'. " +
-                             "if several trimming options are used simultaneously. "+
-                             "The trimming is done by default only to the reads used "+
-                             "for BOWTIE aligner but not for BLAT aligner. In order "+
-                             "to apply the trimming also the reads used by BLAT/STAR/BOWTIE2/BWA aligners "+
-                             "option '--trim-psl' should be used! "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                             "It trims all the reads from their 3-end with the "+
+#                             "given size. "+
+#                             "The trimming priorities are '--5end','--3end','--5keep'. " +
+#                             "if several trimming options are used simultaneously. "+
+#                             "The trimming is done by default only to the reads used "+
+#                             "for BOWTIE aligner but not for BLAT aligner. In order "+
+#                             "to apply the trimming also the reads used by BLAT/STAR/BOWTIE2/BWA aligners "+
+#                             "option '--trim-psl' should be used! "+
+#                             "Default is '%default'."
+                             )
 
-    group.add_option("--trim-psl",
+    parser.add_option("--trim-psl",
                       action = "store_true",
                       dest = "trim_psl",
                       default = False,
-                      help = "If it is specified then also the reads given as input "+
-                             "to BLAT/STAR/BOWTIE2/BWA aligners are trimmed using the parameters given "+
-                             "by command line arguments '--5keep', '--5end', and '--3end'. "+
-                             "By default the trimming options "+
-                             "'--5keep', '--5end', '--3end' are trimming the reads only for "+
-                             "for the BOWTIE method but not when BLAT/STAR/BOWTIE2/BWA are used. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                             "If it is specified then also the reads given as input "+
+#                             "to BLAT/STAR/BOWTIE2/BWA aligners are trimmed using the parameters given "+
+#                             "by command line arguments '--5keep', '--5end', and '--3end'. "+
+#                             "By default the trimming options "+
+#                             "'--5keep', '--5end', '--3end' are trimming the reads only for "+
+#                             "for the BOWTIE method but not when BLAT/STAR/BOWTIE2/BWA are used. "+
+#                             "Default is '%default'."
+                             )
 
 
-    group.add_option("--trim-psl-5keep","-x",
+    parser.add_option("--trim-psl-5keep","-x",
                       action = "store",
                       type = "int",
                       dest = "trim_psl_3end_keep",
                       default = 82, # 80
-                      help = "This may be seen as seed length. All reads given as input "+
-                             "to BLAT/STAR/BOWTIE2/BWA aligners and which "+
-                             "are longer than '%default' will be trimmed from "+
-                             "their 3-end such that to become exactly '%default' bp long. "+
-                             "The reads given as input to Bowtie are not trimmed using this "+
-                             "option. It should be set to 0 if no trimming should be done "+
-                             "for BLAT/STAR/BOWTIE2/BWA. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                             "This may be seen as seed length. All reads given as input "+
+#                             "to BLAT/STAR/BOWTIE2/BWA aligners and which "+
+#                             "are longer than '%default' will be trimmed from "+
+#                             "their 3-end such that to become exactly '%default' bp long. "+
+#                             "The reads given as input to Bowtie are not trimmed using this "+
+#                             "option. It should be set to 0 if no trimming should be done "+
+#                             "for BLAT/STAR/BOWTIE2/BWA. "+
+#                             "Default is '%default'."
+                             )
 
-    group.add_option("--trim-psl-5end",
+    parser.add_option("--trim-psl-5end",
                       action = "store_true",
                       dest = "trim_psl_5end",
                       default = False,
-                      help = "If it is specified then also the reads given as input "+
-                             "to BLAT/STAR/BOWTIE2/BWA aligners are trimmed using the parameters given "+
-                             "by command line argument '--5end'. "+
-                             "By default the trimming options "+
-                             "'--5keep', '--5end', '--3end' are trimming the reads only for "+
-                             "for the BOWTIE method but not when BLAT/STAR/BOWTIE2/BWA are used. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                             "If it is specified then also the reads given as input "+
+#                             "to BLAT/STAR/BOWTIE2/BWA aligners are trimmed using the parameters given "+
+#                             "by command line argument '--5end'. "+
+#                             "By default the trimming options "+
+#                             "'--5keep', '--5end', '--3end' are trimming the reads only for "+
+#                             "for the BOWTIE method but not when BLAT/STAR/BOWTIE2/BWA are used. "+
+#                             "Default is '%default'."
+                 )
 
-    group.add_option("--trim-quality","-Q",
+    parser.add_option("--trim-quality","-Q",
                       action = "store",
                       dest = "trim_quality",
                       type = "int",
                       default = 5,
-                      help = "The input reads will be trimmed from their 3'end "+
-                             "when the quality scores are below the given threshold, e.g. 5 for Q5. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                             "The input reads will be trimmed from their 3'end "+
+#                             "when the quality scores are below the given threshold, e.g. 5 for Q5. "+
+#                             "Default is '%default'."
+                             )
 
-    group.add_option("--trim-wiggle",
+    parser.add_option("--trim-wiggle",
                       action = "store",
                       dest = "trim_wiggle",
                       type = "int",
                       default = 0, # it was 2
-                      help = "The input reads will be trimmed during the alignment "+
-                             "from their 5' and 3' ends for filtering only purposes. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                             "The input reads will be trimmed during the alignment "+
+#                             "from their 5' and 3' ends for filtering only purposes. "+
+#                             "Default is '%default'."
+                             )
 
-    group.add_option("--trimfq",
+    parser.add_option("--trimfq",
                       action = "store",
                       dest = "trimfq",
                       type = "float",
                       default = 1.00,
-                      help = "If this is set less than 1.00 the quality then the quality "+
-                             "trimming will be done using Phred algorithm in addition to "+
-                             "quality filtering which is already done by default. "+
-                             "For this the 'seqtk trimfq' tool is used and also the input "+
-                             "reads should have quality score in Sanger format. A recommended value "+
-                             "here for quality trimming is 0.05 (which is the default value of 'seqtk trimfq') or 0.10."
+                      help = optparse.SUPPRESS_HELP
+#                             "If this is set less than 1.00 the quality then the quality "+
+#                             "trimming will be done using Phred algorithm in addition to "+
+#                             "quality filtering which is already done by default. "+
+#                             "For this the 'seqtk trimfq' tool is used and also the input "+
+#                             "reads should have quality score in Sanger format. A recommended value "+
+#                             "here for quality trimming is 0.05 (which is the default value of 'seqtk trimfq') or 0.10."
                     )
-
-
-    parser.add_option_group(group)
-
-
-    group = optparse.OptionGroup(parser, "Search fusion genes options")
-
-    group.add_option("--mismatches","-m",
-                      action = "store",
-                      type = "int",
-                      dest = "mismatches",
-                      default = 2,
-                      help = "Maximum number of mismatches to be allowed for "+
-                             "mapping reads using Bowtie aligner. "+
-                             "Minimum accepted value is zero and maximum is 3. "+
-                             "Default is '%default'.")
-
-    group.add_option("--mismatches-psl",
-                      action = "store",
-                      type = "int",
-                      dest = "mismatches_psl",
-                      default = 2,
-                      help = "Maximum number of mismatches to be allowed for "+
-                             "mapping reads using BLAT/STAR/BOWTIE2/BWA aligner. "+
-                             "Default is '%default'.")
-
-    group.add_option("--mismatches-ambiguous",
-                      action = "store",
-                      type = "int",
-                      dest = "ambiguous_mismatches",
-                      default = 2,
-                      help = "Maximum number of mapping mismatches for which the "
-                             "same reads are considered mapping ambiguously. "+
-                             "Default is '%default'.")
-
-    group.add_option("--mismatches-filtering",
-                      action = "store",
-                      type = "int",
-                      dest = "filter_mismatches",
-                      default = 2,
-                      help = "Maximum number of mapping mismatches used for filtering the reads. "+
-                             "Default is '%default'.")
-
-    group.add_option("--top-pairs-fusion",
-                      action = "store",
-                      type = "int",
-                      dest = "spanning_pairs_count",
-                      default = 10000,
-                      help = "If the '--pairs-fusion' selects more than N preliminary "+
-                             "candidate fusion genes then only the first N will be "+
-                             "considered for further analysis. N is set here. "+
-                             "Default is '%default'.")
-
-    group.add_option("--pairs-fusion","-s",
-                      action = "store",
-                      dest = "spanning_pairs",
-                      default = "3,3,3,3,3",
-                      help = "The minimum number of (encompassing) paired-end reads which "+
-                             "support a candidate fusion gene and which will be "+
-                             "considered for further analysis.  "+
-                             "It is given separated by commas for each of "+
-                             "the aligners: BOWTIE, BLAT, STAR, BOWTIE2, BWA (in this order). " +
-                             "Default is '%default'.")
-
-
-    group.add_option("--reads-fusion","-r",
-                      action = "store",
-                      dest = "spanning_reads",
-                      default = "2,2,2,2,2",
-                      help = "The minimum number of reads which "+
-                             "support a candidate fusion gene that is the minimum "+
-                             "number of reads which overlap over the fusion "+
-                             "junction. It is given separated by commas for each of "+
-                             "the aligners: BOWTIE, BLAT, STAR, BOWTIE2, BWA (in this order). " +
-                             "Default is '%default'.")
-
-
-    group.add_option("--anchor-fusion","-a",
-                      action = "store",
-                      dest = "length_anchor",
-                      default = "17,17,17,17,17", # default 14; 17; 18?
-                      help = "The minimum length which a read should overlap over (or anchor/overhang for) "+
-                             "fusion junction of a candidate fusion gene in order to be considered for " +
-                             "further analysis. Minimum accepted value is 10 and it should not exceed half "+
-                             "of the length of the longest read from the input data. It is given separated "+
-                             "by commas for each of the aligners: BOWTIE, BLAT, STAR, BOWTIE2, BWA (in this order). " +
-                             "Default is '%default'.")
-
-    group.add_option("--anchor-fusion2","-W",
-                      action = "store",
-                      type = "int",
-                      dest = "length_anchor2",
-                      default = 47, # default 22?
-                      help = "If the anchor/overhang which supports the fusion is longer (or equal) than "+
-                             "this value than the required number of reads supporting the fusion is 1. " +
-                             "It basically overrides '--reads-fusion*' for anchors longer (or equal) than"+
-                             "the value specified here. It always should be larger than the value "+
-                             "specified by '--reads-fusion*'. "+
-                             "Default is '%default'.")
 
 
     mydefault = sorted([
@@ -634,7 +537,7 @@ if __name__ == "__main__":
             "metazoa",
             "bodymap2",
             "hpa",
-            "non_tumor_cells",
+#            "non_tumor_cells",
             "fragments",
             "removed"])
     all_choices = sorted([
@@ -690,255 +593,276 @@ if __name__ == "__main__":
             'banned',
             'hla',
             'non_tumor_cells',
+            'non_cancer_tissues',
             'removed'])
-    group.add_option("--filter-fusion","-b",
+    parser.add_option("--filter-fusion","-b",
                       action = "store",
                       type = "string",
                       dest = "biotypes",
                       default = ','.join(sorted(mydefault)),
-                      help = "Candidate gene fusions to be skipped from further "+
-                             "analysis in case that one of "+
-                             "partner gene or both genes (which form a fusion) "+
-                             "are specified here. "+
-                             "All possible values are: ["+', '.join(sorted(all_choices))+"]. "+
-                             "'short_distance' is used for labeling the "+
-                             "candidate fusion genes which do meet the criteria "+
-                             "specified with '--min-dist-fusion'. "+
-                             "Several can be chosen but in this case they " +
-                             "should comma separated. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Candidate gene fusions to be skipped from further "+
+#                             "analysis in case that one of "+
+#                             "partner gene or both genes (which form a fusion) "+
+#                             "are specified here. "+
+#                             "All possible values are: ["+', '.join(sorted(all_choices))+"]. "+
+#                             "'short_distance' is used for labeling the "+
+#                             "candidate fusion genes which do meet the criteria "+
+#                             "specified with '--min-dist-fusion'. "+
+#                             "Several can be chosen but in this case they " +
+#                             "should comma separated. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--filter-fusion-add","-B",
+    parser.add_option("--filter-fusion-add","-B",
                       action = "store",
                       type = "string",
                       dest = "biotypes_more",
-                      help = "Any label of fusion genes specified here will be "+
-                             "appended to the list given to '--filter-fusion'. "+
-                             "This is just an easy way to add more to '--filter-fusion'. "+
-                             "For more read the description of '--filter-fusion'. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Any label of fusion genes specified here will be "+
+#                             "appended to the list given to '--filter-fusion'. "+
+#                             "This is just an easy way to add more to '--filter-fusion'. "+
+#                             "For more read the description of '--filter-fusion'. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--dist-fusion","-D",
+    parser.add_option("--dist-fusion","-D",
                       action = "store",
                       type = "int",
                       dest = "min_dist",
                       default = 200000,
-                      help = "The candidate fusion genes where the distance "+
-                             "between the genes is below this threshold will be marked "+
-                             "using the label 'custom_distance' "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                             "The candidate fusion genes where the distance "+
+#                             "between the genes is below this threshold will be marked "+
+#                             "using the label 'custom_distance' "+
+#                             "Default is '%default'.")
 
-    group.add_option("--all-reads-fusion","-A",
+
+    parser.add_option("--all-reads-fusion","-A",
                       action = "store_true",
                       dest = "all_reads_junction",
                       default = False,
-                      help = "If it is specified then all reads (reads which form "+
-                             "a pair and single reads which do not have a mate "+
-                             "read because their mate has been removed due to "+
-                             "different reasons, like for example low quality), "+
-                             "will be used for finding the fusion point, which "+
-                             "is the exon-exon junction. If not specified then only "+
-                             "reads which form a pair will be used for "+
-                             "finding the exon-exon junction (one read maps on one "+
-                             "of the transcripts of the gene involved in the fusion "+
-                             "and its mate will map on the exon-exon junction). "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                             "If it is specified then all reads (reads which form "+
+#                             "a pair and single reads which do not have a mate "+
+#                             "read because their mate has been removed due to "+
+#                             "different reasons, like for example low quality), "+
+#                             "will be used for finding the fusion point, which "+
+#                             "is the exon-exon junction. If not specified then only "+
+#                             "reads which form a pair will be used for "+
+#                             "finding the exon-exon junction (one read maps on one "+
+#                             "of the transcripts of the gene involved in the fusion "+
+#                             "and its mate will map on the exon-exon junction). "+
+#                             "Default is '%default'."
 
-    group.add_option("--homolog-fusion","-H",
+
+    parser.add_option("--homolog-fusion","-H",
                       action = "store",
                       type = "float",
                       dest = "homolog",
                       default =  float(1)/float(8*(10**4)),#float(1)/float(2*(10**5)), # float(1)/float(8*(10**4)),# float(1)/float(5*(10**4)),
-                      help = "The minimum number of reads (as percentage [0..1]) "+
-                             "which map simultaneously "+
-                             "onto two genes in order to be considered homologous. "+
-                             "If set to 0 then no homology analysis is done. "+
-                             "This information is used for filtering out candidate "+
-                             "fusion genes which are homologous. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                             "The minimum number of reads (as percentage [0..1]) "+
+#                             "which map simultaneously "+
+#                             "onto two genes in order to be considered homologous. "+
+#                             "If set to 0 then no homology analysis is done. "+
+#                             "This information is used for filtering out candidate "+
+#                             "fusion genes which are homologous. "+
+#                             "Default is '%default'."
 
-    group.add_option("--filter-str",
+
+    parser.add_option("--filter-str",
                       action = "store",
                       type = "float",
                       dest = "filter_str",
                       default = 2.1,
-                      help = "If specified to 0 then it skips filtering out the reads "+
-                             "which contain STR (short tandem repeats). "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If specified to 0 then it skips filtering out the reads "+
+#                             "which contain STR (short tandem repeats). "+
+#                             "Default is '%default'."
 
 
-    group.add_option("--visualization-psl",
+
+    parser.add_option("--visualization-psl",
                       action = "store_true",
                       dest = "psl_visualization",
                       default = False,
-                      help = "If it is set then the pipeline will use the BLAT "+
-                             "aligner for aligning the reads which support the "+
-                             "newly found candidate fusion genes.  Please, note "+
-                             "that BLAT license does not allow BLAT to be used for "+
-                             "commercial activities.  Fore more information "+
-                             "regarding BLAT please see its license: "+
-                             "<http://users.soe.ucsc.edu/~kent/src/>.  Also please, note "+
-                             "that this option is not actively supported anymore and "+
-                             "in the future will be deprecated.  If one still wants "+
-                             "to use it, then one should run this 'faToTwoBit genome.fa genome.2bit -noMask') "+
-                             "in 'fusioncatcher/data/current/'.  Instead it is recommended to use "+
-                             "'--visualization-sam'. This will be deprecated in the future. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If it is set then the pipeline will use the BLAT "+
+#                             "aligner for aligning the reads which support the "+
+#                             "newly found candidate fusion genes.  Please, note "+
+#                             "that BLAT license does not allow BLAT to be used for "+
+#                             "commercial activities.  Fore more information "+
+#                             "regarding BLAT please see its license: "+
+#                             "<http://users.soe.ucsc.edu/~kent/src/>.  Also please, note "+
+#                             "that this option is not actively supported anymore and "+
+#                             "in the future will be deprecated.  If one still wants "+
+#                             "to use it, then one should run this 'faToTwoBit genome.fa genome.2bit -noMask') "+
+#                             "in 'fusioncatcher/data/current/'.  Instead it is recommended to use "+
+#                             "'--visualization-sam'. This will be deprecated in the future. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--visualization-sam",
+    parser.add_option("--visualization-sam",
                       action = "store_true",
                       dest = "sam_visualization",
                       default = False,
-                      help = "If it is set then the pipeline will use the BOWTIE2 "+
-                             "aligner for aligning the reads which support the "+
-                             "newly found candidate fusion genes. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If it is set then the pipeline will use the BOWTIE2 "+
+#                             "aligner for aligning the reads which support the "+
+#                             "newly found candidate fusion genes. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--assembly","-M",
+    parser.add_option("--assembly","-M",
                      action = "store_true",
                      dest = "assembly",
                      default = False,
-                     help = "If used then the reads found to support the newly "+
-                            "found candidate fusion genes are assembled using "+
-                            "VELVET <http://www.ebi.ac.uk/~zerbino/velvet/>. "+
-                            "This will be deprecated in the future. " +
-                            "Default is '%default'.")
+                     help = optparse.SUPPRESS_HELP)
+#                     help = "If used then the reads found to support the newly "+
+#                            "found candidate fusion genes are assembled using "+
+#                            "VELVET <http://www.ebi.ac.uk/~zerbino/velvet/>. "+
+#                            "This will be deprecated in the future. " +
+#                            "Default is '%default'.")
 
 
-    parser.add_option_group(group)
-
-
-    group = optparse.OptionGroup(parser, "Bioinformatics sonication (for input reads longer than 130bp only)")
-
-
-    group.add_option("--sonication",
+    parser.add_option("--sonication",
                       action = "store",
                       type = "int",
                       dest = "sonication",
                       default =  130,
-                      help = "In case that the input reads are longer than the threshold set here "+
-                             "then they will be broken up bioinformatically in smaller reads. "+
-                             "If this is set to 0 then no break up will be done. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "In case that the input reads are longer than the threshold set here "+
+#                             "then they will be broken up bioinformatically in smaller reads. "+
+#                             "If this is set to 0 then no break up will be done. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--bridges",
+    parser.add_option("--bridges",
                       action = "store",
                       type = "int",
                       dest = "bridges",
                       default = 0,
-                      help = "Number of encompasses paired-reads to be generated for each input long read. "+
-                             "If it is set to 0 then the number will chosen automatically based on "+
-                             "the length of input reads, i.e. ceil(length_read/160). " +
-                             "Default is '%default'.")
-
-    parser.add_option_group(group)
-
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Number of encompasses paired-reads to be generated for each input long read. "+
+#                             "If it is set to 0 then the number will chosen automatically based on "+
+#                             "the length of input reads, i.e. ceil(length_read/160). " +
+#                             "Default is '%default'."
 
 
-    group = optparse.OptionGroup(parser, "Reads filtering/processing options")
 
-    group.add_option("--skip-filter-mt",
+    parser.add_option("--skip-filter-mt",
                       action = "store_true",
                       dest = "skip_mitochondrion_filtering",
                       default = False,
-                      help = "If specified then it skips filtering out the reads "+
-                             "which map on the mitochondrion. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                      help = "If specified then it skips filtering out the reads "+
+#                             "which map on the mitochondrion. "+
+#                             "Default is '%default'."
+                             )
 
-    group.add_option("--skip-filter-vir",
+    parser.add_option("--skip-filter-vir",
                       action = "store_true",
                       dest = "skip_viruses_filtering",
                       default = False,
-                      help = "If specified then it skips filtering out the reads "+
-                             "which map on known genomes of viruses. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                      help = "If specified then it skips filtering out the reads "+
+#                             "which map on known genomes of viruses. "+
+#                             "Default is '%default'."
+                             )
 
-    group.add_option("--skip-filter-b",
+    parser.add_option("--skip-filter-b",
                       action = "store_true",
                       dest = "skip_b_filtering",
                       default = False,
-                      help = "If specified then it skips filtering out the reads with "+
-                             "B quality scores (i.e. low quality) which are a special "+
-                             "indicator in "+
-                             "Fastq Illumina files. Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                      help = "If specified then it skips filtering out the reads with "+
+#                             "B quality scores (i.e. low quality) which are a special "+
+#                             "indicator in "+
+#                             "Fastq Illumina files. Default is '%default'."
+                             )
 
-    group.add_option("--skip-filter-ambiguous",
+    parser.add_option("--skip-filter-ambiguous",
                       action = "store_true",
                       dest = "skip_ambiguous_filtering",
                       default = False,
-                      help = "If specified then it skips filtering out the reads which "+
-                             "maps ambiguously (i.e. same read map simultaneously on two "+
-                             "locuses on genome/transcriptome within 0-3 mismatches. "
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                      help = "If specified then it skips filtering out the reads which "+
+#                             "maps ambiguously (i.e. same read map simultaneously on two "+
+#                             "locuses on genome/transcriptome within 0-3 mismatches. "
+#                             "Default is '%default'."
+                             )
 
-    group.add_option("--skip-filter-adapter",
+    parser.add_option("--skip-filter-adapter",
                       action = "store_true",
                       dest = "skip_adapter_filtering",
                       default = False,
-                      help = "If specified then it skips filtering out the reads which "+
-                             "contains the adapters. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                      help = "If specified then it skips filtering out the reads which "+
+#                             "contains the adapters. "+
+#                             "Default is '%default'."
+                             )
 
-    group.add_option("--skip-filter-psl",
+    parser.add_option("--skip-filter-psl",
                       action = "store_true",
                       dest = "skip_prefiltering_psl",
                       default = False,
-                      help = "If it is set then the pipeline will not prefilter "+
-                             "the short reads which will be used for doing BLAT/STAR/BOWTIE2/BWA alignment. "+
-                             "By default, the short reads are prefiltered before "+
-                             "being aligned using BLAT/STAR/BOWTIE2 in order to speed up the BLAT/STAR/BOWTIE2/BWA "+
-                             "alignment which is time and computationally demanding. "+
-                             "The disadvantage of doing prefiltering is that the sensitivity "+
-                             "of BLAT/STAR/BOWTIE2/BWA alignment is somewhat lowered. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If it is set then the pipeline will not prefilter "+
+#                             "the short reads which will be used for doing BLAT/STAR/BOWTIE2/BWA alignment. "+
+#                             "By default, the short reads are prefiltered before "+
+#                             "being aligned using BLAT/STAR/BOWTIE2 in order to speed up the BLAT/STAR/BOWTIE2/BWA "+
+#                             "alignment which is time and computationally demanding. "+
+#                             "The disadvantage of doing prefiltering is that the sensitivity "+
+#                             "of BLAT/STAR/BOWTIE2/BWA alignment is somewhat lowered. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--skip-interleave",
+    parser.add_option("--skip-interleave",
                       action = "store_true",
                       dest = "skip_interleave_processing",
                       default = False,
-                      help = "If specified then it skips interleaving the short reads "+
-                             "from the input FASTQ files. The program tries automatically "+
-                             "to pair the forward and reverse short reads based on file "+
-                             "names. In case that the pair is done wronlgy then this "+
-                             "argument should be used to remedy the problem. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If specified then it skips interleaving the short reads "+
+#                             "from the input FASTQ files. The program tries automatically "+
+#                             "to pair the forward and reverse short reads based on file "+
+#                             "names. In case that the pair is done wronlgy then this "+
+#                             "argument should be used to remedy the problem. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--skip-known-fusions",
+    parser.add_option("--skip-known-fusions",
                       action = "store_true",
                       dest = "skip_known_fusions",
                       default = False,
-                      help = "If it is set then the pipeline will not use its own database "+
-                             "and COSMIC database of already known fusion genes! "+
-                             "Here skipping means that the known fusion genes will "+
-                             "treated as any other candidate fusion genes "+
-                             "and if there is enough evidence will be shown in the "+
-                             "final list of found fusion genes. By default, the known "+
-                             "fusion genes are treated preferentially and are pushed "+
-                             "directly to the very final step of finding the junction "+
-                             "point. " +
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If it is set then the pipeline will not use its own database "+
+#                             "and COSMIC database of already known fusion genes! "+
+#                             "Here skipping means that the known fusion genes will "+
+#                             "treated as any other candidate fusion genes "+
+#                             "and if there is enough evidence will be shown in the "+
+#                             "final list of found fusion genes. By default, the known "+
+#                             "fusion genes are treated preferentially and are pushed "+
+#                             "directly to the very final step of finding the junction "+
+#                             "point. " +
+#                             "Default is '%default'.")
 
-    group.add_option("--skip-adjacent",
+    parser.add_option("--skip-adjacent",
                       action = "store_true",
                       dest = "skip_adjacent",
                       default = False,
-                      help = "If it is set then the pipeline will not seach for "+
-                             "candidate fusion genes where the genes are adjacent! "+
-                             "By default the candidate fusion genes which have "+
-                             "genes that are adjacent are analysed also but in many cases "+
-                             "they are just annotation errors in the Ensembl database "+
-                             "and maybe they are not real fusion genes. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If it is set then the pipeline will not seach for "+
+#                             "candidate fusion genes where the genes are adjacent! "+
+#                             "By default the candidate fusion genes which have "+
+#                             "genes that are adjacent are analysed also but in many cases "+
+#                             "they are just annotation errors in the Ensembl database "+
+#                             "and maybe they are not real fusion genes. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--skip-banned-fusions",
+    parser.add_option("--skip-banned-fusions",
                       action = "store_true",
                       dest = "skip_banned_fusions",
                       default = False,
-                      help = "If it is set then the list of known banned fusion "+
-                             "genes (which are found in healthy samples) is not used. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If it is set then the list of known banned fusion "+
+#                             "genes (which are found in healthy samples) is not used. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--keep-viruses-alignments","-V",
+    parser.add_option("--keep-viruses-alignments","-V",
                       action = "store_true",
                       dest = "keep_viruses",
                       default = False,
@@ -947,7 +871,7 @@ if __name__ == "__main__":
                              "for later inspection by the user. "+
                              "Default is '%default'.")
 
-    group.add_option("--keep-unmapped-reads","-U",
+    parser.add_option("--keep-unmapped-reads","-U",
                       action = "store_true",
                       dest = "keep_unmapped_reads",
                       default = False,
@@ -957,36 +881,36 @@ if __name__ == "__main__":
                              "for later inspection by the user. "+
                              "Default is '%default'.")
 
-    group.add_option("--skip-compress-ids",
+    parser.add_option("--skip-compress-ids",
                       action = "store_true",
                       dest = "skip_compress_ids",
                       default = False,
-                      help = "If it is set then the reads ids will not be compressed "+
-                             "(i.d. renamed) using lossy compression and "+
-                             "the original reads ids will be kept thru the whole "+
-                             "run of FusionCatcher. Be default the reads ids will be "+
-                             "compressed using lossy compression. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP
+#                      help = "If it is set then the reads ids will not be compressed "+
+#                             "(i.d. renamed) using lossy compression and "+
+#                             "the original reads ids will be kept thru the whole "+
+#                             "run of FusionCatcher. Be default the reads ids will be "+
+#                             "compressed using lossy compression. "+
+#                             "Default is '%default'."
+                             )
 
-    group.add_option("--skip-automatic-scaling",
+    parser.add_option("--skip-automatic-scaling",
                       action = "store_true",
                       dest = "skip_automatic_scaling",
                       default = False,
-                      help = "If it is set then the thresholds for anchor length, "+
-                             "spanning reads, and spanning pairs will not be adjusted "+
-                             "automatically according to the input reads. "+
-                             "Default is '%default'.")
-
-    parser.add_option_group(group)
-
-    group = optparse.OptionGroup(parser, "Usage of aligners")
+                      help = optparse.SUPPRESS_HELP
+#                      help = "If it is set then the thresholds for anchor length, "+
+#                             "spanning reads, and spanning pairs will not be adjusted "+
+#                             "automatically according to the input reads. "+
+#                             "Default is '%default'."
+)
 
 
-    group.add_option("--aligners",
+    parser.add_option("--aligners",
                       action = "store",
                       type = "string",
                       dest = "aligners",
-                      default = "blat,star",
+                      default = os.path.abspath(os.path.join(pipeline_path,"..","etc","configuration.cfg"))+',' + "blat,star",
                       help = "The aligners to be used on Bowtie aligner. "+
                              "By default always BOWTIE aligner is used and it "+
                              "cannot be disabled. The choices are: "+
@@ -995,10 +919,18 @@ if __name__ == "__main__":
                              "For example, if one wants to used all four aligners "+
                              "then 'blat,star,bowtie2,bwa' should be given. "+
                              "The command line options '--skip-blat', '--skip-star', "+
-                             "and '--skip-bowtie2' have priority over this option. "
+                             "and '--skip-bowtie2' have priority over this option. "+
+                             "If the first element in the list is the configuration file "+
+                             "(that is '.cfg' file) of FusionCatcher "+
+                             "then the aligners specified in the list of "+
+                             "aligners specified in the configuration file will "+
+                             "be used (and the rest of aligner specified here "+
+                             "will be ignored). "+
+                             "In case that the configuration file is not found "+
+                             "then the following aligners from the list will be used. "
                              "Default is '%default'.")
 
-    group.add_option("--skip-blat",
+    parser.add_option("--skip-blat",
                       action = "store_true",
                       dest = "skip_blat",
                       default = False,
@@ -1012,7 +944,7 @@ if __name__ == "__main__":
                              "<http://users.soe.ucsc.edu/~kent/src/>. "+
                              "Default is '%default'.")
 
-    group.add_option("--skip-star",
+    parser.add_option("--skip-star",
                       action = "store_true",
                       dest = "skip_star",
                       default = False,
@@ -1022,349 +954,322 @@ if __name__ == "__main__":
                              "STAR aligner is used by default. " +
                              "Default is '%default'.")
 
-    group.add_option("--skip-bowtie2",
+    parser.add_option("--skip-bowtie2",
                       action = "store_true",
                       dest = "skip_bowtie2",
                       default = False,
-                      help = "If it is set then the pipeline will NOT use the BOWTIE2 "+
-                             "aligner and all options and methods which make use of "+
-                             "BOWTIE2 will be disabled. "+
-                             "BOWTIE2 aligner is used by default. " +
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If it is set then the pipeline will NOT use the BOWTIE2 "+
+#                             "aligner and all options and methods which make use of "+
+#                             "BOWTIE2 will be disabled. "+
+#                             "BOWTIE2 aligner is used by default. " +
+#                             "Default is '%default'.")
 
-    group.add_option("--skip-bwa",
+    parser.add_option("--skip-bwa",
                       action = "store_true",
                       dest = "skip_bwa",
                       default = False,
-                      help = "If it is set then the pipeline will NOT use the BWA "+
-                             "aligner and all options and methods which make use of "+
-                             "BWA will be disabled. "+
-                             "BWA aligner is used by default. " +
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If it is set then the pipeline will NOT use the BWA "+
+#                             "aligner and all options and methods which make use of "+
+#                             "BWA will be disabled. "+
+#                             "BWA aligner is used by default. " +
+#                             "Default is '%default'.")
 
 
-    group.add_option("--skip-conversion-grch37",
+    parser.add_option("--skip-conversion-grch37",
                       action = "store_true",
                       dest = "skip_conversion_grch37",
                       default = False,
-                      help = "If it is set then the fusion coordinates for human "+
-                             "genome version GRCh38 (which is default) will NOT be "+
-                             "reported also using version GRCh37. " +
-                             "Default is '%default'.")
-
-    parser.add_option_group(group)
-
-
-    group = optparse.OptionGroup(parser, "Size limits for reference FASTA files for aligners")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If it is set then the fusion coordinates for human "+
+#                             "genome version GRCh38 (which is default) will NOT be "+
+#                             "reported also using version GRCh37. " +
+#                             "Default is '%default'.")
 
 
-    group.add_option("--limit-blat",
+    parser.add_option("--limit-blat",
                       action = "store",
                       type = "int",
                       dest = "limit_blat",
                       default = 3 * (2**30),
-                      help = "The maximum limit of the genome's size which BLAT aligner "+
-                             "is able to handle.  If the genome is larger than this limit "+
-                             "then it will be split automatically in smaller pieces such that "+
-                             "the aligner can handle them without an error. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The maximum limit of the genome's size which BLAT aligner "+
+#                             "is able to handle.  If the genome is larger than this limit "+
+#                             "then it will be split automatically in smaller pieces such that "+
+#                             "the aligner can handle them without an error. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--limit-bowtie",
+    parser.add_option("--limit-bowtie",
                       action = "store",
                       type = "int",
                       dest = "limit_bowtie",
                       default = 2**32 - 100000,
-                      help = "The maximum limit of the genome's size which BOWTIE aligner "+
-                             "is able to handle.  If the genome is larger than this limit "+
-                             "then it will be split automatically in smaller pieces such that "+
-                             "the aligner can handle them without an error. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The maximum limit of the genome's size which BOWTIE aligner "+
+#                             "is able to handle.  If the genome is larger than this limit "+
+#                             "then it will be split automatically in smaller pieces such that "+
+#                             "the aligner can handle them without an error. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--limit-bowtie2",
+    parser.add_option("--limit-bowtie2",
                       action = "store",
                       type = "int",
                       dest = "limit_bowtie2",
                       default = 30*(10**6), # 300*(10**6)
-                      help = "The maximum limit of the genome's size which BOWTIE2 aligner "+
-                             "is able to handle.  If the genome is larger than this limit "+
-                             "then it will be split automatically in smaller pieces such that "+
-                             "the aligner can handle them without an error. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The maximum limit of the genome's size which BOWTIE2 aligner "+
+#                             "is able to handle.  If the genome is larger than this limit "+
+#                             "then it will be split automatically in smaller pieces such that "+
+#                             "the aligner can handle them without an error. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--limit-bwa",
+    parser.add_option("--limit-bwa",
                       action = "store",
                       type = "int",
                       dest = "limit_bwa",
                       default = 1,
-                      help = "The maximum limit of the genome's size which BWA aligner "+
-                             "is able to handle.  If the genome is larger than this limit "+
-                             "then it will be split automatically in smaller pieces such that "+
-                             "the aligner can handle them without an error. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The maximum limit of the genome's size which BWA aligner "+
+#                             "is able to handle.  If the genome is larger than this limit "+
+#                             "then it will be split automatically in smaller pieces such that "+
+#                             "the aligner can handle them without an error. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--limit-star",
+    parser.add_option("--limit-star",
                       action = "store",
                       type = "int",
                       dest = "limit_star",
                       default = 500*(10**6),#1,#30*(10**6), # 3 * (2**30)
-                      help = "The maximum limit of the genome's size which STAR aligner "+
-                             "is able to handle.  If the genome is larger than this limit "+
-                             "then it will be split automatically in smaller pieces such that "+
-                             "the aligner can handle them without an error. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The maximum limit of the genome's size which STAR aligner "+
+#                             "is able to handle.  If the genome is larger than this limit "+
+#                             "then it will be split automatically in smaller pieces such that "+
+#                             "the aligner can handle them without an error. "+
+#                             "Default is '%default'.")
 
 
-    parser.add_option_group(group)
-
-
-    group = optparse.OptionGroup(parser, "Search sensitivity of fusions (they are mutually exclusive)")
-
-    group.add_option("--sensitive",
-                      action = "store_true",
-                      dest = "sensitive",
-                      default = False,
-                      help = "This will increase the sensitivity of finding fusion genes "+
-                             "at the expense of finding slightly more false positives. "+
-                             "Default is '%default'.")
-
-    group.add_option("--mildly-sensitive",
-                      action = "store_true",
-                      dest = "mildly_sensitive",
-                      default = False,
-                      help = "This will increase the sensitivity of finding fusion genes "+
-                             "at the expense of finding slightly more false positives. "+
-                             "Default is '%default'.")
-
-    group.add_option("--highly-sensitive",
-                      action = "store_true",
-                      dest = "highly_sensitive",
-                      default = False,
-                      help = "This will increase the sensitivity of finding fusion genes "+
-                             "at the expense of finding slightly more false positives. "+
-                             "Default is '%default'.")
-
-    group.add_option("--paranoid-sensitive",
+    parser.add_option("--paranoid-sensitive",
                       action = "store_true",
                       dest = "paranoid_sensitive",
                       default = False,
-                      help = "This will increase the sensitivity of finding fusion genes "+
-                             "at maximum at the expense of very high rate of false positives. "+
-                             "It is not recommended to be used for finding novel fusion genes. "+
-                             "It may be used in cases when one searches for already known fusion "+
-                             "genes which were missed in previous runs with default sensitivity. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "This will increase the sensitivity of finding fusion genes "+
+#                             "at maximum at the expense of very high rate of false positives. "+
+#                             "It is not recommended to be used for finding novel fusion genes. "+
+#                             "It may be used in cases when one searches for already known fusion "+
+#                             "genes which were missed in previous runs with default sensitivity. "+
+#                             "Default is '%default'.")
 
-    parser.add_option_group(group)
-
-
-
-    group = optparse.OptionGroup(parser, "Custom labels for fusions and (pre)filtering of fusions")
-
-    group.add_option("--label-title",
+    parser.add_option("--label-title",
                       action = "store",
                       type = "string",
                       dest = "label_title",
-                      help = "The label title(s) which will be used to mark the "+
-                             "candidate fusion genes given as input to '--label-file'. "+
-                             "If several are given then they should be comma separated. "+
-                             "If '--label-title' is used then also '--label-file' should be specified.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The label title(s) which will be used to mark the "+
+#                             "candidate fusion genes given as input to '--label-file'. "+
+#                             "If several are given then they should be comma separated. "+
+#                             "If '--label-title' is used then also '--label-file' should be specified.")
 
-    group.add_option("--label-file",
+    parser.add_option("--label-file",
                       action = "store",
                       type = "string",
                       dest = "label_file",
-                      help = "File(s) containing pairs of Ensembl gene ids (separated by tab, "+
-                             "i.e. first two columns) "+
-                             "candidate fusion genes given as input to '--label-file'. "+
-                             "If several are given then they should be comma separated. "+
-                             "If '--label-file' is used then also '--label-title' should be specified.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "File(s) containing pairs of Ensembl gene ids (separated by tab, "+
+#                             "i.e. first two columns) "+
+#                             "candidate fusion genes given as input to '--label-file'. "+
+#                             "If several are given then they should be comma separated. "+
+#                             "If '--label-file' is used then also '--label-title' should be specified.")
 
-    group.add_option("--label-threshold",
+    parser.add_option("--label-threshold",
                       action = "store",
                       type = "string",
                       dest = "label_threshold",
-                      help = "The thresholds which might be given as an optional column 3 "+
-                             "in '--label-file'. All the pairs given in '--label-file' "+
-                             "which have the number of column number 3 strictly less than "+
-                             "this given threshold will be ignored/skipped. "+
-                             "If several are given then they should be comma separated.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The thresholds which might be given as an optional column 3 "+
+#                             "in '--label-file'. All the pairs given in '--label-file' "+
+#                             "which have the number of column number 3 strictly less than "+
+#                             "this given threshold will be ignored/skipped. "+
+#                             "If several are given then they should be comma separated.")
 
 
-    parser.add_option_group(group)
-
-
-
-    group = optparse.OptionGroup(parser, "Rescue of partially mapped reads")
-
-    group.add_option("--skip-rescue",
+    parser.add_option("--skip-rescue",
                       action = "store_true",
                       dest = "skip_star_bowtie",
                       default = False,
-                      help = "By default it is tried to rescue "+
-                             "STAR's partially mapped reads (which includes also gap alignment "+
-                             "for IG@ fusions) by running "+
-                             "again BOWTIE aligner and stich together the the partialy mapped reads. " +
-                             "If this is set then the pipeline will NOT use the BOWTIE "+
-                             "aligner within the the usage of STAR aligner and no rescuing is done. " +
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "By default it is tried to rescue "+
+#                             "STAR's partially mapped reads (which includes also gap alignment "+
+#                             "for IG@ fusions) by running "+
+#                             "again BOWTIE aligner and stich together the the partialy mapped reads. " +
+#                             "If this is set then the pipeline will NOT use the BOWTIE "+
+#                             "aligner within the the usage of STAR aligner and no rescuing is done. " +
+#                             "Default is '%default'.")
 
-    group.add_option("--rescue-wiggle-size",
+    parser.add_option("--rescue-wiggle-size",
                       action = "store",
                       type = "int",
                       dest = "rescue_wiggle_size",
                       default = 0, 
-                      help = "Some wiggle room is allowed in case of gap alignment of rescued reads. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Some wiggle room is allowed in case of gap alignment of rescued reads. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--rescue-gap-size",
+    parser.add_option("--rescue-gap-size",
                       action = "store",
                       type = "int",
                       dest = "rescue_gap_size",
                       default = 0, 
-                      help = "Some very small wiggle room is allowed in case of rescuing the reads alignments. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Some very small wiggle room is allowed in case of rescuing the reads alignments. "+
+#                             "Default is '%default'.")
 
 
-    parser.add_option_group(group)
 
-
-    group = optparse.OptionGroup(parser, "Rescue of partially mapped reads with gap alignment only for IG@ fusions")
-
-
-    group.add_option("--ig-gap-size",
+    parser.add_option("--ig-gap-size",
                       action = "store",
                       type = "int",
                       dest = "length_gap",
-                      default = 18, # default 18?
-                      help = "In case of IG@ fusions a gap in alignment of reads is allowed. "+
-                             "The maximum length of the gap is specified here. "
-                             "Default is '%default'.")
+                      default = 21, # default 18?
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "In case of IG@ fusions a gap in alignment of reads is allowed. "+
+#                             "The maximum length of the gap is specified here. "
+#                             "Default is '%default'.")
 
 
-    group.add_option("--ig-gap-mismatches",
+    parser.add_option("--ig-gap-mismatches",
                       action = "store",
                       type = "int",
                       dest = "mismatches_gap",
-                      default = 6,
-                      help = "Maximum number of mismatches to be allowed for "+
-                             "mapping reads when also a gap is allowed. "+
-                             "Default is '%default'.")
+                      default = 7,
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Maximum number of mismatches to be allowed for "+
+#                             "mapping reads when also a gap is allowed. "+
+#                             "Default is '%default'.")
 
 
-    group.add_option("--ig-gap-anchor",
+    parser.add_option("--ig-gap-anchor",
                       action = "store",
                       type = "int",
                       dest = "length_anchor_gap",
                       default = 17, # default 14; 17; 18?
-                      help = "In case of gap alignments, it is the minimum length which a read should "+
-                             "overlap over (or anchor/overhang for) "+
-                             "fusion junction of a candidate fusion gene in order to be considered for " +
-                             "further analysis. Minimum accepted value is 10 and it should not exceed half "+
-                             "of the length of the longest read from the input data. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "In case of gap alignments, it is the minimum length which a read should "+
+#                             "overlap over (or anchor/overhang for) "+
+#                             "fusion junction of a candidate fusion gene in order to be considered for " +
+#                             "further analysis. Minimum accepted value is 10 and it should not exceed half "+
+#                             "of the length of the longest read from the input data. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--ig-gap-wiggle-size",
+    parser.add_option("--ig-gap-anchor-max",
+                      action = "store",
+                      type = "int",
+                      dest = "length_anchor_gap_max",
+                      default = 100, # default 100
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "In case of gap alignments, it is the maximum length which a read should "+
+#                             "overlap over (or anchor/overhang for) "+
+#                             "fusion junction of a candidate fusion gene in order to be considered for " +
+#                             "further analysis. Minimum accepted value is 10 and it should not exceed half "+
+#                             "of the length of the longest read from the input data. "+
+#                             "Default is '%default'.")
+
+    parser.add_option("--ig-gap-wiggle-size",
                       action = "store",
                       type = "int",
                       dest = "gap_wiggle_size",
                       default = 2, 
-                      help = "Some wiggle room is allowed in case of gap alignment of reads. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Some wiggle room is allowed in case of gap alignment of reads. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--ig-gap-skip-extension",
+    parser.add_option("--ig-gap-skip-extension",
                       action = "store_true",
                       dest = "skip_extension",
                       default = False,
-                      help = "If it is set then the pipeline will NOT use the extended reads "+
-                             "wherever is possible for gap alignment. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If it is set then the pipeline will NOT use the extended reads "+
+#                             "wherever is possible for gap alignment. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--ig-bowtie",
+    parser.add_option("--ig-bowtie",
                       action = "store_true",
                       dest = "skip_ig_star",
                       default = False,
-                      help = "If it is set then the pipeline will use BOWTIE instead of STAR "+
-                             "for gap alignment. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If it is set then the pipeline will use BOWTIE instead of STAR "+
+#                             "for gap alignment. "+
+#                             "Default is '%default'.")
 
-    parser.add_option_group(group)
-
-    #
-    # (extra) reporting arguments
-    #
-
-    group = optparse.OptionGroup(parser, "Reporting")
-
-    group.add_option("--focus",
+    parser.add_option("--focus",
                       action = "store",
                       type = "string",
                       dest = "focus_fusions",
-                      help = "It contains a tab separated file text containd two columns "+
-                             "with Ensembl gene ids for candidate fusion genes which will "+
-                             "be forced to pass the preliminary filtering. This lines should "+
-                             "be sorted and also the columns should be sorted.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "It contains a tab separated file text containd two columns "+
+#                             "with Ensembl gene ids for candidate fusion genes which will "+
+#                             "be forced to pass the preliminary filtering. This lines should "+
+#                             "be sorted and also the columns should be sorted.")
 
-    group.add_option("--reads-preliminary-fusions",
+    parser.add_option("--reads-preliminary-fusions",
                       action = "store_true",
                       dest = "reads_preliminary_fusions",
                       default = False,
-                      help = "The sequences of all reads which support the preliminary candidate fusion genes "+
-                             "are extracted. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The sequences of all reads which support the preliminary candidate fusion genes "+
+#                             "are extracted. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--long",
+    parser.add_option("--long",
                       action = "store_true",
                       dest = "long_report",
                       default = False,
-                      help = "A slightly longer report for fusion genes will be generated (i.e. fusions genes will be given per each aligner used). "+
-                             "Default value is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "A slightly longer report for fusion genes will be generated (i.e. fusions genes will be given per each aligner used). "+
+#                             "Default value is '%default'.")
 
 
-    parser.add_option_group(group)
 
-    #
-    # debugging arguments
-    #
-
-    group = optparse.OptionGroup(parser, "SeqTK subseq tool")
-
-    group.add_option("--extract-buffer-size",
+    parser.add_option("--extract-buffer-size",
                       action = "store",
                       type = "int",
                       dest = "extract_buffer_size",
                       default = 1*(10**9), # default = 2*(10**9)
-                      help = "The size of memory buffer used by Python script (for extracting reads from a FASTQ file based on a list of reads ids). "+
-                             "This depends more on the amount of memory which Python environment is able to handle and less than the free actual free RAM memory on the computer where this is run. "+
-                             "It might be that the default value is too high and needs to be lowered, e.g. '500000000' "+
-                             "be required to be lowered. This is meant to be used together with '--split-seqtk-subseq 0'. " +
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The size of memory buffer used by Python script (for extracting reads from a FASTQ file based on a list of reads ids). "+
+#                             "This depends more on the amount of memory which Python environment is able to handle and less than the free actual free RAM memory on the computer where this is run. "+
+#                             "It might be that the default value is too high and needs to be lowered, e.g. '500000000' "+
+#                             "be required to be lowered. This is meant to be used together with '--split-seqtk-subseq 0'. " +
+#                             "Default is '%default'.")
 
-    group.add_option("--split-seqtk-subseq",
+    parser.add_option("--split-seqtk-subseq",
                       action = "store",
                       type = "int",
                       dest = "split_seqtk_subseq",
                       default = 1,
-                      help = "The input file (i.e. file containing read ids) of 'SEQTK SUBSEQ' will "+
-                             "be splitted in a number of parts specified here. If it is 1 then no spliting is done. "+
-                             "If it is set to 0 then 'SEQTK SUBSEQ' will not be used and instead an alternative Python script is used. "+
-                             "Setting this to 0 or 2 or larger values is meant to be used in cases when "+
-                             "'SEQTK SUBSEQ' fails due to not enough memory. "+
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The input file (i.e. file containing read ids) of 'SEQTK SUBSEQ' will "+
+#                             "be splitted in a number of parts specified here. If it is 1 then no spliting is done. "+
+#                             "If it is set to 0 then 'SEQTK SUBSEQ' will not be used and instead an alternative Python script is used. "+
+#                             "Setting this to 0 or 2 or larger values is meant to be used in cases when "+
+#                             "'SEQTK SUBSEQ' fails due to not enough memory. "+
+#                             "Default is '%default'.")
+
+
+    parser.add_option("--sort-buffer-size",
+                      action = "store",
+                      dest = "sort_buffer_size",
+                      default = "80%",
+                      help = "It specifies the buffer size for command SORT. "+
                              "Default is '%default'.")
 
-    parser.add_option_group(group)
-
-    #
-    # debugging arguments
-    #
-
-    group = optparse.OptionGroup(parser, "Debug Options")
-
-    group.add_option("--start",
+    parser.add_option("--start",
                       action = "store",
                       type = "int",
                       dest = "start_step",
                       default = 0,
-                      help = "It starts executing the workflow from the given "+
+                      help = "It re-starts executing the workflow/pipeline from the given "+
                              "step number. This can be used when the pipeline "+
                              "has crashed/stopped and one wants to re-run it from "+
                              "from the step where it stopped without re-running " +
@@ -1373,53 +1278,163 @@ if __name__ == "__main__":
                              "Default is '%default'.")
 
     choices = ('no','crc32','md5','adler32','sha512','sha256')
-    group.add_option("--hash",
+    parser.add_option("--hash",
                       action = "store",
                       type = "choice",
                       choices = choices,
                       dest = "hash",
                       default = "no",
-                      help = "Hash to be used for computing checksum. The choices "+
-                             "are ['"+"','".join(choices)+"']. "+
-                             "If it is set up to 'no' then no checksum is used and "+
-                             "the entire pipeline is executed as a normal shell "+
-                             "script. For more information see 'hash_library' in "+
-                             "'workflow.py'. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Hash to be used for computing checksum. The choices "+
+#                             "are ['"+"','".join(choices)+"']. "+
+#                             "If it is set up to 'no' then no checksum is used and "+
+#                             "the entire pipeline is executed as a normal shell "+
+#                             "script. For more information see 'hash_library' in "+
+#                             "'workflow.py'. "+
+#                             "Default is '%default'.")
 
-    group.add_option("--keep",
+    parser.add_option("--keep",
                       action = "store_true",
                       dest = "keep_temporary_files",
                       default = False,
-                      help = "Preserve intermediate files produced during the run. "+
-                             "By default, they are deleted upon exit. "+
-                             "Default value is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Preserve intermediate files produced during the run. "+
+#                             "By default, they are deleted upon exit. "+
+#                             "Default value is '%default'.")
 
-    group.add_option("--keep-preliminary",
+    parser.add_option("--keep-preliminary",
                       action = "store_true",
                       dest = "keep_preliminary",
                       default = False,
-                      help = "If it is set then preliminary candidate fusion genes are kept (i.e. they are not deleted). "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If it is set then preliminary candidate fusion genes are kept (i.e. they are not deleted). "+
+#                             "Default is '%default'.")
 
-    group.add_option("--checksums",
+    parser.add_option("--checksums",
                       action = "store",
                       type = "string",
                       dest = "checksums_filename",
                       default = 'checksums.txt',
-                      help = "The name of the checksums file. "+
-                             "Default value is '%default'. ")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The name of the checksums file. "+
+#                             "Default value is '%default'. ")
 
-    group.add_option("--bowtie-chunkmbs",
+    parser.add_option("--bowtie-chunkmbs",
                       action = "store",
                       type = "int",
                       dest = "chunkmbs",
                       default = 128, # 128
-                      help = "The value to be passed to the '--chunkmbs' command line option of Bowtie aligner. "+
-                             "Default is '%default'.")
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The value to be passed to the '--chunkmbs' command line option of Bowtie aligner. "+
+#                             "Default is '%default'.")
+
+    parser.add_option("--mismatches","-m",
+                      action = "store",
+                      type = "int",
+                      dest = "mismatches",
+                      default = 2,
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Maximum number of mismatches to be allowed for "+
+#                             "mapping reads using Bowtie aligner. "+
+#                             "Minimum accepted value is zero and maximum is 3. "+
+#                             "Default is '%default'.")
+
+    parser.add_option("--mismatches-psl",
+                      action = "store",
+                      type = "int",
+                      dest = "mismatches_psl",
+                      default = 2,
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Maximum number of mismatches to be allowed for "+
+#                             "mapping reads using BLAT/STAR/BOWTIE2/BWA aligner. "+
+#                             "Default is '%default'.")
+
+    parser.add_option("--mismatches-ambiguous",
+                      action = "store",
+                      type = "int",
+                      dest = "ambiguous_mismatches",
+                      default = 2,
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Maximum number of mapping mismatches for which the "
+#                             "same reads are considered mapping ambiguously. "+
+#                             "Default is '%default'.")
+
+    parser.add_option("--mismatches-filtering",
+                      action = "store",
+                      type = "int",
+                      dest = "filter_mismatches",
+                      default = 2,
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Maximum number of mapping mismatches used for filtering the reads. "+
+#                             "Default is '%default'.")
+
+    parser.add_option("--top-pairs-fusion",
+                      action = "store",
+                      type = "int",
+                      dest = "spanning_pairs_count",
+                      default = 10000,
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If the '--pairs-fusion' selects more than N preliminary "+
+#                             "candidate fusion genes then only the first N will be "+
+#                             "considered for further analysis. N is set here. "+
+#                             "Default is '%default'.")
+
+    parser.add_option("--pairs-fusion","-s",
+                      action = "store",
+                      dest = "spanning_pairs",
+                      default = "3,3,3,3,3",
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The minimum number of (encompassing) paired-end reads which "+
+#                             "support a candidate fusion gene and which will be "+
+#                             "considered for further analysis.  "+
+#                             "It is given separated by commas for each of "+
+#                             "the aligners: BOWTIE, BLAT, STAR, BOWTIE2, BWA (in this order). " +
+#                             "This should be used only for DEBUGGING purposes! This will be deprecated in the future! "+
+#                             "Default is '%default'.")
 
 
-    parser.add_option_group(group)
+    parser.add_option("--reads-fusion","-r",
+                      action = "store",
+                      dest = "spanning_reads",
+                      default = "2,2,2,2,2",
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The minimum number of reads which "+
+#                             "support a candidate fusion gene that is the minimum "+
+#                             "number of reads which overlap over the fusion "+
+#                             "junction. It is given separated by commas for each of "+
+#                             "the aligners: BOWTIE, BLAT, STAR, BOWTIE2, BWA (in this order). " +
+#                             "This should be used only for DEBUGGING purposes! This will be deprecated in the future! "+
+#                             "Default is '%default'.")
+
+
+    parser.add_option("--anchor-fusion","-a",
+                      action = "store",
+                      dest = "length_anchor",
+                      default = "17,17,17,17,17", # default 14; 17; 18?
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "The minimum length which a read should overlap over (or anchor/overhang for) "+
+#                             "fusion junction of a candidate fusion gene in order to be considered for " +
+#                             "further analysis. Minimum accepted value is 10 and it should not exceed half "+
+#                             "of the length of the longest read from the input data. It is given separated "+
+#                             "by commas for each of the aligners: BOWTIE, BLAT, STAR, BOWTIE2, BWA (in this order). " +
+#                             "This should be used only for DEBUGGING purposes! This will be deprecated in the future! "+
+#                             "Default is '%default'.")
+
+    parser.add_option("--anchor-fusion2","-W",
+                      action = "store",
+                      type = "int",
+                      dest = "length_anchor2",
+                      default = 47, # default 22?
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "If the anchor/overhang which supports the fusion is longer (or equal) than "+
+#                             "this value than the required number of reads supporting the fusion is 1. " +
+#                             "It basically overrides '--reads-fusion*' for anchors longer (or equal) than"+
+#                             "the value specified here. It always should be larger than the value "+
+#                             "specified by '--reads-fusion*'. "+
+#                             "This should be used only for DEBUGGING purposes! This will be deprecated in the future! "+
+#                             "Default is '%default'.")
+
+
 
     ################################################################################
     #
@@ -1633,6 +1648,8 @@ if __name__ == "__main__":
             options.processes = multiprocessing.cpu_count()
             options.processes = options.processes if options.processes < 17 else 16
             
+    config_aligners = confs.get("ALIGNERS","")
+    
     if options.processes and options.processes > multiprocessing.cpu_count():
             options.processes = multiprocessing.cpu_count()
             
@@ -1673,7 +1690,16 @@ if __name__ == "__main__":
     if options.keep_viruses:
         options.skip_viruses_filtering = False
 
-    alg = set([el for el in options.aligners.lower().split(',') ])
+    opt_alg = options.aligners
+    if opt_alg.lower().find(".cfg") != -1:
+        # found a configuration file
+        oa = set([el for el in opt_alg.lower().split(',') if el.find('.cfg') != -1])
+        # try to read the configuration file
+        if config_aligners:
+            opt_alg = config_aligners
+        else:
+            opt_alg = ','.join(oa)
+    alg = set([el for el in opt_alg.lower().split(',') ])
     if (not options.skip_blat) and ('blat' not in alg):
         options.skip_blat = True
     if (not options.skip_star) and ('star' not in alg):
@@ -1700,37 +1726,37 @@ if __name__ == "__main__":
     # SENSITIVE
     ################################################################################
     sensitive = 0
-    if options.sensitive:
-        options.spanning_pairs = "2,2,2,2,2"
-        options.spanning_reads = "2,2,2,2,2"
-        options.length_anchor = "14,17,17,17,17"
-        options.length_anchor2 = 40
-        sensitive = sensitive + 1
+#    if options.sensitive:
+#        options.spanning_pairs = "2,2,2,2,2"
+#        options.spanning_reads = "2,2,2,2,2"
+#        options.length_anchor = "14,17,17,17,17"
+#        options.length_anchor2 = 40
+#        sensitive = sensitive + 1
 
-    ################################################################################
-    # MILD SENSITIVE
-    ################################################################################
-    if options.mildly_sensitive:
-        options.spanning_pairs = "2,2,2,2,2"
-        options.spanning_reads = "2,2,2,2,2"
-        options.length_anchor = "13,15,15,15,15"
-        options.length_anchor2 = 22
-        options.mismatches = 2
-        options.mismatches_psl = 4
-        sensitive = sensitive + 1
+#    ################################################################################
+#    # MILD SENSITIVE
+#    ################################################################################
+#    if options.mildly_sensitive:
+#        options.spanning_pairs = "2,2,2,2,2"
+#        options.spanning_reads = "2,2,2,2,2"
+#        options.length_anchor = "13,15,15,15,15"
+#        options.length_anchor2 = 22
+#        options.mismatches = 2
+#        options.mismatches_psl = 4
+#        sensitive = sensitive + 1
 
-    ################################################################################
-    # HIGHLY SENSITIVE
-    ################################################################################
-    if options.highly_sensitive:
-        options.spanning_pairs = "2,2,2,2,2"
-        options.spanning_reads = "1,1,1,1,1"
-        options.length_anchor = "13,14,14,14,14"
-        options.length_anchor2 = 22
-        options.mismatches = 2
-        options.mismatches_psl = 4
-        options.skip_prefiltering_psl = True
-        sensitive = sensitive + 1
+#    ################################################################################
+#    # HIGHLY SENSITIVE
+#    ################################################################################
+#    if options.highly_sensitive:
+#        options.spanning_pairs = "2,2,2,2,2"
+#        options.spanning_reads = "1,1,1,1,1"
+#        options.length_anchor = "13,14,14,14,14"
+#        options.length_anchor2 = 22
+#        options.mismatches = 2
+#        options.mismatches_psl = 4
+#        options.skip_prefiltering_psl = True
+#        sensitive = sensitive + 1
 
     ################################################################################
     # PARANOID SENSITIVE
@@ -1741,10 +1767,10 @@ if __name__ == "__main__":
         options.length_anchor = "11,11,11,11,11"
         options.length_anchor2 = 22
         options.mismatches = 2
-        options.mismatches_psl = 4
-        options.spanning_pairs_count = 20000
-        options.homolog = 0
-        options.skip_prefiltering_psl = True
+        #options.mismatches_psl = 4
+        #options.spanning_pairs_count = 20000
+        #options.homolog = 0
+        #options.skip_prefiltering_psl = True
 #        options.all_reads_junction = True
         sensitive = sensitive + 1
 
@@ -1910,7 +1936,16 @@ if __name__ == "__main__":
     sort_buffer = None
     r = os.system("sort --help | grep 'buffer-size' > "+outdir('sort_help.txt'))
     if (not r) and (not empty(outdir('sort_help.txt'))) and len(file(outdir('sort_help.txt'),'r').readlines()) == 1:
-        sort_buffer = "80%"
+        if not is_optparse_provided(parser,'sort_buffer_size'):
+            # here is the automatic setting
+            mem = memory(unit="gb")
+            mt = mem['total']
+            if mt and mt > 33:
+                sort_buffer = "26G"
+            else:
+                sort_buffer = options.sort_buffer_size #"80%"
+        else:
+            sort_buffer = options.sort_buffer_size #"80%"
     delete_file(outdir('sort_help.txt'))
     # check options suppported by SORT command
     sort_lzop_compress = False
@@ -2171,6 +2206,13 @@ if __name__ == "__main__":
     job.add('>>',info_file,kind='output')
     job.run()
     job.add('awk',kind='program')
+    job.add('-Wversion',kind='parameter')
+    job.add('2>&1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('head','-1',kind='parameter')
+    job.add('>>',info_file,kind='output')
+    job.add('||',kind='parameter')
+    job.add('awk',kind='parameter')
     job.add('--version',kind='parameter')
     job.add('2>&1',kind='parameter')
     job.add('|',kind='parameter')
@@ -2236,7 +2278,7 @@ if __name__ == "__main__":
 
         os.system("STAR --version > '%s'" % (outdir('star_version.txt'),))
         last_line = file(outdir('star_version.txt'),'r').readline().lower().rstrip("\r\n")
-        correct_version = 'star_2.5.0c'
+        correct_version = 'star_2.5.1b'
         #correct_version = 'star_2.4.2a'
         if correct_version.lower().startswith('star_2.5'):
             star25 = True
@@ -2348,6 +2390,7 @@ if __name__ == "__main__":
 
         os.system("chmod u+x '%s'" % (outdir('restart.sh'),))
 
+
     info(job,
          fromfile = configfile,
          tofile = info_file,
@@ -2385,6 +2428,7 @@ if __name__ == "__main__":
             print >>sys.stderr,"Please, run again the 'fusioncatcher-build.py' in order to fix this!"
             print >>sys.stderr,"...................."
             sys.exit(1)
+
 
     # find available memory
     job.add('printf',kind='program')
@@ -3079,7 +3123,8 @@ if __name__ == "__main__":
         job.add('>>',info_file,kind='output')
         job.run()
 
-        job.add('cat',kind='program')
+        job.add('LC_ALL=C',kind='program')
+        job.add('cat',kind='parameter')
         job.add('',input_file,kind='input')
         job.add('|',kind='parameter')
         job.add("echo $((`wc -l`/4))",kind='parameter')
@@ -3553,7 +3598,8 @@ if __name__ == "__main__":
 ##        job.link(outdir('reads_no-shorts.fq'),outdir('reads_acgt.fq'),temp_path=temp_flag)
 
 
-    job.add('cat',kind='program')
+    job.add('LC_ALL=C',kind='program')
+    job.add('cat',kind='parameter')
     job.add('',outdir('reads_acgt.fq'),kind='input')
     job.add('|',kind='parameter')
     job.add("echo $((`wc -l`/4))",kind='parameter')
@@ -3623,9 +3669,9 @@ if __name__ == "__main__":
             (not is_optparse_provided(parser,'spanning_pairs')) and
             (not is_optparse_provided(parser,'spanning_reads')) and
             (not is_optparse_provided(parser,'length_anchor')) and
-            (not options.sensitive) and
-            (not options.mildly_sensitive) and
-            (not options.highly_sensitive) and
+#            (not options.sensitive) and
+#            (not options.mildly_sensitive) and
+#            (not options.highly_sensitive) and
             (not options.paranoid_sensitive)):
             if no_reads < 35000000 and no_reads >= 15000000 and max_len_reads < 60:
                 spanning_pairs_bowtie = 3
@@ -3663,7 +3709,7 @@ if __name__ == "__main__":
 
     if job.run():
         if (2 * length_anchor_minimum) > len_reads - 1:
-            job.write(["ERROR: The length of the anchor (i.e. %d) is too long compared to the length of the reads (i.e. %d )" % (options.length_anchor,len_reads),
+            job.write(["ERROR: The length of the anchor (i.e. %s) is too long compared to the length of the reads (i.e. %d )" % (options.length_anchor,len_reads),
                        "Suggestion 1: Decrease the length of the anchor using '--anchor-fusion' option if possible!",
                        "Suggestion 2: Decrease the size of the trimming using '--5end' or '--5keep' option if possible!",
                       ], stdout = True, stderr = True, log = True)
@@ -3772,9 +3818,11 @@ if __name__ == "__main__":
     # remove the reads which do not form a pair
     if (not options.all_reads_junction) and (not options.skip_interleave_processing):
         # assumption all reads are not interleaved
-        job.add('cat',kind='program')
+        job.add('LC_ALL=C',kind='program')
+        job.add('cat',kind='parameter')
         job.add('',outdir('reads-filtered_temp.fq'),kind='input',temp_path=temp_flag)
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('paste','- - - -',kind='parameter')
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
@@ -3791,6 +3839,7 @@ if __name__ == "__main__":
             job.add('--compress-program','gzip',kind='parameter',checksum='no')
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('tr',kind='parameter')
         job.add('"\\t"',kind='parameter')
         job.add('"\\n"',kind='parameter')
@@ -3801,7 +3850,8 @@ if __name__ == "__main__":
         job.add('>',outdir('reads-filtered.fq'),kind='output')
         job.run()
 
-        job.add('cat',kind='program')
+        job.add('LC_ALL=C',kind='program')
+        job.add('cat',kind='parameter')
         job.add('',outdir('reads-filtered.fq'),kind='input')
         job.add('|',kind='parameter')
         job.add("echo $((`wc -l`/4))",kind='parameter')
@@ -3870,7 +3920,8 @@ if __name__ == "__main__":
                 sys.exit(1)
     job.clean(outdir('log_reads1_removed.txt'),temp_path=temp_flag)
 
-    job.add('cat',kind='program')
+    job.add('LC_ALL=C',kind='program')
+    job.add('cat',kind='parameter')
     job.add('',outdir('reads-filtered.fq'),kind='input')
     job.add('|',kind='parameter')
     job.add("echo $((`wc -l`/4))",kind='parameter')
@@ -3925,8 +3976,10 @@ if __name__ == "__main__":
     job.add('-a',kind='parameter')
     #job.add('-k','2',kind='parameter')
     job.add('-v','1',kind='parameter') # options.filter_mismatches # stjude
+    ##job.add('-v','0',kind='parameter') # options.filter_mismatches # stjude
     job.add('-p',options.processes,kind='parameter',checksum='no')
     job.add('-m','1',kind='parameter')
+    #job.add('-m','2',kind='parameter')
     #job.add('-k','1',kind='parameter')
     job.add('--suppress','5,6,7',kind='parameter')
     #job.add('--solexa1.3-quals',kind='parameter')
@@ -3970,10 +4023,14 @@ if __name__ == "__main__":
 #    job.run()
 
     # extract the names of the short reads which mapped on the genome
-    job.add('cut',kind='program')
+
+ 
+    job.add('LC_ALL=C',kind='program')
+    job.add('cut',kind='parameter')
     job.add('-f','1',kind='parameter')
     job.add('',outdir('reads_filtered_genome.map'),kind='input')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('|',kind='parameter')
     job.add('LC_ALL=C',kind='parameter')
@@ -3988,6 +4045,7 @@ if __name__ == "__main__":
         job.add('--compress-program','gzip',kind='parameter',checksum='no')
     job.add('-T',tmp_dir,kind='parameter',checksum='no')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('list-names-reads-filtered_genome.txt'),kind='output')
     job.run()
@@ -4095,10 +4153,12 @@ if __name__ == "__main__":
 #    job.run()
 
     # extract ids of short reads which mapped on the transcriptome
-    job.add('cut',kind='program')
+    job.add('LC_ALL=C',kind='program')
+    job.add('cut',kind='parameter')
     job.add('-f','1',kind='parameter')
     job.add('',outdir('reads_filtered_not-mapped-genome_transcriptome.map'),kind='input')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('|',kind='parameter')
     job.add('LC_ALL=C',kind='parameter')
@@ -4113,6 +4173,7 @@ if __name__ == "__main__":
         job.add('--compress-program','gzip',kind='parameter',checksum='no')
     job.add('-T',tmp_dir,kind='parameter',checksum='no')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('list-names-reads-filtered_not-mapped-genome_mapped-transcriptome.txt'),kind='output')
     job.run()
@@ -4194,10 +4255,12 @@ if __name__ == "__main__":
     job.run()
 
     # extract the names of the short reads which mapped on the transcriptome
-    job.add('cut',kind='program')
+    job.add('LC_ALL=C',kind='program')
+    job.add('cut',kind='parameter')
     job.add('-f','1',kind='parameter')
     job.add('',outdir('reads_filtered_unique-mapped-genome_transcriptome.map'),kind='input')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('|',kind='parameter')
     job.add('LC_ALL=C',kind='parameter')
@@ -4212,6 +4275,7 @@ if __name__ == "__main__":
         job.add('--compress-program','gzip',kind='parameter',checksum='no')
     job.add('-T',tmp_dir,kind='parameter',checksum='no')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('list-names-reads-filtered_unique-mapped-genome_mapped-transcriptome.txt'),kind='output')
     job.run()
@@ -4292,7 +4356,8 @@ if __name__ == "__main__":
 
     # group reads' mappings on transcriptome in one MAP file
     #job.add('concatenate.py',kind='program')
-    job.add('cat',kind='program')
+    job.add('LC_ALL=C',kind='program')
+    job.add('cat',kind='parameter')
     job.add('',outdir('reads_filtered_not-mapped-genome_transcriptome.map'),kind='input',temp_path=temp_flag)
     job.add('',outdir('reads_filtered_unique-mapped-genome_transcriptome.map'),kind='input',temp_path=temp_flag)
 #    job.add('-',kind='parameter')  # <== best mappings on transcriptome #######
@@ -4361,19 +4426,23 @@ if __name__ == "__main__":
         #job.add('|',kind='parameter') # XXX
         # sort the reads' all possible mappings on transcriptome by reads name
         #job.add('LC_ALL=C',kind='parameter')
-        job.add('|',kind='parameter') 
+        job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('grep',kind='parameter') # remove the ENST09  and ENST07 transcripts
         job.add('-v',kind='parameter')
         job.add('-F',kind='parameter')
         job.add('-f',datadir('custom_transcripts_mark.txt'),kind='input')
         job.add('|',kind='parameter') # XXX
         if classic_1:
+            job.add('LC_ALL=C',kind='parameter')
             job.add('sed',kind='parameter')
             job.add("""'s/\\tEN.*\;EN/\\tEN/'""",kind='parameter')
         else:
+            job.add('LC_ALL=C',kind='parameter')
             job.add('awk',kind='parameter')
             job.add("""'{print $1"\\t"substr($2,index($2,";")+1)"\\t"gsub(">","",$3)}'""",kind='parameter')
         job.add('|',kind='parameter') # XXX
+        job.add('LC_ALL=C',kind='parameter')
         job.add('uniq',kind='parameter') # XXX
         #job.add('|',kind='parameter') # XXX
         job.add('>',outdir('reads_filtered_all-possible-mappings-transcriptome.map'),kind='output') # <== best mappings on transcriptome ####### XXX
@@ -4402,6 +4471,7 @@ if __name__ == "__main__":
 #        job.add('-F',kind='parameter')
 #        job.add('-f',datadir('custom_genes_mark.txt'),kind='input')
         job.add('|',kind='parameter') # XXX
+        job.add('LC_ALL=C',kind='parameter')
         job.add('uniq',kind='parameter') # XXX
         #job.add('|',kind='parameter') # XXX
         job.add('>',outdir('reads_filtered_all-possible-mappings-transcriptome_sorted.map'),kind='output')
@@ -4438,6 +4508,7 @@ if __name__ == "__main__":
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
         job.add('',outdir('list_offending_reads_.txt'),kind='input',temp_path=temp_flag)
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('uniq',kind='parameter')
         job.add('>',outdir('list_offending_reads.txt'),kind='output')
         job.run()
@@ -4502,12 +4573,15 @@ if __name__ == "__main__":
             #job.add('awk',kind='program')
             #job.add("""awk '{print $1"\\t"substr($2,index($2,";")+1)"\\t"gsub(">","",$3)}'""",outdir('reads_filtered_all-possible-mappings-transcriptome.map'),kind='input',temp_path=temp_flag)
             if classic_2:
+                job.add('LC_ALL=C',kind='parameter')
                 job.add('sed',kind='parameter')
                 job.add("""'s/\\tEN.*\;EN/\\tEN/'""",kind='parameter')
             else:
+                job.add('LC_ALL=C',kind='parameter')
                 job.add('awk',kind='parameter')
                 job.add("""'{print $1"\\t"substr($2,index($2,";")+1)"\\t"gsub(">","",$3)}'""",kind='parameter')
             job.add('|',kind='parameter') # XXX
+            job.add('LC_ALL=C',kind='parameter')
             job.add('uniq',kind='parameter') # XXX
             #job.add('|',kind='parameter') # XXX
             job.add('>',outdir('reads_filtered_all-possible-mappings-transcriptome_multiple.map'),kind='output') # <== best mappings on transcriptome #######
@@ -4531,6 +4605,7 @@ if __name__ == "__main__":
             #job.add('>',outdir('reads_filtered_all-possible-mappings-transcriptome_multiple_sorted.map'),kind='output') # XXX
             #job.run() # XXX
             job.add('|',kind='parameter') # XXX
+            job.add('LC_ALL=C',kind='parameter')
             job.add('uniq',kind='parameter') # XXX
             job.add('>',outdir('reads_filtered_all-possible-mappings-transcriptome_multiple_sorted.map'),kind='output') # XXX
             job.run() #XXX
@@ -4652,6 +4727,7 @@ if __name__ == "__main__":
             job.add('--compress-program','gzip',kind='parameter',checksum='no')
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('uniq',kind='parameter')
         job.add('>',outdir('pre-fusion_ids.txt'),kind='output')
         job.run()
@@ -5114,11 +5190,25 @@ if __name__ == "__main__":
     job.add('--filter_gene_pairs',datadir('gtex.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_61.txt'),kind='output')
     job.run()
-    # label fusion genes -- hla
+    # label fusion genes -- non-cancer tissues
     job.add('label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_61.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','non_cancer_tissues',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('non-cancer_tissues.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_62.txt'),kind='output')
+    job.run()
+    # label fusion genes -- hla
+    job.add('label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_62.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','hla',kind='parameter')
     job.add('--filter_genes',datadir('hla.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_63.txt'),kind='output')
+    job.run()
+    # label fusion genes -- pancreatic
+    job.add('label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_63.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','pancreases',kind='parameter')
+    job.add('--filter_genes',datadir('pancreases.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_1000.txt'),kind='output')
     job.run()
     #
@@ -5186,21 +5276,25 @@ if __name__ == "__main__":
     job.add('--output_fusion_reads',outdir('candidate_fusion-genes_further_paired-reads.txt'),kind='output')
     job.run()
 
-    job.add('grep',kind='program')
+    job.add('LC_ALL=C',kind='program')
+    job.add('grep',kind='parameter')
     job.add('-F',kind='parameter')
     job.add('-f',datadir('custom_genes_mark.txt'),kind='input')
     job.add('',outdir('candidate_fusion-genes_further.txt'),kind='input')
     job.add('>',outdir('candidate_fusion-genes_further_mark.txt'),kind='output')
     job.run(successful_exit_status=(0,1))
 
-    job.add('grep',kind='program')
+    job.add('LC_ALL=C',kind='program')
+    job.add('grep',kind='parameter')
     job.add('-F',kind='parameter')
     job.add('-f',datadir('ig_loci.txt'),kind='input')
     job.add('',outdir('candidate_fusion-genes_further.txt'),kind='input')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
     job.add('grep',kind='parameter')
     job.add('"known"',kind='parameter')
     job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
     job.add('grep',kind='parameter')
     job.add('"further_analysis"',kind='parameter')
     job.add('>',outdir('candidate_fusion-genes_further_eporcrlf2igh.txt'),kind='output')
@@ -5210,10 +5304,12 @@ if __name__ == "__main__":
     if job.iff( organism == 'homo_sapiens' and max_len_reads > 74 and (not empty(outdir('candidate_fusion-genes_further_eporcrlf2igh.txt'))), id ="#candidate_fusion-genes_further_eporcrlf2igh#"):
         eporcrlf2igh = True
         
-        job.add('cut',kind='program')
+        job.add('LC_ALL=C',kind='program')
+        job.add('cut',kind='parameter')
         job.add('-f','1,2',kind='parameter')
         job.add('',outdir('candidate_fusion-genes_further_eporcrlf2igh.txt'),kind='input')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('tr',kind='parameter')
         job.add('"\\t"',kind='parameter')
         job.add('"\\n"',kind='parameter')
@@ -5221,6 +5317,7 @@ if __name__ == "__main__":
         job.add('LC_ALL=C',kind='parameter')
         job.add('sort',kind='parameter')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('uniq',kind='parameter')
         job.add('>',outdir('eporcrlf2_temp.txt'),kind='output')
         job.run()
@@ -5537,6 +5634,7 @@ if __name__ == "__main__":
                 #job.add('',outdir('reads-mapped-on-viruses.sam'),kind='output')
                 job.add('2>',outdir('log_sam-viruses.stdout.txt'),kind='output',checksum='no')
                 job.add('|',kind='parameter')
+                job.add('LC_ALL=C',kind='parameter')
                 job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
                 job.add('|',kind='parameter')
                 if pigz:
@@ -5607,6 +5705,7 @@ if __name__ == "__main__":
             job.add('-T',tmp_dir,kind='parameter',checksum='no')
             #job.add('',outdir('reads-filtered-viruses.map'),kind='input',temp_path=temp_flag) # XXX
             job.add('|',kind='parameter')
+            job.add('LC_ALL=C',kind='parameter')
             job.add('uniq',kind='parameter')
             job.add('-c',kind='parameter')
             job.add('|',kind='parameter')
@@ -5677,7 +5776,7 @@ if __name__ == "__main__":
         else:
             job.add('--trim5', length_anchor_minimum - 7, kind='parameter') # trim 11 bp on the fly
 #        job.add('--suppress','1,2,3,4,5,6,7,8',kind='parameter')
-        job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end2.fq'),kind='output') # here is the result
+        job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.fq'),kind='output') # here is the result
         job.add('--max',outdir('reads_filtered_not-mapped_multiple_end2.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
         if os.path.isfile(datadir('genome_index','.1.ebwtl')):
             job.add('--large-index',kind='parameter')
@@ -5698,9 +5797,10 @@ if __name__ == "__main__":
             temp_path = temp_flag)
 
 
-        job.link(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end2.fq'),
-                 outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.fq'),
-                 temp_path=temp_flag)
+#        job.link(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end2.fq'),
+#                 outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.fq'),
+#                 temp_path=temp_flag)
+                 
 #        # filter -- map on genome again the trimmed reads with 11 bp from 5' end
 #        job.add('bowtie',kind='program')
 #        job.add('-t',kind='parameter')
@@ -5804,9 +5904,11 @@ if __name__ == "__main__":
     if candidates:
 
         # extract reads ids
-        job.add('awk',kind='program')
+        job.add('LC_ALL=C',kind='program')
+        job.add('awk',kind='parameter')
         job.add("'NR%4==1 {print substr($0,2)}'",outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.fq'),kind='input')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('uniq',kind='parameter')
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
@@ -5821,15 +5923,18 @@ if __name__ == "__main__":
             job.add('--compress-program','gzip',kind='parameter',checksum='no')
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('uniq',kind='parameter')
         job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.txt'),kind='output')
         job.run()
 
         # add also the mates to the unmapped reads (the mates may be mapping just fine)
-        job.add('awk',kind='program')
+        job.add('LC_ALL=C',kind='program')
+        job.add('awk',kind='parameter')
         job.add("""'{n=length($0); r=substr($0,1,n-1); print r"1"; print r"2"}'""",kind='parameter')
         job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.txt'),kind='input',temp_path=temp_flag if not options.keep_unmapped_reads else 'no')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('uniq',kind='parameter')
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
@@ -5844,14 +5949,17 @@ if __name__ == "__main__":
             job.add('--compress-program','gzip',kind='parameter',checksum='no')
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('uniq',kind='parameter')
         job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final2.txt'),kind='input')
         job.run()
 
-        job.add('cat',kind='program')
+        job.add('LC_ALL=C',kind='program')
+        job.add('cat',kind='parameter')
         job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final2.txt'),kind='input')
         job.add('',outdir('candidate_fusion-genes_further_paired-reads.txt'),kind='input')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('uniq',kind='parameter')
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
@@ -5866,6 +5974,7 @@ if __name__ == "__main__":
             job.add('--compress-program','gzip',kind='parameter',checksum='no')
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('uniq',kind='parameter')
         job.add('>',outdir('original_important.txt'),kind='output')
         job.run()
@@ -6249,6 +6358,7 @@ if __name__ == "__main__":
         job.add('du',kind='program')
         job.add('-b',outdir('gene-gene.fa'),kind='input')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add('cut',kind='parameter')
         job.add('-f','1',kind='parameter')
         job.add('>',outdir('gene-gene__nuc.txt'),kind='output')
@@ -6256,8 +6366,8 @@ if __name__ == "__main__":
 
         nucleotides_gg = int(file(outdir('gene-gene__nuc.txt'),'r').readline().strip())
 
-
-        job.add('grep',kind='program')
+        job.add('LC_ALL=C',kind='program')
+        job.add('grep',kind='parameter')
         job.add('-c',kind='parameter')
         job.add("'^>'",outdir('gene-gene.fa'),kind='input')
         job.add('>',outdir('gene-gene__seq.txt'),kind='output')
@@ -6276,9 +6386,11 @@ if __name__ == "__main__":
 #            job.add('--output',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome.txt'),kind='output')
 #            job.run()
             # extract reads ids
-            job.add('awk',kind='program')
+            job.add('LC_ALL=C',kind='program')
+            job.add('awk',kind='parameter')
             job.add("'NR%4==1 {print substr($0,2)}'",outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'),kind='input',temp_path=temp_flag)
             job.add('|',kind='parameter')
+            job.add('LC_ALL=C',kind='parameter')
             job.add('uniq',kind='parameter')
             job.add('|',kind='parameter')
             job.add('LC_ALL=C',kind='parameter')
@@ -6293,6 +6405,7 @@ if __name__ == "__main__":
                 job.add('--compress-program','gzip',kind='parameter',checksum='no')
             job.add('-T',tmp_dir,kind='parameter',checksum='no')
             job.add('|',kind='parameter')
+            job.add('LC_ALL=C',kind='parameter')
             job.add('uniq',kind='parameter')
             job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome.txt'),kind='output')
             job.run()
@@ -6309,10 +6422,12 @@ if __name__ == "__main__":
 
             if min(max_len_reads,options.trim_psl_3end_keep) > min_len_reads + 9:
                 # add also the reads of the paired reads which support the candidate fusion genes (some of them might overlap the fusion junction)
-                job.add('cat',kind='program')
+                job.add('LC_ALL=C',kind='program')
+                job.add('cat',kind='parameter')
                 job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome.txt'),kind='input',temp_path=temp_flag)
                 job.add('',outdir('candidate_fusion-genes_further_paired-reads.txt'),kind='input')
                 job.add('|',kind='parameter')
+                job.add('LC_ALL=C',kind='parameter')
                 job.add('uniq',kind='parameter')
                 job.add('|',kind='parameter')
                 job.add('LC_ALL=C',kind='parameter')
@@ -6327,6 +6442,7 @@ if __name__ == "__main__":
                     job.add('--compress-program','gzip',kind='parameter',checksum='no')
                 job.add('-T',tmp_dir,kind='parameter',checksum='no')
                 job.add('|',kind='parameter')
+                job.add('LC_ALL=C',kind='parameter')
                 job.add('uniq',kind='parameter')
                 job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome2.txt'),kind='output')
                 job.run()
@@ -6737,8 +6853,10 @@ if __name__ == "__main__":
                         #job.add('2>&1',kind='parameter',checksum='no')
                         #job.run()
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('uniq',kind='parameter')
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('sort',kind='parameter')
                         if sort_buffer:
                             job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
@@ -6750,6 +6868,7 @@ if __name__ == "__main__":
                             job.add('--compress-program','gzip',kind='parameter',checksum='no')
                         job.add('-T',tmp_dir,kind='parameter',checksum='no')
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('uniq',kind='parameter')
                         #job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl_all.map'),kind='input',temp_path = temp_flag) # XXX
                         job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl_all_uniq.map.')+str(i),kind='output',dest_list='genegeneunique')
@@ -6798,8 +6917,10 @@ if __name__ == "__main__":
                     #job.add('2>&1',kind='parameter',checksum='no')
                     #job.run()
                     job.add('|',kind='parameter')
+                    job.add('LC_ALL=C',kind='parameter')
                     job.add('uniq',kind='parameter')
                     job.add('|',kind='parameter')
+                    job.add('LC_ALL=C',kind='parameter')
                     job.add('sort',kind='parameter')
                     if sort_buffer:
                         job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
@@ -6811,6 +6932,7 @@ if __name__ == "__main__":
                         job.add('--compress-program','gzip',kind='parameter',checksum='no')
                     job.add('-T',tmp_dir,kind='parameter',checksum='no')
                     job.add('|',kind='parameter')
+                    job.add('LC_ALL=C',kind='parameter')
                     job.add('uniq',kind='parameter')
                     #job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl_all.map'),kind='input',temp_path = temp_flag) # XXX
                     job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl_all_uniq.map'),kind='output')
@@ -7072,6 +7194,8 @@ if __name__ == "__main__":
                 job.add('--output',outdir('reads_best_unique_blat_mapped_on_fusion_genes.psl'),kind='output')
 #                if (not empty(outdir('candidate_fusion-genes_further_mark.txt'))) and (not empty(datadir('custom_genes.txt'))):
 #                    job.add('--ties',datadir('custom_genes_mark.txt'),kind='input')
+                if sort_buffer:
+                    job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                 job.add('--ties-overlappings',datadir('ensembl_overlapping_genes.txt'),kind='input')
                 job.add('--anchor',length_anchor_blat,kind='parameter') # find_fusion_genes_blat.py --threshold_overlap is enough!
                 job.add('--mismatches',options.mismatches_psl,kind='parameter')
@@ -7100,7 +7224,13 @@ if __name__ == "__main__":
                 job.add('--input_genes_positions',datadir('genes.txt'),kind='input')
                 job.add('--threshold_overlap',length_anchor_blat,kind='parameter')
                 job.add('--mismatches',options.mismatches_psl,kind='parameter')
+                job.add('--output',outdir('candidates_fusion_genes_reads_blat7.txt'),kind='output')
+                job.run()
+
+                job.add('smoothing_fusions_psl.py',kind='program')
+                job.add('--input',outdir('candidates_fusion_genes_reads_blat7.txt'),kind='input',temp_path=temp_flag)
                 job.add('--output',outdir('candidates_fusion_genes_reads_blat.txt'),kind='output')
+                job.add('--wiggle','3',kind='parameter')
                 job.run()
 
                 # summary the gene-gene mappings
@@ -7131,7 +7261,8 @@ if __name__ == "__main__":
 
                 # STAR is removing the /1 and /2 from the end of the reads names
                 # changing "/1" and "/2" into "-1" "-2" such that STAR does not remove them
-                job.add('sed',kind='program')
+                job.add('LC_ALL=C',kind='program')
+                job.add('sed',kind='parameter')
                 job.add("""'s/\/\([1-2]$\)/\-\\1/;n;n;n'""",outdir('reads_gene-gene_no-str.fq'),kind='input')
                 job.add('>',outdir('reads_gene-gene_no-str_fixed.fq'),kind='output')
                 job.run()
@@ -7172,6 +7303,7 @@ if __name__ == "__main__":
                         job.add('du',kind='program')
                         job.add('-b',part,kind='input')
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('cut',kind='parameter')
                         job.add('-f','1',kind='parameter')
                         job.add('>',part+'.len',kind='output')
@@ -7231,7 +7363,7 @@ if __name__ == "__main__":
                             job.add('--alignSplicedMateMapLminOverLmate',perc,kind='parameter') # NEW in v0.99.4b
                         job.add('--genomeDir',gd,kind='input',temp_path=temp_flag)
                         job.add('--runThreadN',options.processes,kind='parameter',checksum='no')
-                        job.add('--seedSearchStartLmax',length_anchor_star,kind='parameter') # 20 # default is: 50
+                        job.add('--seedSearchStartLmax',length_anchor_star-1,kind='parameter') # 20 # default is: 50
                         job.add('--alignSJoverhangMin',length_anchor_star-1,kind='parameter') # 9 # default is 5? # NEW in v0.99.4b
                         if star25:
                             job.add('--alignSJstitchMismatchNmax','5 -1 5 5',kind='parameter')# default is: 0 -1 0 0 # added in STAR 2.5.x
@@ -7241,14 +7373,15 @@ if __name__ == "__main__":
                         job.add('--outSJfilterDistToOtherSJmin','0 0 0 0',kind='parameter')# default is: 10 0 5 10
                         job.add('--outSJfilterIntronMaxVsReadN','%s %s %s' % (t,t,t),kind='parameter')# default is: 50000 100000 200000
                         job.add('--limitOutSAMoneReadBytes','100000000',kind='parameter')
-                        job.add('--scoreGapNoncan','-4',kind='parameter')
+                        job.add('--scoreGapNoncan','-4',kind='parameter') # should it be -2?
                         job.add('--scoreGapATAC','-4',kind='parameter')
                         job.add('--readFilesIn',outdir('reads_gene-gene_no-str_fixed.fq'),kind='input')
                         job.add('--outFileNamePrefix',gdr,kind='output')
                         job.add('--outFileNamePrefix',os.path.join(gdr,'Aligned.out.sam'),kind='output',command_line = 'no')
                         job.run()
 
-                        job.add('sed',kind='program')
+                        job.add('LC_ALL=C',kind='program')
+                        job.add('sed',kind='parameter')
                         job.add("""'s/\-\([1-2]\\t\)/\/\\1/'""",os.path.join(gdr,'Aligned.out.sam'),kind='input')
                         job.add("",gdr,kind='input',temp_path=temp_flag,command_line='no')
                         job.add('|',kind='parameter')
@@ -7310,13 +7443,16 @@ if __name__ == "__main__":
                                 job.add('-T',tmp_dir,kind='parameter',checksum='no')
                                 job.add('',outdir('reads-ids_clip_psl_star.txt.')+str(i),kind='input',temp_path=temp_flag)
                                 job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
                                 job.add('uniq',kind='parameter')
                                 job.add('>',outdir('reads-ids_clip_star_psl_uniq.txt.')+str(i),kind='output')
                                 job.run()
 
-                                job.add('cut',kind='program')
+                                job.add('LC_ALL=C',kind='program')
+                                job.add('cut',kind='parameter')
                                 job.add('-f1',outdir('reads-ids_clip_star_psl_uniq.txt.')+str(i),kind='input')
                                 job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
                                 job.add('uniq',kind='parameter')
                                 job.add('|',kind='parameter')
                                 job.add('LC_ALL=C',kind='parameter')
@@ -7331,6 +7467,7 @@ if __name__ == "__main__":
                                     job.add('--compress-program','gzip',kind='parameter',checksum='no')
                                 job.add('-T',tmp_dir,kind='parameter',checksum='no')
                                 job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
                                 job.add('uniq',kind='parameter')
                                 job.add('|',kind='parameter')
                                 job.add('seqtk',kind='parameter')
@@ -7367,6 +7504,7 @@ if __name__ == "__main__":
                                 job.add('-T',tmp_dir,kind='parameter',checksum='no')
                                 job.add('',outdir('reads-refs_clip_psl_star.txt.')+str(i),kind='input',temp_path=temp_flag)
                                 job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
                                 job.add('uniq',kind='parameter')
                                 job.add('>',outdir('reads-refs_clip_star_psl_uniq.txt.')+str(i),kind='output')
                                 job.run()
@@ -7418,6 +7556,7 @@ if __name__ == "__main__":
                                 job.add('-2',outdir('reads-ids_clip_star_psl_r2.fq.')+str(i),kind='input',temp_path=temp_flag)
                                 job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
                                 job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
                                 job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
                                 job.add('>',outdir('split_gene-gene_star.sam.')+str(i),kind='output')
                                 job.run()
@@ -7472,9 +7611,11 @@ if __name__ == "__main__":
                                     ##########################################################
                                 
                                     # extract reads ids
-                                    job.add('awk',kind='program')
+                                    job.add('LC_ALL=C',kind='program')
+                                    job.add('awk',kind='parameter')
                                     job.add("""'NR%4==1 {print substr($0,2,index($0,"__")-2)}'""",outdir('reads-ids_clip_star_psl_unmapped-'+str(i)+'_1.fq'),kind='input')
                                     job.add('|',kind='parameter')
+                                    job.add('LC_ALL=C',kind='parameter')
                                     job.add('uniq',kind='parameter')
                                     job.add('|',kind='parameter')
                                     job.add('LC_ALL=C',kind='parameter')
@@ -7489,6 +7630,7 @@ if __name__ == "__main__":
                                         job.add('--compress-program','gzip',kind='parameter',checksum='no')
                                     job.add('-T',tmp_dir,kind='parameter',checksum='no')
                                     job.add('|',kind='parameter')
+                                    job.add('LC_ALL=C',kind='parameter')
                                     job.add('uniq',kind='parameter')
                                     job.add('|',kind='parameter')
                                     job.add('seqtk',kind='parameter')
@@ -7508,11 +7650,11 @@ if __name__ == "__main__":
                                         job.add('-t',options.trim_quality,kind='parameter') # below Q5 trimming starts
                                         job.add('--score-type','sanger',kind='parameter')
                                         job.add('--input','-',kind='parameter')
-                                        job.add('--output',outdir('reads-ids_clip_star_psl_unmapped.fq.')+str(i),kind='output')
+                                        job.add('--output',outdir('reads-ids_clip_star_psl_unmapped_x.fq.')+str(i),kind='output')
                                     else:
                                         job.add('',outdir('reads-ids_clip_star_psl.fq.')+str(i),kind='input',temp_path=temp_flag)
                                         job.add('-',kind='parameter')
-                                        job.add('>',outdir('reads-ids_clip_star_psl_unmapped.fq.')+str(i),kind='output')
+                                        job.add('>',outdir('reads-ids_clip_star_psl_unmapped_x.fq.')+str(i),kind='output')
                                     job.run()
 
                                     job.clean(outdir('reads-ids_clip_star_psl.fq.')+str(i),temp_path=temp_flag)
@@ -7520,13 +7662,14 @@ if __name__ == "__main__":
                                     job.clean(outdir('reads-ids_clip_star_psl_unmapped-'+str(i)+'_2.fq'),temp_path=temp_flag)
 
                                     job.add('split-reads.py',kind='program')
-                                    job.add('--input',outdir('reads-ids_clip_star_psl_unmapped.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                    job.add('--input',outdir('reads-ids_clip_star_psl_unmapped_x.fq.')+str(i),kind='input',temp_path=temp_flag)
                                     job.add('--list',outdir('reads-ids_clip_star_psl_uniq.txt.')+str(i),kind='input',temp_path=temp_flag)
                                     job.add('--output-1',outdir('reads-ids_clip_star_psl_unmapped_s_1.fq.')+str(i),kind='output')
                                     job.add('--output-2',outdir('reads-ids_clip_star_psl_unmapped_s_2.fq.')+str(i),kind='output')
                                     job.add('--wiggle-size',options.gap_wiggle_size,kind='parameter')
                                     job.add('--gap-size',options.length_gap,kind='parameter')
                                     job.add('--anchor-size',options.length_anchor_gap,kind='parameter')
+                                    job.add('--anchor-size-max',options.length_anchor_gap_max,kind='parameter')
                                     job.add('--buffer-size',options.extract_buffer_size,kind='parameter',checksum='no')
                                     if not options.skip_ig_star:
                                             job.add('--output-2-rc',kind='parameter')
@@ -7561,6 +7704,7 @@ if __name__ == "__main__":
                                         job.add('-2',outdir('reads-ids_clip_star_psl_unmapped_s_2.fq.')+str(i),kind='input',temp_path=temp_flag)
                                         job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star-unampped.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
                                         job.add('|',kind='parameter')
+                                        job.add('LC_ALL=C',kind='parameter')
                                         job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
                                         job.add('>',outdir('split_gene-gene_star_unmapped.sam.')+str(i),kind='output')
                                         job.run()
@@ -7571,6 +7715,7 @@ if __name__ == "__main__":
                                         job.add('du',kind='program')
                                         job.add('-b',gda,kind='input')
                                         job.add('|',kind='parameter')
+                                        job.add('LC_ALL=C',kind='parameter')
                                         job.add('cut',kind='parameter')
                                         job.add('-f','1',kind='parameter')
                                         job.add('>',outdir('gene-gene2__nuc.txt.')+str(i),kind='output',dest_list='gg2nuc')
@@ -7578,7 +7723,8 @@ if __name__ == "__main__":
 
                                         nucleotides2_gg = int(file(outdir('gene-gene2__nuc.txt.')+str(i),'r').readline().strip())
 
-                                        job.add('grep',kind='program')
+                                        job.add('LC_ALL=C',kind='program')
+                                        job.add('grep',kind='parameter')
                                         job.add('-c',kind='parameter')
                                         job.add("'^>'",gda,kind='input')
                                         job.add('>',outdir('gene-gene2__seq.txt.')+str(i),kind='output',dest_list='gg2seq')
@@ -7610,18 +7756,18 @@ if __name__ == "__main__":
                                         #job.add('--twopassMode','Basic',kind='parameter')
                                         job.add('--genomeSAindexNbases',genomesaindexnbases2,kind='parameter')
                                         job.add('--alignIntronMax',outdir('gene-gene_longest.txt'),kind='parameter',from_file = 'yes')
-                                        job.add('--outFilterMatchNmin','17',kind='parameter')
+                                        job.add('--outFilterMatchNmin',length_anchor_star-1,kind='parameter')# 17
                                         job.add('--outSAMattributes','NM',kind='parameter') # 'NM' ==> NM is different than nM
                                         job.add('--outFilterMatchNminOverLread','0.80',kind='parameter')
                                         job.add('--outFilterScoreMinOverLread','0.80',kind='parameter')  # NEW in v0.99.4b
                                         job.add('--alignSplicedMateMapLminOverLmate','0.80',kind='parameter') # NEW in v0.99.4b
                                         job.add('--genomeDir',outdir('gene-gene-bowtie_star2.'+str(i)+'/'),kind='input',temp_path=temp_flag)
                                         job.add('--runThreadN',options.processes,kind='parameter',checksum='no')
-                                        job.add('--seedSearchStartLmax',length_anchor_star,kind='parameter')# default is: 50
+                                        job.add('--seedSearchStartLmax',length_anchor_star-1,kind='parameter')# default is: 50
                                         if star25:
                                             job.add('--alignSJstitchMismatchNmax','5 -1 5 5',kind='parameter')# default is: 0 -1 0 0 # added in STAR 2.5.x
                                         job.add('--limitOutSAMoneReadBytes','100000000',kind='parameter')
-                                        job.add('--alignTranscriptsPerReadNmax','1000000',kind='parameter') # if this is missing STAR crashes in some cases
+                                        job.add('--alignTranscriptsPerReadNmax','500000',kind='parameter') # if this is missing STAR crashes in some cases
                                         job.add('--scoreGap','-10000',kind='parameter')
                                         job.add('--alignEndsType','EndToEnd',kind='parameter') # disable soft clipping
                                         job.add('--readFilesIn',outdir('reads-ids_clip_star_psl_unmapped_s_1.fq.')+str(i),kind='input',temp_path=temp_flag)
@@ -7635,7 +7781,8 @@ if __name__ == "__main__":
                                     job.add('merge-sam.py',kind='program')
                                     job.add('--input',outdir('split_gene-gene_star_unmapped.sam.')+str(i),kind='input',temp_path=temp_flag)
                                     job.add('--output',outdir('split_gene-gene_star_unmapped_patch.sam.')+str(i),kind='output')
-                                    job.add('--mismatches-long',options.mismatches+1,kind='parameter')
+                                    #job.add('--mismatches-long',options.mismatches+1,kind='parameter')
+                                    job.add('--mismatches-long',options.mismatches_gap,kind='parameter')
                                     job.add('--mismatches-short',options.mismatches,kind='parameter')
                                     if not options.skip_ig_star:
                                         job.add('--forward-reverse',kind='parameter')
@@ -7758,7 +7905,7 @@ if __name__ == "__main__":
                         job.add('--alignSplicedMateMapLminOverLmate',perc,kind='parameter') # NEW in v0.99.4b
                     job.add('--genomeDir',outdir('gene-gene-star/'),kind='input',temp_path=temp_flag)
                     job.add('--runThreadN',options.processes,kind='parameter',checksum='no')
-                    job.add('--seedSearchStartLmax',length_anchor_star,kind='parameter')# default is: 50
+                    job.add('--seedSearchStartLmax',length_anchor_star-1,kind='parameter')# default is: 50
                     job.add('--alignSJoverhangMin',length_anchor_star-1,kind='parameter') #9 # default is 5? # NEW in v0.99.4b
                     if star25:
                         job.add('--alignSJstitchMismatchNmax','5 -1 5 5',kind='parameter')# default is: 0 -1 0 0 # added in STAR 2.5.0a
@@ -7801,7 +7948,8 @@ if __name__ == "__main__":
 # --outFileNamePrefix /apps/fusioncatcher/output/snu16/gene-gene-star-results/
 
 
-                    job.add('sed',kind='program')
+                    job.add('LC_ALL=C',kind='program')
+                    job.add('sed',kind='parameter')
                     job.add("""'s/\-\([1-2]\\t\)/\/\\1/'""",outdir('gene-gene-star-results','Aligned.out.sam'),kind='input')
                     job.add("",outdir('gene-gene-star-results/'),kind='input',temp_path=temp_flag,command_line='no')
                     job.add('|',kind='parameter')
@@ -7887,13 +8035,16 @@ if __name__ == "__main__":
                             job.add('-T',tmp_dir,kind='parameter',checksum='no')
                             job.add('',outdir('reads-ids_clip_psl_star.txt'),kind='input',temp_path=temp_flag)
                             job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
                             job.add('uniq',kind='parameter')
                             job.add('>',outdir('reads-ids_clip_star_psl_uniq.txt'),kind='output')
                             job.run()
 
-                            job.add('cut',kind='program')
+                            job.add('LC_ALL=C',kind='program')
+                            job.add('cut',kind='parameter')
                             job.add('-f1',outdir('reads-ids_clip_star_psl_uniq.txt'),kind='input')
                             job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
                             job.add('uniq',kind='parameter')
                             job.add('|',kind='parameter')
                             job.add('LC_ALL=C',kind='parameter')
@@ -7908,6 +8059,7 @@ if __name__ == "__main__":
                                 job.add('--compress-program','gzip',kind='parameter',checksum='no')
                             job.add('-T',tmp_dir,kind='parameter',checksum='no')
                             job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
                             job.add('uniq',kind='parameter')
                             job.add('|',kind='parameter')
                             job.add('seqtk',kind='parameter')
@@ -7945,6 +8097,7 @@ if __name__ == "__main__":
                             job.add('-T',tmp_dir,kind='parameter',checksum='no')
                             job.add('',outdir('reads-refs_clip_psl_star.txt'),kind='input',temp_path=temp_flag)
                             job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
                             job.add('uniq',kind='parameter')
                             job.add('>',outdir('reads-refs_clip_star_psl_uniq.txt'),kind='output')
                             job.run()
@@ -7993,6 +8146,7 @@ if __name__ == "__main__":
                             job.add('-2',outdir('reads-ids_clip_star_psl_r2.fq'),kind='input',temp_path=temp_flag)
                             job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
                             job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
                             job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
                             job.add('>',outdir('split_gene-gene_star.sam'),kind='output')
                             job.run()
@@ -8046,9 +8200,11 @@ if __name__ == "__main__":
                                 ##########################################################
                             
                                 # extract reads ids
-                                job.add('awk',kind='program')
+                                job.add('LC_ALL=C',kind='program')
+                                job.add('awk',kind='parameter')
                                 job.add("""'NR%4==1 {print substr($0,2,index($0,"__")-2)}'""",outdir('reads-ids_clip_star_psl_unmapped_1.fq'),kind='input')
                                 job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
                                 job.add('uniq',kind='parameter')
                                 job.add('|',kind='parameter')
                                 job.add('LC_ALL=C',kind='parameter')
@@ -8063,6 +8219,7 @@ if __name__ == "__main__":
                                     job.add('--compress-program','gzip',kind='parameter',checksum='no')
                                 job.add('-T',tmp_dir,kind='parameter',checksum='no')
                                 job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
                                 job.add('uniq',kind='parameter')
                                 job.add('|',kind='parameter')
                                 job.add('seqtk',kind='parameter')
@@ -8082,11 +8239,11 @@ if __name__ == "__main__":
                                     job.add('-t',options.trim_quality,kind='parameter') # below Q5 trimming starts
                                     job.add('--score-type','sanger',kind='parameter')
                                     job.add('--input','-',kind='parameter')
-                                    job.add('--output',outdir('reads-ids_clip_star_psl_unmapped.fq'),kind='output')
+                                    job.add('--output',outdir('reads-ids_clip_star_psl_unmapped_x.fq'),kind='output')
                                 else:
                                     job.add('',outdir('reads-ids_clip_star_psl.fq'),kind='input',temp_path=temp_flag)
                                     job.add('-',kind='parameter')
-                                    job.add('>',outdir('reads-ids_clip_star_psl_unmapped.fq'),kind='output')
+                                    job.add('>',outdir('reads-ids_clip_star_psl_unmapped_x.fq'),kind='output')
                                 job.run()
 
                                 job.clean(outdir('reads-ids_clip_star_psl.fq'),temp_path=temp_flag)
@@ -8094,17 +8251,18 @@ if __name__ == "__main__":
                                 job.clean(outdir('reads-ids_clip_star_psl_unmapped_2.fq'),temp_path=temp_flag)
 
                                 job.add('split-reads.py',kind='program')
-                                job.add('--input',outdir('reads-ids_clip_star_psl_unmapped.fq'),kind='input',temp_path=temp_flag)
+                                job.add('--input',outdir('reads-ids_clip_star_psl_unmapped_x.fq'),kind='input',temp_path=temp_flag)
                                 job.add('--list',outdir('reads-ids_clip_star_psl_uniq.txt'),kind='input',temp_path=temp_flag)
                                 job.add('--output-1',outdir('reads-ids_clip_star_psl_unmapped_s_1.fq'),kind='output')
                                 job.add('--output-2',outdir('reads-ids_clip_star_psl_unmapped_s_2.fq'),kind='output')
                                 job.add('--wiggle-size',options.gap_wiggle_size,kind='parameter')
                                 job.add('--gap-size',options.length_gap,kind='parameter')
                                 job.add('--anchor-size',options.length_anchor_gap,kind='parameter')
+                                job.add('--anchor-size-max',options.length_anchor_gap_max,kind='parameter')
                                 job.add('--buffer-size',options.extract_buffer_size,kind='parameter',checksum='no')
                                 if not options.skip_ig_star:
-                                        job.add('--output-2-rc',kind='parameter')
-                                        job.add('--replace-solexa-ids','=',kind='parameter')
+                                    job.add('--output-2-rc',kind='parameter')
+                                    job.add('--replace-solexa-ids','=',kind='parameter')
                                 job.run(error_message = ("If this fails due to a memory error then lowering the "+
                                                          "buffer size (to 50% or 25%) using the command line option --extra-buffer-size "+
                                                          "of FusionCatcher and running it again might help!"))
@@ -8135,6 +8293,7 @@ if __name__ == "__main__":
                                     job.add('-2',outdir('reads-ids_clip_star_psl_unmapped_s_2.fq'),kind='input',temp_path=temp_flag)
                                     job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star-unampped.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
                                     job.add('|',kind='parameter')
+                                    job.add('LC_ALL=C',kind='parameter')
                                     job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
                                     job.add('>',outdir('split_gene-gene_star_unmapped.sam'),kind='output')
                                     job.run()
@@ -8145,6 +8304,7 @@ if __name__ == "__main__":
                                     job.add('du',kind='program')
                                     job.add('-b',outdir('gene-gene-bowtie_star.fa'),kind='input')
                                     job.add('|',kind='parameter')
+                                    job.add('LC_ALL=C',kind='parameter')
                                     job.add('cut',kind='parameter')
                                     job.add('-f','1',kind='parameter')
                                     job.add('>',outdir('gene-gene2__nuc.txt'),kind='output')
@@ -8152,7 +8312,8 @@ if __name__ == "__main__":
 
                                     nucleotides2_gg = int(file(outdir('gene-gene2__nuc.txt'),'r').readline().strip())
 
-                                    job.add('grep',kind='program')
+                                    job.add('LC_ALL=C',kind='program')
+                                    job.add('grep',kind='parameter')
                                     job.add('-c',kind='parameter')
                                     job.add("'^>'",outdir('gene-gene-bowtie_star.fa'),kind='input')
                                     job.add('>',outdir('gene-gene2__seq.txt'),kind='output')
@@ -8179,12 +8340,14 @@ if __name__ == "__main__":
 
                                 
                                     # align the unmapped reads using STAR on candidate fusion gene-gene
+                                    # idea: --alignEndsType Extend5pOfRead1 --outFilterMismatchNmax 0 --seedSearchStartLmax 999
+                                    mirna = False
                                     job.add('STAR',kind='program')
                                     #job.add('--twopass1readsN','-1',kind='parameter')
                                     #job.add('--twopassMode','Basic',kind='parameter')
                                     job.add('--genomeSAindexNbases',genomesaindexnbases2,kind='parameter')
                                     job.add('--alignIntronMax',outdir('gene-gene_longest.txt'),kind='parameter',from_file = 'yes')
-                                    job.add('--outFilterMatchNmin','17',kind='parameter')
+                                    job.add('--outFilterMatchNmin',length_anchor_star-1,kind='parameter') # 17
                                     job.add('--outSAMattributes','NM',kind='parameter') # 'NM' ==> NM is different than nM
                                     job.add('--outFilterMatchNminOverLread','0.80',kind='parameter')
                                     job.add('--outFilterScoreMinOverLread','0.80',kind='parameter')  # NEW in v0.99.4b
@@ -8193,11 +8356,16 @@ if __name__ == "__main__":
                                         job.add('--alignSJstitchMismatchNmax','5 -1 5 5',kind='parameter')# default is: 0 -1 0 0 # added in STAR 2.5.x
                                     job.add('--genomeDir',outdir('gene-gene-bowtie_star2/'),kind='input',temp_path=temp_flag)
                                     job.add('--runThreadN',options.processes,kind='parameter',checksum='no')
-                                    job.add('--seedSearchStartLmax',length_anchor_star,kind='parameter')# default is: 50
                                     job.add('--limitOutSAMoneReadBytes','100000000',kind='parameter')
-                                    job.add('--alignTranscriptsPerReadNmax','1000000',kind='parameter') # if this is missing STAR crashes in some cases
+                                    job.add('--alignTranscriptsPerReadNmax','500000',kind='parameter') # if this is missing STAR crashes in some cases
                                     job.add('--scoreGap','-10000',kind='parameter')
-                                    job.add('--alignEndsType','EndToEnd',kind='parameter') # disable soft clipping
+                                    if not mirna:
+                                        job.add('--alignEndsType','EndToEnd',kind='parameter') # disable soft clipping
+                                        job.add('--seedSearchStartLmax',length_anchor_star-1,kind='parameter')# default is: 50
+                                    else:
+                                        #job.add('--alignEndsType','Extend5pOfRead1',kind='parameter') # behaves like a miRNA alignment
+                                        job.add('--alignEndsType','EndToEnd',kind='parameter') # behaves like a miRNA alignment
+                                        job.add('--seedSearchStartLmax','999',kind='parameter')# default is: 50
                                     job.add('--readFilesIn',outdir('reads-ids_clip_star_psl_unmapped_s_1.fq'),kind='input',temp_path=temp_flag)
                                     job.add('',outdir('reads-ids_clip_star_psl_unmapped_s_2.fq'),kind='input',temp_path=temp_flag)
                                     job.add('--outFileNamePrefix',outdir('gene-gene-star-results-unmapped/'),kind='output')
@@ -8209,7 +8377,8 @@ if __name__ == "__main__":
                                 job.add('merge-sam.py',kind='program')
                                 job.add('--input',outdir('split_gene-gene_star_unmapped.sam'),kind='input',temp_path=temp_flag)
                                 job.add('--output',outdir('split_gene-gene_star_unmapped_patch.sam'),kind='output')
-                                job.add('--mismatches-long',options.mismatches+1,kind='parameter')
+                                #job.add('--mismatches-long',options.mismatches+1,kind='parameter')
+                                job.add('--mismatches-long',options.mismatches_gap,kind='parameter')
                                 job.add('--mismatches-short',options.mismatches,kind='parameter')
                                 if not options.skip_ig_star:
                                     job.add('--forward-reverse',kind='parameter')
@@ -8270,6 +8439,8 @@ if __name__ == "__main__":
                 job.add('--output',outdir('gene-gene-star_best-unique.psl'),kind='output')
 #                if (not empty(outdir('candidate_fusion-genes_further_mark.txt'))) and (not empty(datadir('custom_genes.txt'))):
 #                    job.add('--ties',datadir('custom_genes_mark.txt'),kind='input')
+                if sort_buffer:
+                    job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                 job.add('--ties-overlappings',datadir('ensembl_overlapping_genes.txt'),kind='input')
                 job.add('--anchor',length_anchor_star,kind='parameter') # find_fusion_genes_blat.py --threshold_overlap is enough!
                 job.add('--mismatches',options.mismatches_psl,kind='parameter')
@@ -8298,7 +8469,13 @@ if __name__ == "__main__":
                 job.add('--input_genes_positions',datadir('genes.txt'),kind='input')
                 job.add('--threshold_overlap',length_anchor_star,kind='parameter')
                 job.add('--mismatches',options.mismatches_psl,kind='parameter')
+                job.add('--output',outdir('candidates_fusion_genes_reads_star7.txt'),kind='output')
+                job.run()
+
+                job.add('smoothing_fusions_psl.py',kind='program')
+                job.add('--input',outdir('candidates_fusion_genes_reads_star7.txt'),kind='input',temp_path=temp_flag)
                 job.add('--output',outdir('candidates_fusion_genes_reads_star.txt'),kind='output')
+                job.add('--wiggle','3',kind='parameter')
                 job.run()
 
                 #eporcrlf2igh
@@ -8309,17 +8486,21 @@ if __name__ == "__main__":
                     job.add('--input',outdir('split_gene-gene_star_unmapped_final.psl'),kind='input',temp_path=temp_flag)
                     job.add('--output',outdir('gene-gene-star_best-unique_.psl'),kind='output')
                     job.add('--ties-overlappings',datadir('ensembl_overlapping_genes.txt'),kind='input')
+                    if sort_buffer:
+                        job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                     job.add('--anchor',length_anchor_star,kind='parameter') # find_fusion_genes_blat.py --threshold_overlap is enough!
                     job.add('--mismatches',options.mismatches_gap,kind='parameter')
                     job.add('--processes',options.processes,kind='parameter',checksum='no')
                     job.add('--tmp_dir',tmp_dir,kind='output',checksum='no')
                     job.run()
 
-                    job.add('grep',kind='program')
+                    job.add('LC_ALL=C',kind='program')
+                    job.add('grep',kind='parameter')
                     job.add('-F',kind='parameter')
                     job.add('-f',datadir('ig_loci.txt'),kind='input')
                     job.add('',outdir('gene-gene-star_best-unique_.psl'),kind='input',temp_path=temp_flag)
                     job.add('|',kind='parameter')
+                    job.add('LC_ALL=C',kind='parameter')
                     job.add('grep',kind='parameter')
                     job.add('-F',kind='parameter')
                     job.add('-f',outdir('eporcrlf2.txt'),kind='input',temp_path=temp_flag)
@@ -8350,9 +8531,17 @@ if __name__ == "__main__":
                 
                 
                     if job.iff(not empty(outdir('candidates_fusion_genes_reads_star_.txt')), id ="#candidates_fusion_genes_reads_star_.txt#"):
-                        job.add('sed',kind='program')
+                    
+                        job.add('smoothing_fusions_psl.py',kind='program')
+                        job.add('--input',outdir('candidates_fusion_genes_reads_star_.txt'),kind='input',temp_path=temp_flag)
+                        job.add('--output',outdir('candidates_fusion_genes_reads_star_2.txt'),kind='output')
+                        job.add('--wiggle','3',kind='parameter')
+                        job.run()
+                    
+                        job.add('LC_ALL=C',kind='program')
+                        job.add('sed',kind='parameter')
                         job.add("'1d'",kind='parameter')
-                        job.add('',outdir('candidates_fusion_genes_reads_star_.txt'),kind='input',temp_path=temp_flag)
+                        job.add('',outdir('candidates_fusion_genes_reads_star_2.txt'),kind='input',temp_path=temp_flag)
                         job.add("|",kind='parameter')
                         job.add('cat',kind='parameter')
                         job.add('',outdir('candidates_fusion_genes_reads_star.txt'),kind='input',temp_path=temp_flag)
@@ -8369,6 +8558,8 @@ if __name__ == "__main__":
                              outdir('candidates_fusion_genes_reads_star_last.txt'),
                              temp_path=temp_flag)
 
+
+
                 job.clean(outdir('reads_filtered_transcriptome_sorted-read_end_important.map'),temp_path=temp_flag if options.skip_bowtie2 and options.skip_bwa else 'no')
                 job.clean(outdir('gene-gene.fa'),temp_path=temp_flag if options.skip_bowtie2 and options.skip_bwa else 'no')
 
@@ -8376,6 +8567,8 @@ if __name__ == "__main__":
                 job.add('build_report_fusions_psl.py',kind='program')
                 job.add('--suporting_unique_reads',spanning_reads_star,kind='parameter')
                 job.add('--anchor2',length_anchor2,kind='parameter')
+                job.add('--mismatches',options.mismatches_psl+1,kind='parameter')
+                job.add('--mismatches-gap',options.mismatches_gap,kind='parameter')
                 job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),kind='input',temp_path=temp_flag if options.skip_bowtie2 and options.skip_bwa else 'no')
                 job.add('--input_fastq',outdir('original_important.fq.gz'),kind='input',temp_path=temp_flag if options.skip_bowtie2 and options.skip_bwa else 'no')
                 job.add('--input_fusion_psl',outdir('candidates_fusion_genes_reads_star_last.txt'),kind='input',temp_path=temp_flag)
@@ -8506,13 +8699,16 @@ if __name__ == "__main__":
                             job.add('-T',tmp_dir,kind='parameter',checksum='no')
                             job.add('',outdir('reads-ids_clip_psl_bowtie2.txt.')+str(i),kind='input',temp_path=temp_flag)
                             job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
                             job.add('uniq',kind='parameter')
                             job.add('>',outdir('reads-ids_clip_bowtie2_psl_uniq.txt.')+str(i),kind='output')
                             job.run()
 
-                            job.add('cut',kind='program')
+                            job.add('LC_ALL=C',kind='program')
+                            job.add('cut',kind='parameter')
                             job.add('-f1',outdir('reads-ids_clip_bowtie2_psl_uniq.txt.')+str(i),kind='input')
                             job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
                             job.add('uniq',kind='parameter')
                             job.add('|',kind='parameter')
                             job.add('LC_ALL=C',kind='parameter')
@@ -8527,6 +8723,7 @@ if __name__ == "__main__":
                                 job.add('--compress-program','gzip',kind='parameter',checksum='no')
                             job.add('-T',tmp_dir,kind='parameter',checksum='no')
                             job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
                             job.add('uniq',kind='parameter')
                             job.add('|',kind='parameter')
                             job.add('seqtk',kind='parameter')
@@ -8563,6 +8760,7 @@ if __name__ == "__main__":
                             job.add('-T',tmp_dir,kind='parameter',checksum='no')
                             job.add('',outdir('reads-refs_clip_psl_bowtie2.txt.')+str(i),kind='input',temp_path=temp_flag)
                             job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
                             job.add('uniq',kind='parameter')
                             job.add('>',outdir('reads-refs_clip_bowtie2_psl_uniq.txt.')+str(i),kind='output')
                             job.run()
@@ -8611,6 +8809,7 @@ if __name__ == "__main__":
                             job.add('-2',outdir('reads-ids_clip_bowtie2_psl_r2.fq.')+str(i),kind='input',temp_path=temp_flag)
                             job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
                             job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
                             job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
                             job.add('>',outdir('split_gene-gene_bowtie2.sam.')+str(i),kind='output')
                             job.run()
@@ -8760,13 +8959,16 @@ if __name__ == "__main__":
                         job.add('-T',tmp_dir,kind='parameter',checksum='no')
                         job.add('',outdir('reads-ids_clip_psl_bowtie2.txt'),kind='input',temp_path=temp_flag)
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('uniq',kind='parameter')
                         job.add('>',outdir('reads-ids_clip_bowtie2_psl_uniq.txt'),kind='output')
                         job.run()
 
-                        job.add('cut',kind='program')
+                        job.add('LC_ALL=C',kind='program')
+                        job.add('cut',kind='parameter')
                         job.add('-f1',outdir('reads-ids_clip_bowtie2_psl_uniq.txt'),kind='input')
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('uniq',kind='parameter')
                         job.add('|',kind='parameter')
                         job.add('LC_ALL=C',kind='parameter')
@@ -8781,6 +8983,7 @@ if __name__ == "__main__":
                             job.add('--compress-program','gzip',kind='parameter',checksum='no')
                         job.add('-T',tmp_dir,kind='parameter',checksum='no')
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('uniq',kind='parameter')
                         job.add('|',kind='parameter')
                         job.add('seqtk',kind='parameter')
@@ -8817,6 +9020,7 @@ if __name__ == "__main__":
                         job.add('-T',tmp_dir,kind='parameter',checksum='no')
                         job.add('',outdir('reads-refs_clip_psl_bowtie2.txt'),kind='input',temp_path=temp_flag)
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('uniq',kind='parameter')
                         job.add('>',outdir('reads-refs_clip_bowtie2_psl_uniq.txt'),kind='output')
                         job.run()
@@ -8860,6 +9064,7 @@ if __name__ == "__main__":
                         job.add('-2',outdir('reads-ids_clip_bowtie2_psl_r2.fq'),kind='input',temp_path=temp_flag)
                         job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
                         job.add('>',outdir('split_gene-gene_bowtie2.sam'),kind='output')
                         job.run()
@@ -8918,6 +9123,8 @@ if __name__ == "__main__":
                 job.add('--output',outdir('gene-gene-bowtie2_best-unique.psl'),kind='output')
 #                if (not empty(outdir('candidate_fusion-genes_further_mark.txt'))) and (not empty(datadir('custom_genes.txt'))):
 #                    job.add('--ties',datadir('custom_genes_mark.txt'),kind='output')
+                if sort_buffer:
+                    job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                 job.add('--ties-overlappings',datadir('ensembl_overlapping_genes.txt'),kind='input')
                 job.add('--anchor',length_anchor_bowtie2,kind='parameter') # find_fusion_genes_blat.py --threshold_overlap is enough!
                 job.add('--mismatches',options.mismatches_psl,kind='parameter')
@@ -8946,7 +9153,13 @@ if __name__ == "__main__":
                 job.add('--input_genes_positions',datadir('genes.txt'),kind='input')
                 job.add('--threshold_overlap',length_anchor_bowtie2,kind='parameter')
                 job.add('--mismatches',options.mismatches_psl,kind='parameter')
+                job.add('--output',outdir('candidates_fusion_genes_reads_bowtie2_7.txt'),kind='output')
+                job.run()
+
+                job.add('smoothing_fusions_psl.py',kind='program')
+                job.add('--input',outdir('candidates_fusion_genes_reads_bowtie2_7.txt'),kind='input',temp_path=temp_flag)
                 job.add('--output',outdir('candidates_fusion_genes_reads_bowtie2.txt'),kind='output')
+                job.add('--wiggle','3',kind='parameter')
                 job.run()
 
                 # summary the gene-gene mappings
@@ -8979,7 +9192,8 @@ if __name__ == "__main__":
                 if options.skip_star:
                     # BWA is removing the /1 and /2 from the end of the reads names
                     # changing "/1" and "/2" into "-1" "-2" such that BWA does not remove them
-                    job.add('sed',kind='program')
+                    job.add('LC_ALL=C',kind='program')
+                    job.add('sed',kind='parameter')
                     job.add("""'s/\/\([1-2]$\)/\-\\1/;n;n;n'""",outdir('reads_gene-gene_no-str.fq'),kind='input',temp_path=temp_flag)
                     job.add('>',outdir('reads_gene-gene_no-str_fixed.fq'),kind='output')
                     job.run()
@@ -9041,6 +9255,7 @@ if __name__ == "__main__":
                     job.add('--input','-',kind='parameter')
                     job.add('--output','-',kind='output')
                     job.add('|',kind='parameter')
+                    job.add('LC_ALL=C',kind='parameter')
                     job.add('sed',kind='parameter')
 #                    job.add("""'s/\-\([1-2]\\t\)/\/\\1/'""",outdir('gene-gene-bwa.sam.')+str(i),kind='input',temp_path=temp_flag)
                     job.add("""'s/\-\([1-2]\\t\)/\/\\1/'""",kind='parameter')
@@ -9089,13 +9304,16 @@ if __name__ == "__main__":
                         job.add('-T',tmp_dir,kind='parameter',checksum='no')
                         job.add('',outdir('reads-ids_clip_psl_bwa.txt.')+str(i),kind='input',temp_path=temp_flag)
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('uniq',kind='parameter')
                         job.add('>',outdir('reads-ids_clip_bwa_psl_uniq.txt.')+str(i),kind='output')
                         job.run()
 
-                        job.add('cut',kind='program')
+                        job.add('LC_ALL=C',kind='program')
+                        job.add('cut',kind='parameter')
                         job.add('-f1',outdir('reads-ids_clip_bwa_psl_uniq.txt.')+str(i),kind='input')
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('uniq',kind='parameter')
                         job.add('|',kind='parameter')
                         job.add('LC_ALL=C',kind='parameter')
@@ -9110,6 +9328,7 @@ if __name__ == "__main__":
                             job.add('--compress-program','gzip',kind='parameter',checksum='no')
                         job.add('-T',tmp_dir,kind='parameter',checksum='no')
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('uniq',kind='parameter')
                         job.add('|',kind='parameter')
                         job.add('seqtk',kind='parameter')
@@ -9166,6 +9385,7 @@ if __name__ == "__main__":
                         job.add('-2',outdir('reads-ids_clip_bwa_psl_r2.fq.')+str(i),kind='input',temp_path=temp_flag)
                         job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bwa.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
                         job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
                         job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
                         job.add('>',outdir('split_gene-gene_bwa.sam.')+str(i),kind='output')
                         job.run()
@@ -9238,6 +9458,8 @@ if __name__ == "__main__":
                 job.add('--output',outdir('gene-gene-bwa_best-unique.psl'),kind='output')
 #                if (not empty(outdir('candidate_fusion-genes_further_mark.txt'))) and (not empty(datadir('custom_genes.txt'))):
 #                    job.add('--ties',datadir('custom_genes_mark.txt'),kind='input')
+                if sort_buffer:
+                    job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                 job.add('--ties-overlappings',datadir('ensembl_overlapping_genes.txt'),kind='input')
                 job.add('--anchor',length_anchor_bwa,kind='parameter') # find_fusion_genes_blat.py --threshold_overlap is enough!
                 job.add('--mismatches',options.mismatches_psl,kind='parameter')
@@ -9267,7 +9489,13 @@ if __name__ == "__main__":
                 job.add('--input_genes_positions',datadir('genes.txt'),kind='input')
                 job.add('--threshold_overlap',length_anchor_bwa,kind='parameter')
                 job.add('--mismatches',options.mismatches_psl,kind='parameter')
+                job.add('--output',outdir('candidates_fusion_genes_reads_bwa7.txt'),kind='output')
+                job.run()
+
+                job.add('smoothing_fusions_psl.py',kind='program')
+                job.add('--input',outdir('candidates_fusion_genes_reads_bwa7.txt'),kind='input',temp_path=temp_flag)
                 job.add('--output',outdir('candidates_fusion_genes_reads_bwa.txt'),kind='output')
+                job.add('--wiggle','3',kind='parameter')
                 job.run()
 
                 # summary the gene-gene mappings
@@ -9361,6 +9589,25 @@ if __name__ == "__main__":
             job.add('--tmp_dir',tmp_dir,kind='parameter',checksum='no')
             job.run()
 
+    job.add('LC_ALL=C',kind='program')
+    job.add('awk',kind='parameter')
+    job.add("""'(NR==1) || (($3>%d) && ($7=="skipped"))'""" % (spanning_pairs_minimum-1,),outdir('preliminary-list_candidate-fusion-genes.txt'),kind='input')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('cut',kind='parameter')
+    job.add('-f',"4,5",kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('tr',kind='parameter')
+    job.add("'\\t'","'/'",kind='parameter')
+#    job.add('|',kind='parameter')
+#    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('uniq',kind='parameter')
+    job.add('>',outdir('junk-chimeras.txt'),kind='output')
+    job.run()
+
 
     # save the preliminary candidates to info file
     info(job,
@@ -9371,6 +9618,7 @@ if __name__ == "__main__":
                 "==========================================="],
          bottom = "\n\n\n",
          temp_path = temp_flag if not options.keep_preliminary else 'no')
+
 
 
     #

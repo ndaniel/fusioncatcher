@@ -604,6 +604,14 @@ if __name__ == '__main__':
                       default = 0,
                       help = """Number of parallel threads/processes/CPUs to be used for computations. In case of value 0 then the program will use all the CPUs which are found. The default value is %default.""")
 
+    parser.add_option("--buffer-size",
+                  action = "store",
+                  type = "string",
+                  default = "80%",
+                  dest = "buffer_size",
+                  help = "The main buffer size which is passed further to GNU sort command. For more see '--buffer-size' of GNU sort command. Default is '%default'.")
+
+
     parser.add_option("--mismatches",
                       action="store",
                       type="float",
@@ -650,6 +658,7 @@ if __name__ == '__main__':
                            header = False,
                            ignore_case = False,
                            tmp_dir = options.tmp_dir,
+                           buffer_size = options.buffer_size,
                            parallel = cpus
                            )
 #    for line in file(ft_name_2,'r'):
@@ -697,6 +706,7 @@ if __name__ == '__main__':
                                header = False,
                                ignore_case = False,
                                tmp_dir = options.tmp_dir,
+                               buffer_size = options.buffer_size,
                                parallel = cpus
                                )
     else:
@@ -706,6 +716,7 @@ if __name__ == '__main__':
                                header = False,
                                ignore_case = False,
                                tmp_dir = options.tmp_dir,
+                               buffer_size = options.buffer_size,
                                parallel = cpus
                                )
 #    for line in file(options.output_filename,'r'):

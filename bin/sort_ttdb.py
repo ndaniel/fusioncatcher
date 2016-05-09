@@ -91,7 +91,7 @@ def sort_columns(input_filename = '-',
                  ignore_case=False,
                  unique = False,
                  tmp_dir=None,
-                 buffer_size = '85%',
+                 buffer_size = '80%',
                  parallel = multiprocessing.cpu_count(),
                  compress_program = None):
     """
@@ -185,7 +185,7 @@ def sort_columns(input_filename = '-',
         if tmp_dir:
             comd = "-T '"+tmp_dir+"' "+comd
         if header:
-            comd = "sed 1d '" + fin + "' | LC_ALL=C sort " + extra + comd + " >> '" + output_filename + "'"
+            comd = "LC_ALL=C sed 1d '" + fin + "' | LC_ALL=C sort " + extra + comd + " >> '" + output_filename + "'"
         else:
             comd = "LC_ALL=C sort " + extra + comd + " '" + fin + "' >> '" + output_filename + "'"
         r = os.system(comd)

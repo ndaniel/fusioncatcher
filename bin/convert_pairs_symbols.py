@@ -93,22 +93,29 @@ symbols per line separated by tab) into their Ensembl gene ids."""
     data = []
     if mygenes:
 
-        #file_symbols = os.path.join(options.output_directory,'genes_symbols.txt')
-        file_symbols = os.path.join(os.path.dirname(options.output),'synonyms.txt')
+        file_symbols1 = os.path.join(os.path.dirname(options.output),'genes_symbols.txt')
+        file_symbols2 = os.path.join(os.path.dirname(options.output),'synonyms.txt')
 
-        loci = symbols.generate_loci(file_symbols)
+        loci1 = symbols.generate_loci(file_symbols1)
+        loci2 = symbols.generate_loci(file_symbols2)
 
-        genes = symbols.read_genes_symbols(file_symbols)
+        genes1 = symbols.read_genes_symbols(file_symbols1)
+        genes2 = symbols.read_genes_symbols(file_symbols2)
 
         d = []
         for (g1,g2) in mygenes:
-            if g1.upper() != g2.upper():
-                ens1 = symbols.ensembl(g1.upper(),genes,loci)
-                ens2 = symbols.ensembl(g2.upper(),genes,loci)
+            if g1 and g2 and g1.upper() != g2.upper():
+                ens1 = symbols.ensembl(g1.upper(),genes1,loci1)
+                ens2 = symbols.ensembl(g2.upper(),genes1,loci1)
+                if not ens1:
+                    ens1 = symbols.ensembl(g1.upper(),genes2,loci2)
+                if not ens2:
+                    ens2 = symbols.ensembl(g2.upper(),genes2,loci2)
+                    
                 if ens1 and ens2:
                     for e1 in ens1:
                         for e2 in ens2:
-                            if e1 != e2:
+                            if e1 and e2 and e1 != e2:
                                 d.append([e1,e2])
 
         data = ['\t'.join(sorted(line)) + '\n' for line in d]

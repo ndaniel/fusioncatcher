@@ -161,7 +161,10 @@ if __name__ == '__main__':
         'SPIB',
         'TNFSF13',
         'WWOX',
-        'ZFP36L1'
+        'ZFP36L1',
+#        'NPM1', # already enlarged
+        'CIC',
+        'DUX4'
 
 ]
 

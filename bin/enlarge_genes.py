@@ -171,8 +171,14 @@ if __name__ == '__main__':
     strand = col['strand']
 
     database = [line.rstrip('\r\n').split('\t') for line in file(database_filename,'r').readlines() if line.rstrip("\r\n")]
-    database = [line for line in database if abs(int(line[start]) - int(line[end])) > options.gene_short]
+    
+    database_removed = [line for line in database if abs(int(line[start]) - int(line[end])) <= options.gene_short]
+    file(os.path.join(options.output_directory,"exons_removed.txt"),"a").writelines(['\t'.join(line)+'\n' for line in database_removed])
 
+    x = set(['\t'.join((line[gene],line[end],line[start],line[strand],line[cr]))+'\n' for line in database_removed])
+    file(os.path.join(options.output_directory,"genes_removed.txt"),"a").writelines(sorted(x))
+
+    database = [line for line in database if abs(int(line[start]) - int(line[end])) > options.gene_short]
     database = sorted(database, key = lambda x: (x[1],x[2],int(x[6])) )
 
     chrom = sorted(set([line[cr] for line in database]))
@@ -450,7 +456,7 @@ if __name__ == '__main__':
     x = set(['\t'.join((line[gene],line[end],line[start],line[strand],line[cr]))+'\n' for line in data])
     file(os.path.join(options.output_directory,"genes.txt"),"w").writelines(sorted(x))
 
-    print "Writing results also in BED foramt..."
+    print "Writing results also in BED format..."
     # convert BED to UCSC format 
     bed = zip(*bed)
     bed[0] = ["chr"+line if line != 'MT' else "chrM" for line in bed[0]]

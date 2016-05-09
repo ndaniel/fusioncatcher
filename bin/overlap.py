@@ -204,8 +204,10 @@ class lines_to_file:
 
 def fast_alignment5(sa, sb, n, positions, wiggle = 2):
     lib = -1
-    xa = ""
-    xb = ""
+    xa = sa # ""
+    xb = ' '* len(sa) + sb # ""
+    mis = -1
+    misp = -1
     for (pa,pb) in positions:
         z = sa[pa:pb]
         if z.find('N') != -1 or z.find('.') != -1:
@@ -214,25 +216,44 @@ def fast_alignment5(sa, sb, n, positions, wiggle = 2):
         if p != -1:
             if pa > p:
                 lib = pa + n - p
-                t = ' ' * (pa - p)
+                pap = pa - p
+                t = ' ' * pap
                 xa = sa
                 xb = "%s%s" % (t,sb)
+                lxa = len(xa)
+                mis = len([1 for ix in xrange(pap,lxa) if (xa[ix] != xb[ix] or (xa[ix] == 'N' and xb[ix] == 'N'))])
+                misp = float(mis)/float(lxa-pap)
             else:
                 lib = pa + n - p
-                t = ' ' * (p - pa)
+                ppa = p - pa
+                t = ' ' * ppa
                 xa = "%s%s" % (t,sa)
                 xb = sb
+                lxb = len(xb)
+                mis = len([1 for ix in xrange(ppa,lxb) if (xa[ix] != xb[ix] or (xa[ix] == 'N' and xb[ix] == 'N'))])
+                misp = float(mis)/float(lxb-ppa)
+
             #print xa
             #print xb
             #print lib, len("%s%s" % (t,sb))
             #print ""
             break
-    return (lib,xa,xb)
+
+    if misp != -1 and misp > 0.3:
+        # too many mismatches not good alignment
+        lib = -1
+        xa = sa # ""
+        xb = ' '* len(sa) + sb # ""
+        mis = -1
+
+    return (lib,xa,xb,mis)
 
 def fast_alignment3(sa, sb, n, positions, wiggle = 2):
     lib = -1
-    xa = ""
-    xb = ""
+    xa = sa #""
+    xb = ' '* len(sa) + sb # ""
+    mis = -1
+    misp = -1
     for (pa,pb) in positions:
         z = sb[pa:pb]
         if z.find('N') != -1 or z.find('.') != -1:
@@ -241,20 +262,36 @@ def fast_alignment3(sa, sb, n, positions, wiggle = 2):
         if p != -1:
             if p < pa:
                 lib =  n - pa + p
-                t = ' ' * (pa - p)
+                pap = pa - p
+                t = ' ' * pap
                 xa = "%s%s" % (t,sa)
                 xb = sb
+                lxb = len(xb)
+                mis = len([1 for ix in xrange(pap,lxb) if (xa[ix] != xb[ix] or (xa[ix] == 'N' and xb[ix] == 'N'))])
+                misp = float(mis)/float(lxb-pap)
             else:
                 lib =  p + n - pa
+                ppa = p - pa
                 t = ' ' * (p - pa)
                 xa = sa
                 xb = "%s%s" % (t,sb)
+                lxa = len(xa)
+                mis = len([1 for ix in xrange(ppa,lxa) if (xa[ix] != xb[ix] or (xa[ix] == 'N' and xb[ix] == 'N'))])
+                misp = float(mis)/float(lxa-ppa)
 #            print xa
 #            print xb
 #            print lib, len("%s%s" % (t,sb))
 #            print ""
             break
-    return (lib,xa,xb)
+            
+    if misp != -1 and misp > 0.3:
+        # too many mismatches not good alignment
+        lib = -1
+        xa = sa #""
+        xb = ' '* len(sa) + sb # ""
+        mis = -1
+            
+    return (lib,xa,xb,mis)
 
 
 #
@@ -270,23 +307,26 @@ def compute(stuff):
     b = dnaReverseComplement(mate[3])
     id1 = mate[0]
     id2 = mate[2]
+    mis = -1
 
     if id1 == 'myexit':
         f = na
         x = a
         y = b
+        mis = 0
     else:
         f = -1
         if a == b:
             f = na
             x = a
             y = b
+            mis = 0
         else:
-            (f,x,y) = fast_alignment5(a, b, na, [(na - o - 1, na - 1), (na - o - 10, na - 10), (na - o - 20, na - 20), (na - o - 30, na - 30)])
+            (f,x,y,mis) = fast_alignment5(a, b, na, [(na - o - 1, na - 1), (na - o - 10, na - 10), (na - o - 20, na - 20), (na - o - 30, na - 30)])
             if f == -1:
-                (f,x,y) = fast_alignment3(a, b, na, [(nb - o - 1, nb - 1), (nb - o - 10, nb - 10), (nb - o - 20, nb - 20), (nb - o - 30, nb - 30)])
+                (f,x,y,mis) = fast_alignment3(a, b, na, [(nb - o - 1, nb - 1), (nb - o - 10, nb - 10), (nb - o - 20, nb - 20), (nb - o - 30, nb - 30)])
 
-    return (f,x,y,id1,id2)
+    return (f,x,y,id1,id2,mis)
 
 
 #
@@ -354,14 +394,20 @@ def overlap(input_1_filename,
     getout = -1
     if not output_alignment_filename:
         for w in pool.imap_unordered(compute,
-                                     itertools.izip_longest(reads_from_paired_fastq_file(input_1_filename, input_2_filename, nn, fail_gracefully = fail_gracefully),
-                                                            [],
-                                                            fillvalue = para),
+                                     itertools.izip_longest(
+                                        reads_from_paired_fastq_file(
+                                            input_1_filename, 
+                                            input_2_filename, 
+                                            nn, 
+                                            fail_gracefully = fail_gracefully),
+                                        [],
+                                        fillvalue = para),
                                      chunksize = 100
                                      ):
             f = w[0]
             x = w[1]
             y = w[2]
+
 
             if w[3] == 'myexit':
                 getout = int(x)
@@ -376,11 +422,16 @@ def overlap(input_1_filename,
         log = lines_to_file(output_alignment_filename)
 
         for w in pool.imap_unordered(compute,
-                           itertools.izip_longest(reads_from_paired_fastq_file(input_1_filename, input_2_filename, nn, fail_gracefully = fail_gracefully),
-                                                  [],
-                                                  fillvalue = para),
-                           chunksize = 100
-                           ):
+                                     itertools.izip_longest(
+                                         reads_from_paired_fastq_file(
+                                            input_1_filename, 
+                                            input_2_filename, 
+                                            nn, 
+                                            fail_gracefully = fail_gracefully),
+                                         [],
+                                         fillvalue = para),
+                                     chunksize = 100
+                                     ):
             f = w[0]
             x = w[1]
             y = w[2]
@@ -391,14 +442,21 @@ def overlap(input_1_filename,
 
             if f != -1:
                 library[f] = library.get(f,0) + 1
-                log.add_lines([w[3],x,y,w[4],"",""])
+
+            log.add_lines([w[3],x,y,w[4],"mismatches = "+str(w[5]) ,"",""])
+
             i = i + 1
             if i % 10000000 == 0:
                 print >>sys.stderr,"Reading... %i reads" % (i,)
+        log.close()
+        
+    pool.close()
+    pool.join()
+
 
     if getout != -1:
-        pool.close()
         sys.exit(getout)
+
 
     print >>sys.stderr,"Total count mate reads = %i" % (i,)
     print >>sys.stderr,"Read length = %i" % (na,)

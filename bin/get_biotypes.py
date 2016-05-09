@@ -167,6 +167,14 @@ if __name__ == '__main__':
         print "\nError: Generic exception!",str(error)
         sys.exit(1)
 
+    if options.organism.lower() == "saccharomyces_cerevisiae":
+        x = options.organism.upper().split('_')
+        templ = "ENS"+x[0][0]+x[1][0:2]+"G"
+        data = [line.rstrip("\r\n").split("\t") for line in file(biotypes_filename,"r").readlines() if line.rstrip("\r\n")]
+        data = [[templ+line[0].upper(),line[1]] for line in data]
+        file(biotypes_filename,"w").writelines(['\t'.join(line)+'\n' for line in data])
+
+
 
     file(biotypes_header_filename,'w').writelines([el.split('"')[1]+'\n' for i,el in enumerate(query.split('Attribute name =')) if i>0])
 

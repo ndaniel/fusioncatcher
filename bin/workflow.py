@@ -1480,13 +1480,25 @@ class pipeline:
             if _islink(fin):
                 linkfrom = _expand(os.readlink(fin))
             if (not self.__isprotected(fin)) and ((temp_path == 'yes' and kind == 'soft') or kind == 'move'):
-                shutil.move(fin, fout)
+                try:
+                    shutil.move(fin, fout)
+                except OSError as er:
+                    self.write("ERROR: Cannot move ('%s' and '%s')!  [Error number: %s][%s]" % (fin,fout,str(er.errno),str(er)))
+                    sys.exit(1)
                 self.write("Moving from:\n'%s'\nto:\n'%s'" % (fin,fout) )
             elif kind == 'copy':
                 if os.path.isdir(linkfrom):
-                    shutil.copytree(linkfrom,fout)
+                    try:
+                        shutil.copytree(linkfrom,fout)
+                    except OSError as er:
+                        self.write("ERROR: Cannot copy ('%s' and '%s')!  [Error number: %s][%s]" % (linkfrom,fout,str(er.errno),str(er)))
+                        sys.exit(1)
                 else:
-                    shutil.copyfile(linkfrom,fout)
+                    try:
+                        shutil.copyfile(linkfrom,fout)
+                    except OSError as er:
+                        self.write("ERROR: Cannot copy ('%s' and '%s')!  [Error number: %s][%s]" % (linkfrom,fout,str(er.errno),str(er)))
+                        sys.exit(1)
                 self.write("Copying from:\n'%s'\nto:\n'%s'" % (linkfrom,fout) )
             elif kind == 'soft':
                 linkfrom = _expand(linkfrom)
@@ -1504,7 +1516,11 @@ class pipeline:
                     self.write("Soft linking from:\n'%s'\nto:\n'%s'" % (linkfrom,fout) )
             elif kind == 'hard':
                 if os.path.isdir(linkfrom):
-                    shutil.copytree(linkfrom,fout)
+                    try:
+                        shutil.copytree(linkfrom,fout)
+                    except OSError as er:
+                        self.write("ERROR: Cannot copy ('%s' and '%s')!  [Error number: %s][%s]" % (linkfrom,fout,str(er.errno),str(er)))
+                        sys.exit(1)
                     self.write("Copying from:\n'%s'\nto:\n'%s'" % (linkfrom,fout) )
                 else:
                     linkfrom = _expand(linkfrom)

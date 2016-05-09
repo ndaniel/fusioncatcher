@@ -131,7 +131,7 @@ if __name__ == '__main__':
         if options.organism.lower() != 'homo_sapiens':
             fasta_name = '.dna.toplevel.fa'
 
-        list_files = [el for el in list_files if el.lower().startswith(options.organism.lower()) and (el.lower().find('.dna.chromosome.mt.fa.gz')>-1 or el.lower().find('%s.gz' %(fasta_name,))>-1)]
+        list_files = [el for el in list_files if el.lower().startswith(options.organism.lower()) and (el.lower().find('.dna.chromosome.mt.fa.gz')>-1 or el.lower().endswith('.dna.chromosome.mito.fa.gz') or el.lower().find('%s.gz' %(fasta_name,))>-1)]
 
         if len(list_files) == 2:
             new_files = []
@@ -145,6 +145,7 @@ if __name__ == '__main__':
                 fid.close()
         else:
             print "ERROR: Cannot find the genome and mitochondria files!"
+            print list_files
             sys.exit(1)
         ftp.close()
     except ftplib.all_errors, e:
@@ -196,7 +197,7 @@ if __name__ == '__main__':
 
 
     # find the FASTA file containing the MT and save it as mt.fa
-    mt_filename = [el for el in new_list_files if el.lower().endswith('.dna.chromosome.mt.fa')]
+    mt_filename = [el for el in new_list_files if el.lower().endswith('.dna.chromosome.mt.fa') or el.lower().endswith('.dna.chromosome.mito.fa')]
     mt_filename = mt_filename.pop(0)
     (mt_dir,mt_new_filename) = os.path.split(mt_filename)
     mt_new_filename = os.path.join(mt_dir,'mt.fa')

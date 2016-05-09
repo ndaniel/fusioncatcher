@@ -106,7 +106,11 @@ if __name__ == '__main__':
                 gene_id = e[:-1].partition(' "')[2].upper()
             elif e.startswith('gene_name '):
                 gene_name = e[:-1].partition(' "')[2].upper()
-        if gene_id.startswith('ENS'):
+        if options.organism.lower() == "saccharomyces_cerevisiae":
+            x = options.organism.upper().split('_')
+            templ = "ENS"+x[0][0]+x[1][0:2]+"G"
+            data.add((templ+gene_id.upper(),gene_name))
+        elif gene_id.startswith('ENS'):
             data.add((gene_id,gene_name))
 
     # keep only the genes which start with ENS

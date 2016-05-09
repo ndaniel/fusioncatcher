@@ -51,6 +51,13 @@ import locale
 import workflow
 import configuration
 
+bowtie_error = ("Please, check if 'Bowtie' (from <http://bowtie-bio.sourceforge.net/index.shtml>) "+
+               "is installed correctly and it is in the corresponding PATH "+
+               "(or if 'configuration.cfg' file is set up correctly)!")
+bowtie2_error = ("Please, check if 'Bowtie2' (from <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>) "+
+               "is installed correctly and it is in the corresponding PATH "+
+               "(or if 'configuration.cfg' file is set up correctly)!")
+
 # for sort in linux
 locale.setlocale(locale.LC_ALL, 'C')
 
@@ -129,7 +136,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 0.99.5a beta"
+    version = "%prog 0.99.6a beta"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -227,6 +234,14 @@ if __name__ == '__main__':
                       dest = "enlarge_genes",
                       default = False,
                       help = "If it is set then the genes are enlarged (i.e. their introns include also in the transcriptome). "+
+                             "Default is '%default'.")
+
+    parser.add_option("--threads","-p",
+                      action = "store",
+                      type = "int",
+                      dest = "processes",
+                      default = 0,
+                      help = "Number or processes/threads to be used. "+
                              "Default is '%default'.")
 
     choices = ('cosmic','conjoing','chimerdb2','ticdb','cgp','cacg')
@@ -334,6 +349,9 @@ if __name__ == '__main__':
     temp_flag = 'yes'
     if options.keep_temporary_files or (options.hash != '' and options.hash != 'no'):
         temp_flag = 'no'
+
+    if not options.processes:
+        options.processes = multiprocessing.cpu_count()
 
     #
     # Reading the configuration file: "configuration.cfg"
@@ -473,6 +491,8 @@ if __name__ == '__main__':
     job.add('',outdir('exons.txt'),kind='output',command_line='no')
     job.add('',outdir('genes.txt'),kind='output',command_line='no')
     job.run()
+
+    job.link(outdir('genes.txt'),outdir('genes_backup.txt'),kind='copy')
 
     job.add('get_biotypes.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
@@ -821,6 +841,150 @@ if __name__ == '__main__':
         job.add('',outdir('genes.txt'),kind='output',command_line='no')
         job.run()
 
+    job.add('generate_known.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('known.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add('cut',kind='program')
+    job.add('-f1,2',kind='parameter')
+    job.add('',outdir('biotypes.txt'),kind='input')
+    job.add('|',kind='parameter')
+    job.add('grep',kind='parameter')
+    job.add('--ignore-case',kind='parameter')
+    job.add('','pseudogene',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('cut',kind='parameter')
+    job.add('-f1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('uniq',kind='parameter')
+    job.add('>',outdir('pseudogenes.txt'),kind='output')
+    job.run()
+
+    job.add('grep',kind='program')
+    job.add('--ignore-case',kind='parameter')
+    job.add('','ribosomal',kind='parameter')
+    job.add('',outdir('descriptions.txt'),kind='input')
+    job.add('|',kind='parameter')
+    job.add('grep',kind='parameter')
+    job.add('','protein',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('grep',kind='parameter')
+    job.add('','ENS',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('cut',kind='parameter')
+    job.add('-f1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('LC_ALL=C',kind='parameter')
+    job.add('sort',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('uniq',kind='parameter')
+    job.add('>',outdir('ribosomal_proteins.txt'),kind='output')
+    job.run()
+
+    job.add('shield_genes.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--read-len','500',kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('--pseudo-genes-check',kind='parameter')
+    job.add('',outdir('shielded_genes.bed'),kind='output',command_line='no')
+    job.add('',outdir('shielded_reads_similarity.bed'),kind='output',command_line='no')
+    job.run()
+
+    if not empty(outdir('shield_erase-regions.bed')):
+
+        job.add('seqtk',kind='program')
+        job.add('seq',kind='parameter')
+        job.add('-n','A',kind='parameter')
+        #job.add('-M',outdir('shield_against_pseudo-genes.bed'),kind='input') # this erases only the pseudogenes associated with a manually given list of genes
+        job.add('-M',outdir('shield_pseudogenes-predicted-to-be-erased.bed'),kind='input') # # this erases ALL the pseudogenes associated with genes (based on shielding..._report.txt file)
+        job.add('',outdir('genome.fa'),kind='input')
+        job.add('>',outdir('genome2.fa'),kind='output')
+        job.run()
+        
+        job.add('seqtk',kind='program')
+        job.add('seq',kind='parameter')
+        job.add('-n','A',kind='parameter')
+        job.add('-M',outdir('shield_erase-regions.bed'),kind='input')
+        job.add('',outdir('genome2.fa'),kind='input',temp_path='yes')
+        job.add('>',outdir('genome3.fa'),kind='output')
+        job.run()
+
+        job.link(outdir('genome3.fa'),outdir('genome.fa'),temp_path='yes')
+
+#        job.add('seqtk',kind='program')
+#        job.add('seq',kind='parameter')
+#        job.add('-n','A',kind='parameter')
+#        job.add('-M',outdir('shielded_genes.bed'),kind='input')
+#        job.add('',outdir('genome.fa'),kind='input')
+#        job.add('>',outdir('genome2.fa'),kind='output')
+#        job.run()
+
+#        job.add('seqtk',kind='program')
+#        job.add('subseq',kind='parameter')
+#        job.add('',outdir('genome.fa'),kind='input')
+#        job.add('',outdir('shielded_reads_similarity.bed'),kind='input',temp_path='yes')
+#        job.add('>',outdir('shielded_reads.fa'),kind='output')
+#        job.run()
+
+#        job.add('bowtie-build',kind='program')
+#        job.add('-f',kind='parameter')
+#        job.add('--quiet',kind='parameter')
+#        job.add('--offrate','1',kind='parameter')
+#        job.add('--ftabchars','7',kind='parameter')
+#        job.add('',outdir('genome2.fa'),kind='input',temp_path='yes')
+#        job.add('',outdir('genome2_index/'),kind='output')
+#        job.run(error_message = bowtie_error)
+
+#        job.add('bowtie',kind='program')
+#        job.add('-p',options.processes,kind='parameter',checksum='no')
+#        job.add('-f',kind='parameter') # fasta
+#        #job.add('-a',kind='parameter')
+#        job.add('-k','1000',kind='parameter')
+#        job.add('-v','0',kind='parameter') # mismatches
+#        #job.add('--best',kind='parameter')
+#        #job.add('--sam',kind='parameter')
+#        job.add('--chunkmbs','128',kind='parameter',checksum='no')
+#        job.add('--suppress','1,2,6,7,8',kind='parameter') # original
+#        if os.path.isfile(outdir('genome2_index','.1.ebwtl')):
+#            job.add('--large-index',kind='parameter')
+#        job.add('',outdir('genome2_index/'),kind='input',temp_path='yes')
+#        job.add('',outdir('shielded_reads.fa'),kind='input',temp_path='yes')
+#        job.add('',outdir('shield.map'),kind='output')
+#        job.run()
+
+#        job.add('awk',kind='program')
+#        job.add("""'{print $1"\\t"$2"\\t"$2+length($3)}'""",kind='parameter')
+#        job.add('',outdir('shield.map'),kind='input',temp_path='yes')
+#        job.add('|',kind='parameter') # XXX
+#        job.add('LC_ALL=C',kind='parameter')
+#        job.add('sort',kind='parameter')
+#        job.add('-t',"'\t'",kind='parameter')
+#        job.add('-k','1,1',kind='parameter')
+#        job.add('-k','2,2n',kind='parameter')
+#        job.add('--buffer-size',"80%",kind='parameter',checksum='no')
+#        job.add('|',kind='parameter') # XXX
+#        job.add('uniq',kind='parameter') # XXX
+#        job.add('|',kind='parameter') # XXX
+#        job.add('clean_bed.py',kind='parameter') # XXX
+#        job.add('-i','-',kind='parameter') # XXX
+#        job.add('-o',outdir('shield_mask.bed'),kind='output')
+#        job.run()
+
+#        job.add('seqtk',kind='program')
+#        job.add('seq',kind='parameter')
+#        job.add('-n','A',kind='parameter')
+#        job.add('-M',outdir('shield_mask.bed'),kind='input')
+#        job.add('',outdir('genome.fa'),kind='input')
+#        job.add('>',outdir('genome3.fa'),kind='output')
+#        job.run()
+#        
+#        job.link(outdir('genome3.fa'),outdir('genome.fa'),temp_path='yes')
+
 
     job.add('generate_rrna_unit.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
@@ -838,6 +1002,18 @@ if __name__ == '__main__':
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('healthy.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add('generate_nontumor.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('non-tumor_cells.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add('get_noncancer.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('non-cancer_tissues.txt'),kind='output',command_line='no')
     job.run()
 
     job.add('generate_exons.py',kind='program')
@@ -894,12 +1070,6 @@ if __name__ == '__main__':
     job.add('',outdir('hpa.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_known.py',kind='program')
-    job.add('--organism',options.organism,kind='parameter')
-    job.add('--output',out_dir,kind='output',checksum='no')
-    job.add('',outdir('known.txt'),kind='output',command_line='no')
-    job.run()
-
     job.add('get_celllines.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
@@ -910,6 +1080,12 @@ if __name__ == '__main__':
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('prostates.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add('get_pancreases.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('pancreases.txt'),kind='output',command_line='no')
     job.run()
 
     job.add('grep',kind='program')
@@ -946,24 +1122,6 @@ if __name__ == '__main__':
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('hla.txt'),kind='output')
-    job.run()
-
-    job.add('cut',kind='program')
-    job.add('-f1,2',kind='parameter')
-    job.add('',outdir('biotypes.txt'),kind='input')
-    job.add('|',kind='parameter')
-    job.add('grep',kind='parameter')
-    job.add('--ignore-case',kind='parameter')
-    job.add('','pseudogene',kind='parameter')
-    job.add('|',kind='parameter')
-    job.add('cut',kind='parameter')
-    job.add('-f1',kind='parameter')
-    job.add('|',kind='parameter')
-    job.add('LC_ALL=C',kind='parameter')
-    job.add('sort',kind='parameter')
-    job.add('|',kind='parameter')
-    job.add('uniq',kind='parameter')
-    job.add('>',outdir('pseudogenes.txt'),kind='output')
     job.run()
 
     job.add('cut',kind='program')
@@ -1198,27 +1356,6 @@ if __name__ == '__main__':
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('7skrnas.txt'),kind='output')
-    job.run()
-
-    job.add('grep',kind='program')
-    job.add('--ignore-case',kind='parameter')
-    job.add('','ribosomal',kind='parameter')
-    job.add('',outdir('descriptions.txt'),kind='input')
-    job.add('|',kind='parameter')
-    job.add('grep',kind='parameter')
-    job.add('','protein',kind='parameter')
-    job.add('|',kind='parameter')
-    job.add('grep',kind='parameter')
-    job.add('','ENS',kind='parameter')
-    job.add('|',kind='parameter')
-    job.add('cut',kind='parameter')
-    job.add('-f1',kind='parameter')
-    job.add('|',kind='parameter')
-    job.add('LC_ALL=C',kind='parameter')
-    job.add('sort',kind='parameter')
-    job.add('|',kind='parameter')
-    job.add('uniq',kind='parameter')
-    job.add('>',outdir('ribosomal_proteins.txt'),kind='output')
     job.run()
 
     job.add('grep',kind='program')
@@ -1505,12 +1642,7 @@ if __name__ == '__main__':
     job.run()
 
 
-    bowtie_error = ("Please, check if 'Bowtie' (from <http://bowtie-bio.sourceforge.net/index.shtml>) "+
-                   "is installed correctly and it is in the corresponding PATH "+
-                   "(or if 'configuration.cfg' file is set up correctly)!")
-    bowtie2_error = ("Please, check if 'Bowtie2' (from <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>) "+
-                   "is installed correctly and it is in the corresponding PATH "+
-                   "(or if 'configuration.cfg' file is set up correctly)!")
+
     job.add('bowtie-build',kind='program')
     job.add('-f',kind='parameter')
 #    job.add('--ntoa',kind='parameter')

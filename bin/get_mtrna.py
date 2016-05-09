@@ -98,18 +98,22 @@ if __name__ == '__main__':
 
     CHUNK_SIZE = 65536 # 2**20 1 MB
 
+    mito = "MT"
+    if options.organism.lower() == "saccharomyces_cerevisiae":
+        mito = "Mito"
+
     query = """<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE Query>
     <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
         <Dataset name = "%%%organism%%%" interface = "default" >
-            <Filter name = "chromosome_name" value = "MT"/>
+            <Filter name = "chromosome_name" value = "%%%mitochondria%%%"/>
             <Attribute name = "ensembl_gene_id" />
-    		<Attribute name = "ensembl_transcript_id" />            
-    		<Attribute name = "chromosome_name" />    		
+            <Attribute name = "ensembl_transcript_id" />
+            <Attribute name = "chromosome_name" />
             <Attribute name = "cdna" />
         </Dataset>
     </Query>
-    """.replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip()
+    """.replace('%%%organism%%%',ensembl_organism).replace("%%%mitochondria%%%",mito).replace("\n"," ").strip()
 
     mtrna_filename = os.path.join(options.output_directory,'mtrna.fa')
     headers = {

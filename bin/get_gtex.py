@@ -115,6 +115,7 @@ if __name__ == '__main__':
             sem = False
             print >>sys.stderr, "Warning: Cannot access '%s%s'! The output file will be empty!" % (options.server,url)
 
+        removed = []
         if sem:
             print "Parsing..."
             fusions = set()
@@ -122,15 +123,25 @@ if __name__ == '__main__':
                 li = line.rstrip('\r\n').split('\t')
                 if (not li) or li[0].startswith('#'):
                     continue
+                counts = 0
+                if len(li) > 1:
+                    counts = int(li[1])
                 li = li[0].split('--')
                 if len(li) != 2:
+                    continue
+
+                if counts < 5:
+                    removed.append('%s--%s\t%d\n' % (li[0],li[1],counts))
                     continue
                 u1 = li[0].upper().split('|')
                 u2 = li[1].upper().split('|')
                 for g1 in u1:
                     for g2 in u2:
                         (g1,g2) = (g2,g1) if g2 < g1 else (g1,g2)
-                        fusions.add((g1,g2))
+                        if (g2 == "TMPRSS2" and g1 == "ERG") or (g2 == "BCR" and g1 == "ABL1"):
+                            pass
+                        else:
+                            fusions.add((g1,g2))
 
             fusions = list(fusions)
             print "%d known gene fusions found!" % (len(fusions),)
@@ -181,9 +192,10 @@ if __name__ == '__main__':
         else:
             data = []
         file(os.path.join(options.output_directory,'gtex.txt'),'w').writelines(data)
+        file(os.path.join(options.output_directory,'gtex_removed.txt'),'w').writelines(removed)
         if os.path.isfile(tmp_file):
             os.remove(tmp_file)
     else:
         # write an empty file for other organisms than human
-        file(os.path.join(options.output_directory,'getx.txt'),'w').write('')
+        file(os.path.join(options.output_directory,'gtex.txt'),'w').write('')
 #

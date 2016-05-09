@@ -449,7 +449,7 @@ if __name__ == '__main__':
                       type = "int",
                       dest = "mismatches",
                       default = 10000,
-                      help = """Maximum number of mismatches accepted per read for read sequences strictly longer than the value specified by '--short'. If the number of mismatches in the input read is strictly larger than this number of mismaches given here then the read is filtered out. Default is '%default'.""")
+                      help = """Maximum number of mismatches accepted per read for read sequences strictly longer than the value specified by '--mismatches-long'. If the number of mismatches in the input read is strictly larger than this number of mismaches given here then the read is filtered out. Default is '%default'.""")
 
 
     parser.add_option("--mismatches-short","-M",
@@ -457,7 +457,7 @@ if __name__ == '__main__':
                       type = "int",
                       dest = "mismatches20",
                       default = 10000,
-                      help = """Maximum number of mismatches accepted per read for read sequences shorter than (including) the value specified by '--short'. If the number of mismatches in the input read is strictly larger than this number of mismaches given here then the read is filtered out. Default is '%default'.""")
+                      help = """Maximum number of mismatches accepted per read for read sequences shorter than (including) the value specified by '--mismatches-short'. If the number of mismatches in the input read is strictly larger than this number of mismaches given here then the read is filtered out. Default is '%default'.""")
 
     parser.add_option("--short","-s",
                       action = "store",

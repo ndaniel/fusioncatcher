@@ -149,8 +149,17 @@ class lines_to_file:
     def __del__(self):
         self.close()
 
+##################################
+def givemeid(rep_solex_id,aread,iii):
+    ww = ""
+    if rep_solex_id:
+        ww = aread.replace("/",rep_solex_id,1)+'__'+int2str(iii)
+    else:
+        ww = aread+'__'+int2str(iii)
+    return ww
+
 ##################
-def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, gap = 0, anchor = 15, replace_solexa_ids = "", rc = False, size_buffer = 2*(10**9)):
+def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, gap = 0, anchor = 15, anchor_max = 500, replace_solexa_ids = "", rc = False, size_buffer = 2*(10**9)):
 
     data1 = lines_to_file(f_out_1)
     data2 = lines_to_file(f_out_2)
@@ -219,16 +228,18 @@ def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, gap = 0, anchor = 15
                             k1 = cut+1-agap
                             k2 = cut+1
                             if (k1,k2) not in unique:
-                                if replace_solexa_ids:
-                                    w = read[0][:-1].replace("/",replace_solexa_ids,1)+'__'+int2str(i)
-                                else:
-                                    w = read[0][:-1]+'__'+int2str(i)
+                                w = givemeid(replace_solexa_ids,read[0][:-1],i)
+#                                if replace_solexa_ids:
+#                                    w = read[0][:-1].replace("/",replace_solexa_ids,1)+'__'+int2str(i)
+#                                else:
+#                                    w = read[0][:-1]+'__'+int2str(i)
                                 r1a = read[1][0:cut+1-agap]
                                 r2a = read[2][0:cut+1-agap]
                                 r1b = read[1][cut+1:]
                                 r2b = read[2][cut+1:]
-
-                                if len(r1a) > am1 and len(r1b) > am2:
+                                lr1a = len(r1a)
+                                lr1b = len(r1b)
+                                if lr1a > am1 and lr1b > am2:
                                     data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
                                     if rc:
                                         data2.add_line("%sb\n%s\n+\n%s\n" % (w,reversecomplement(r1b),reverse(r2b)))
@@ -236,20 +247,42 @@ def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, gap = 0, anchor = 15
                                         data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
                                     i = i + 1
                                     unique.add((k1,k2))
+
+                                    flag = True # trim only one end and not both ends
+                                    if lr1a > anchor_max:
+                                        r1a = r1a[-anchor_max:]
+                                        r2a = r2a[-anchor_max:]
+                                        flag = False
+                                    if lr1b > anchor_max and flag:
+                                        r1b = r1b[:anchor_max]
+                                        r2b = r2b[:anchor_max]
+                                        flag = False
+                                    if flag == False:
+                                        w = givemeid(replace_solexa_ids,read[0][:-1],i)
+                                        data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
+                                        if rc:
+                                            data2.add_line("%sb\n%s\n+\n%s\n" % (w,reversecomplement(r1b),reverse(r2b)))
+                                        else:
+                                            data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
+                                        i = i + 1
+
 
                         if len(read[1])-(cut+1+agap) > anchor - 1:
                             k1 = cut+1
                             k2 = cut+1+agap
                             if (k1,k2) not in unique:
-                                if replace_solexa_ids:
-                                    w = read[0][:-1].replace("/",replace_solexa_ids,1)+'__'+int2str(i)
-                                else:
-                                    w = read[0][:-1]+'__'+int2str(i)
+                                w = givemeid(replace_solexa_ids,read[0][:-1],i)
+#                                if replace_solexa_ids:
+#                                    w = read[0][:-1].replace("/",replace_solexa_ids,1)+'__'+int2str(i)
+#                                else:
+#                                    w = read[0][:-1]+'__'+int2str(i)
                                 r1a = read[1][0:cut+1]
                                 r2a = read[2][0:cut+1]
                                 r1b = read[1][cut+1+agap:]
                                 r2b = read[2][cut+1+agap:]
-                                if len(r1a) > am1 and len(r1b) > am2:
+                                lr1a = len(r1a)
+                                lr1b = len(r1b)
+                                if lr1a > am1 and lr1b > am2:
                                     data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
                                     if rc:
                                         data2.add_line("%sb\n%s\n+\n%s\n" % (w,reversecomplement(r1b),reverse(r2b)))
@@ -257,23 +290,64 @@ def split_reads(f_in, f_list, f_out_1, f_out_2, wiggle = 0, gap = 0, anchor = 15
                                         data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
                                     i = i + 1
                                     unique.add((k1,k2))
+                                    
+                                    flag = True # trim only one end and not both ends
+                                    if lr1a > anchor_max:
+                                        r1a = r1a[-anchor_max:]
+                                        r2a = r2a[-anchor_max:]
+                                        flag = False
+                                    if lr1b > anchor_max and flag:
+                                        r1b = r1b[:anchor_max]
+                                        r2b = r2b[:anchor_max]
+                                        flag = False
+                                    if flag == False:
+                                        w = givemeid(replace_solexa_ids,read[0][:-1],i)
+                                        data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
+                                        if rc:
+                                            data2.add_line("%sb\n%s\n+\n%s\n" % (w,reversecomplement(r1b),reverse(r2b)))
+                                        else:
+                                            data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
+                                        i = i + 1
+
             else:
                 for cut in v:
-                    if replace_solexa_ids:
-                        w = read[0][:-1].replace("/",replace_solexa_ids,1)+'__'+int2str(i)
-                    else:
-                        w = read[0][:-1]+'__'+int2str(i)
+                    w = givemeid(replace_solexa_ids,read[0][:-1],i)
+#                    if replace_solexa_ids:
+#                        w = read[0][:-1].replace("/",replace_solexa_ids,1)+'__'+int2str(i)
+#                    else:
+#                        w = read[0][:-1]+'__'+int2str(i)
                     r1a = read[1][0:cut+1]
                     r2a = read[2][0:cut+1]
                     r1b = read[1][cut+1:]
                     r2b = read[2][cut+1:]
-                    if len(r1a) > am1 and len(r1b) > am2:
+                    lr1a = len(r1a)
+                    lr1b = len(r1b)
+                    if lr1a > am1 and lr1b > am2:
                         data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
                         if rc:
                             data2.add_line("%sb\n%s\n+\n%s\n" % (w,reversecomplement(r1b),reverse(r2b)))
                         else:
                             data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
                         i = i + 1
+                        
+                        flag = True # trim only one end and not both ends
+                        if lr1a > anchor_max:
+                            r1a = r1a[-anchor_max:]
+                            r2a = r2a[-anchor_max:]
+                            flag = False
+                        if lr1b > anchor_max and flag:
+                            r1b = r1b[:anchor_max]
+                            r2b = r2b[:anchor_max]
+                            flag = False
+                            
+                        if flag == False:
+                            w = givemeid(replace_solexa_ids,read[0][:-1],i)
+                            data1.add_line("%sa\n%s\n+\n%s\n" % (w,r1a,r2a))
+                            if rc:
+                                data2.add_line("%sb\n%s\n+\n%s\n" % (w,reversecomplement(r1b),reverse(r2b)))
+                            else:
+                                data2.add_line("%sb\n%s+\n%s" % (w,r1b,r2b))
+                            i = i + 1
     data1.close()
     data2.close()
     fid.close()
@@ -287,7 +361,7 @@ if __name__ == '__main__':
     usage="%prog [options]"
     description="""Given a list of short read names and cut position, it will extracts them from
 an input FASTQ file and split each read into two (paired) reads in two separate FASTQ files."""
-    version="%prog 0.19 beta"
+    version="%prog 0.20 beta"
 
     parser=optparse.OptionParser(usage=usage,description=description,version=version)
 
@@ -337,6 +411,13 @@ an input FASTQ file and split each read into two (paired) reads in two separate 
                       dest = "anchor",
                       help="""The minimum size of the anchor (for a mapped read which is splited). Default is %default.""")
 
+    parser.add_option("--anchor-size-max",
+                      action = "store",
+                      type = "int",
+                      default = 500,
+                      dest = "anchor_max",
+                      help="""The maximum size of the anchor (for a mapped read which is splited). Default is %default.""")
+
 
     parser.add_option("--replace-solexa-ids",
                       action = "store",
@@ -385,6 +466,7 @@ an input FASTQ file and split each read into two (paired) reads in two separate 
                 options.wiggle,
                 options.gap,
                 options.anchor,
+                options.anchor_max,
                 options.replace_solexa_ids if options.replace_solexa_ids else "",
                 options.reverse_complement,
                 options.bucket)

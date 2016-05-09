@@ -1,6 +1,20 @@
 Version Release History for FusionCatcher
 =========================================
 
+Version 0.99.6a beta - May 8, 2016
+---------------------------------------
+ * added support for Ensembl version 84
+ * improved handling of pseudogenes
+ * added support for Saccharomyces Cerevisiae organism
+ * more tuning for the parameters for finding fusions which involve IGH loci
+ * added to installation test for CRLF2-IGH@ and DUX4-IGH@ fusions
+ * default aligners to be used can now be set also by configuration file 'fusioncatcher/etc/configuration.cfg'
+ * fixed a bug regarding memory allocation when multiple threads are used
+ * limiting the maximum memory to maximum of 26 GB used by sort command (from coreutils)
+ * fixed several minor bugs
+ * updated manual
+
+
 Version 0.99.5a beta - January 15, 2016
 ---------------------------------------
  * added support for Ensembl version 83 and human genome GRCh38.p5

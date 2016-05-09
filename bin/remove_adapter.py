@@ -441,8 +441,9 @@ def fast_alignment(sa, sb, overlap = 13, wiggle = 2, adpt5 = "", adpt3 = ""):
         #    print xa
         #    print xb
         # count the mismatches in the overlap; N is not considered a mismatch in the overlapping part
-        mis = len([1 for ix in xrange(lib) if s+ix<nb and ((sa[ix] != sb[s+ix] and sa[ix] != 'N' and sb[s+ix] != 'N') or ( sa[ix] == 'N' and sb[s+ix] == 'N'))])
-        n_notn = len([1 for ix in xrange(lib) if s+ix<nb and (sa[ix] == 'N' or sb[s+ix] == 'N')])
+        xlib = range(lib)
+        mis = len([1 for ix in xlib if s+ix<nb and ((sa[ix] != sb[s+ix] and sa[ix] != 'N' and sb[s+ix] != 'N') or ( sa[ix] == 'N' and sb[s+ix] == 'N'))])
+        n_notn = len([1 for ix in xlib if s+ix<nb and (sa[ix] == 'N' or sb[s+ix] == 'N')])
         if lib > 0 and float(n_notn) / float(lib) > 0.3:
             mis = mis + n_notn
         if mis > 0 and lib > 0 and ((mis / float(lib) > cut_mis) or (lib == na and mis / float(lib) > 0.05)):
@@ -896,8 +897,9 @@ def trim_adapter(input_file_1,
                 ),
             chunksize = 100
             )
+            pool.close()
+            pool.join()
         all_fixed = 0
-
 
 
         for stuff in give:

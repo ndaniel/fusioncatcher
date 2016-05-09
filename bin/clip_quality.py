@@ -283,6 +283,10 @@ def clip(
             f = f + 1
         fq.add(name,seq,qual)
     fq.close()
+    
+    pool.close()
+    pool.join()
+    
     t = "Empty input file!"
     if p != 0:
         t ="%.5f %% reads clipped due to low quality (less or equal than Q%d) at 3' end (%d out of %d)!" % ((100*float(f)/float(p)),quality_score,f,p)

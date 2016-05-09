@@ -244,7 +244,14 @@ if __name__ == '__main__':
     gene = [line.rstrip('\r\n').split('\t') for line in file(files['gene'],'r').readlines() if line.rstrip('\r\n')]
     g_dxi = table['gene']['display_xref_id']
     g_si = table['gene']['stable_id']
-    gene = [line for line in gene if line[g_si].upper().startswith('ENS')]
+    gene_test = [line for line in gene if line[g_si].upper().startswith('ENS')]
+    if gene_test:
+        gene = gene_test
+    else: # this is in case that all ensembl gene ids do not start with ENS
+        x = options.organism.upper().split('_')
+        templ = "ENS"+x[0][0]+x[1][0:2]+"G"
+        for hui in xrange(len(gene)):
+            gene[hui][g_si] = templ+gene[hui][g_si].upper()
     g = dict()
     for line in gene:
         id = line[g_dxi].replace("'","").replace('"','')

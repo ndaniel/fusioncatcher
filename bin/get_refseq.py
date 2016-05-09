@@ -231,7 +231,7 @@ if __name__ == '__main__':
         txt = "%s\n%s\n%s\n%s\n%s\n" % ('gene_symbol','end','start','strand','chromosome')
         file(os.path.join(options.output_directory,'refseq_genes_header.txt'),'w').write(txt)
 
-        txt = ["RefSeq NCBI database version (downloaded thru UCSC database): %s\n" % (version,)]
+        txt = ["RefSeq NCBI database version (downloaded thru UCSC database; %s): %s\n" % (org,version)]
         file(os.path.join(options.output_directory,'version.txt'),'a').writelines(txt)
 
         #

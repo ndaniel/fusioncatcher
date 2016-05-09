@@ -48,6 +48,7 @@ socket.setdefaulttimeout(timeout)
 import urllib
 import urllib2
 import optparse
+import time
 
 
 if __name__ == '__main__':
@@ -93,7 +94,8 @@ if __name__ == '__main__':
     #
     #
     #
-    temp_paralogs_filename=os.path.join(options.output_directory,'temp_paralogs.txt')
+    temp_paralogs_filename1=os.path.join(options.output_directory,'temp_paralogs1.txt')
+    temp_paralogs_filename2=os.path.join(options.output_directory,'temp_paralogs2.txt')
     paralogs_filename=os.path.join(options.output_directory,'paralogs.txt')
     paralogs_header_filename=os.path.join(options.output_directory,'paralogs_header.txt')
         
@@ -105,11 +107,21 @@ if __name__ == '__main__':
 
     CHUNK_SIZE=65536 # 2**20 1 MB
 
+    query1 = """<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE Query>
+    <Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.6" >
+        <Dataset name = "%%%organism%%%" interface = "default" >
+            <Attribute name = "ensembl_gene_id" />
+            <Attribute name = "chromosome_name" />
+        </Dataset>
+    </Query>
+    """.replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip()
 
-    query = """<?xml version="1.0" encoding="UTF-8"?>
+    query2 = """<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE Query>
     <Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
         <Dataset name = "%%%organism%%%" interface = "default" >
+            <Filter name = "chromosome_name" value = "%%%chromosome%%%"/>        
             <Attribute name = "ensembl_gene_id" />
             <Attribute name = "%%%org%%%_paralog_ensembl_gene" />
         </Dataset>
@@ -118,7 +130,7 @@ if __name__ == '__main__':
 
 
 
-    mydata=urllib.urlencode( {"query" : query} )
+    mydata1=urllib.urlencode( {"query" : query1} )
     headers = {
     'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3',
     'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
@@ -131,10 +143,10 @@ if __name__ == '__main__':
     ns = 0
     server = "http://%s/biomart/martservice" % (options.server,)
     try:
-        req=urllib2.Request(server,mydata,headers)
+        req=urllib2.Request(server,mydata1,headers)
         page=urllib2.urlopen(req)
 
-        fid=open(temp_paralogs_filename,'w')
+        fid=open(temp_paralogs_filename1,'w')
         size=0
         while True:
             part=page.read(CHUNK_SIZE)
@@ -150,7 +162,55 @@ if __name__ == '__main__':
             sys.stdout.write(s)
             sys.stdout.flush()
         fid.close()
-        print "\nDownloaded: %9.2f MB\n" % amount
+        print "\nFinished downloading: %9.2f MB\n" % amount
+    except urllib2.HTTPError, error:
+        print '\nHTTPError = ' + str(error)
+        sys.exit(1)
+    except urllib2.URLError, error:
+        print '\nURLError = ' + str(error)
+        sys.exit(1)
+    except IOError, error:
+        print '\nIOError = ' + str(error)
+        sys.exit(1)
+    except Exception, error:
+        print "\nError: Generic exception!",str(error)
+        sys.exit(1)
+
+    # extract chromosomes
+    chroms = sorted(set([line.rstrip('\r\n').split('\t')[-1] for line in file(temp_paralogs_filename1,'r').readlines() if line.rstrip("\r\n")]))
+    file(temp_paralogs_filename2,'w').write('')
+
+    try:
+    
+        for crs in chroms:
+            time.sleep(3)
+            print "chromosome =",crs
+            mydata2=urllib.urlencode( {"query" : query2.replace("%%%chromosome%%%",crs)} )
+            headers = {
+            'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3',
+            'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
+            'Accept-Language' : 'en-gb,en;q=0.5'
+            }
+            req=urllib2.Request(server,mydata2,headers)
+            page=urllib2.urlopen(req)
+
+            fid=open(temp_paralogs_filename2,'a')
+            size=0
+            while True:
+                part=page.read(CHUNK_SIZE)
+                if not part:
+                    break
+                size=size+len(part)
+                fid.write(part)
+                amount=size/float(1024*1024)
+                sys.stdout.write("\b"*ns)
+                sys.stdout.flush()
+                s = "Downloaded: %9.2f MB" % amount
+                ns = len(s)
+                sys.stdout.write(s)
+                sys.stdout.flush()
+            fid.close()
+            print "\nFinished downloading: %9.2f MB\n" % amount
     except urllib2.HTTPError, error:
         print '\nHTTPError = ' + str(error)
         sys.exit(1)
@@ -165,14 +225,25 @@ if __name__ == '__main__':
         sys.exit(1)
 
 
-    data=[el.strip('\r\n').split('\t') for el in file(temp_paralogs_filename,'rt').readlines()]
+    # continue as usual
+    data=[el.strip('\r\n').split('\t') for el in file(temp_paralogs_filename2,'rt').readlines()]
 
     data=['\t'.join(sorted(line))+'\n' for line in data if line[1]]
     data=sorted(list(set(data)))
 
     file(paralogs_filename,'wt').writelines(data)
-    file(paralogs_header_filename,'w').writelines([el.split('"')[1]+'\n' for el in query.split('Attribute name =')[1:]])
-    os.remove(temp_paralogs_filename)
+    
+    if options.organism.lower() == "saccharomyces_cerevisiae":
+        x = options.organism.upper().split('_')
+        templ = "ENS"+x[0][0]+x[1][0:2]+"G"
+        data = [line.rstrip("\r\n").split("\t") for line in file(paralogs_filename,"r").readlines() if line.rstrip("\r\n")]
+        data = [[templ+line[0].upper(),templ+line[1].upper()] for line in data]
+        file(paralogs_filename,"w").writelines(['\t'.join(line)+'\n' for line in data])
+    
+    
+    file(paralogs_header_filename,'w').writelines([el.split('"')[1]+'\n' for el in query2.split('Attribute name =')[1:]])
+    os.remove(temp_paralogs_filename1)
+    os.remove(temp_paralogs_filename2)
     
     print "End."
 

@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
     #url = 'http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0092867415005486/1-s2.0-S0092867415005486-mmc4.xlsx/272196/html/S0092867415005486/198196b9ed4de2f80a504687fdfb5126/mmc4.xlsx'
     url = 'http://www.sciencedirect.com/science/MiamiMultiMediaURL/1-s2.0-S0092867415005486/1-s2.0-S0092867415005486-mmc4.xlsx/272196/html/S0092867415005486/198196b9ed4de2f80a504687fdfb5126/mmc4.xlsx'
-    tmp_file = os.path.join(options.output_directory,'temp_prostates.xls')
+    tmp_file = os.path.join(options.output_directory,'temp_prostates.xlsx')
 
     headers = { 'User-Agent' : 'Mozilla/5.0' }
 

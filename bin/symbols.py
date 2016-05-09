@@ -183,7 +183,7 @@ synonym = {
 'BX648577':'FLJ27352',
 'NSD3':'WHSC1L1',
 'NPM':'NPM1',
-'TK14':'FGFR2_',
+'TK14':'FGFR2',
 'ASPL':'ASPSCR1',
 'AFX':'FOXO4',
 'EIAF':'ETV4',

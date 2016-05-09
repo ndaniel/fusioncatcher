@@ -1246,6 +1246,9 @@ if __name__ == '__main__':
                     end_ex  = '105863400', #
                 )
 
+
+
+
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000001210',
                     gene_symbol = 'RORC', #
@@ -1390,6 +1393,191 @@ if __name__ == '__main__':
                     chrom = '18',
                     strand = '1'
                 )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001261',
+                    gene_symbol = 'NR4A3', #  NR4A3  Chromosome 9: 99,821,855-99,866,891 forward strand.
+                    gene_id = 'ENSG00000119508',
+                    transcript_id = 'ENST09000001261',
+                    exon_id = 'ENSE09000001261',
+                    exon_number = '1',
+                    start = '99821200', #
+                    end =   '99875400', #58754477
+                    chrom = '9',
+                    strand = '1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001262',
+                    gene_symbol = 'TAF15', #  TAF15  Chromosome 17: 35,713,791-35,864,615 forward strand.
+                    gene_id = 'ENSG00000270647',
+                    transcript_id = 'ENST09000001262',
+                    exon_id = 'ENSE09000001262',
+                    exon_number = '1',
+                    start = '35800000', #
+                    end =   '35864650', #58754477
+                    chrom = '17',
+                    strand = '1'
+                )
+
+
+
+                # transcript 2 - exon 1/4-- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001300',
+                    gene_symbol = 'IGH_locus_(b)', # stjude 
+                    gene_id = 'ENSG09000000014',
+                    transcript_id = 'ENST09000001300',
+                    exon_id = 'ENSE09000001300',
+                    exon_number = '1',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '1',
+
+                    start_tr = '105855906',
+                    end_tr =   '105863248',
+                    start_ex = '105855906', #
+                    end_ex =   '105856217' #
+                )
+
+                # transcript 2 - exon 2/4 -- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001300',
+                    gene_symbol = 'IGH_locus_(b)', # stjude 
+                    gene_id = 'ENSG09000000014',
+                    transcript_id = 'ENST09000001300',
+                    exon_id = 'ENSE09000001301',
+                    exon_number = '2',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '1',
+                    
+                    start_tr = '105855906',
+                    end_tr =   '105863248',
+                    start_ex = '105863198', #
+                    end_ex  = '105863240', #
+                )
+
+
+                # transcript 2 - exon 3/4 -- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001300',
+                    gene_symbol = 'IGH_locus_(b)', # stjude 
+                    gene_id = 'ENSG09000000014',
+                    transcript_id = 'ENST09000001300',
+                    exon_id = 'ENSE09000001302',
+                    exon_number = '3',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '1',
+                    
+                    start_tr = '105855906',
+                    end_tr =   '105863248',
+                    start_ex = '105863296', # 
+                    end_ex  = '105863298', #
+                )
+
+                # transcript 2 - exon 4/4 -- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001300',
+                    gene_symbol = 'IGH_locus_(b)', # stjude 
+                    gene_id = 'ENSG09000000014',
+                    transcript_id = 'ENST09000001300',
+                    exon_id = 'ENSE09000001304',
+                    exon_number = '4',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '1',
+                    
+                    start_tr = '105855906',
+                    end_tr =   '105863248',
+                    start_ex = '105863241', #
+                    end_ex  = '105863248', #
+                )
+
+
+                # transcript 1 - exon 4/4 -- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001400',
+                    gene_symbol = 'IGH_locus_(h)', # stjude 
+                    gene_id = 'ENSG09000001014',
+                    transcript_id = 'ENST09000001400',
+                    exon_id = 'ENSE09000001403',
+                    exon_number = '4',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '-1',
+                    
+                    start_tr   = '105855906',
+                    end_tr =   '105863248',
+                    start_ex = '105863241', #
+                    end_ex  = '105863248', #
+                )
+
+
+                # transcript 1 - exon 3/4 -- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001400',
+                    gene_symbol = 'IGH_locus_(h)', # stjude 
+                    gene_id = 'ENSG09000001014',
+                    transcript_id = 'ENST09000001400',
+                    exon_id = 'ENSE09000001402',
+                    exon_number = '3',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '-1',
+                    
+                    start_tr   = '105855906',
+                    end_tr =   '105863248',
+                    start_ex = '105863296', # 
+                    end_ex  = '105863298', #
+                )
+
+                # transcript 1 - exon 2/4 -- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001400',
+                    gene_symbol = 'IGH_locus_(h)', # stjude 
+                    gene_id = 'ENSG09000001014',
+                    transcript_id = 'ENST09000001400',
+                    exon_id = 'ENSE09000001401',
+                    exon_number = '2',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '-1',
+                    
+                    start_tr   = '105855906',
+                    end_tr =   '105863248',
+                    start_ex = '105863198', #
+                    end_ex =   '105863400' #
+                )
+
+                # transcript 1 - exon 1/4-- IGHM
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001400',
+                    gene_symbol = 'IGH_locus_(h)', # stjude 
+                    gene_id = 'ENSG09000001014',
+                    transcript_id = 'ENST09000001400',
+                    exon_id = 'ENSE09000001400',
+                    exon_number = '1',
+                    start = '105778001', #
+                    end =   '106000000', #
+                    chrom = '14',
+                    strand = '-1',
+
+                    start_tr = '105855906',
+                    end_tr =   '105863248',
+                    start_ex = '105855906', #
+                    end_ex =   '105856217' #
+                )
+
+
 
             else:
                 print >>sys.stderr,"WARNING: Cannot identify correctly the human genome version!",d[0]

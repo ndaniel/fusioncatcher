@@ -226,6 +226,7 @@ def chunks(psl_file, min_count = 2, ids_out = None, ref_out = None, clip_size = 
     last_tname = None
     last_strand = None
     chunk = []
+    buff_max = 100000
     if ids_out:
         ft = open(ids_out,'w')
         fr = None
@@ -239,6 +240,8 @@ def chunks(psl_file, min_count = 2, ids_out = None, ref_out = None, clip_size = 
                 last_tname = line[psl_tName]
             if last_qname != line[psl_qName] or last_tname != line[psl_tName] or last_strand != line[psl_strand]:
                 # the bin is full and now analyze it
+
+
                 if len(chunk) > min_count - 1:
                     yield chunk
                 elif len(chunk) == 1: #and int(chunk[0][psl_qSize]) + int(chunk[0][psl_qStart]) - int(chunk[0][psl_qEnd]) > clip_size - 1:
@@ -246,7 +249,10 @@ def chunks(psl_file, min_count = 2, ids_out = None, ref_out = None, clip_size = 
                     nn = int(chunk[0][psl_qSize])
                     pqs = int(chunk[0][psl_qStart])
                     pqe = int(chunk[0][psl_qEnd])
-                    if nn + pqs - pqe > clip_size - 1:
+                    too_fragmented = 0
+                    if int(chunk[0][psl_blockCount]) > 2:
+                        too_fragmented = sum([1 for elef in chunk[0][psl_blockSizes][:-1].split(',')[1:-1] if int(elef)<27]) # int(chunk[0][psl_blockCount]) > 2 # test if there are some smal mapping in the middle of the alignment like for example 25M 35661N 18M 122379N 58M
+                    if (nn + pqs - pqe > clip_size - 1) or too_fragmented:
                         if chunk[0][psl_blockCount] == '1':
                             p2 = pqs
                             p3 = pqe
@@ -258,6 +264,7 @@ def chunks(psl_file, min_count = 2, ids_out = None, ref_out = None, clip_size = 
                             bidx = index_max(blen)
                             p2 = qstart[bidx]
                             p3 = p2 + blen[bidx]
+
                         if chunk[0][psl_strand] == "-":
                             (p2,p3) = (nn - p3,nn - p2)
                         cut = -1
@@ -270,17 +277,17 @@ def chunks(psl_file, min_count = 2, ids_out = None, ref_out = None, clip_size = 
                             if buff and buff[-1] == z:
                                 if fr:
                                     ref.append(chunk[0][psl_tName]+'\n')
-                                    if len(ref) > 100000:
+                                    if len(ref) > buff_max:
                                         fr.writelines(ref)
                                         ref = []
                             else:
-                                if len(buff)+1 > 100000:
+                                if len(buff)+1 > buff_max:
                                     ft.writelines(buff)
                                     buff = []
                                 buff.append(z)
                                 if fr:
                                     ref.append(chunk[0][psl_tName]+'\n')
-                                    if len(ref) > 100000:
+                                    if len(ref) > buff_max:
                                         fr.writelines(ref)
                                         ref = []
                 last_qname = line[psl_qName]
@@ -298,6 +305,7 @@ def chunks(psl_file, min_count = 2, ids_out = None, ref_out = None, clip_size = 
                 ref = []
             fr.close()
     else:
+        #print "..............else"
         for line in lines(psl_file):
             if not chunk:
                 last_qname = line[psl_qName]
@@ -325,10 +333,18 @@ def merge_local_alignment_sam(psl_in, psl_ou, ids_ou = None, ref_ou = None, min_
         fou = open(psl_ou,'w')
 
     limit_psl = 10**5
+    
+    xi = 0
 
     for bucket in chunks(psl_in, min_count = 2, ids_out = ids_ou, ref_out = ref_ou, clip_size = min_clip):
+    
+        xi = 0
 
         for box in itertools.combinations(bucket,2):
+            xi = xi + 1
+            
+            if xi > 100000: # too many combinations
+                break
 
             if box[0][psl_strand] == box[1][psl_strand]:
 
@@ -379,7 +395,7 @@ def merge_local_alignment_sam(psl_in, psl_ou, ids_ou = None, ref_ou = None, min_
 
                 elif r1_end > r2_start and r1_end < r2_start + wiggle_overlap:
                     dif = r1_end - r2_start
-
+                    
                     if r2_end - r2_start - dif > min_clip:
                         # cut the second
                         box[1][psl_matches] = str(int(box[1][psl_matches]) - dif)
@@ -407,6 +423,7 @@ def merge_local_alignment_sam(psl_in, psl_ou, ids_ou = None, ref_ou = None, min_
                         t2_start = int(box[1][psl_tStart])
                         t2_end = int(box[1][psl_tEnd])
                     else:
+
                         box[0][psl_matches] = str(int(box[0][psl_matches]) - dif)
                         box[0][psl_misMatches] = str(int(box[0][psl_misMatches]) + dif)
 
@@ -423,6 +440,8 @@ def merge_local_alignment_sam(psl_in, psl_ou, ids_ou = None, ref_ou = None, min_
 
                         t1_start = int(box[0][psl_tStart])
                         t1_end = int(box[0][psl_tEnd])
+
+
 
                 if r1_end <= r2_start and t1_end <= t2_start: #and box[0][psl_strand] == "+" :
 
@@ -480,6 +499,7 @@ def merge_local_alignment_sam(psl_in, psl_ou, ids_ou = None, ref_ou = None, min_
                     gc.disable()
                     psl.append(map(str,merged))
                     gc.enable()
+
                     if len(psl) >= limit_psl:
                         if remove_extra:
                             for line in psl:
@@ -505,7 +525,7 @@ if __name__ == '__main__':
     description = """It takes as input a PSL formated file generated which has been converted from
 SAM file (that is sorted output of sam2psl.py) generated by STAR/BOWTIE2/BWA aligners.
 Here the assumption is that the PSL is sorted by columns 10, 14, 12, and 13."""
-    version = "%prog 0.11 beta"
+    version = "%prog 0.12 beta"
 
     parser = optparse.OptionParser(
         usage = usage,

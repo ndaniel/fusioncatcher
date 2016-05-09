@@ -125,6 +125,10 @@ if __name__ == '__main__':
     """.replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip()
 
 
+    if options.organism.lower() == "saccharomyces_cerevisiae":
+        query1 = query1.replace('<Attribute name = "refseq_mrna_predicted" />',"")
+        query2 = query2.replace('<Attribute name = "refseq_ncrna_predicted" />',"")
+
     filename = os.path.join(options.output_directory,'refseq_ids.txt')
     header_filename = os.path.join(options.output_directory,'refseq_ids_header.txt')
     tmp1 = os.path.join(options.output_directory,'refseq_ids_tmp1.txt')
@@ -183,8 +187,11 @@ if __name__ == '__main__':
     
     d = d1 + d2
     
+   
     r = dict()
     for line in d:
+        if len(line) < 2:
+            continue
         k = ("%s\t%s") % (line[0],line[1])
         v = ','.join([e for e in line[2:] if e])
         if not r.has_key(k):
@@ -197,6 +204,15 @@ if __name__ == '__main__':
     o = sorted(["%s\t%s\n" % (k,",".join(sorted(set(v.split(','))))) for (k,v) in r.items()])
     
     file(filename,"w").writelines(o)
+
+
+    if options.organism.lower() == "saccharomyces_cerevisiae":
+        x = options.organism.upper().split('_')
+        templ = "ENS"+x[0][0]+x[1][0:2]
+        data = [line.rstrip("\r\n").split("\t") for line in file(filename,"r").readlines() if line.rstrip("\r\n")]
+        data = [[templ+"G"+line[0].upper(),templ+"T"+line[1].upper()+line[2]] for line in data]
+        file(filename,"w").writelines(['\t'.join(line)+'\n' for line in data])
+    
 
 
     file(header_filename,'w').writelines([el.split('"')[1]+'\n' for el in query1.split('Attribute name =')[1:4]])

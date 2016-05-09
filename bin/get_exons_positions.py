@@ -47,6 +47,18 @@ socket.setdefaulttimeout(timeout)
 import urllib
 import urllib2
 import optparse
+import time
+import shutil
+
+def int2rom(v):
+   i = (1000, 900,  500, 400, 100,  90, 50,  40, 10,  9,   5,  4,   1)
+   n = ('M', 'CM',  'D','CD',  'C','XC','L','XL','X','IX','V','IV','I')
+   r = ""
+   for j in xrange(len(i)):
+      c = int(v / i[j])
+      r = r + n[j] * c
+      v = v - i[j] * c
+   return r
 
 
 if __name__ == '__main__':
@@ -109,10 +121,22 @@ if __name__ == '__main__':
 
     CHUNK_SIZE=65536 # 2**20 1 MB
 
-    query = """<?xml version="1.0" encoding="UTF-8"?>
+    query1 = """<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE Query>
-    <Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
+    <Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.6" >
         <Dataset name = "%%%organism%%%" interface = "default" >
+            <Attribute name = "ensembl_gene_id" />
+            <Attribute name = "chromosome_name" />
+        </Dataset>
+    </Query>
+    """.replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip()
+    
+    
+    query2 = """<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE Query>
+    <Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.6" >
+        <Dataset name = "%%%organism%%%" interface = "default" >
+            <Filter name = "chromosome_name" value = "%%%chromosome%%%"/>
             <Attribute name = "ensembl_peptide_id" />
             <Attribute name = "ensembl_gene_id" />
             <Attribute name = "ensembl_transcript_id" />
@@ -130,19 +154,23 @@ if __name__ == '__main__':
     </Query>
     """.replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip()
 
-    temp_exons_filename = os.path.join(options.output_directory,'temp_exons.txt')
+    temp_exons_filename1 = os.path.join(options.output_directory,'temp_exons1.txt')
+    temp_exons_filename2 = os.path.join(options.output_directory,'temp_exons2.txt')
     exons_filename = os.path.join(options.output_directory,'exons.txt')
     exons_header_filename = os.path.join(options.output_directory,'exons_header.txt')
 
     genes_filename = os.path.join(options.output_directory,'genes.txt')
     genes_header_filename = os.path.join(options.output_directory,'genes_header.txt')
 
-    mydata=urllib.urlencode( {"query" : query} )
+    mydata1=urllib.urlencode( {"query" : query1} )
     headers = {
     'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3',
     'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
     'Accept-Language' : 'en-gb,en;q=0.5'
     }
+
+
+
 
     print "Starting..."
 
@@ -150,11 +178,11 @@ if __name__ == '__main__':
     ns = 0
     server = "http://%s/biomart/martservice" % (options.server,)
     try:
-        req=urllib2.Request(server,mydata,headers)
-        page=urllib2.urlopen(req)
+        req = urllib2.Request(server,mydata1,headers)
+        page = urllib2.urlopen(req)
 
 
-        fid=open(temp_exons_filename,'w')
+        fid=open(temp_exons_filename1,'w')
         size=0
         while True:
             part=page.read(CHUNK_SIZE)
@@ -170,7 +198,7 @@ if __name__ == '__main__':
             sys.stdout.write(s)
             sys.stdout.flush()
         fid.close()
-        print "\nDownloaded: %9.2f MB\n" % amount
+        print "\nFINISHED downloading: %9.2f MB\n" % amount
     except urllib2.HTTPError, error:
         print '\nHTTPError = ' + str(error)
         sys.exit(1)
@@ -184,41 +212,116 @@ if __name__ == '__main__':
         print "\nError: Generic exception!",str(error)
         sys.exit(1)
 
+    # extract chromosomes
+    chroms = sorted(set([line.rstrip('\r\n').split('\t')[-1] for line in file(temp_exons_filename1,'r').readlines() if line.rstrip("\r\n")]))
+    file(temp_exons_filename2,'w').write('')
+    
+    try:
+        for crs in chroms:
+            time.sleep(3)
+            print "chromosome =",crs
+            mydata2=urllib.urlencode( {"query" : query2.replace("%%%chromosome%%%",crs)} )
+            headers = {
+            'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3',
+            'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
+            'Accept-Language' : 'en-gb,en;q=0.5'
+            }
+        
+            req = urllib2.Request(server,mydata2,headers)
+            page = urllib2.urlopen(req)
+
+
+            fid=open(temp_exons_filename2,'a')
+            size=0
+            while True:
+                part=page.read(CHUNK_SIZE)
+                if not part:
+                    break
+                size=size+len(part)
+                fid.write(part)
+                amount=size/float(1024*1024)
+                sys.stdout.write("\b"*ns)
+                sys.stdout.flush()
+                s = "Downloaded: %9.2f MB" % amount
+                ns = len(s)
+                sys.stdout.write(s)
+                sys.stdout.flush()
+            fid.close()
+            print "\nFINISHED downloading: %9.2f MB\n" % amount
+    except urllib2.HTTPError, error:
+        print '\nHTTPError = ' + str(error)
+        sys.exit(1)
+    except urllib2.URLError, error:
+        print '\nURLError = ' + str(error)
+        sys.exit(1)
+    except IOError, error:
+        print '\nIOError = ' + str(error)
+        sys.exit(1)
+    except Exception, error:
+        print "\nError: Generic exception!",str(error)
+        sys.exit(1)
+
+
+
+
+    # continue as usual
+    
     # print keeping only the chromosomes (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y,MT)
-    allchr=[str(i) for i in range(1,100)]
-    chromosomes=set(allchr+['X','Y','MT','UN'])
+    allchr = [str(i) for i in xrange(1,100)] + [int2rom(i) for i in xrange(1,100)]
+    chromosomes = set(allchr+['X','Y','MT','UN','MITO'])
 
     chromosomes=set(el.upper() for el in chromosomes)
 
     #print "Keeping only the genes/transcript/exons from the chromosomes :",chromosomes
 
-    fid=open(temp_exons_filename,'rt')
-    fod=open(exons_filename,'wt')
-    removed = []
+    shutil.copyfile(temp_exons_filename2,os.path.join(options.output_directory,'exons_original.txt'))
+
+    # write also the original genes
+    data = [line.rstrip('\r\n').split('\t') for line in file(os.path.join(options.output_directory,'exons_original.txt'),'r').readlines() if line.rstrip('\r\n')]
+    data = set([(line[1],line[8],line[7],line[11],line[12]) for line in data])
+    data = sorted(data)
+    file(os.path.join(options.output_directory,'genes_original.txt'),'w').writelines(['\t'.join(line)+'\n' for line in data])
+
+
+    fid = open(temp_exons_filename2,'r')
+    fod = open(exons_filename,'w')
+    fov = open(os.path.join(options.output_directory,'exons_removed.txt'),"w")
+    min_gene_length = options.gene_length
     while True:
         lines = fid.readlines(10**8)
         if not lines:
             break
         lines = [line.rstrip('\r\n').split("\t") for line in lines if line.rstrip('\r\n')]
         li = []
+        removed = []
         for line in lines:
-            if (line[12].upper() not in chromosomes) or abs(int(line[7])-int(line[8])) <= options.gene_length:
+            if (line[12].upper() not in chromosomes) or (abs(int(line[7])-int(line[8])) <= min_gene_length):
                 removed.append(line)
             else:
                 li.append(line)
-        lines = li
 #        lines = [line for line in lines if line[12].upper() in chromosomes]
 #        lines = [line for line in lines if abs(int(line[7])-int(line[8]))>options.gene_length]
-        if lines:
-            fod.writelines(['\t'.join(line)+'\n' for line in lines])
+        if li:
+            fod.writelines(['\t'.join(line)+'\n' for line in li])
+        if removed:
+            fov.writelines(['\t'.join(line)+'\n' for line in removed])
+    fov.close()
     fod.close()
     fid.close()
 
-    file(os.path.join(options.output_directory,'exons_removed.txt'),"w").writelines(['\t'.join(line)+'\n' for line in removed])
+    if options.organism.lower() == "saccharomyces_cerevisiae":
+        # Add ENSSCE
+        x = options.organism.upper().split('_')
+        temp = "ENS"+x[0][0]+x[1][0:2]
+        data = [line.rstrip('\r\n').split('\t') for line in  file(exons_filename,'r').readlines() if line.rstrip('\r\n')]
+        data = [[temp+"P"+line[0].upper() if line[0] else '',temp+"G"+line[1].upper(),temp+"T"+line[2].upper(),temp+"E"+line[3].upper()]+ line[4:] for line in data]
+        file(exons_filename,'w').writelines(['\t'.join(line)+'\n' for line in data])
 
-    os.remove(temp_exons_filename)
 
-    header = [el.split('"')[1]+'\n' for el in query.split('Attribute name =')[1:]]
+    os.remove(temp_exons_filename1)
+    os.remove(temp_exons_filename2)
+
+    header = [el.split('"')[1]+'\n' for el in query2.split('Attribute name =')[1:]]
     file(exons_header_filename,'w').writelines(header)
 
 
@@ -230,4 +333,16 @@ if __name__ == '__main__':
 
     header = (header[1],header[8],header[7],header[11],header[12])
     file(genes_header_filename,'w').writelines(header)
+    
+    # write also the removed genes
+    data = [line.rstrip('\r\n').split('\t') for line in file(os.path.join(options.output_directory,'exons_removed.txt'),'r').readlines() if line.rstrip('\r\n')]
+    data = set([(line[1],line[8],line[7],line[11],line[12]) for line in data])
+    data = sorted(data)
+    file(os.path.join(options.output_directory,'genes_removed.txt'),'w').writelines(['\t'.join(line)+'\n' for line in data])
+    
+
+    
+    
     print "End."
+    
+    #

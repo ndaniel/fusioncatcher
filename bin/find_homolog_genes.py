@@ -337,6 +337,19 @@ if __name__ == '__main__':
                       default = False,
                       help="""If it set then only the alignments of a read are taken into consideration which are at maximum one mismatch away. This works only for maximum two mismatches. This expects that the input has 4 columns instead of 3, and the fourth column contains the mismatches from Bowtie.""")
 
+    parser.add_option("--output_saved_from_pseudogenes",
+                      action="store",
+                      type="string",
+                      dest="output_saved_from_pseudogenes_filename",
+                      help="""A file containing paths to candidate fusion genes and transcripts together with the ids/names of supporting reads.""")
+
+    parser.add_option("--input_pseudogenes",
+                      action="store",
+                      type="string",
+                      dest="input_pseudogenes_filename",
+                      help="""The input database with gene ids of the pseudogenes.""")
+
+
 
     parser.add_option("-p", "--processes",
                       action = "store",
@@ -368,6 +381,12 @@ if __name__ == '__main__':
     filterout = None
     if options.filter_filename:
         filterout = file(options.filter_filename,"r").readline().rstrip("\r\n")
+
+    pseudogenes=set()
+    if options.input_pseudogenes_filename:
+        print "Reading...",options.input_pseudogenes_filename
+        pseudogenes=set([line.rstrip('\r\n') for line in file(options.input_pseudogenes_filename,'r') if line.rstrip('\r\n')])
+
 
     database = {}
     if options.exons_filename:
@@ -449,8 +468,8 @@ if __name__ == '__main__':
             my_iter,
             chunksize = 100):
 
-            h = w[0]
-            f = w[1]
+            h = w[0] # list of pairs of genes which are homologous to each other
+            f = w[1] # read id if it the genes are NOT overlapping
 
             z = len(h)
             if z > max_genes_per_read:
@@ -493,7 +512,8 @@ if __name__ == '__main__':
                     d.append(e)
                     gc.enable()
             fo.writelines([line+'\n' for line in d])
-        fo.close()
+        if fo:
+            fo.close()
 
     else:
 
@@ -541,6 +561,8 @@ if __name__ == '__main__':
 #            offenders.add(a_read)
 #            gc.enable()
 
+    pool.close()
+    pool.join()
     #print "Writing...",options.output_filename
     #homolog = sorted([k+'\t'+str(v)+'\n' for (k,v) in homolog.items() if v >= options.reads])
     homolog = [k+'\t'+str(v)+'\n' for (k,v) in homolog.items() if v >= options.reads]

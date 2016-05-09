@@ -256,7 +256,7 @@ if __name__ == '__main__':
             txt = "%s\n%s\n%s\n%s\n%s\n" % ('gene_symbol','end','start','strand','chromosome')
             file(os.path.join(options.output_directory,'ucsc_genes_header.txt'),'w').write(txt)
 
-            txt = ["UCSC database version: %s\n" % (version,)]
+            txt = ["UCSC database version (%s): %s\n" % (org,version)]
             file(os.path.join(options.output_directory,'version.txt'),'a').writelines(txt)
 
             #

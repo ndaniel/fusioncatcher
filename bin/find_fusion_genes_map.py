@@ -222,6 +222,7 @@ if __name__ == '__main__':
         print "Reading...",options.input_filter_genes_filename
         no_proteins=set([line.rstrip('\r\n') for line in file(options.input_filter_genes_filename,'r') if line.rstrip('\r\n')])
 
+
     print "Reading...",options.input_hugo_filename
     # it is assumed that it is in this format
 #    ensembl_gene_id

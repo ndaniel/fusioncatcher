@@ -304,6 +304,11 @@ def str_filter(
     fq.close()
     if fs:
         fs.close()
+
+    pool.close()
+    pool.join()
+
+
     t = "Empty input file!"
     if p != 0:
         t ="%.5f %% reads removed due to STR (short tandem repeats) content (%d out of %d)!" % ((100*float(f)/float(p)),f,p)

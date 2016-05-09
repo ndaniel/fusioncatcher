@@ -3788,8 +3788,32 @@ if __name__ == '__main__':
         ['IGF2R','IGFBP4'],
         ['IGFBP5','NFIX'],
         ['PHGDH','SCD'],
-        ['SVEP1','TIMP3']
-        
+        ['SVEP1','TIMP3'],
+        ['ACTB','SENP3-EIF4A1'],
+        ['ADGRL1','SUZ12'],
+        ['AGAP11','BMS1'],
+        ['BANP','RRN3'],
+        ['BRS3','HTATSF1'],
+        ['C16ORF46','GCSH'],
+        ['ACTB','SENP3-EIF4A1'],
+        ['ADGRL1','SUZ12'],
+        ['AGAP11','BMS1'],
+        ['ATP1A1','SUN1'],
+        ['BANP','RRN3'],
+        ['BRS3','HTATSF1'],
+        ['C16ORF46','GCSH'],
+        ['HCG4','XXBAC-BPG248L24.12'],
+        ['HSPA8','MALAT1'],
+        ['GSTM3','NFIC'],
+        ['MYH11','UBE2N'],
+        ['CTSB','LTBP2'],
+        ['FTL','TPO'],
+        ['GNAS','TMBIM6'],
+        ['HSPB1','TIMP3'],
+        ['HSPE1','MOB4'],
+        ['NF2','TG'],
+        ['PARG','TIMM23B'],
+        ['ST3GAL1','TPO']
 ]
 
 

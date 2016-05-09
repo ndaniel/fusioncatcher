@@ -69,6 +69,7 @@ HIGHLIGHT = '\033[33;7m'
 ################################################################################
 
 def PATHS(exe = None, prefix = None, installdir = None, internet = True):
+    global DEFAULT_ALIGNERS
     global PYTHON_EXE
     global FUSIONCATCHER_PREFIX
     global FUSIONCATCHER_PATH
@@ -91,51 +92,77 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     global OPENPYXL_URL
     global BWA_PATH
     global BWA_URL
+    global BWA_VERSION
     global SAMTOOLS_PATH
     global SAMTOOLS_URL
+    global SAMTOOLS_VERSION
     global SETUPTOOLS_PATH
     global SETUPTOOLS_URL
     global BOWTIE_PATH
     global BOWTIE_URL
+    global BOWTIE_VERSION
     global BOWTIE2_PATH
     global BOWTIE2_URL
+    global BOWTIE2_VERSION
     global BLAT_PATH
     global BLAT_URL
+    global BLAT_VERSION
     global STAR_PATH
     global STAR_URL
+    global STAR_VERSION
     global FATOTWOBIT_PATH
     global FATOTWOBIT_URL
+    global FATOTWOBIT_VERSION
     global SRATOOLKIT_PATH
     global SRATOOLKIT_URL
+    global SRATOOLKIT_VERSION
     global VELVET_PATH
     global VELVET_URL
+    global VELVET_VERSION
     global LZO_PATH
     global LZO_URL
+    global LZO_VERSION
     global LZOP_PATH
     global LZOP_URL
+    global LZOP_VERSION
     global COREUTILS_PATH
     global COREUTILS_URL
+    global COREUTILS_VERSION
     global PIGZ_PATH
     global PIGZ_URL
+    global PIGZ_VERSION
     global PXZ_PATH
     global PXZ_URL
+    global PXZ_VERSION
     global SEQTK_PATH
     global SEQTK_URL
+    global SEQTK_VERSION
     global PARALLEL_PATH
     global PARALLEL_URL
+    global PARALLEL_VERSION
     global PICARD_PATH
     global PICARD_URL
+    global PICARD_VERSION
     global LIFTOVER_PATH
     global LIFTOVER_URL
+    global LIFTOVER_VERSION
     global JAVA_PATH
     global ENSEMBL_VERSION
+
+
+
     # python
+    PYTHON_EXE = ''
     if exe:
         PYTHON_EXE = expand(exe)
     else:
         PYTHON_EXE = '/usr/bin/python'
-    # fusioncatcher
 
+    # ALIGNERS
+    DEFAULT_ALIGNERS = "blat,star"
+
+
+    # FUSIONCATCHER
     if prefix:
         FUSIONCATCHER_PREFIX = expand(prefix)
     else:
@@ -148,10 +175,10 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PREFIX = expand(os.path.dirname(installdir.rstrip(os.sep)))
     else:
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
-
+    
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.5a.zip'
-    FUSIONCATCHER_VERSION = "0.99.5a beta"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.6a.zip'
+    FUSIONCATCHER_VERSION = "0.99.6a beta"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -160,78 +187,95 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     FUSIONCATCHER_CONFIGURATION = expand(FUSIONCATCHER_BIN,'..','etc','configuration.cfg')
     # numpy
     NUMPY_PATH = os.path.join(FUSIONCATCHER_TOOLS,'numpy')
-    NUMPY_URL = 'http://pypi.python.org/packages/source/n/numpy/numpy-1.9.2.tar.gz'
+    NUMPY_URL = 'http://pypi.python.org/packages/source/n/numpy/numpy-1.11.0.tar.gz'
     # biopython
     BIOPYTHON_PATH = os.path.join(FUSIONCATCHER_TOOLS,'biopython')
-    BIOPYTHON_URL = 'http://pypi.python.org/packages/source/b/biopython/biopython-1.65.tar.gz'
+    BIOPYTHON_URL = 'http://pypi.python.org/packages/source/b/biopython/biopython-1.66.tar.gz'
     # xlrd python
     XLRD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'xlrd')
-    XLRD_URL = 'http://pypi.python.org/packages/source/x/xlrd/xlrd-0.9.2.tar.gz'
+    XLRD_URL = 'http://pypi.python.org/packages/source/x/xlrd/xlrd-0.9.4.tar.gz'
     # openpyxl python
     OPENPYXL_PATH = os.path.join(FUSIONCATCHER_TOOLS,'openpyxl')
-    OPENPYXL_URL = 'http://pypi.python.org/packages/source/o/openpyxl/openpyxl-2.2.2.tar.gz'
+    OPENPYXL_URL = 'http://pypi.python.org/packages/source/o/openpyxl/openpyxl-2.4.0-a1.tar.gz'
     # setuptools python
     SETUPTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'setuptools')
-    SETUPTOOLS_URL = 'http://pypi.python.org/packages/source/s/setuptools/setuptools-14.0.tar.gz'
+    SETUPTOOLS_URL = 'http://pypi.python.org/packages/source/s/setuptools/setuptools-20.9.0.tar.gz'
     # BOWTIE
     BOWTIE_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie')
     BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-linux-x86_64.zip'
+    BOWTIE_VERSION = ('1.1.2',)
     # BOWTIE2
     BOWTIE2_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie2')
-    BOWTIE2_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.6/bowtie2-2.2.6-linux-x86_64.zip'
+    BOWTIE2_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.9/bowtie2-2.2.9-linux-x86_64.zip'
+    BOWTIE2_VERSION = ('2.2.9',)
     # BLAT
     BLAT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'blat')
     BLAT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/blat/blat'
+    BLAT_VERSION = ('35x1',)
     # STAR
     STAR_PATH = os.path.join(FUSIONCATCHER_TOOLS,'star')
-    STAR_URL = 'http://github.com/alexdobin/STAR/archive/2.5.0c.tar.gz'
+    STAR_URL = 'http://github.com/alexdobin/STAR/archive/2.5.1b.tar.gz'
+    STAR_VERSION = ('STAR_2.5.1b',)
    # BWA
     BWA_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bwa')
     BWA_URL = 'http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2'
+    BWA_VERSION = ('0.7.10-r789',)
     # faToTwoBit
     FATOTWOBIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'fatotwobit')
     FATOTWOBIT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/faToTwoBit'
     # SRATOOLKIT
     SRATOOLKIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'sratoolkit')
-    SRATOOLKIT_URL = 'http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.5.1/sratoolkit.2.5.1-centos_linux64.tar.gz'
+    SRATOOLKIT_URL = 'http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.6.2/sratoolkit.2.6.2-centos_linux64.tar.gz'
+    SRATOOLKIT_VERSION = ('2.3.5-2','2.4.2','2.5.1','2.6.2')
     # VELVET
     VELVET_PATH = os.path.join(FUSIONCATCHER_TOOLS,'velvet')
     VELVET_URL = 'http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz'
+    VELVET_VERSION = ('1.2.09','1.2.10')
     # ENSEMBL version
     ENSEMBL_VERSION = ensembl_version(internet = internet)
     # LZO
     LZO_PATH = os.path.join(FUSIONCATCHER_TOOLS,'lzo')
     LZO_URL = 'http://www.oberhumer.com/opensource/lzo/download/lzo-2.08.tar.gz'
+    LZO_VERSION = ('v2.08',)
     # LZOP
     LZOP_PATH = os.path.join(FUSIONCATCHER_TOOLS,'lzop')
     LZOP_URL = 'http://www.lzop.org/download/lzop-1.03.tar.gz'
+    LZOP_VERSION = ('v1.03',)
     # COREUTILS (for SORT parallel)
     COREUTILS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'coreutils')
-    COREUTILS_URL = 'http://ftp.gnu.org/gnu/coreutils/coreutils-8.23.tar.xz'
+    COREUTILS_URL = 'http://ftp.gnu.org/gnu/coreutils/coreutils-8.25.tar.xz'
+    COREUTILS_VERSION = ('v8.25',)
     # PIGZ (GZIP parallel)
     PIGZ_PATH = os.path.join(FUSIONCATCHER_TOOLS,'pigz')
     PIGZ_URL = 'http://http.debian.net/debian/pool/main/p/pigz/pigz_2.3.1.orig.tar.gz' #'http://zlib.net/pigz/pigz-2.3.3.tar.gz'
+    PIGZ_VERSION = ('2.3','2.3.1','2.3.3')
     # PXZ (XZ parallel)
     PXZ_PATH = os.path.join(FUSIONCATCHER_TOOLS,'pxz')
     PXZ_URL = 'http://jnovy.fedorapeople.org/pxz/pxz-4.999.9beta.20091201git.tar.xz'
+    PXZ_VERSION = ('4.999.9beta',)
     # GNU PARALLEL
     PARALLEL_PATH = os.path.join(FUSIONCATCHER_TOOLS,'parallel')
-    PARALLEL_URL = 'http://ftp.gnu.org/gnu/parallel/parallel-20150522.tar.bz2'
+    PARALLEL_URL = 'http://ftp.gnu.org/gnu/parallel/parallel-20160422.tar.bz2'
+    PARALLEL_VERSION = ('20160422',)
     # samtools
     SAMTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'samtools')
     SAMTOOLS_URL = 'http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2'
+    SAMTOOLS_VERSION = ('0.1.19-44428cd',)
     # SEQTK
     SEQTK_PATH = os.path.join(FUSIONCATCHER_TOOLS,'seqtk')
     SEQTK_URL = 'http://github.com/ndaniel/seqtk/archive/1.0-r82b.tar.gz'
+    SEQTK_VERSION = ('1.0-r82b-dirty',)
     # 'http://github.com/lh3/seqtk/archive/master.zip'
     #SEQTK_URL = 'http://github.com/lh3/seqtk/archive/1.0.tar.gz'
     # PICARD
     PICARD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'picard')
     #PICARD_URL = 'http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip'
-    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/1.129/picard-tools-1.129.zip'
+    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/2.2.2/picard-tools-2.2.2.zip'
+    PICARD_VERSION = ('2.2.2(20d49152d0840a960fcb97df76dbaca260b39244_1461168806)',)
     # LiftOver
     LIFTOVER_PATH = os.path.join(FUSIONCATCHER_TOOLS,'liftover')
     LIFTOVER_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/liftOver'
+    LIFTOVER_VERSION = ('move annotations',)
     # JAVA
     JAVA_PATH = "/usr/bin/"
 
@@ -904,7 +948,7 @@ if __name__ == '__main__':
                   "<http://github.com/ndaniel/fusioncatcher>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 0.99.5a beta"
+    version = "%prog 0.99.6a beta"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -946,6 +990,13 @@ if __name__ == '__main__':
                       default = False,
                       dest = "skip_install_all",
                       help = """It skips installing and testing all the dependencies, which are the (1) software tools, and (2) Python modules. Only the FusionCatcher scripts will be installed. Use this when there the internet connection is broken or not available.""")
+
+    parser.add_option("-k","--skip-blat",
+                      action = "store_true",
+                      default = False,
+                      dest = "skip_blat",
+                      help = """It skips installing (and using) the BLAT aligner.""")
+
 
     parser.add_option("-y","--yes",
                       action = "store_true",
@@ -997,7 +1048,7 @@ if __name__ == '__main__':
 ################################################################################
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "ensembl_v83"
+    v = "ensembl_v84"
     ############################################################################
     # List all dependencies
     ############################################################################
@@ -1161,7 +1212,7 @@ if __name__ == '__main__':
     ############################################################################
     # Installation path of FusionCatcher
     ############################################################################
-    print "Path for installation of FusionCatcher: '%s'" % (options.installation_directory,)
+    print "Path for installation of FusionCatcher: '%s'" % (expand(options.installation_directory),)
     r = accept(question = "  Do you accept this path (WARNING: some files/directories within this path may be deleted/replaced/updated without warning)?",
                yes = True,
                no = False,
@@ -1320,7 +1371,7 @@ if __name__ == '__main__':
                  exe = "bowtie",
                  param = "--version",
                  web = "<http://bowtie-bio.sourceforge.net/index.shtml>",
-                 versions = ('1.1.2',),
+                 versions = BOWTIE_VERSION,
                  force = options.force_yes,
                  url = BOWTIE_URL,
                  path = BOWTIE_PATH,
@@ -1335,7 +1386,7 @@ if __name__ == '__main__':
                  exe = "bowtie2",
                  param = "--version",
                  web = "<http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>",
-                 versions = ('2.2.6',),
+                 versions = BOWTIE2_VERSION,
                  force = options.force_yes,
                  url = BOWTIE2_URL,
                  path = BOWTIE2_PATH,
@@ -1351,7 +1402,7 @@ if __name__ == '__main__':
                  exe = "fastq-dump",
                  param = "",
                  web = "<http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software>",
-                 versions = ('2.3.5-2','2.4.2','2.5.1'),
+                 versions = SRATOOLKIT_VERSION,
                  version_word = 'fastq-dump',
                  force = options.force_yes,
                  url = SRATOOLKIT_URL,
@@ -1367,7 +1418,7 @@ if __name__ == '__main__':
                  exe = "liftOver",
                  param = "",
                  web = "<http://genome.ucsc.edu/cgi-bin/hgLiftOver>",
-                 versions = ('move annotations',),
+                 versions = LIFTOVER_VERSION,
                  version_word = 'liftOver',
                  force = options.force_yes,
                  url = LIFTOVER_URL,
@@ -1379,43 +1430,48 @@ if __name__ == '__main__':
         ############################################################################
         # BLAT
         ############################################################################
-        blat = False
-        if (not options.install_all) and (not options.install_all_py):
-            (b,p) = test_tool(name = "BLAT (alignment tool)",
-                              exe = "blat",
-                              web = "<http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software>",
-                              param = "",
-                              versions = ('35x1',),
-                              version_word = 'blat v.',
-                              verbose = False,
-                              exit = False)
-            if not b:
-                blat = True
-        r = tool(name = "BLAT (alignment tool)",
-                 exe = "blat",
-                 param = "",
-                 web = "<http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software>",
-                 versions = ('35x1',),
-                 version_word = 'blat v.',
-                 force = options.force_yes,
-                 url = BLAT_URL,
-                 path = BLAT_PATH,
-                 install = options.install_all or options.install_all_tools)
-        if r:
-            BLAT_PATH = r
+        if options.skip_blat:
+            BLAT_PATH = ""
+            FATOTWOBIT_PATH = ""
+            DEFAULT_ALIGNERS = "star,bowtie2"
+        else:
+            blat = False
+            if (not options.install_all) and (not options.install_all_py):
+                (b,p) = test_tool(name = "BLAT (alignment tool)",
+                                  exe = "blat",
+                                  web = "<http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software>",
+                                  param = "",
+                                  versions = BLAT_VERSION,
+                                  version_word = 'blat v.',
+                                  verbose = False,
+                                  exit = False)
+                if not b:
+                    blat = True
+            r = tool(name = "BLAT (alignment tool)",
+                     exe = "blat",
+                     param = "",
+                     web = "<http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software>",
+                     versions = BLAT_VERSION,
+                     version_word = 'blat v.',
+                     force = options.force_yes,
+                     url = BLAT_URL,
+                     path = BLAT_PATH,
+                     install = options.install_all or options.install_all_tools)
+            if r:
+                BLAT_PATH = r
 
-        r = tool(name = "FaToTwoBit (companion of BLAT alignment tool)",
-                 exe = "faToTwoBit",
-                 param = "",
-                 web = "<http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software>",
-                 versions = ('in.fa',),
-                 version_word = "faToTwoBit",
-                 force = options.force_yes,
-                 url = FATOTWOBIT_URL,
-                 path = FATOTWOBIT_PATH,
-                 install = options.install_all or options.install_all_tools or blat)
-        if r:
-            FATOTWOBIT_PATH = r
+            r = tool(name = "FaToTwoBit (companion of BLAT alignment tool)",
+                     exe = "faToTwoBit",
+                     param = "",
+                     web = "<http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software>",
+                     versions = ('in.fa',),
+                     version_word = "faToTwoBit",
+                     force = options.force_yes,
+                     url = FATOTWOBIT_URL,
+                     path = FATOTWOBIT_PATH,
+                     install = options.install_all or options.install_all_tools or blat)
+            if r:
+                FATOTWOBIT_PATH = r
 
         ############################################################################
         # SEQTK
@@ -1424,7 +1480,7 @@ if __name__ == '__main__':
                  exe = "seqtk",
                  param = "",
                  web = "<http://github.com/ndaniel/seqtk/>",
-                 versions = ('1.0-r82b-dirty',),
+                 versions = SEQTK_VERSION,
                  version_word = "Version:",
                  force = options.force_yes,
                  url = SEQTK_URL,
@@ -1440,7 +1496,7 @@ if __name__ == '__main__':
                  exe = "STAR",
                  param = "--version",
                  web = "<https://github.com/alexdobin/STAR>",
-                 versions = ('STAR_2.5.0c',),
+                 versions = STAR_VERSION,
                  version_word = 'STAR_',
                  force = options.force_yes,
                  url = STAR_URL,
@@ -1473,7 +1529,7 @@ if __name__ == '__main__':
                      exe = "bwa",
                      param = "",
                      web = "<http://bio-bwa.sourceforge.net/>",
-                     versions = ('0.7.10-r789',),
+                     versions = BWA_VERSION,
                      version_word = 'Version',
                      force = options.force_yes,
                      url = BWA_URL,
@@ -1490,7 +1546,7 @@ if __name__ == '__main__':
                      exe = "samtools",
                      param = "",
                      web = "<http://samtools.sourceforge.net/>",
-                     versions = ('0.1.19-44428cd',),
+                     versions = SAMTOOLS_VERSION,
                      version_word = 'Version:',
                      force = options.force_yes,
                      url = SAMTOOLS_URL,
@@ -1504,7 +1560,7 @@ if __name__ == '__main__':
                      exe = "velveth",
                      param = "--version",
                      web = "<http://www.ebi.ac.uk/~zerbino/velvet/>",
-                     versions = ('1.2.09','1.2.10'),
+                     versions = VELVET_VERSION,
                      force = options.force_yes,
                      url = VELVET_URL,
                      path = VELVET_PATH,
@@ -1518,7 +1574,7 @@ if __name__ == '__main__':
                      exe = "lzop",
                      param = "-V",
                      web = "<http://www.oberhumer.com/opensource/lzo/>",
-                     versions = ('v2.08',),
+                     versions = LZO_VERSION,
                      version_word = 'lzo',
                      force = options.force_yes,
                      url = LZO_URL,
@@ -1533,7 +1589,7 @@ if __name__ == '__main__':
                      exe = "lzop",
                      param = "-V",
                      web = "<http://www.lzop.org/>",
-                     versions = ('v1.03',),
+                     versions = LZOP_VERSION,
                      version_word = 'lzop',
                      force = options.force_yes,
                      url = LZOP_URL,
@@ -1550,7 +1606,7 @@ if __name__ == '__main__':
                      exe = "sort",
                      param = "--version",
                      web = "<http://ftp.gnu.org/gnu/coreutils>",
-                     versions = ('v8.23',),
+                     versions = COREUTILS_VERSION,
                      version_word = 'coreutils',
                      force = options.force_yes,
                      url = COREUTILS_URL,
@@ -1565,7 +1621,7 @@ if __name__ == '__main__':
                      exe = "pigz",
                      param = "--version",
                      web = "<http://zlib.net/pigz/>",
-                     versions = ('2.3','2.3.1','2.3.3'),
+                     versions = PIGZ_VERSION,
                      version_word = 'pigz',
                      force = options.force_yes,
                      url = PIGZ_URL,
@@ -1580,7 +1636,7 @@ if __name__ == '__main__':
 #                     exe = "pxz",
 #                     param = "--version",
 #                     web = "<http://jnovy.fedorapeople.org/pxz/>",
-#                     versions = ('4.999.9beta',),
+#                     versions = PXZ_VERSION,
 #                     version_word = 'pxz',
 #                     force = options.force_yes,
 #                     url = PXZ_URL,
@@ -1594,8 +1650,8 @@ if __name__ == '__main__':
             r = tool(name = "PICARD (Java-based command-line utilities that manipulate SAM files)",
                      exe = "java -jar picard.jar SamToFastq",
                      param = "--version",
-                     web = "<http://picard.sourceforge.net/>",
-                     versions = ('1.129(b508b2885562a4e932d3a3a60b8ea283b7ec78e2_1424706677)',),
+                     web = "<http://github.com/broadinstitute/picard/>",
+                     versions = PICARD_VERSION,
                      force = options.force_yes,
                      url = PICARD_URL,
                      path = PICARD_PATH,
@@ -1609,7 +1665,7 @@ if __name__ == '__main__':
                      exe = "parallel",
                      param = "--version",
                      web = "<http://www.gnu.org/software/parallel/>",
-                     versions = ('20150522',),
+                     versions = PARALLEL_VERSION,
                      force = options.force_yes,
                      url = PARALLEL_URL,
                      path = PARALLEL_PATH,
@@ -1725,6 +1781,7 @@ if __name__ == '__main__':
     data.append("\n")
     data.append("[parameters]\n")
     data.append("threads = %s\n" % (FUSIONCATCHER_THREADS,))
+    data.append("aligners = %s\n" % (DEFAULT_ALIGNERS,))
     data.append("\n")
     data.append("[versions]\n")
     data.append("fusioncatcher = %s\n"%(FUSIONCATCHER_VERSION,))
@@ -1778,7 +1835,7 @@ if __name__ == '__main__':
         txt.append("rm -f %s/checksums.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
         txt.append("mkdir -p %s" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
         txt.append("ln -s %s %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),FUSIONCATCHER_CURRENT.replace(" ","\\ ")))
-        txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.aa -O %s.tar.gz.aa" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
+        txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%star.gz.aa -O %s.tar.gz.aa" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ab -O %s.tar.gz.ab" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ac -O %s.tar.gz.ac" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ad -O %s.tar.gz.ad" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))

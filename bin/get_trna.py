@@ -97,70 +97,91 @@ if __name__ == '__main__':
     ensembl_organism=ense[0][0]+ense[1]+'_gene_ensembl'
 
     CHUNK_SIZE=65536 # 2**20 1 MB
-
-    query = ["""<?xml version="1.0" encoding="UTF-8"?>
+    
+    query_template = """<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE Query>
     <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
         <Dataset name = "%%%organism%%%" interface = "default" >
-            <Filter name = "biotype" value = "Mt_tRNA"/>
+            <Filter name = "biotype" value = "%%%rnatype%%%"/>
             <Attribute name = "ensembl_gene_id" />
-            <Attribute name = "cdna" />
-            <Attribute name = "description" />
-        </Dataset>
-    </Query>
-    """.replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip(),
-    """<?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE Query>
-    <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
-        <Dataset name = "%%%organism%%%" interface = "default" >
-            <Filter name = "biotype" value = "Mt_tRNA"/>
-            <Attribute name = "ensembl_gene_id" />
-            <Attribute name = "gene_exon_intron" />
-            <Attribute name = "description" />
-        </Dataset>
-    </Query>
-    """.replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip(),
-    """<?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE Query>
-    <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
-        <Dataset name = "%%%organism%%%" interface = "default" >
-            <Filter name = "biotype" value = "Mt_tRNA_pseudogene"/>
-            <Attribute name = "ensembl_gene_id" />
-            <Attribute name = "gene_exon_intron" />
-            <Attribute name = "description" />
-        </Dataset>
-    </Query>""".replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip(),
-    """<?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE Query>
-    <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
-        <Dataset name = "%%%organism%%%" interface = "default" >
-            <Filter name = "biotype" value = "Mt_tRNA_pseudogene"/>
-            <Attribute name = "ensembl_gene_id" />
-            <Attribute name = "cdna" />
-            <Attribute name = "description" />
-        </Dataset>
-    </Query>""".replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip(),
-    """<?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE Query>
-    <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
-        <Dataset name = "%%%organism%%%" interface = "default" >
-            <Filter name = "biotype" value = "tRNA_pseudogene"/>
-            <Attribute name = "ensembl_gene_id" />
-            <Attribute name = "gene_exon_intron" />
-            <Attribute name = "description" />
-        </Dataset>
-    </Query>""".replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip(),
-    """<?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE Query>
-    <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
-        <Dataset name = "%%%organism%%%" interface = "default" >
-            <Filter name = "biotype" value = "tRNA_pseudogene"/>
-            <Attribute name = "ensembl_gene_id" />
-            <Attribute name = "cdna" />
+            <Attribute name = "%%%attribute2%%%" />
             <Attribute name = "description" />
         </Dataset>
     </Query>""".replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip()
-    ]
+    
+    attribute2 = ("cdna","gene_exon_intron")
+    rna_types = ("Mt_tRNA","Mt_tRNA_pseudogene","tRNA_pseudogene")
+    if options.organism.lower() == "saccharomyces_cerevisiae":
+        rna_types = ("tRNA",)
+    
+    query = []
+    for a in attribute2:
+        for r in rna_types:
+            query.append(query_template.replace("%%%attribute2%%%",a).replace("%%%rnatype%%%",r))
+
+#    query = ["""<?xml version="1.0" encoding="UTF-8"?>
+#    <!DOCTYPE Query>
+#    <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
+#        <Dataset name = "%%%organism%%%" interface = "default" >
+#            <Filter name = "biotype" value = "Mt_tRNA"/>
+#            <Attribute name = "ensembl_gene_id" />
+#            <Attribute name = "cdna" />
+#            <Attribute name = "description" />
+#        </Dataset>
+#    </Query>
+#    """.replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip(),
+#    """<?xml version="1.0" encoding="UTF-8"?>
+#    <!DOCTYPE Query>
+#    <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
+#        <Dataset name = "%%%organism%%%" interface = "default" >
+#            <Filter name = "biotype" value = "Mt_tRNA"/>
+#            <Attribute name = "ensembl_gene_id" />
+#            <Attribute name = "gene_exon_intron" />
+#            <Attribute name = "description" />
+#        </Dataset>
+#    </Query>
+#    """.replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip(),
+#    """<?xml version="1.0" encoding="UTF-8"?>
+#    <!DOCTYPE Query>
+#    <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
+#        <Dataset name = "%%%organism%%%" interface = "default" >
+#            <Filter name = "biotype" value = "Mt_tRNA_pseudogene"/>
+#            <Attribute name = "ensembl_gene_id" />
+#            <Attribute name = "gene_exon_intron" />
+#            <Attribute name = "description" />
+#        </Dataset>
+#    </Query>""".replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip(),
+#    """<?xml version="1.0" encoding="UTF-8"?>
+#    <!DOCTYPE Query>
+#    <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
+#        <Dataset name = "%%%organism%%%" interface = "default" >
+#            <Filter name = "biotype" value = "Mt_tRNA_pseudogene"/>
+#            <Attribute name = "ensembl_gene_id" />
+#            <Attribute name = "cdna" />
+#            <Attribute name = "description" />
+#        </Dataset>
+#    </Query>""".replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip(),
+#    """<?xml version="1.0" encoding="UTF-8"?>
+#    <!DOCTYPE Query>
+#    <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
+#        <Dataset name = "%%%organism%%%" interface = "default" >
+#            <Filter name = "biotype" value = "tRNA_pseudogene"/>
+#            <Attribute name = "ensembl_gene_id" />
+#            <Attribute name = "gene_exon_intron" />
+#            <Attribute name = "description" />
+#        </Dataset>
+#    </Query>""".replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip(),
+#    """<?xml version="1.0" encoding="UTF-8"?>
+#    <!DOCTYPE Query>
+#    <Query  virtualSchemaName = "default" formatter = "FASTA" header = "0" uniqueRows = "0" count = "" datasetConfigVersion = "0.7" >
+#        <Dataset name = "%%%organism%%%" interface = "default" >
+#            <Filter name = "biotype" value = "tRNA_pseudogene"/>
+#            <Attribute name = "ensembl_gene_id" />
+#            <Attribute name = "cdna" />
+#            <Attribute name = "description" />
+#        </Dataset>
+#    </Query>""".replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip()
+#    ]
 
     trna_filename=os.path.join(options.output_directory,'trna.fa')
 

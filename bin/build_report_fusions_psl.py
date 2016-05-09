@@ -383,6 +383,14 @@ if __name__ == '__main__':
                       default = 3,
                       help = """The minimum number of mismatches accepted in the alignment. Default is '%default'.""")
 
+    parser.add_option("--mismatches-gap",
+                      action = "store",
+                      type = "int",
+                      dest = "mismatches_gap",
+                      default = 7,
+                      help = """The minimum number of mismatches accepted in the gap alignment. Default is '%default'.""")
+
+
     parser.add_option("--junction",
                       action = "store_true",
                       dest = "junction",
@@ -453,7 +461,18 @@ if __name__ == '__main__':
 
 
     # filter for mismatches
-    data = [line for line in data if int(line[13])<=options.mismatches]
+    #data = [line for line in data if int(line[13])<=options.mismatches]
+    dudu = []
+    for line in data:
+        if line[20].lower().find('*n') == -1:
+            if int(line[13])<=options.mismatches:
+                dudu.append(line)
+        elif int(line[13])<=options.mismatches_gap:
+            dudu.append(line)
+            # here I have gaps in alignment (i.e. IGH fusions) because there is "*NNNN"
+    #data = [line for line in data if int(line[13])<=options.mismatches] # ORIGINAL
+    data = dudu
+
 
     # find unique reads
 
@@ -471,6 +490,7 @@ if __name__ == '__main__':
     # filter those fusion with too few counts
     #dd = [(k,v) for (k,v) in dd if v >= options.supporting_unique_reads]
     dd = [(k,v) for (k,v) in dd if v >= 1] # in order to allow the use of options.anchor2
+
 
     # find those reads and the fusion sequence for the unique fusion points
     summary = []
