@@ -35,7 +35,7 @@ contain a small selection of short reads from:
     Encyclopedia,
      http://browser.cghub.ucsc.edu/details/61a94c69-20f1-43e5-a7a8-1f169ed248fa/
 
-These short reads were selected such that they cover 15 already known fusion genes,
+These short reads were selected such that they cover 16 already known fusion genes,
 which are:
 - FGFR3-TACC3  (short reads from [2]),
 - FIP1L1-PDGFRA  (short reads from [3]),
