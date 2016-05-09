@@ -1835,7 +1835,7 @@ if __name__ == '__main__':
         txt.append("rm -f %s/checksums.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
         txt.append("mkdir -p %s" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
         txt.append("ln -s %s %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),FUSIONCATCHER_CURRENT.replace(" ","\\ ")))
-        txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%star.gz.aa -O %s.tar.gz.aa" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
+        txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.aa -O %s.tar.gz.aa" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ab -O %s.tar.gz.ab" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ac -O %s.tar.gz.ac" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ad -O %s.tar.gz.ad" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
