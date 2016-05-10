@@ -61,7 +61,7 @@ These are expected by default to be installed but their use can be disabled by u
   * **BLAT** version 0.35 http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *FusionCatcher* (hint: if you are a non-profit organization you should be fine) (will be installed by `boostrap.py`)
   * **faToTwoBit** http://users.soe.ucsc.edu/~kent/src/ . Executables are available at http://hgdownload.cse.ucsc.edu/admin/exe/ . Please, check the license to see if it allows you to run/use it! This is needed by *FusionCatcher* and `fusioncatcher-build` if one plans to use BLAT as a second (optional) alternative method for finding fusion genes! (required also by option `--blat-visualization`) (will be installed by `boostrap.py`)
 
-Note: If one does not want to install BLAT (whilst installing *FusionCatcher* automatically thru `bootstrap.py`) and also not to use BLAT with *FusionCatcher* then using command line `-b` option of `bootstrap.py` will do that.
+Note: If one does not want to install BLAT (whilst installing *FusionCatcher* automatically thru `bootstrap.py`) and also not to use BLAT with *FusionCatcher* then using command line `-k` option of `bootstrap.py` will do that.
 
 ### 2.2.2 - Nice to have
   * **Velvet** (de novo assembler) version 1.2.10 http://www.ebi.ac.uk/~zerbino/velvet/ . This is needed if one plans to do _de novo_ assembly of the reads which support the candidate fusion genes. (required by option `--assembly` of *FusionCatcher*) (will be installed by `boostrap.py`)
@@ -171,10 +171,10 @@ wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py
 sudo python bootstrap.py
 ```
 
-In case that one plans not to use at all BLAT with *FusionCatcher* then add the command line `-b` to the `boostrap.py`, as following:
+In case that one plans not to use at all BLAT with *FusionCatcher* then add the command line `-k` to the `boostrap.py`, as following:
 
 ```
-python bootstrap.py -b
+python bootstrap.py -k
 ```
 
 In case that you do not know which one to use from these examples, please use the first one!
@@ -503,7 +503,7 @@ This is an example of semi-automatic installation of *FusionCatcher* (and it is 
     ```
    * copy/move (manually) the folder `fuscat` and all its content to computer B (which does not have internet connection) where one intends to install *FusionCatcher*
   * on the computer B (which does not have internet connection), where one intends to install *FusionCatcher*:
-   * go to the folder `fuscat` and make sure that the downloaded files do **not** have their permissions set as executables (this might confuse bootstrap.py)
+   * go to the folder `fuscat` and make sure that the downloaded files do **not** have their permissions set as executables (this might confuse `bootstrap.py`)
     ```
     cd fuscat
     chmod -x *
@@ -512,7 +512,7 @@ This is an example of semi-automatic installation of *FusionCatcher* (and it is 
     ```
     python bootstrap.py --local .
     ```
-   * for installing the pre-built index files for human, please run (or take a look for instructions to) `mega.sh` (it should be in `bin` directory where *FusionCatcher* has been installed)
+   * for installing the pre-built index files for human, please run (or take a look for instructions to) `download.sh` (it should be in `bin` directory where *FusionCatcher* has been installed)
    * for installing the pre-built index files for other organisms than human please, use `fusioncatcher-build` according tot the manual
 
 For more information regarding the installation settings and possibilities, run:
