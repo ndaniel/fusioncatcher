@@ -1262,7 +1262,7 @@ if __name__ == "__main__":
                       dest = "sort_buffer_size",
                       default = "80%",
                       help = "It specifies the buffer size for command SORT. "+
-                             "Default is '%default'.")
+                             "Default is '%default' if less than 32GB RAM is installed on computer else is set to 26GB.")
 
     parser.add_option("--start",
                       action = "store",
