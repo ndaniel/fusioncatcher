@@ -1390,7 +1390,8 @@ and the command line options are:
                         default. Default is 'False'.
   --sort-buffer-size=SORT_BUFFER_SIZE
                         It specifies the buffer size for command SORT. Default
-                        is '80%'.
+                        is '80%' if less than 32GB installed RAM else is set 
+                        to 26 GB.
   --start=START_STEP    It re-starts executing the workflow/pipeline from the
                         given step number. This can be used when the pipeline
                         has crashed/stopped and one wants to re-run it from
