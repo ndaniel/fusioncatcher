@@ -1262,7 +1262,8 @@ if __name__ == "__main__":
                       dest = "sort_buffer_size",
                       default = "80%",
                       help = "It specifies the buffer size for command SORT. "+
-                             "Default is '%default' if less than 32GB RAM is installed on computer else is set to 26GB.")
+                             "Default is '%default' if less than 32GB RAM is "+
+                             "installed on computer else is set to 26GB.")
 
     parser.add_option("--start",
                       action = "store",
@@ -3658,7 +3659,7 @@ if __name__ == "__main__":
         if (not is_optparse_provided(parser,'mismatches_psl')) and (not is_optparse_provided(parser,'trim_psl_3end_keep')):
             if max_len_reads > 109:
                 options.trim_psl_3end_keep = max_len_reads - 20
-                options.mismatches_psl = math.ceil(float(options.trim_psl_3end_keep)/50)
+                options.mismatches_psl = int(math.ceil(float(options.trim_psl_3end_keep)/50))
                 job.add('printf',kind='program')
                 job.add('"\nAdjusted automatically mismatches_psl and trim_psl_3end_keep (%d,%d) because reads of maximum length of %d bp were found!.\n\n"' % (options.trim_psl_3end_keep,options.mismatches_psl,max_len_reads),kind='parameter')
                 job.add('>>',info_file,kind='output')

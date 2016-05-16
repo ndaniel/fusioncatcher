@@ -125,8 +125,8 @@ if __name__ == '__main__':
     'Accept-Language' : 'en-gb,en;q=0.5'
     }
 
+    today = datetime.date.today()
     if options.organism.lower() == 'homo_sapiens':
-        today = datetime.date.today()
         data = []
         sem = True
         if options.data_filename:

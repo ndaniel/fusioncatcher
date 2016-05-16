@@ -146,6 +146,8 @@ if __name__ == '__main__':
     log_file = os.path.join(options.output_directory,'shielded_genes.txt')
     file(log_file,"w").write("")
 
+    gene_ids = []
+
     if options.organism.lower() == 'homo_sapiens':
         gene_ids = [
             "ENSG00000181163", # NPM1

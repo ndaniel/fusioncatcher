@@ -6686,7 +6686,23 @@ if __name__ == '__main__':
         ['ZP4','ADPRHL1'],
         ['ZSCAN21','HEPACAM2'],
         ['ZSCAN30','BRAF'],
-        ['ZZEF1','ANKFY1']
+        ['ZZEF1','ANKFY1'],
+        ['E2A','PBX1'],
+        ['ETV6','RUNX1'],
+        ['ETV6','SLC15A5'],
+        ['HOXA11-AS','MIR181A1HG'],
+        ['LMO2','TRBC2'],
+        ['MAST3','C19ORF10'],
+        ['MIR181A1HG','HOXA11-AS'],
+        ['NUP214','ABL1'],
+        ['NUP98','RAP1GDS1'],
+        ['PTEN','FAS'],
+        ['SET','NUP214'],
+        ['STIL','TAL1'],
+        ['TAL1','TRDC'],
+        ['TRAC','SOX8'],
+        ['TRBC2','HOXA11-AS'],
+        ['WT1','THEM7P']
 
 
 
