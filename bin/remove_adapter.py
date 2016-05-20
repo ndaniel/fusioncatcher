@@ -869,95 +869,156 @@ def trim_adapter(input_file_1,
 
         #
 
-
+        all_fixed = 0
         give = None
         if cpus == 1:
-            give = itertools.imap(
-                compute,
-                itertools.izip_longest(
-                    reads_from_paired_fastq_file(
-                        input_file_1, 
-                        input_file_2
-                    ),
-                    [],
-                    fillvalue = para
-                )
-            )
+
+            for stuff in itertools.imap(
+                                    compute,
+                                    itertools.izip_longest(
+                                        reads_from_paired_fastq_file(
+                                            input_file_1, 
+                                            input_file_2
+                                        ),
+                                        [],
+                                        fillvalue = para
+                                    )
+                                ):
+
+                i = i + 1
+                mate = stuff[0]
+                st1 = stuff[1]
+                st2 = stuff[2]
+                stn = stuff[3]
+                jj = stuff[4]
+                xx = stuff[5]
+                fixed = stuff[6]
+                all_fixed = all_fixed + fixed
+
+                if st1 != -1:
+                    stat[st1] = stat.get(st1,0) + 1
+                if st2 != -1:
+                    stat[st2] = stat.get(st2,0) + 1
+                if stn != -1:
+                    statn[stn] = statn.get(stn,0) + 1
+                j = j + jj
+
+                if trim_n:
+                    # do N trimming from both ends
+                    mm1 = mate[1].rstrip('\r\n')
+                    if mm1.startswith('N') or mm1.endswith('N'):
+                        mm2 = mate[3].rstrip('\r\n')
+                        (mate[1], mate[3]) = trim_tail_n(mm1,mm2,trim_n)
+
+                    mm1 = mate[5].rstrip('\r\n')
+                    if mm1.startswith('N') or mm1.endswith('N'):
+                        mm2 = mate[7].rstrip('\r\n')
+                        (mate[5], mate[7]) = trim_tail_n(mm1,mm2,trim_n)
+
+
+                if len(mate[1]) < shortest_read + 1:
+                    out_1.add_line(mate[0])
+                    out_1.add_line(empty_read[1])
+                    out_1.add_line(empty_read[2])
+                    out_1.add_line(empty_read[3])
+                else:
+                    out_1.add_lines(mate[0:4])
+
+                if len(mate[5]) < shortest_read + 1:
+                    out_2.add_line(mate[4])
+                    out_2.add_line(empty_read[1])
+                    out_2.add_line(empty_read[2])
+                    out_2.add_line(empty_read[3])
+                else:
+                    out_2.add_lines(mate[4:8])
+
+
+                if flag_log and last_j != j:
+                    log.add_line(xx)
+
+                last_j = j
+                if verbose and i % 1 == 10000000: # 10000000
+                    print >>sys.stderr,"   %d pair-reads [ %d (%f%%) reads trimmed ]" % (i,j,100*float(j)/float(2*i))
+
+            
         else:
             pool = multiprocessing.Pool(processes = cpus)
-            give = pool.imap_unordered(
-                compute,
-                itertools.izip_longest(
-                    reads_from_paired_fastq_file(
-                        input_file_1,
-                        input_file_2
-                    ),
-                    [],
-                    fillvalue = para
-                ),
-            chunksize = 100
-            )
+
+            for stuff in pool.imap_unordered(
+                                            compute,
+                                            itertools.izip_longest(
+                                                reads_from_paired_fastq_file(
+                                                    input_file_1,
+                                                    input_file_2
+                                                ),
+                                                [],
+                                                fillvalue = para
+                                            ),
+                                        chunksize = 100
+                                        ):
+
+                i = i + 1
+                mate = stuff[0]
+                st1 = stuff[1]
+                st2 = stuff[2]
+                stn = stuff[3]
+                jj = stuff[4]
+                xx = stuff[5]
+                fixed = stuff[6]
+                all_fixed = all_fixed + fixed
+
+                if st1 != -1:
+                    stat[st1] = stat.get(st1,0) + 1
+                if st2 != -1:
+                    stat[st2] = stat.get(st2,0) + 1
+                if stn != -1:
+                    statn[stn] = statn.get(stn,0) + 1
+                j = j + jj
+
+                if trim_n:
+                    # do N trimming from both ends
+                    mm1 = mate[1].rstrip('\r\n')
+                    if mm1.startswith('N') or mm1.endswith('N'):
+                        mm2 = mate[3].rstrip('\r\n')
+                        (mate[1], mate[3]) = trim_tail_n(mm1,mm2,trim_n)
+
+                    mm1 = mate[5].rstrip('\r\n')
+                    if mm1.startswith('N') or mm1.endswith('N'):
+                        mm2 = mate[7].rstrip('\r\n')
+                        (mate[5], mate[7]) = trim_tail_n(mm1,mm2,trim_n)
+
+
+                if len(mate[1]) < shortest_read + 1:
+                    out_1.add_line(mate[0])
+                    out_1.add_line(empty_read[1])
+                    out_1.add_line(empty_read[2])
+                    out_1.add_line(empty_read[3])
+                else:
+                    out_1.add_lines(mate[0:4])
+
+                if len(mate[5]) < shortest_read + 1:
+                    out_2.add_line(mate[4])
+                    out_2.add_line(empty_read[1])
+                    out_2.add_line(empty_read[2])
+                    out_2.add_line(empty_read[3])
+                else:
+                    out_2.add_lines(mate[4:8])
+
+
+                if flag_log and last_j != j:
+                    log.add_line(xx)
+
+                last_j = j
+                if verbose and i % 1 == 10000000: # 10000000
+                    print >>sys.stderr,"   %d pair-reads [ %d (%f%%) reads trimmed ]" % (i,j,100*float(j)/float(2*i))
+
+
+            
             pool.close()
             pool.join()
-        all_fixed = 0
 
 
-        for stuff in give:
 
-            i = i + 1
-            mate = stuff[0]
-            st1 = stuff[1]
-            st2 = stuff[2]
-            stn = stuff[3]
-            jj = stuff[4]
-            xx = stuff[5]
-            fixed = stuff[6]
-            all_fixed = all_fixed + fixed
-
-            if st1 != -1:
-                stat[st1] = stat.get(st1,0) + 1
-            if st2 != -1:
-                stat[st2] = stat.get(st2,0) + 1
-            if stn != -1:
-                statn[stn] = statn.get(stn,0) + 1
-            j = j + jj
-
-            if trim_n:
-                # do N trimming from both ends
-                mm1 = mate[1].rstrip('\r\n')
-                if mm1.startswith('N') or mm1.endswith('N'):
-                    mm2 = mate[3].rstrip('\r\n')
-                    (mate[1], mate[3]) = trim_tail_n(mm1,mm2,trim_n)
-
-                mm1 = mate[5].rstrip('\r\n')
-                if mm1.startswith('N') or mm1.endswith('N'):
-                    mm2 = mate[7].rstrip('\r\n')
-                    (mate[5], mate[7]) = trim_tail_n(mm1,mm2,trim_n)
-
-
-            if len(mate[1]) < shortest_read + 1:
-                out_1.add_line(mate[0])
-                out_1.add_line(empty_read[1])
-                out_1.add_line(empty_read[2])
-                out_1.add_line(empty_read[3])
-            else:
-                out_1.add_lines(mate[0:4])
-
-            if len(mate[5]) < shortest_read + 1:
-                out_2.add_line(mate[4])
-                out_2.add_line(empty_read[1])
-                out_2.add_line(empty_read[2])
-                out_2.add_line(empty_read[3])
-            else:
-                out_2.add_lines(mate[4:8])
-
-
-            if flag_log and last_j != j:
-                log.add_line(xx)
-
-            last_j = j
-            if verbose and i % 1 == 10000000: # 10000000
-                print >>sys.stderr,"   %d pair-reads [ %d (%f%%) reads trimmed ]" % (i,j,100*float(j)/float(2*i))
 
         out_1.close()
         out_2.close()
@@ -1049,7 +1110,7 @@ Email: Daniel.Nicorici@gmail.com
 
 """
 
-    version = "%prog 0.97 beta"
+    version = "%prog 0.98 beta"
 
     parser = MyOptionParser(usage       = usage,
                             epilog      = epilog,
@@ -1175,7 +1236,7 @@ Email: Daniel.Nicorici@gmail.com
                       type = "int",
                       dest = "processes",
                       default = 0,
-                      help = """Number of parallel processes/CPUs to be used for computations. In case of value 0 then the program will use all the CPUs which are found. The default value is %default.""")
+                      help = """Maximum number of parallel processes/CPUs to be used for computations. In case of value 0 then the program will try to use, if it see fit, all the CPUs which are found. The default value is %default.""")
 
     ( options , args ) = parser.parse_args()
 
