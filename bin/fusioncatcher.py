@@ -2086,9 +2086,11 @@ if __name__ == "__main__":
     correct_version = 'bowtie version 1.1.2'
     if last_line != correct_version:
         job.close()
-        print >>sys.stderr,"\n\n\nERROR: Wrong version of BOWTIE found! It should be '%s'.\n" % (correct_version,)
-        sys.exit(1)
+        os.system("which bowtie > '%s'" % (outdir('bowtie_path.txt'),))
+        bowtie_path = file(outdir('bowtie_path.txt'),'r').readline().lower().rstrip("\r\n")
+        raise Exception("\n\n\nERROR: Wrong version of BOWTIE found ("+bowtie_path+")! It should be '"+correct_version+"'.\n")
     os.remove(outdir('bowtie_version.txt'))
+
 
 
 
