@@ -393,7 +393,7 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   ```
   
   * specify the paths to the above tools such that *FusionCatcher* can find them. There are two choices.
-   * *Choice A*: Edit the *FusionCatcher* configuration file `configuration.cfg` (type: `nano /apps/fusioncatcher/etc/configuration.cfg` at command line) and make sure that the *FusionCatcher*'s configuration file **'configuration.cfg'** looks like this:
+   * *Choice A*: Edit the *FusionCatcher* configuration file `configuration.cfg` (type: `nano /apps/fusioncatcher/etc/configuration.cfg` at command line), which has priority over `PATH`,  and make sure that the *FusionCatcher*'s configuration file **'configuration.cfg'** looks like this:
    ```
    [paths]
    python = /usr/bin/
@@ -453,7 +453,9 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
    export PATH=/some/other/version/of/python:$PATH
    ```
    
-   > *Note 2*: In some cases it might not be enough to change the Python's path in `.bashrc` file, like for example the case when *FusionCatcher* is run on a server which defaults to another Python than one used to install *FusionCatcher*. In this case it is required that one changes all the [shebangs](http://en.wikipedia.org/wiki/Shebang_(Unix)) of the all Python scripts which belong to *FusionCatcher*. In case that one uses the Python which has the following Python executable path `/some/other/python` than this can be done like this (it changes in place `/usr/bin/env python` into `/some/other/python` in all `/apps/fusioncatcher/bin/*.py`):
+   > *Note 2*: `fusioncatcher/etc/configuration.cfg` **has priority** over `$PATH`. 
+   
+   > *Note 3*: In some cases it might not be enough to change the Python's path in `.bashrc` file, like for example the case when *FusionCatcher* is run on a server which defaults to another Python than one used to install *FusionCatcher*. In this case it is required that one changes all the [shebangs](http://en.wikipedia.org/wiki/Shebang_(Unix)) of the all Python scripts which belong to *FusionCatcher*. In case that one uses the Python which has the following Python executable path `/some/other/python` than this can be done like this (it changes in place `/usr/bin/env python` into `/some/other/python` in all `/apps/fusioncatcher/bin/*.py`):
    ```
    sed -i 's/\/usr\/bin\/env\ python/\/some\/other\/python/g' /apps/fusioncatcher/bin/*.py
    ```
