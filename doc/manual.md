@@ -124,6 +124,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Chang W. et al, **Multi-Dimensional ClinOmics for Precision Therapy of Children and Adolescent Young Adults with Relapsed and Refractory Cancer: A report from the Center for Cancer Research**, Clinical Cancer Research, March 2016, http://dx.doi.org/10.1158/1078-0432.CCR-15-2717
   * Spans L. et al., **Recurrent MALAT1-GLI1 oncogenic fusion and GLI1 upregulation define a subset of plexiform fibromyxoma**, The Journal of Pathology, April 2016, http://dx.doi.org/10.1002/path.4730
   * Micci F. et al., **Cytogenetic and Molecular Profile of Endometrial Stromal Sarcoma**, Genes Chromosomes & Cancer, May 2016, http://dx.doi.org/10.1002/gcc.22380
+  * Olsen K.T. et al., **Novel Fusion Genes and Chimeric Transcripts in Ependymal Tumors**, Genes Chromosomes & Cancer, July 2016, http://dx.doi.org/10.1002/gcc.22392
 
 ---
 
