@@ -125,6 +125,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Spans L. et al., **Recurrent MALAT1-GLI1 oncogenic fusion and GLI1 upregulation define a subset of plexiform fibromyxoma**, The Journal of Pathology, April 2016, http://dx.doi.org/10.1002/path.4730
   * Micci F. et al., **Cytogenetic and Molecular Profile of Endometrial Stromal Sarcoma**, Genes Chromosomes & Cancer, May 2016, http://dx.doi.org/10.1002/gcc.22380
   * Olsen K.T. et al., **Novel Fusion Genes and Chimeric Transcripts in Ependymal Tumors**, Genes Chromosomes & Cancer, July 2016, http://dx.doi.org/10.1002/gcc.22392
+  * Panagopoulos I. et al., **Recurrent fusion of the genes FN1 and ALK in gastrointestinal leiomyomas**, Modern Pathology, July 2016, http://dx.doi.org/10.1038/modpathol.2016.129
 
 ---
 
