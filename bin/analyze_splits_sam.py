@@ -341,7 +341,7 @@ def merge_local_alignment_sam(psl_in, psl_ou, ids_ou = None, ref_ou = None, min_
         xi = 0
 
         for box in itertools.combinations(bucket,2):
-            xi = xi + 1
+            xi += 1
             
             if xi > 100000: # too many combinations
                 break
@@ -357,9 +357,9 @@ def merge_local_alignment_sam(psl_in, psl_ou, ids_ou = None, ref_ou = None, min_
                 if r1_start > r2_start:
                     box = (box[1],box[0])
 
-                r1_start = int(box[0][psl_qStart])
+                #r1_start = int(box[0][psl_qStart])# redundant
                 r1_end = int(box[0][psl_qEnd])
-                r2_start = int(box[1][psl_qStart])
+                #r2_start = int(box[1][psl_qStart])# redundant
                 r2_end = int(box[1][psl_qEnd])
 
                 t1_start = int(box[0][psl_tStart])
