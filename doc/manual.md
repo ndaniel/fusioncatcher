@@ -126,6 +126,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Micci F. et al., **Cytogenetic and Molecular Profile of Endometrial Stromal Sarcoma**, Genes Chromosomes & Cancer, May 2016, http://dx.doi.org/10.1002/gcc.22380
   * Olsen K.T. et al., **Novel Fusion Genes and Chimeric Transcripts in Ependymal Tumors**, Genes Chromosomes & Cancer, July 2016, http://dx.doi.org/10.1002/gcc.22392
   * Panagopoulos I. et al., **Recurrent fusion of the genes FN1 and ALK in gastrointestinal leiomyomas**, Modern Pathology, July 2016, http://dx.doi.org/10.1038/modpathol.2016.129
+  * Barnes D.J. et al., **A germline mutation of CDKN2A and a novel RPLP1-C19MC fusion detected in a rare melanotic neuroectodermal tumor of infancy: a case report**, BMC Cancer, August 2016, http://dx.doi.org/10.1186/s12885-016-2669-3
 
 ---
 
