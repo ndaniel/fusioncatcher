@@ -129,7 +129,11 @@ if __name__=='__main__':
             break
         if first:
             # find the lowest quality score and use it for padding
-            qual = min([min(data[j][:-1]) for j in xrange(len(data)) if (j+i)%4 == 3])
+            #qual = min([min(data[j][:-1]) for j in xrange(len(data)) if (j+i)%4 == 3])
+            try:
+                qual = min([min(data[j][:-1]) for j in xrange(len(data)) if (j+i)%4 == 3 and len(data[j])>1])
+            except:
+                qual = 'F'
             qual = qual * n
             first = False
         if n:
