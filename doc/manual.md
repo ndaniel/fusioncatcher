@@ -127,7 +127,9 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Olsen K.T. et al., **Novel Fusion Genes and Chimeric Transcripts in Ependymal Tumors**, Genes Chromosomes & Cancer, July 2016, http://dx.doi.org/10.1002/gcc.22392
   * Panagopoulos I. et al., **Recurrent fusion of the genes FN1 and ALK in gastrointestinal leiomyomas**, Modern Pathology, July 2016, http://dx.doi.org/10.1038/modpathol.2016.129
   * Barnes D.J. et al., **A germline mutation of CDKN2A and a novel RPLP1-C19MC fusion detected in a rare melanotic neuroectodermal tumor of infancy: a case report**, BMC Cancer, August 2016, http://dx.doi.org/10.1186/s12885-016-2669-3
-
+  * Panagopoulos I. et al., **Gene fusions AHRR-NCOA2, NCOA2-ETV4, ETV4-AHRR, P4HA2-TBCK, and TBCK-P4HA2 resulting from the translocations t(5;8;17)(p15;q13;q21) and t(4;5)(q24;q31) in a soft tissue angiofibroma**, Oncology Reports, Sept. 2016, http://dx.doi.org/10.3892/or.2016.5096
+  
+  
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
