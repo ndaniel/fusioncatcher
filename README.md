@@ -64,6 +64,9 @@ Release history
 ---------------
 A complete release history can be found [here](NEWS).
 
+Official releases
+-----------------
+Old releases and the latest release of FusionCatcher are on https://sourceforge.net/projects/fusioncatcher/files/
 
 Citing
 ------
