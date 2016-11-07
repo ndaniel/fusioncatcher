@@ -11,13 +11,13 @@ contain a small selection of short reads from:
      for cancer gene fusions, BMC Genomics 2014, and
 
 [2] RT-4 bladder cell line from Cancer Cell Line Encyclopedia,
-     http://browser.cghub.ucsc.edu/details/55c315f0-6c8c-4a04-86e5-fc73f35b3619/
+     https://gdc-portal.nci.nih.gov/legacy-archive/files/dc45e1c0-e048-40b5-b48c-8caf3a7bc5ad
 
 [3] EOL-1 acute myeloid leukemia cell line from Cancer Cell Line Encyclopedia,
-     http://browser.cghub.ucsc.edu/details/9f787897-3d61-47a8-a94e-fd26b7888cc2/
+     https://gdc-portal.nci.nih.gov/legacy-archive/files/f8df0beb-ac7f-450f-aa61-eef082f642ae
 
 [4] U-118MG glioblastoma cell line from Cancer Cell Line Encyclopedia,
-     http://browser.cghub.ucsc.edu/details/2a6d6e8f-aabc-4357-9fc8-5cde0e70ac13/
+     https://gdc-portal.nci.nih.gov/legacy-archive/files/2c1a4f66-567b-46e0-9849-a869ac47ffc2
 
 [5] Homo sapiens isolate case 2 IGH (D2-21)/MALT1 reciprocal breakpoint junction 
     genomic sequence, Accession GQ406059,
@@ -25,15 +25,15 @@ contain a small selection of short reads from:
 
 [6] MUTZ-5 pre-B cell acute lymphoblastic leukemia cell line from Cancer 
     Cell Line Encyclopedia,
-     http://browser.cghub.ucsc.edu/details/499c83cb-9390-489f-80f8-6a6f9417df82/
+     https://gdc-portal.nci.nih.gov/legacy-archive/files/b82fb337-1b52-4146-b3a8-7878422a8027
 
 [7] NALM-6 pre-B cell acute lymphoblastic leukemia cell line from Cancer 
     Cell Line Encyclopedia,
-     http://browser.cghub.ucsc.edu/details/b5077268-f161-4708-b9de-3bc5673e8843/
+     https://gdc-portal.nci.nih.gov/legacy-archive/files/6fa77b04-bb16-49c5-8033-79dd76860c97
 
 [8] SU-DHL-1 anaplastic large cell lymphoma cell line from Cancer Cell Line 
     Encyclopedia,
-     http://browser.cghub.ucsc.edu/details/61a94c69-20f1-43e5-a7a8-1f169ed248fa/
+     https://gdc-portal.nci.nih.gov/legacy-archive/files/d6f97294-6cdd-4343-b40d-8277df996576
 
 These short reads were selected such that they cover 16 already known fusion genes,
 which are:
