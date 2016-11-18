@@ -977,6 +977,7 @@ Table 2 - Labels used to describe the found fusion genes (column *Fusion\_ descr
 
 | **Fusion\_description** | **Description** |
 |:------------------------|:----------------|
+| **1000genomes**             | fusion gene has been seen in a healthy sample. It has been found in [RNA-seq data from some samples from 1000 genomes project](http://dx.doi.org/10.1371/journal.pone.0104567). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
 | **antisense**           | one or both genes is a gene coding for [antisense RNA](http://en.wikipedia.org/wiki/Antisense_RNA)|
 | **adjacent**           | both genes forming the fusion are adjacent on the genome (i.e. same strand and there is no other genes situated between them on the same strand)|
 | **banned**              | fusion gene is on a list of known false positive fusion genes. These were found with very strong supporting data in healthy samples (i.e. it showed up in file final-list\_candidate\_fusion\_genes.txt). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
