@@ -130,6 +130,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Panagopoulos I. et al., **Gene fusions AHRR-NCOA2, NCOA2-ETV4, ETV4-AHRR, P4HA2-TBCK, and TBCK-P4HA2 resulting from the translocations t(5;8;17)(p15;q13;q21) and t(4;5)(q24;q31) in a soft tissue angiofibroma**, Oncology Reports, Sept. 2016, http://dx.doi.org/10.3892/or.2016.5096
   * Lang P.Y. et al., **ATR maintains chromosomal integrity during postnatal cerebellar neurogenesis and is required for medulloblastoma formation**, Development, Nov. 2016, http://dx.doi.org/10.1242/dev.139022
   * Gu Z. et al., **Genomic analyses identify recurrent MEF2D fusions in acute lymphoblastic leukaemia**, Nature Communications, Nov. 2016, http://dx.doi.org/10.1038/ncomms13331
+  * Alaei-Mahabadi B. et al., **Global analysis of somatic structural genomic alterations and their impact on gene expression in diverse human cancers**, PNAS, Nov. 2016, http://dx.doi.org/10.1073/pnas.1606220113
   
 ---
 
