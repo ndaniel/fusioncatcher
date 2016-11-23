@@ -131,7 +131,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Lang P.Y. et al., **ATR maintains chromosomal integrity during postnatal cerebellar neurogenesis and is required for medulloblastoma formation**, Development, Nov. 2016, http://dx.doi.org/10.1242/dev.139022
   * Gu Z. et al., **Genomic analyses identify recurrent MEF2D fusions in acute lymphoblastic leukaemia**, Nature Communications, Nov. 2016, http://dx.doi.org/10.1038/ncomms13331
   * Alaei-Mahabadi B. et al., **Global analysis of somatic structural genomic alterations and their impact on gene expression in diverse human cancers**, PNAS, Nov. 2016, http://dx.doi.org/10.1073/pnas.1606220113
-  
+  * Yap K.L. et al., **Diagnostic evaluation of RNA sequencing for the detection of genetic abnormalities associated with Ph-like acute lymphoblastic leukemia (ALL)**, Leukemia & Lymphoma, Nov. 2016, http://dx.doi.org/10.1080/10428194.2016.1219902
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
