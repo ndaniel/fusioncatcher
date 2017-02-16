@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+fbin=""
+fc=$(readlink $0)
+if [[ -z $fc ]]; then
+ fbin=$(dirname $0)
+else
+ fbin=$(dirname $fc)
+fi
+export PATH=$fbin:$PATH
+"$fbin/fusioncatcher.py" "$@"
