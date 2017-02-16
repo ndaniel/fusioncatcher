@@ -7,7 +7,7 @@ It takes a FASTQ file and padds its reads which are shorter than a given size wi
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -129,7 +129,6 @@ if __name__=='__main__':
             break
         if first:
             # find the lowest quality score and use it for padding
-            #qual = min([min(data[j][:-1]) for j in xrange(len(data)) if (j+i)%4 == 3])
             try:
                 qual = min([min(data[j][:-1]) for j in xrange(len(data)) if (j+i)%4 == 3 and len(data[j])>1])
             except:

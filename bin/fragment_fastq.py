@@ -7,7 +7,7 @@ It fragments the input paired-end reads in short reads.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -44,7 +44,6 @@ import sys
 import os
 import datetime
 import optparse
-import multiprocessing
 import itertools
 import string
 import itertools
@@ -397,7 +396,7 @@ def main():
 
 Author: Daniel Nicorici
 Email: Daniel.Nicorici@gmail.com
-(c) 2009-2016 Daniel Nicorici.
+Copyright (c) 2009-2017 Daniel Nicorici
 
 """
 

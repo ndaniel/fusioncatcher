@@ -1,6 +1,20 @@
 Version Release History for FusionCatcher
 =========================================
 
+
+Version 0.99.7a beta - February 17, 2017
+---------------------------------------
+ * added support for Ensembl version 86
+ * speed improvements
+ * added support for more databases of known fusion genes
+ * fixed a rare bug affecting split-fast.py
+ * fixed bug affecting the PATHs for some of tools used by FusionCatcher
+ * fixed bug regarding ZIP64
+ * added fixes from https://github.com/yhoogstrate
+ * fixed several minor bugs
+ * updated manual
+
+
 Version 0.99.6a beta - May 8, 2016
 ---------------------------------------
  * added support for Ensembl version 84
@@ -157,6 +171,7 @@ Version 0.99.2 beta - February 5, 2014
   * fixed several minor bugs
 
 Version 0.99.1 beta - December 4, 2013
+--------------------------------------
   * added support for the latest version of Ensembl database http://www.ensembl.org (that is version 74)
   * all viruses/bacteria/phages found to have reads mapping on their genomes will be listed together with the corresponding reads counts
   * speed improvements when using BLAT aligner

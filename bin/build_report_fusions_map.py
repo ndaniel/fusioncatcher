@@ -9,7 +9,7 @@ fusion gene is generated.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -823,7 +823,7 @@ if __name__ == '__main__':
             fastq[ev] = (w,q)
     # create a ZIP FASTA file where is a file for each candidate fusion gene
     print "Writing the FASTA/FASTQ files containing the supporting reads...",options.output_zip_fasta_filename
-    archive = zipfile.ZipFile(options.output_zip_fasta_filename, 'w', zipfile.ZIP_STORED)
+    archive = zipfile.ZipFile(options.output_zip_fasta_filename, 'w', zipfile.ZIP_STORED, allowZip64 = True)
     for (gg,vv) in support.items():
         # for each candidate fusion
 

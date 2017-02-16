@@ -7,7 +7,7 @@ It trim the short reads from 5-end or 3-end.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

@@ -9,7 +9,7 @@ C. Klijn et al., A comprehensive transcriptional portrait of human cancer cell l
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

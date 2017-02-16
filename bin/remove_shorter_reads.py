@@ -7,7 +7,7 @@ It takes a FASTQ file and removes all reads which are shorter than a given thres
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -123,15 +123,19 @@ if __name__=='__main__':
             for a_line in lines:
                 piece[i] = a_line
                 i = i + 1
-                if i == 4 and len(piece[1]) > threshold:
-                    gc.disable()
-                    bucket.append("%s%s+\n%s"%(piece[0],piece[1],piece[3]))
-                    gc.enable()
+                if i == 4:
+                    if len(piece[1]) > threshold:
+                        gc.disable()
+                        bucket.append("%s%s+\n%s"%(piece[0],piece[1],piece[3]))
+                        gc.enable()
                     piece = [None,None,None,None]
                     i = 0
             if bucket:
                 fou.writelines(bucket)
                 bucket = []
+        if bucket:
+            fou.writelines(bucket)
+            bucket = []
         fid.close()
         fou.close()
     else:
@@ -175,5 +179,8 @@ if __name__=='__main__':
             if bucket:
                 fou.writelines(bucket)
                 bucket = []
+        if bucket:
+            fou.writelines(bucket)
+            bucket = []
         fid.close()
         fou.close()

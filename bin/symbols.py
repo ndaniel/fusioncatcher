@@ -7,7 +7,7 @@ It handles the loci and gene symbols and their synonyms.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -496,7 +496,8 @@ synonym = {
 'AL672183.2':'RPL23AP25',
 'AC090627.1':'THRA1/BTR',
 'STBD1':'FAM47E-STBD1',
-'KIAA0660':'G3BP2'
+'KIAA0660':'G3BP2',
+'MIR143':'CARMN'
 }
 
 # see here for more: http://www.genenames.org/genefamilies/TR#TRG

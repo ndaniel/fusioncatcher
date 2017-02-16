@@ -9,7 +9,7 @@ in here and it is manually curated from Illumina BodyMap2 RNA-seq database of sa
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -3813,7 +3813,27 @@ if __name__ == '__main__':
         ['HSPE1','MOB4'],
         ['NF2','TG'],
         ['PARG','TIMM23B'],
-        ['ST3GAL1','TPO']
+        ['ST3GAL1','TPO'],
+        ['ACTB','EIF4A1'],
+        ['AL513122.1','PTRF'],
+        ['AZGP1','GJC3'],
+        ['BCAP29','DUS4L'],
+        ['BRS3','HTATSF1'],
+        ['COQ8B','NUMBL'],
+        ['HSPE1','MOB4'],
+        ['SIDT2','TAGLN'],
+        ['ANXA1','COL6A1'],
+        ['ATP6V0A1','YBX3'],
+        ['CD44','CTSS'],
+        ['CTSB','PNPLA6'],
+        ['DES','FLNA'],
+        ['EEF1A1','PLD3'],
+        ['FBLN5','MYH11'],
+        ['IGFBP5','VCL'],
+        ['IGKC','TMED5'],
+        ['KLF6','METAP1'],
+        ['RNF216','XKR8'],
+        ['SARS','TLR8-AS1']
 ]
 
 

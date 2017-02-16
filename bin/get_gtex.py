@@ -9,7 +9,7 @@ The Genotype-Tissue Expression Project (GTEx)
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -98,6 +98,7 @@ if __name__ == '__main__':
 
     url1 = '/ndaniel/FusionAnnotator/master/Hg19_CTAT_fusion_annotator_lib/GTEx_v2.txt'
     url2 = '/ndaniel/FusionAnnotator/master/Hg19_CTAT_fusion_annotator_lib/Stransky2014_GTEx_normals_pairs.txt'
+    url3 = '/ndaniel/FusionAnnotator/master/Hg19_CTAT_fusion_annotator_lib/GTEx_Recurrent_Blacklist_July222016.txt'
 
     if options.organism.lower() == 'homo_sapiens':
         today = datetime.date.today()
@@ -111,6 +112,8 @@ if __name__ == '__main__':
             file(tmp_file,'a').write('\n')
             d2 = urllib2.urlopen('%s%s' % (options.server,url2))
             file(tmp_file,'a').write(d2.read())
+#            d3 = urllib2.urlopen('%s%s' % (options.server,url3))
+#            file(tmp_file,'a').write(d3.read())
         except:
             sem = False
             print >>sys.stderr, "Warning: Cannot access '%s%s'! The output file will be empty!" % (options.server,url)

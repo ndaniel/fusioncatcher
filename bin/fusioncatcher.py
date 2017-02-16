@@ -11,7 +11,7 @@ Solexa/HiSeq/NextSeq/MiSeq/MiniSeq).
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -233,7 +233,7 @@ usage = "%prog [options]"
 epilog = ("\n" +
          "Author: Daniel Nicorici \n" +
          "Email: Daniel.Nicorici@gmail.com \n" +
-         "Copyright (c) 2009-2016, Daniel Nicorici \n " +
+         "Copyright (c) 2009-2017, Daniel Nicorici \n " +
          "\n")
 
 description = ("FusionCatcher searches for novel and known somatic gene fusions in RNA-seq \n"+
@@ -242,7 +242,7 @@ description = ("FusionCatcher searches for novel and known somatic gene fusions 
                "Illumina HiSeq 2000, Illumina HiSeq X, Illumina NextSeq 500, \n"+
                "Illumina GAIIx, Illumina GAII, Illumina MiSeq, Illumina MiniSeq). \n")
 
-version = "%prog 0.99.6a beta"
+version = "%prog 0.99.7a beta"
 
 
 if __name__ == "__main__":
@@ -537,6 +537,7 @@ if __name__ == "__main__":
             "metazoa",
             "bodymap2",
             "hpa",
+            "1000genomes",
 #            "non_tumor_cells",
             "fragments",
             "removed"])
@@ -546,10 +547,14 @@ if __name__ == "__main__":
             'ambiguous',
             'distance1000bp',
             'chimerdb2',
+            'chimerdb3kb',
+            'chimerdb3pub',
+            'chimerdb3seq',
             'cacg',
             'duplicates',
             'bodymap2',
             'hpa',
+            "1000genomes",
             'gtex',
             'metazoa',
             'similar_reads',
@@ -745,6 +750,25 @@ if __name__ == "__main__":
 #                             "Default is '%default'."
 
 
+    parser.add_option("--skip-deduplication",
+                      action = "store_true",
+                      dest = "skip_deduplication",
+                      default = False,
+                      help = optparse.SUPPRESS_HELP
+#                      help = "If specified then it skips filtering out "+
+#                             "the reads which are duplicates to each other. "+
+#                             "Default is '%default'."
+                             )
+
+    parser.add_option("--skip-fast",
+                      action = "store_true",
+                      dest = "skip_fast",
+                      default = False,
+                      help = optparse.SUPPRESS_HELP
+#                      help = "If specified then it skips filtering out "+
+#                             "the reads which mapping on same transcript. "+
+#                             "Default is '%default'."
+                             )
 
     parser.add_option("--skip-filter-mt",
                       action = "store_true",
@@ -1004,7 +1028,7 @@ if __name__ == "__main__":
                       action = "store",
                       type = "int",
                       dest = "limit_bowtie",
-                      default = 2**32 - 100000,
+                      default = 2**31 - 100000, # 15.2.2017 was 2**32 - 100000
                       help = optparse.SUPPRESS_HELP)
 #                      help = "The maximum limit of the genome's size which BOWTIE aligner "+
 #                             "is able to handle.  If the genome is larger than this limit "+
@@ -1868,7 +1892,7 @@ if __name__ == "__main__":
             
             timeout = 10
             socket.setdefaulttimeout(timeout)
-            serverversion  = urllib2.urlopen('http://fusioncatcher.blogsite.org/fusioncatcher-version.txt').read()
+            serverversion  = urllib2.urlopen('http://fusioncatcher.hopto.org/fusioncatcher-version.txt').read()
             if serverversion:
                 serverversion = serverversion.splitlines()
                 serverversion = serverversion[0].strip()
@@ -2087,10 +2111,10 @@ if __name__ == "__main__":
     if last_line != correct_version:
         job.close()
         os.system("which bowtie > '%s'" % (outdir('bowtie_path.txt'),))
-        bowtie_path = file(outdir('bowtie_path.txt'),'r').readline().lower().rstrip("\r\n")
-        raise Exception("\n\n\nERROR: Wrong version of BOWTIE found ("+bowtie_path+")! It should be '"+correct_version+"'.\n")
+        bowtie_path = file(outdir('bowtie_path.txt'),'r').readline().rstrip("\r\n")
+        print >>sys.stderr,("\n\n\nERROR: Wrong version of BOWTIE found ("+bowtie_path+")! It should be '"+correct_version+"'. One may specify the path to the correct version in 'fusioncatcher/etc/configuration.cfg'.\n")
+        sys.exit(1)
     os.remove(outdir('bowtie_version.txt'))
-
 
 
 
@@ -2187,9 +2211,14 @@ if __name__ == "__main__":
     correct_version = ('version: 1.0-r68e-dirty','version: 1.0-r82b-dirty')
     if last_line not in correct_version:
         job.close()
-        print >>sys.stderr,"\n\n\nERROR: Wrong version of SeqTK found! It should be '%s'.\n" % (correct_version,)
+        os.system("which seqtk > '%s'" % (outdir('seqtk_path.txt'),))
+        seqtk_path = file(outdir('seqtk_path.txt'),'r').readline().rstrip("\r\n")
+        print >>sys.stderr,("\n\n\nERROR: Wrong version of SeqTK found ("+seqtk_path+")! It should be '"+correct_version+"'. One may specify the path to the correct version in 'fusioncatcher/etc/configuration.cfg'.\n")
         sys.exit(1)
     os.remove(outdir('seqtk_version.txt'))
+
+
+
 
     job.add('printf',kind='program')
     job.add('"\nsed:\n---------\n"',kind='parameter')
@@ -2273,43 +2302,51 @@ if __name__ == "__main__":
         job.add('--version',kind='parameter')
         job.add('>>',info_file,kind='output')
         job.run(error_message = ("Please, check if STAR (from "+
-            "<https://code.google.com/p/rna-star/> and "+
-            "<http://labshare.cshl.edu/shares/gingeraslab/www-data/dobin/STAR/STARreleases/Patches/>) is installed correctly and it "+
+            "<https://github.com/alexdobin/STAR> and "+
+            "<https://github.com/alexdobin/STAR/releases>) is installed correctly and it "+
             "is in the corresponding PATH (or if 'configuration.cfg' file is "+
             "set up correctly)!\n If there is no wish to use STAR aligner then please "+
             "(re)run FusionCatcher using command line option '--skip-star'."))
 
         os.system("STAR --version > '%s'" % (outdir('star_version.txt'),))
         last_line = file(outdir('star_version.txt'),'r').readline().lower().rstrip("\r\n")
-        correct_version = 'star_2.5.1b'
+        correct_version = 'star_2.5.2b'
+        #correct_version = 'star_2.5.2a'
+        #correct_version = 'star_2.5.1b'
         #correct_version = 'star_2.4.2a'
-        if correct_version.lower().startswith('star_2.5'):
+        if not (correct_version.lower().startswith('star_2.1.') or 
+                correct_version.lower().startswith('star_2.2.') or 
+                correct_version.lower().startswith('star_2.3.') or 
+                correct_version.lower().startswith('star_2.4.')):
             star25 = True
         if last_line != correct_version:
             job.close()
-            print >>sys.stderr,"\n\n\nERROR: Wrong version of STAR found! It should be '%s'.\n" % (correct_version,)
+            os.system("which STAR > '%s'" % (outdir('star_path.txt'),))
+            star_path = file(outdir('star_path.txt'),'r').readline().rstrip("\r\n")
+            print >>sys.stderr,"\n\n\nERROR: Wrong version of STAR found ("+star_path+")! It should be '"+correct_version+"'. One may specify the path to the correct version in 'fusioncatcher/etc/configuration.cfg'.\n"
             sys.exit(1)
         os.remove(outdir('star_version.txt'))
 
 
-    if not options.skip_bowtie2:
-        # save version of BOWTIE2 used to analyze the data
-        job.add('printf',kind='program')
-        job.add('"\n\nBOWTIE2:\n------\n"',kind='parameter')
-        job.add('>>',info_file,kind='output')
-        job.run()
-        job.add('bowtie2',kind='program')
-        job.add('--version',kind='parameter')
-        job.add('2>&1',kind='parameter')
-        job.add('|',kind='parameter')
-        job.add('head','-2',kind='parameter')
-        job.add('>>',info_file,kind='output')
-        job.run(error_message = ("Please, check if BOWTIE2 (from "+
-            "<http://bowtie-bio.sourceforge.net/bowtie2/index.shtml> "+
-            "is installed correctly and it "+
-            "is in the corresponding PATH (or if 'configuration.cfg' file is "+
-            "set up correctly)!\n If there is no wish to use BOWTIE2 aligner then please "+
-            "(re)run FusionCatcher using command line option '--skip-bowtie2'."))
+
+
+    # save version of BOWTIE2 used to analyze the data
+    job.add('printf',kind='program')
+    job.add('"\n\nBOWTIE2:\n------\n"',kind='parameter')
+    job.add('>>',info_file,kind='output')
+    job.run()
+    job.add('bowtie2',kind='program')
+    job.add('--version',kind='parameter')
+    job.add('2>&1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('head','-2',kind='parameter')
+    job.add('>>',info_file,kind='output')
+    job.run(error_message = ("Please, check if BOWTIE2 (from "+
+        "<http://bowtie-bio.sourceforge.net/bowtie2/index.shtml> "+
+        "is installed correctly and it "+
+        "is in the corresponding PATH (or if 'configuration.cfg' file is "+
+        "set up correctly)!\n If there is no wish to use BOWTIE2 aligner then please "+
+        "(re)run FusionCatcher using command line option '--skip-bowtie2'."))
 
     if not options.skip_bwa:
         # save version of BWA used to analyze the data
@@ -2962,7 +2999,7 @@ if __name__ == "__main__":
     #            job.run()
 
 
-                job.add('remove_adapter.py',kind='program')
+                job.add('remove-adapter.py',kind='program')
                 job.add('--processes',options.processes,kind='parameter',checksum='no')
                 job.add('--input_1',f,kind='input',temp_path=temp_flag)
                 job.add('--input_2',r,kind='input',temp_path=temp_flag)
@@ -3163,7 +3200,7 @@ if __name__ == "__main__":
     job.add('>>',info_file,kind='output')
     job.run()
 
-    output_file = outdir('origin.fq')
+    output_file = outdir('orig.fq')
     # concatenate reads before trimming
     if len(list_input_files) > 1:
         #job.add('concatenate.py',kind='program')
@@ -3179,6 +3216,104 @@ if __name__ == "__main__":
         job.run()
     else:
         job.link(new_list_input_files[0], output_file, temp_path=temp_flag)
+
+    if not options.skip_deduplication:
+        job.add('LC_ALL=C',kind='program')
+        job.add('cat',kind='parameter')
+        job.add('',outdir('orig.fq'),kind='input',temp_path=temp_flag)
+        job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
+        job.add('paste','- - - - - - - -',kind='parameter')
+        job.add('|',kind='parameter')
+        job.add('pair8removal.py',kind='parameter')
+        job.add('-l','30',kind='parameter')
+        job.add('-i','-',kind='parameter')
+        job.add('-o','-',kind='parameter')
+        job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
+        job.add('sort',kind='parameter')
+        job.add('-k','2,2',kind='parameter')
+        job.add('-k','6,6',kind='parameter')
+        job.add('-u',kind='parameter') # unique
+        job.add('-t',"'\t'",kind='parameter')
+        if sort_buffer:
+            job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+        if sort_parallel:
+            job.add('--parallel',options.processes,kind='parameter',checksum='no')
+        if sort_lzop_compress:
+            job.add('--compress-program','lzop',kind='parameter',checksum='no')
+        elif sort_gzip_compress:
+            job.add('--compress-program','gzip',kind='parameter',checksum='no')
+        job.add('-T',tmp_dir,kind='parameter',checksum='no')
+        job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
+        job.add('tr',kind='parameter')
+        job.add('"\\t"',kind='parameter')
+        job.add('"\\n"',kind='parameter')
+        job.add('>',outdir('origi.fq'),kind='output')
+        job.run()
+    else:
+        job.link(outdir('orig.fq'), outdir('origi.fq'), temp_path=temp_flag)
+
+
+    if not options.skip_fast:
+
+        job.add('seqtk',kind='program')
+        job.add('seq',kind='parameter')
+        job.add('-1',outdir('origi.fq'),kind='input')
+        job.add('>',outdir('ox1.fq'),kind='output')
+        job.run()
+        
+        job.add('seqtk',kind='program')
+        job.add('seq',kind='parameter')
+        job.add('-2',outdir('origi.fq'),kind='input',temp_path=temp_flag)
+        job.add('>',outdir('ox2.fq'),kind='output')
+        job.run()
+    
+        # map reads on transcriptome for fast filtering
+        job.add('bowtie',kind='program')
+        job.add('-t',kind='parameter')
+        job.add('-v','1',kind='parameter') # options.mismatches
+        job.add('-X','800',kind='parameter')
+        job.add('-p',options.processes,kind='parameter',checksum='no')
+        job.add('-k','1',kind='parameter')
+        job.add('--phred33-quals',kind='parameter')
+#        job.add('--tryhard',kind='parameter')
+        job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+#        job.add('--best',kind='parameter')
+        #job.add('--strata',kind='parameter')
+        job.add('--un',outdir('ox.fq'),kind='output',checksum='no') # unmapped reads
+        job.add('--un',outdir('ox_1.fq'),kind='output',command_line='no') # unmapped reads
+        job.add('--un',outdir('ox_2.fq'),kind='output',command_line='no') # unmapped reads
+        job.add('--max',outdir('ox_multiple.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
+        if os.path.isfile(datadir('transcripts_index','.1.ebwtl')):
+            job.add('--large-index',kind='parameter')
+        job.add('',datadir('transcripts_index/'),kind='input')
+        job.add('-1',outdir('ox1.fq'),kind='input',temp_path=temp_flag)
+        job.add('-2',outdir('ox2.fq'),kind='input',temp_path=temp_flag)
+        job.add('',outdir('ox.map'),kind='output',temp_path=temp_flag)
+        job.add('2>',outdir('log_fast-filtering.stdout.txt'),kind='output',checksum='no')
+        job.run()
+
+        # save lengths reads
+        info(job,
+             fromfile = outdir('log_fast-filtering.stdout.txt'),
+             tofile = info_file,
+             top = ["Fast pre-filtering:",
+                    "-------------------"],
+             bottom = "\n\n\n",
+             temp_path=temp_flag)
+
+
+        job.add('seqtk',kind='program')
+        job.add('mergepe',kind='parameter')
+        job.add('',outdir('ox_1.fq'),kind='input',temp_path=temp_flag)
+        job.add('',outdir('ox_2.fq'),kind='input',temp_path=temp_flag)
+        job.add('>',outdir('origin.fq'),kind='output')
+        job.run()
+        
+    else:
+        job.link(outdir('origi.fq'), outdir('origin.fq'), temp_path=temp_flag)
 
     # compute the read lengths for the input file
     job.add('lengths_reads.py',kind='program')
@@ -3221,14 +3356,11 @@ if __name__ == "__main__":
         job.add('compress-reads-ids.py',kind='program')
         job.add('--input',outdir('origin.fq'),kind='input',temp_path=temp_flag)
         job.add('--output',outdir('original.fq'),kind='output')
-        job.add('--count-reads',outdir('log_counts_original_reads.txt'),kind='output')
+        job.add('--count-reads',outdir('log_counts_original_reads.txt'),kind='input')
         job.add('--lowercase',kind='parameter')
         job.run()
     else:
         job.link(outdir('origin.fq'), outdir('original.fq'), temp_path=temp_flag)
-
-
-
 
 
     info(job,
@@ -3252,6 +3384,8 @@ if __name__ == "__main__":
 #    job.add('"\n\n\n"',kind='parameter')
 #    job.add('>>',info_file,kind='output')
 #    job.run()
+
+
 
     if options.sonication > 80 and options.trim_psl_3end_keep < options.sonication and options.sonication <= max_len_reads:
     
@@ -3628,6 +3762,7 @@ if __name__ == "__main__":
         file(info_file,'a').write(t)
         file(log_file,'a').write(t)
         job.clean(outdir('original.fq'),temp_path=temp_flag)
+        job.clean(outdir('origi.fq'),temp_path=temp_flag)
         job.clean(outdir('original.fq.gz'),temp_path=temp_flag)
         job.clean(outdir('originala.fq'),temp_path=temp_flag)
         job.clean(outdir('originala.fq.gz'),temp_path=temp_flag)
@@ -3667,7 +3802,13 @@ if __name__ == "__main__":
                 job.add('>>',info_file,kind='output')
                 job.run()
 
-
+#        if no_reads and max_len_reads > 60 and no_reads < 35000000 and (not is_optparse_provided(parser,'aligners')):
+#            options.skip_bowtie2 = False
+#            job.add('printf',kind='program')
+#            job.add('"\nEnabled automatically Bowtie2 aligner!\n\n"',kind='parameter')
+#            job.add('>>',info_file,kind='output')
+#            job.run()
+                
         if (no_reads and
             (not is_optparse_provided(parser,'spanning_pairs')) and
             (not is_optparse_provided(parser,'spanning_reads')) and
@@ -3758,13 +3899,14 @@ if __name__ == "__main__":
     job.add('-t',kind='parameter')
     #job.add('-q',kind='parameter')
     #job.add('-a',kind='parameter')
-    job.add('-v',options.filter_mismatches,kind='parameter') #options.mismatches
+    #job.add('-v',options.filter_mismatches,kind='parameter') #options.mismatches
+    job.add('-v','1',kind='parameter') #options.mismatches
     job.add('-p',options.processes,kind='parameter',checksum='no')
     #job.add('-m','1',kind='parameter')
     job.add('-k','1',kind='parameter')
     #job.add('--solexa1.3-quals',kind='parameter')
     job.add('--phred33-quals',kind='parameter')
-    job.add('--tryhard',kind='parameter')
+    #job.add('--tryhard',kind='parameter')
     job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
     #job.add('--best',kind='parameter')
     #job.add('--strata',kind='parameter')
@@ -3976,8 +4118,9 @@ if __name__ == "__main__":
     job.add('bowtie',kind='program')
     job.add('-t',kind='parameter')
     #job.add('-q',kind='parameter')
-    job.add('-a',kind='parameter')
+    #job.add('-a',kind='parameter')
     #job.add('-k','2',kind='parameter')
+    job.add('-k','200',kind='parameter')
     job.add('-v','1',kind='parameter') # options.filter_mismatches # stjude
     ##job.add('-v','0',kind='parameter') # options.filter_mismatches # stjude
     job.add('-p',options.processes,kind='parameter',checksum='no')
@@ -4038,6 +4181,7 @@ if __name__ == "__main__":
     job.add('|',kind='parameter')
     job.add('LC_ALL=C',kind='parameter')
     job.add('sort',kind='parameter')
+    job.add('-u',kind='parameter')
     if sort_buffer:
         job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
     if sort_parallel:
@@ -4047,9 +4191,9 @@ if __name__ == "__main__":
     elif sort_gzip_compress:
         job.add('--compress-program','gzip',kind='parameter',checksum='no')
     job.add('-T',tmp_dir,kind='parameter',checksum='no')
-    job.add('|',kind='parameter')
-    job.add('LC_ALL=C',kind='parameter')
-    job.add('uniq',kind='parameter')
+#    job.add('|',kind='parameter')
+#    job.add('LC_ALL=C',kind='parameter')
+#    job.add('uniq',kind='parameter')
     job.add('>',outdir('list-names-reads-filtered_genome.txt'),kind='output')
     job.run()
 
@@ -4113,7 +4257,8 @@ if __name__ == "__main__":
         job.add('bowtie',kind='program')
         job.add('-t',kind='parameter')
         #job.add('-q',kind='parameter')
-        job.add('-a',kind='parameter')
+        #job.add('-a',kind='parameter')
+        job.add('-k','500',kind='parameter')
         job.add('-v',options.mismatches,kind='parameter')
         job.add('-p',options.processes,kind='parameter',checksum='no')
         #job.add('--solexa1.3-quals',kind='parameter')
@@ -4166,6 +4311,7 @@ if __name__ == "__main__":
     job.add('|',kind='parameter')
     job.add('LC_ALL=C',kind='parameter')
     job.add('sort',kind='parameter')
+    job.add('-u',kind='parameter')
     if sort_buffer:
         job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
     if sort_parallel:
@@ -4174,10 +4320,10 @@ if __name__ == "__main__":
         job.add('--compress-program','lzop',kind='parameter',checksum='no')
     elif sort_gzip_compress:
         job.add('--compress-program','gzip',kind='parameter',checksum='no')
-    job.add('-T',tmp_dir,kind='parameter',checksum='no')
-    job.add('|',kind='parameter')
-    job.add('LC_ALL=C',kind='parameter')
-    job.add('uniq',kind='parameter')
+#    job.add('-T',tmp_dir,kind='parameter',checksum='no')
+#    job.add('|',kind='parameter')
+#    job.add('LC_ALL=C',kind='parameter')
+#    job.add('uniq',kind='parameter')
     job.add('>',outdir('list-names-reads-filtered_not-mapped-genome_mapped-transcriptome.txt'),kind='output')
     job.run()
 
@@ -4222,7 +4368,8 @@ if __name__ == "__main__":
     job.add('bowtie',kind='program')
     job.add('-t',kind='parameter')
     #job.add('-q',kind='parameter')
-    job.add('-a',kind='parameter')
+    #job.add('-a',kind='parameter')
+    job.add('-k','500',kind='parameter')
     job.add('-v',options.mismatches,kind='parameter')
     job.add('-p',options.processes,kind='parameter',checksum='no')
     job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
@@ -4268,6 +4415,7 @@ if __name__ == "__main__":
     job.add('|',kind='parameter')
     job.add('LC_ALL=C',kind='parameter')
     job.add('sort',kind='parameter')
+    job.add('-u',kind='parameter')
     if sort_buffer:
         job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
     if sort_parallel:
@@ -4277,9 +4425,9 @@ if __name__ == "__main__":
     elif sort_gzip_compress:
         job.add('--compress-program','gzip',kind='parameter',checksum='no')
     job.add('-T',tmp_dir,kind='parameter',checksum='no')
-    job.add('|',kind='parameter')
-    job.add('LC_ALL=C',kind='parameter')
-    job.add('uniq',kind='parameter')
+#    job.add('|',kind='parameter')
+#    job.add('LC_ALL=C',kind='parameter')
+#    job.add('uniq',kind='parameter')
     job.add('>',outdir('list-names-reads-filtered_unique-mapped-genome_mapped-transcriptome.txt'),kind='output')
     job.run()
 
@@ -4500,6 +4648,7 @@ if __name__ == "__main__":
 
         job.add('LC_ALL=C',kind='program')
         job.add('sort',kind='parameter')
+        job.add('-u',kind='parameter')
         if sort_buffer:
             job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
         if sort_parallel:
@@ -4510,9 +4659,9 @@ if __name__ == "__main__":
             job.add('--compress-program','gzip',kind='parameter',checksum='no')
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
         job.add('',outdir('list_offending_reads_.txt'),kind='input',temp_path=temp_flag)
-        job.add('|',kind='parameter')
-        job.add('LC_ALL=C',kind='parameter')
-        job.add('uniq',kind='parameter')
+#        job.add('|',kind='parameter')
+#        job.add('LC_ALL=C',kind='parameter')
+#        job.add('uniq',kind='parameter')
         job.add('>',outdir('list_offending_reads.txt'),kind='output')
         job.run()
 
@@ -4720,6 +4869,7 @@ if __name__ == "__main__":
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
         job.add('sort',kind='parameter')
+        job.add('-u',kind='parameter')
         if sort_buffer:
             job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
         if sort_parallel:
@@ -4729,9 +4879,9 @@ if __name__ == "__main__":
         elif sort_gzip_compress:
             job.add('--compress-program','gzip',kind='parameter',checksum='no')
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
-        job.add('|',kind='parameter')
-        job.add('LC_ALL=C',kind='parameter')
-        job.add('uniq',kind='parameter')
+#        job.add('|',kind='parameter')
+#        job.add('LC_ALL=C',kind='parameter')
+#        job.add('uniq',kind='parameter')
         job.add('>',outdir('pre-fusion_ids.txt'),kind='output')
         job.run()
 
@@ -5207,9 +5357,55 @@ if __name__ == "__main__":
     job.add('--filter_genes',datadir('hla.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_63.txt'),kind='output')
     job.run()
-    # label fusion genes -- pancreatic
+    # label fusion genes -- 1000 genomes
     job.add('label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_63.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','1000genomes',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('1000genomes.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_64.txt'),kind='output')
+    job.run()
+    # label fusion genes -- 18 cancers
+    job.add('label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_64.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','18cancers',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('18cancers.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_65.txt'),kind='output')
+    job.run()
+    # label fusion genes -- gliomas
+    job.add('label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_65.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','gliomas',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('gliomas.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_66.txt'),kind='output')
+    job.run()
+    # label fusion genes -- ChimerDB 3
+    job.add('label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_66.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','chimerdb3kb',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('chimerdb3kb.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_67.txt'),kind='output')
+    job.run()
+    job.add('label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_67.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','chimerdb3pub',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('chimerdb3pub.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_68.txt'),kind='output')
+    job.run()
+    job.add('label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_68.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','chimerdb3seq',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('chimerdb3seq.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_69.txt'),kind='output')
+    job.run()
+    job.add('label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_69.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','oesophagus',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('oesophagus.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_70.txt'),kind='output')
+    job.run()
+    # label fusion genes -- pancreatic
+    job.add('label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_70.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','pancreases',kind='parameter')
     job.add('--filter_genes',datadir('pancreases.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_1000.txt'),kind='output')
@@ -5319,9 +5515,10 @@ if __name__ == "__main__":
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
         job.add('sort',kind='parameter')
-        job.add('|',kind='parameter')
-        job.add('LC_ALL=C',kind='parameter')
-        job.add('uniq',kind='parameter')
+        job.add('-u',kind='parameter')
+#        job.add('|',kind='parameter')
+#        job.add('LC_ALL=C',kind='parameter')
+#        job.add('uniq',kind='parameter')
         job.add('>',outdir('eporcrlf2_temp.txt'),kind='output')
         job.run()
 
@@ -5414,7 +5611,8 @@ if __name__ == "__main__":
             job.add('bowtie',kind='program')
             job.add('-t',kind='parameter')
             #job.add('-q',kind='parameter')
-            job.add('-a',kind='parameter')
+            #job.add('-a',kind='parameter')
+            job.add('-k','500',kind='parameter')
             job.add('-v','2',kind='parameter') #options.mismatches # stjude # before was 3
             job.add('-p',options.processes,kind='parameter',checksum='no')
             job.add('-m','1',kind='parameter')
@@ -5503,7 +5701,8 @@ if __name__ == "__main__":
                 job.add('bowtie',kind='program')
                 job.add('-t',kind='parameter')
                 #job.add('-q',kind='parameter')
-                job.add('-a',kind='parameter')
+                #job.add('-a',kind='parameter')
+                job.add('-k','200',kind='parameter')
                 job.add('-v','2',kind='parameter') #options.mismatches # stjude # it was 3 before
                 job.add('-p',options.processes,kind='parameter',checksum='no')
                 job.add('-m','1',kind='parameter')
@@ -5616,10 +5815,12 @@ if __name__ == "__main__":
                 job.add('bowtie',kind='program')
                 job.add('-t',kind='parameter')
                 #job.add('-q',kind='parameter')
-                job.add('-v',options.filter_mismatches,kind='parameter') #options.mismatches
+                #job.add('-v',options.filter_mismatches,kind='parameter') #options.mismatches
+                job.add('-v','0',kind='parameter')
                 job.add('-p',options.processes,kind='parameter',checksum='no')
                 #job.add('-m','1',kind='parameter')
-                job.add('-a',kind='parameter')
+                #job.add('-a',kind='parameter')
+                job.add('-k','500',kind='parameter')
                 job.add('--best',kind='parameter')
                 job.add('--strata',kind='parameter')
                 job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
@@ -5670,7 +5871,8 @@ if __name__ == "__main__":
             job.add('-t',kind='parameter')
             #job.add('-q',kind='parameter')
             #job.add('-a',kind='parameter')
-            job.add('-v',options.filter_mismatches,kind='parameter') #options.mismatches
+            #job.add('-v',options.filter_mismatches,kind='parameter') #options.mismatches
+            job.add('-v','0',kind='parameter') #options.mismatches
             job.add('-p',options.processes,kind='parameter',checksum='no')
             #job.add('-m','1',kind='parameter')
             job.add('-k','1',kind='parameter')
@@ -5770,6 +5972,7 @@ if __name__ == "__main__":
         job.add('-v','1',kind='parameter') #options.mismatches
         job.add('-p',options.processes,kind='parameter',checksum='no')
 #        job.add('-m','1',kind='parameter')
+        job.add('-k','1',kind='parameter')
         job.add('--tryhard',kind='parameter')
         job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
 #        job.add('--best',kind='parameter')
@@ -5916,6 +6119,7 @@ if __name__ == "__main__":
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
         job.add('sort',kind='parameter')
+        job.add('-u',kind='parameter')
         if sort_buffer:
             job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
         if sort_parallel:
@@ -5925,9 +6129,9 @@ if __name__ == "__main__":
         elif sort_gzip_compress:
             job.add('--compress-program','gzip',kind='parameter',checksum='no')
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
-        job.add('|',kind='parameter')
-        job.add('LC_ALL=C',kind='parameter')
-        job.add('uniq',kind='parameter')
+#        job.add('|',kind='parameter')
+#        job.add('LC_ALL=C',kind='parameter')
+#        job.add('uniq',kind='parameter')
         job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.txt'),kind='output')
         job.run()
 
@@ -5942,6 +6146,7 @@ if __name__ == "__main__":
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
         job.add('sort',kind='parameter')
+        job.add('-u',kind='parameter')
         if sort_buffer:
             job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
         if sort_parallel:
@@ -5951,9 +6156,9 @@ if __name__ == "__main__":
         elif sort_gzip_compress:
             job.add('--compress-program','gzip',kind='parameter',checksum='no')
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
-        job.add('|',kind='parameter')
-        job.add('LC_ALL=C',kind='parameter')
-        job.add('uniq',kind='parameter')
+#        job.add('|',kind='parameter')
+#        job.add('LC_ALL=C',kind='parameter')
+#        job.add('uniq',kind='parameter')
         job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final2.txt'),kind='input')
         job.run()
 
@@ -5967,6 +6172,7 @@ if __name__ == "__main__":
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
         job.add('sort',kind='parameter')
+        job.add('-u',kind='parameter')
         if sort_buffer:
             job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
         if sort_parallel:
@@ -5976,9 +6182,9 @@ if __name__ == "__main__":
         elif sort_gzip_compress:
             job.add('--compress-program','gzip',kind='parameter',checksum='no')
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
-        job.add('|',kind='parameter')
-        job.add('LC_ALL=C',kind='parameter')
-        job.add('uniq',kind='parameter')
+#        job.add('|',kind='parameter')
+#        job.add('LC_ALL=C',kind='parameter')
+#        job.add('uniq',kind='parameter')
         job.add('>',outdir('original_important.txt'),kind='output')
         job.run()
 
@@ -6173,7 +6379,8 @@ if __name__ == "__main__":
                 job.add('bowtie',kind='program')
                 job.add('-t',kind='parameter')
                 #job.add('-q',kind='parameter')
-                job.add('-a',kind='parameter')
+                #job.add('-a',kind='parameter')
+                job.add('-k','1000',kind='parameter')
                 job.add('-v',options.mismatches,kind='parameter')
                 job.add('-p',options.processes,kind='parameter',checksum='no')
                 if os.path.isfile(os.path.join(part+'_dir','.1.ebwtl')):
@@ -6239,7 +6446,8 @@ if __name__ == "__main__":
             job.add('bowtie',kind='program')
             job.add('-t',kind='parameter')
             #job.add('-q',kind='parameter')
-            job.add('-a',kind='parameter')
+            #job.add('-a',kind='parameter')
+            job.add('-k','1000',kind='parameter')
             job.add('-v',options.mismatches,kind='parameter')
             job.add('-p',options.processes,kind='parameter',checksum='no')
             if os.path.isfile(outdir('exon-exon_fusion-genes','.1.ebwtl')):
@@ -6398,6 +6606,7 @@ if __name__ == "__main__":
             job.add('|',kind='parameter')
             job.add('LC_ALL=C',kind='parameter')
             job.add('sort',kind='parameter')
+            job.add('-u',kind='parameter')
             if sort_buffer:
                 job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
             if sort_parallel:
@@ -6407,9 +6616,9 @@ if __name__ == "__main__":
             elif sort_gzip_compress:
                 job.add('--compress-program','gzip',kind='parameter',checksum='no')
             job.add('-T',tmp_dir,kind='parameter',checksum='no')
-            job.add('|',kind='parameter')
-            job.add('LC_ALL=C',kind='parameter')
-            job.add('uniq',kind='parameter')
+#            job.add('|',kind='parameter')
+#            job.add('LC_ALL=C',kind='parameter')
+#            job.add('uniq',kind='parameter')
             job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome.txt'),kind='output')
             job.run()
 
@@ -6435,6 +6644,7 @@ if __name__ == "__main__":
                 job.add('|',kind='parameter')
                 job.add('LC_ALL=C',kind='parameter')
                 job.add('sort',kind='parameter')
+                job.add('-u',kind='parameter')
                 if sort_buffer:
                     job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                 if sort_parallel:
@@ -6444,9 +6654,9 @@ if __name__ == "__main__":
                 elif sort_gzip_compress:
                     job.add('--compress-program','gzip',kind='parameter',checksum='no')
                 job.add('-T',tmp_dir,kind='parameter',checksum='no')
-                job.add('|',kind='parameter')
-                job.add('LC_ALL=C',kind='parameter')
-                job.add('uniq',kind='parameter')
+#                job.add('|',kind='parameter')
+#                job.add('LC_ALL=C',kind='parameter')
+#                job.add('uniq',kind='parameter')
                 job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome2.txt'),kind='output')
                 job.run()
             else:
@@ -6861,6 +7071,7 @@ if __name__ == "__main__":
                         job.add('|',kind='parameter')
                         job.add('LC_ALL=C',kind='parameter')
                         job.add('sort',kind='parameter')
+                        job.add('-u',kind='parameter')
                         if sort_buffer:
                             job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                         if sort_parallel:
@@ -6870,9 +7081,9 @@ if __name__ == "__main__":
                         elif sort_gzip_compress:
                             job.add('--compress-program','gzip',kind='parameter',checksum='no')
                         job.add('-T',tmp_dir,kind='parameter',checksum='no')
-                        job.add('|',kind='parameter')
-                        job.add('LC_ALL=C',kind='parameter')
-                        job.add('uniq',kind='parameter')
+#                        job.add('|',kind='parameter')
+#                        job.add('LC_ALL=C',kind='parameter')
+#                        job.add('uniq',kind='parameter')
                         #job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl_all.map'),kind='input',temp_path = temp_flag) # XXX
                         job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl_all_uniq.map.')+str(i),kind='output',dest_list='genegeneunique')
                         job.run()
@@ -6925,6 +7136,7 @@ if __name__ == "__main__":
                     job.add('|',kind='parameter')
                     job.add('LC_ALL=C',kind='parameter')
                     job.add('sort',kind='parameter')
+                    job.add('-u',kind='parameter')
                     if sort_buffer:
                         job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                     if sort_parallel:
@@ -6934,9 +7146,9 @@ if __name__ == "__main__":
                     elif sort_gzip_compress:
                         job.add('--compress-program','gzip',kind='parameter',checksum='no')
                     job.add('-T',tmp_dir,kind='parameter',checksum='no')
-                    job.add('|',kind='parameter')
-                    job.add('LC_ALL=C',kind='parameter')
-                    job.add('uniq',kind='parameter')
+#                    job.add('|',kind='parameter')
+#                    job.add('LC_ALL=C',kind='parameter')
+#                    job.add('uniq',kind='parameter')
                     #job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl_all.map'),kind='input',temp_path = temp_flag) # XXX
                     job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl_all_uniq.map'),kind='output')
                     job.run()
@@ -7072,7 +7284,7 @@ if __name__ == "__main__":
 
                 job.add('seqtk',kind='program')
                 job.add('seq',kind='parameter')
-                job.add('-a',kind='parameter')
+                job.add('-A',kind='parameter')
                 job.add('',outdir('reads_gene-gene_no-str.fq'),kind='input',temp_path = temp_flag if options.skip_star and options.skip_bowtie2 and options.skip_bwa else 'no')
                 job.add('>',outdir('reads_gene-gene.fa'),kind='output')
                 job.run()
@@ -7435,6 +7647,7 @@ if __name__ == "__main__":
                             else:
                                 job.add('LC_ALL=C',kind='program')
                                 job.add('sort',kind='parameter')
+                                job.add('-u',kind='parameter')
                                 if sort_buffer:
                                     job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                                 if sort_parallel:
@@ -7445,9 +7658,9 @@ if __name__ == "__main__":
                                     job.add('--compress-program','gzip',kind='parameter',checksum='no')
                                 job.add('-T',tmp_dir,kind='parameter',checksum='no')
                                 job.add('',outdir('reads-ids_clip_psl_star.txt.')+str(i),kind='input',temp_path=temp_flag)
-                                job.add('|',kind='parameter')
-                                job.add('LC_ALL=C',kind='parameter')
-                                job.add('uniq',kind='parameter')
+#                                job.add('|',kind='parameter')
+#                                job.add('LC_ALL=C',kind='parameter')
+#                                job.add('uniq',kind='parameter')
                                 job.add('>',outdir('reads-ids_clip_star_psl_uniq.txt.')+str(i),kind='output')
                                 job.run()
 
@@ -7460,6 +7673,7 @@ if __name__ == "__main__":
                                 job.add('|',kind='parameter')
                                 job.add('LC_ALL=C',kind='parameter')
                                 job.add('sort',kind='parameter')
+                                job.add('-u',kind='parameter')
                                 if sort_buffer:
                                     job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                                 if sort_parallel:
@@ -7469,9 +7683,9 @@ if __name__ == "__main__":
                                 elif sort_gzip_compress:
                                     job.add('--compress-program','gzip',kind='parameter',checksum='no')
                                 job.add('-T',tmp_dir,kind='parameter',checksum='no')
-                                job.add('|',kind='parameter')
-                                job.add('LC_ALL=C',kind='parameter')
-                                job.add('uniq',kind='parameter')
+#                                job.add('|',kind='parameter')
+#                                job.add('LC_ALL=C',kind='parameter')
+#                                job.add('uniq',kind='parameter')
                                 job.add('|',kind='parameter')
                                 job.add('seqtk',kind='parameter')
                                 job.add('subseq',kind='parameter')
@@ -7496,6 +7710,7 @@ if __name__ == "__main__":
 
                                 job.add('LC_ALL=C',kind='program')
                                 job.add('sort',kind='parameter')
+                                job.add('-u',kind='parameter')
                                 if sort_buffer:
                                     job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                                 if sort_parallel:
@@ -7506,9 +7721,9 @@ if __name__ == "__main__":
                                     job.add('--compress-program','gzip',kind='parameter',checksum='no')
                                 job.add('-T',tmp_dir,kind='parameter',checksum='no')
                                 job.add('',outdir('reads-refs_clip_psl_star.txt.')+str(i),kind='input',temp_path=temp_flag)
-                                job.add('|',kind='parameter')
-                                job.add('LC_ALL=C',kind='parameter')
-                                job.add('uniq',kind='parameter')
+#                                job.add('|',kind='parameter')
+#                                job.add('LC_ALL=C',kind='parameter')
+#                                job.add('uniq',kind='parameter')
                                 job.add('>',outdir('reads-refs_clip_star_psl_uniq.txt.')+str(i),kind='output')
                                 job.run()
 
@@ -7537,7 +7752,8 @@ if __name__ == "__main__":
                                 job.add('bowtie',kind='program')
                                 job.add('-t',kind='parameter')
                                 #job.add('-q',kind='parameter')
-                                job.add('-a',kind='parameter')
+                                #job.add('-a',kind='parameter')
+                                job.add('-k','500',kind='parameter')
                                 job.add('-v',options.mismatches,kind='parameter')
                                 job.add('-p',options.processes,kind='parameter',checksum='no')
                                 if os.path.isfile(os.path.join(gdb,'.1.ebwtl')):
@@ -7623,6 +7839,7 @@ if __name__ == "__main__":
                                     job.add('|',kind='parameter')
                                     job.add('LC_ALL=C',kind='parameter')
                                     job.add('sort',kind='parameter')
+                                    job.add('-u',kind='parameter')
                                     if sort_buffer:
                                         job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                                     if sort_parallel:
@@ -7632,9 +7849,9 @@ if __name__ == "__main__":
                                     elif sort_gzip_compress:
                                         job.add('--compress-program','gzip',kind='parameter',checksum='no')
                                     job.add('-T',tmp_dir,kind='parameter',checksum='no')
-                                    job.add('|',kind='parameter')
-                                    job.add('LC_ALL=C',kind='parameter')
-                                    job.add('uniq',kind='parameter')
+#                                    job.add('|',kind='parameter')
+#                                    job.add('LC_ALL=C',kind='parameter')
+#                                    job.add('uniq',kind='parameter')
                                     job.add('|',kind='parameter')
                                     job.add('seqtk',kind='parameter')
                                     job.add('subseq',kind='parameter')
@@ -7689,7 +7906,8 @@ if __name__ == "__main__":
                                         job.add('bowtie',kind='program')
                                         job.add('-t',kind='parameter')
                                         #job.add('-q',kind='parameter')
-                                        job.add('-a',kind='parameter')
+                                        #job.add('-a',kind='parameter')
+                                        job.add('-k','500',kind='parameter')
                                         #job.add('-v',options.mismatches,kind='parameter')
                                         job.add('-v',options.mismatches+1,kind='parameter') # 2 here is not enough for IGH!!!!
                                         job.add('-p',options.processes,kind='parameter',checksum='no')
@@ -8027,6 +8245,7 @@ if __name__ == "__main__":
                         else:
                             job.add('LC_ALL=C',kind='program')
                             job.add('sort',kind='parameter')
+                            job.add('-u',kind='parameter')
                             if sort_buffer:
                                 job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                             if sort_parallel:
@@ -8037,9 +8256,9 @@ if __name__ == "__main__":
                                 job.add('--compress-program','gzip',kind='parameter',checksum='no')
                             job.add('-T',tmp_dir,kind='parameter',checksum='no')
                             job.add('',outdir('reads-ids_clip_psl_star.txt'),kind='input',temp_path=temp_flag)
-                            job.add('|',kind='parameter')
-                            job.add('LC_ALL=C',kind='parameter')
-                            job.add('uniq',kind='parameter')
+#                            job.add('|',kind='parameter')
+#                            job.add('LC_ALL=C',kind='parameter')
+#                            job.add('uniq',kind='parameter')
                             job.add('>',outdir('reads-ids_clip_star_psl_uniq.txt'),kind='output')
                             job.run()
 
@@ -8052,6 +8271,7 @@ if __name__ == "__main__":
                             job.add('|',kind='parameter')
                             job.add('LC_ALL=C',kind='parameter')
                             job.add('sort',kind='parameter')
+                            job.add('-u',kind='parameter')
                             if sort_buffer:
                                 job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                             if sort_parallel:
@@ -8061,9 +8281,9 @@ if __name__ == "__main__":
                             elif sort_gzip_compress:
                                 job.add('--compress-program','gzip',kind='parameter',checksum='no')
                             job.add('-T',tmp_dir,kind='parameter',checksum='no')
-                            job.add('|',kind='parameter')
-                            job.add('LC_ALL=C',kind='parameter')
-                            job.add('uniq',kind='parameter')
+#                            job.add('|',kind='parameter')
+#                            job.add('LC_ALL=C',kind='parameter')
+#                            job.add('uniq',kind='parameter')
                             job.add('|',kind='parameter')
                             job.add('seqtk',kind='parameter')
                             job.add('subseq',kind='parameter')
@@ -8089,6 +8309,7 @@ if __name__ == "__main__":
 
                             job.add('LC_ALL=C',kind='program')
                             job.add('sort',kind='parameter')
+                            job.add('-u',kind='parameter')
                             if sort_buffer:
                                 job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                             if sort_parallel:
@@ -8099,9 +8320,9 @@ if __name__ == "__main__":
                                 job.add('--compress-program','gzip',kind='parameter',checksum='no')
                             job.add('-T',tmp_dir,kind='parameter',checksum='no')
                             job.add('',outdir('reads-refs_clip_psl_star.txt'),kind='input',temp_path=temp_flag)
-                            job.add('|',kind='parameter')
-                            job.add('LC_ALL=C',kind='parameter')
-                            job.add('uniq',kind='parameter')
+#                            job.add('|',kind='parameter')
+#                            job.add('LC_ALL=C',kind='parameter')
+#                            job.add('uniq',kind='parameter')
                             job.add('>',outdir('reads-refs_clip_star_psl_uniq.txt'),kind='output')
                             job.run()
 
@@ -8128,7 +8349,8 @@ if __name__ == "__main__":
                             job.add('bowtie',kind='program')
                             job.add('-t',kind='parameter')
                             #job.add('-q',kind='parameter')
-                            job.add('-a',kind='parameter')
+                            #job.add('-a',kind='parameter')
+                            job.add('-k','500',kind='parameter')
                             job.add('-v',options.mismatches,kind='parameter')
                             job.add('-p',options.processes,kind='parameter',checksum='no')
                             if os.path.isfile(os.path.join(outdir('gene-gene-bowtie'),'.1.ebwtl')):
@@ -8212,6 +8434,7 @@ if __name__ == "__main__":
                                 job.add('|',kind='parameter')
                                 job.add('LC_ALL=C',kind='parameter')
                                 job.add('sort',kind='parameter')
+                                job.add('-u',kind='parameter')
                                 if sort_buffer:
                                     job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                                 if sort_parallel:
@@ -8221,9 +8444,9 @@ if __name__ == "__main__":
                                 elif sort_gzip_compress:
                                     job.add('--compress-program','gzip',kind='parameter',checksum='no')
                                 job.add('-T',tmp_dir,kind='parameter',checksum='no')
-                                job.add('|',kind='parameter')
-                                job.add('LC_ALL=C',kind='parameter')
-                                job.add('uniq',kind='parameter')
+#                                job.add('|',kind='parameter')
+#                                job.add('LC_ALL=C',kind='parameter')
+#                                job.add('uniq',kind='parameter')
                                 job.add('|',kind='parameter')
                                 job.add('seqtk',kind='parameter')
                                 job.add('subseq',kind='parameter')
@@ -8278,7 +8501,8 @@ if __name__ == "__main__":
                                     job.add('bowtie',kind='program')
                                     job.add('-t',kind='parameter')
                                     #job.add('-q',kind='parameter')
-                                    job.add('-a',kind='parameter')
+                                    #job.add('-a',kind='parameter')
+                                    job.add('-k','500',kind='parameter')
                                     #job.add('-v',options.mismatches,kind='parameter')
                                     job.add('-v',options.mismatches+1,kind='parameter') # 2 here is not enough for IGH!!!!
                                     job.add('-p',options.processes,kind='parameter',checksum='no')
@@ -8551,6 +8775,7 @@ if __name__ == "__main__":
                         job.add('-',kind='parameter')
                         job.add('>',outdir('candidates_fusion_genes_reads_star_last.txt'),kind='output')
                         job.run()
+
                     else:
                         job.link(outdir('candidates_fusion_genes_reads_star.txt'),
                                  outdir('candidates_fusion_genes_reads_star_last.txt'),
@@ -8691,6 +8916,7 @@ if __name__ == "__main__":
                         else:
                             job.add('LC_ALL=C',kind='program')
                             job.add('sort',kind='parameter')
+                            job.add('-u',kind='parameter')
                             if sort_buffer:
                                 job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                             if sort_parallel:
@@ -8701,9 +8927,9 @@ if __name__ == "__main__":
                                 job.add('--compress-program','gzip',kind='parameter',checksum='no')
                             job.add('-T',tmp_dir,kind='parameter',checksum='no')
                             job.add('',outdir('reads-ids_clip_psl_bowtie2.txt.')+str(i),kind='input',temp_path=temp_flag)
-                            job.add('|',kind='parameter')
-                            job.add('LC_ALL=C',kind='parameter')
-                            job.add('uniq',kind='parameter')
+#                            job.add('|',kind='parameter')
+#                            job.add('LC_ALL=C',kind='parameter')
+#                            job.add('uniq',kind='parameter')
                             job.add('>',outdir('reads-ids_clip_bowtie2_psl_uniq.txt.')+str(i),kind='output')
                             job.run()
 
@@ -8716,6 +8942,7 @@ if __name__ == "__main__":
                             job.add('|',kind='parameter')
                             job.add('LC_ALL=C',kind='parameter')
                             job.add('sort',kind='parameter')
+                            job.add('-u',kind='parameter')
                             if sort_buffer:
                                 job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                             if sort_parallel:
@@ -8725,9 +8952,9 @@ if __name__ == "__main__":
                             elif sort_gzip_compress:
                                 job.add('--compress-program','gzip',kind='parameter',checksum='no')
                             job.add('-T',tmp_dir,kind='parameter',checksum='no')
-                            job.add('|',kind='parameter')
-                            job.add('LC_ALL=C',kind='parameter')
-                            job.add('uniq',kind='parameter')
+#                            job.add('|',kind='parameter')
+#                            job.add('LC_ALL=C',kind='parameter')
+#                            job.add('uniq',kind='parameter')
                             job.add('|',kind='parameter')
                             job.add('seqtk',kind='parameter')
                             job.add('subseq',kind='parameter')
@@ -8752,6 +8979,7 @@ if __name__ == "__main__":
 
                             job.add('LC_ALL=C',kind='program')
                             job.add('sort',kind='parameter')
+                            job.add('-u',kind='parameter')
                             if sort_buffer:
                                 job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                             if sort_parallel:
@@ -8762,9 +8990,9 @@ if __name__ == "__main__":
                                 job.add('--compress-program','gzip',kind='parameter',checksum='no')
                             job.add('-T',tmp_dir,kind='parameter',checksum='no')
                             job.add('',outdir('reads-refs_clip_psl_bowtie2.txt.')+str(i),kind='input',temp_path=temp_flag)
-                            job.add('|',kind='parameter')
-                            job.add('LC_ALL=C',kind='parameter')
-                            job.add('uniq',kind='parameter')
+#                            job.add('|',kind='parameter')
+#                            job.add('LC_ALL=C',kind='parameter')
+#                            job.add('uniq',kind='parameter')
                             job.add('>',outdir('reads-refs_clip_bowtie2_psl_uniq.txt.')+str(i),kind='output')
                             job.run()
 
@@ -8794,7 +9022,8 @@ if __name__ == "__main__":
                             job.add('bowtie',kind='program')
                             job.add('-t',kind='parameter')
                             #job.add('-q',kind='parameter')
-                            job.add('-a',kind='parameter')
+                            #job.add('-a',kind='parameter')
+                            job.add('-k','500',kind='parameter')
                             job.add('-v',options.mismatches,kind='parameter')
                             job.add('-p',options.processes,kind='parameter',checksum='no')
                             if os.path.isfile(os.path.join(gdb,'.1.ebwtl')):
@@ -8951,6 +9180,7 @@ if __name__ == "__main__":
                     else:
                         job.add('LC_ALL=C',kind='program')
                         job.add('sort',kind='parameter')
+                        job.add('-u',kind='parameter')
                         if sort_buffer:
                             job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                         if sort_parallel:
@@ -8961,9 +9191,9 @@ if __name__ == "__main__":
                             job.add('--compress-program','gzip',kind='parameter',checksum='no')
                         job.add('-T',tmp_dir,kind='parameter',checksum='no')
                         job.add('',outdir('reads-ids_clip_psl_bowtie2.txt'),kind='input',temp_path=temp_flag)
-                        job.add('|',kind='parameter')
-                        job.add('LC_ALL=C',kind='parameter')
-                        job.add('uniq',kind='parameter')
+#                        job.add('|',kind='parameter')
+#                        job.add('LC_ALL=C',kind='parameter')
+#                        job.add('uniq',kind='parameter')
                         job.add('>',outdir('reads-ids_clip_bowtie2_psl_uniq.txt'),kind='output')
                         job.run()
 
@@ -8976,6 +9206,7 @@ if __name__ == "__main__":
                         job.add('|',kind='parameter')
                         job.add('LC_ALL=C',kind='parameter')
                         job.add('sort',kind='parameter')
+                        job.add('-u',kind='parameter')
                         if sort_buffer:
                             job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                         if sort_parallel:
@@ -8985,9 +9216,9 @@ if __name__ == "__main__":
                         elif sort_gzip_compress:
                             job.add('--compress-program','gzip',kind='parameter',checksum='no')
                         job.add('-T',tmp_dir,kind='parameter',checksum='no')
-                        job.add('|',kind='parameter')
-                        job.add('LC_ALL=C',kind='parameter')
-                        job.add('uniq',kind='parameter')
+#                        job.add('|',kind='parameter')
+#                        job.add('LC_ALL=C',kind='parameter')
+#                        job.add('uniq',kind='parameter')
                         job.add('|',kind='parameter')
                         job.add('seqtk',kind='parameter')
                         job.add('subseq',kind='parameter')
@@ -9012,6 +9243,7 @@ if __name__ == "__main__":
 
                         job.add('LC_ALL=C',kind='program')
                         job.add('sort',kind='parameter')
+                        job.add('-u',kind='parameter')
                         if sort_buffer:
                             job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                         if sort_parallel:
@@ -9022,9 +9254,9 @@ if __name__ == "__main__":
                             job.add('--compress-program','gzip',kind='parameter',checksum='no')
                         job.add('-T',tmp_dir,kind='parameter',checksum='no')
                         job.add('',outdir('reads-refs_clip_psl_bowtie2.txt'),kind='input',temp_path=temp_flag)
-                        job.add('|',kind='parameter')
-                        job.add('LC_ALL=C',kind='parameter')
-                        job.add('uniq',kind='parameter')
+#                        job.add('|',kind='parameter')
+#                        job.add('LC_ALL=C',kind='parameter')
+#                        job.add('uniq',kind='parameter')
                         job.add('>',outdir('reads-refs_clip_bowtie2_psl_uniq.txt'),kind='output')
                         job.run()
 
@@ -9050,7 +9282,8 @@ if __name__ == "__main__":
                         job.add('bowtie',kind='program')
                         job.add('-t',kind='parameter')
                         #job.add('-q',kind='parameter')
-                        job.add('-a',kind='parameter')
+                        #job.add('-a',kind='parameter')
+                        job.add('-k','500',kind='parameter')
                         job.add('-v',options.mismatches,kind='parameter')
                         job.add('-p',options.processes,kind='parameter',checksum='no')
                         if os.path.isfile(os.path.join(outdir('gene-gene-bowtie'),'.1.ebwtl')):
@@ -9296,6 +9529,7 @@ if __name__ == "__main__":
                     else:
                         job.add('LC_ALL=C',kind='program')
                         job.add('sort',kind='parameter')
+                        job.add('-u',kind='parameter')
                         if sort_buffer:
                             job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                         if sort_parallel:
@@ -9306,9 +9540,9 @@ if __name__ == "__main__":
                             job.add('--compress-program','gzip',kind='parameter',checksum='no')
                         job.add('-T',tmp_dir,kind='parameter',checksum='no')
                         job.add('',outdir('reads-ids_clip_psl_bwa.txt.')+str(i),kind='input',temp_path=temp_flag)
-                        job.add('|',kind='parameter')
-                        job.add('LC_ALL=C',kind='parameter')
-                        job.add('uniq',kind='parameter')
+#                        job.add('|',kind='parameter')
+#                        job.add('LC_ALL=C',kind='parameter')
+#                        job.add('uniq',kind='parameter')
                         job.add('>',outdir('reads-ids_clip_bwa_psl_uniq.txt.')+str(i),kind='output')
                         job.run()
 
@@ -9321,6 +9555,7 @@ if __name__ == "__main__":
                         job.add('|',kind='parameter')
                         job.add('LC_ALL=C',kind='parameter')
                         job.add('sort',kind='parameter')
+                        job.add('-u',kind='parameter')
                         if sort_buffer:
                             job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
                         if sort_parallel:
@@ -9330,9 +9565,9 @@ if __name__ == "__main__":
                         elif sort_gzip_compress:
                             job.add('--compress-program','gzip',kind='parameter',checksum='no')
                         job.add('-T',tmp_dir,kind='parameter',checksum='no')
-                        job.add('|',kind='parameter')
-                        job.add('LC_ALL=C',kind='parameter')
-                        job.add('uniq',kind='parameter')
+#                        job.add('|',kind='parameter')
+#                        job.add('LC_ALL=C',kind='parameter')
+#                        job.add('uniq',kind='parameter')
                         job.add('|',kind='parameter')
                         job.add('seqtk',kind='parameter')
                         job.add('subseq',kind='parameter')
@@ -9370,7 +9605,8 @@ if __name__ == "__main__":
                         job.add('bowtie',kind='program')
                         job.add('-t',kind='parameter')
                         #job.add('-q',kind='parameter')
-                        job.add('-a',kind='parameter')
+                        #job.add('-a',kind='parameter')
+                        job.add('-k','500',kind='parameter')
                         job.add('-v',options.mismatches,kind='parameter')
                         job.add('-p',options.processes,kind='parameter',checksum='no')
                         if os.path.isfile(os.path.join(gdb,'.1.ebwtl')):

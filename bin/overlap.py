@@ -7,7 +7,7 @@ Gives information regarding the overlap of the mate-reads (i.e. library/fragment
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -417,7 +417,7 @@ def overlap(input_1_filename,
                 library[f] = library.get(f,0) + 1
             i = i + 1
             if i % 10000000 == 0:
-                print >>sys.stderr,"Reading... %i reads" % (i,)
+                print >>sys.stderr,"Reading... %d reads" % (i,)
     else: # flag_log
         log = lines_to_file(output_alignment_filename)
 
@@ -447,7 +447,7 @@ def overlap(input_1_filename,
 
             i = i + 1
             if i % 10000000 == 0:
-                print >>sys.stderr,"Reading... %i reads" % (i,)
+                print >>sys.stderr,"Reading... %d reads" % (i,)
         log.close()
         
     pool.close()

@@ -23,7 +23,7 @@ found subdirectories will be analyzed one by one by FusionCatcher
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -324,7 +324,7 @@ FUSIONCATCHER-BATCH.PY version 0.12
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 It is a wrapper for 'fusioncatcher.py' which allows to run 'fusioncatcher.py' in
 batch mode where the input is a directory which contains the directories for

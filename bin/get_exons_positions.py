@@ -7,7 +7,7 @@ It downloads the positions of all exons from the Ensembl database.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -42,7 +42,7 @@ import sys
 import os
 import socket
 # timeout in seconds
-timeout = 6000 # one hour
+timeout = 150 # one hour
 socket.setdefaulttimeout(timeout)
 import urllib
 import urllib2
@@ -164,22 +164,27 @@ if __name__ == '__main__':
 
     mydata1=urllib.urlencode( {"query" : query1} )
     headers = {
-    'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3',
+    'User-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
     'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
     'Accept-Language' : 'en-gb,en;q=0.5'
     }
 
 
+    # print keeping only the chromosomes (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y,MT)
+    allchr = [str(i) for i in xrange(1,100)] + [int2rom(i) for i in xrange(1,100)]
+    chromosomes = set(allchr+['X','Y','MT','UN','MITO'])
 
+    chromosomes=set(el.upper() for el in chromosomes)
 
     print "Starting..."
+    print "Get lists of chromosomes..."
 
     s = ""
     ns = 0
     server = "http://%s/biomart/martservice" % (options.server,)
     try:
         req = urllib2.Request(server,mydata1,headers)
-        page = urllib2.urlopen(req)
+        page = urllib2.urlopen(req, timeout = 30)
 
 
         fid=open(temp_exons_filename1,'w')
@@ -214,63 +219,74 @@ if __name__ == '__main__':
 
     # extract chromosomes
     chroms = sorted(set([line.rstrip('\r\n').split('\t')[-1] for line in file(temp_exons_filename1,'r').readlines() if line.rstrip("\r\n")]))
-    file(temp_exons_filename2,'w').write('')
-    
-    try:
-        for crs in chroms:
-            time.sleep(3)
-            print "chromosome =",crs
-            mydata2=urllib.urlencode( {"query" : query2.replace("%%%chromosome%%%",crs)} )
-            headers = {
-            'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3',
-            'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
-            'Accept-Language' : 'en-gb,en;q=0.5'
-            }
+    chroms = [l for l in chroms if l in chromosomes]
+
+    again = 0
+    while True:
+        again = again + 1
+        if again > 3:
+            sys.exit(1)
+
+        file(temp_exons_filename2,'w').write('')
         
-            req = urllib2.Request(server,mydata2,headers)
-            page = urllib2.urlopen(req)
+        try:
+            v = 0
+            for crs in chroms:
+                v = v + 1
+                if v % 10 == 0:
+                    time.sleep(300)
+                time.sleep(10)
+                print "chromosome =",crs
+                mydata2=urllib.urlencode( {"query" : query2.replace("%%%chromosome%%%",crs)} )
+                headers = {
+                'User-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
+                'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
+                'Accept-Language' : 'en-gb,en;q=0.5'
+                }
+            
+                req = urllib2.Request(server,mydata2,headers)
+                page = urllib2.urlopen(req, timeout = 30)
 
 
-            fid=open(temp_exons_filename2,'a')
-            size=0
-            while True:
-                part=page.read(CHUNK_SIZE)
-                if not part:
-                    break
-                size=size+len(part)
-                fid.write(part)
-                amount=size/float(1024*1024)
-                sys.stdout.write("\b"*ns)
-                sys.stdout.flush()
-                s = "Downloaded: %9.2f MB" % amount
-                ns = len(s)
-                sys.stdout.write(s)
-                sys.stdout.flush()
-            fid.close()
-            print "\nFINISHED downloading: %9.2f MB\n" % amount
-    except urllib2.HTTPError, error:
-        print '\nHTTPError = ' + str(error)
-        sys.exit(1)
-    except urllib2.URLError, error:
-        print '\nURLError = ' + str(error)
-        sys.exit(1)
-    except IOError, error:
-        print '\nIOError = ' + str(error)
-        sys.exit(1)
-    except Exception, error:
-        print "\nError: Generic exception!",str(error)
-        sys.exit(1)
+                fid=open(temp_exons_filename2,'a')
+                size=0
+                while True:
+                    part=page.read(CHUNK_SIZE)
+                    if not part:
+                        break
+                    size=size+len(part)
+                    fid.write(part)
+                    amount=size/float(1024*1024)
+                    sys.stdout.write("\b"*ns)
+                    sys.stdout.flush()
+                    s = "Downloaded: %9.2f MB" % amount
+                    ns = len(s)
+                    sys.stdout.write(s)
+                    sys.stdout.flush()
+                fid.close()
+                print "\nFINISHED downloading: %9.2f MB\n" % amount
+
+        except urllib2.HTTPError, error:
+            print '\nHTTPError = ' + str(error)
+            continue
+        except urllib2.URLError, error:
+            print '\nURLError = ' + str(error)
+            continue
+        except IOError, error:
+            print '\nIOError = ' + str(error)
+            continue
+        except Exception, error:
+            print "\nError: Generic exception!",str(error)
+            continue
+            
+        break
 
 
 
 
     # continue as usual
     
-    # print keeping only the chromosomes (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y,MT)
-    allchr = [str(i) for i in xrange(1,100)] + [int2rom(i) for i in xrange(1,100)]
-    chromosomes = set(allchr+['X','Y','MT','UN','MITO'])
 
-    chromosomes=set(el.upper() for el in chromosomes)
 
     #print "Keeping only the genes/transcript/exons from the chromosomes :",chromosomes
 

@@ -7,7 +7,7 @@ It downloads the paralog genes from the Ensembl database.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -49,6 +49,17 @@ import urllib
 import urllib2
 import optparse
 import time
+
+
+def int2rom(v):
+   i = (1000, 900,  500, 400, 100,  90, 50,  40, 10,  9,   5,  4,   1)
+   n = ('M', 'CM',  'D','CD',  'C','XC','L','XL','X','IX','V','IV','I')
+   r = ""
+   for j in xrange(len(i)):
+      c = int(v / i[j])
+      r = r + n[j] * c
+      v = v - i[j] * c
+   return r
 
 
 if __name__ == '__main__':
@@ -137,6 +148,12 @@ if __name__ == '__main__':
     'Accept-Language' : 'en-gb,en;q=0.5'
     }
 
+    # print keeping only the chromosomes (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y,MT)
+    allchr = [str(i) for i in xrange(1,100)] + [int2rom(i) for i in xrange(1,100)]
+    chromosomes = set(allchr+['X','Y','MT','UN','MITO'])
+
+    chromosomes=set(el.upper() for el in chromosomes)
+
     print "Starting..."
 
     s = ""
@@ -144,7 +161,7 @@ if __name__ == '__main__':
     server = "http://%s/biomart/martservice" % (options.server,)
     try:
         req=urllib2.Request(server,mydata1,headers)
-        page=urllib2.urlopen(req)
+        page=urllib2.urlopen(req, timeout = 30)
 
         fid=open(temp_paralogs_filename1,'w')
         size=0
@@ -178,12 +195,16 @@ if __name__ == '__main__':
 
     # extract chromosomes
     chroms = sorted(set([line.rstrip('\r\n').split('\t')[-1] for line in file(temp_paralogs_filename1,'r').readlines() if line.rstrip("\r\n")]))
+    chroms = [l for l in chroms if l in chromosomes]
     file(temp_paralogs_filename2,'w').write('')
 
     try:
-    
+        v = 0
         for crs in chroms:
-            time.sleep(3)
+            v = v + 1
+            if v % 10 == 0:
+                time.sleep(180)
+            time.sleep(10)
             print "chromosome =",crs
             mydata2=urllib.urlencode( {"query" : query2.replace("%%%chromosome%%%",crs)} )
             headers = {
@@ -192,7 +213,7 @@ if __name__ == '__main__':
             'Accept-Language' : 'en-gb,en;q=0.5'
             }
             req=urllib2.Request(server,mydata2,headers)
-            page=urllib2.urlopen(req)
+            page=urllib2.urlopen(req, timeout = 30)
 
             fid=open(temp_paralogs_filename2,'a')
             size=0

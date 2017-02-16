@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-It a FASTA file into several equally sized FASTA files.
+It splits a FASTA file into several equally sized FASTA files.
 
 
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -86,8 +86,8 @@ if __name__ == '__main__':
     #command line parsing
 
     usage = "%prog [options]"
-    description = """It a FASTA file into several equally sized FASTA files such that all are below a given size threshold."""
-    version = "%prog 0.11 beta"
+    description = """It splits a FASTA file into several equally sized FASTA files such that all are below a given size threshold."""
+    version = "%prog 0.12 beta"
 
     parser = optparse.OptionParser(
         usage = usage,
@@ -105,7 +105,7 @@ if __name__ == '__main__':
                       type = "int",
                       dest = "threshold",
                       default = 2**31-1000,
-                      help = """Any splitted file should not have the size (in bytes) over this threshold. If this is set to 1 then one sequence will be written in each output FASTA file. Default is %default.""")
+                      help = """Any splitted file should not have the size (in bytes) over this threshold if that is possible. If this is set to 1 then one sequence will be written in each output FASTA file. Default is %default.""")
 
     parser.add_option("--seq_per_fasta","-f",
                       action = "store",
@@ -262,15 +262,31 @@ if __name__ == '__main__':
     if truck:
         fod.writelines(truck)
         written = True
+
+    if not fod.closed:
+        fod.close()
         if max_lens:
             fmax = options.output_max_lens_filename+'.'+int2str(xid,no_digits)
             file(fmax,'w').write("%d" %(max_x,))
             maxlist.append(fmax)
             max_x = 0
-    fod.close()
+
+
     if written == False: # the last opened file might be empty
         last = xlist.pop()
         os.remove(last)
+        if max_lens:
+            last = maxlist.pop()
+            os.remove(last)
+
+    # EXTRA CHECKING
+    if xlist:
+        if os.path.isfile(xlist[-1]) and os.path.getsize(xlist[-1]) == 0:
+            last = xlist.pop()
+            os.remove(last)
+            if max_lens:
+                last = maxlist.pop()
+                os.remove(last)
 
     file(options.output_filename,"w").writelines([el+'\n' for el in xlist])
     

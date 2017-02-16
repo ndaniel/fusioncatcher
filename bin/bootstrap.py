@@ -10,7 +10,7 @@ It only needs to have pre-installed:
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -177,8 +177,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
     
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.6a.zip'
-    FUSIONCATCHER_VERSION = "0.99.6a beta"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7a.zip'
+    FUSIONCATCHER_VERSION = "0.99.7a beta"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -190,7 +190,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     NUMPY_URL = 'http://pypi.python.org/packages/source/n/numpy/numpy-1.11.0.tar.gz'
     # biopython
     BIOPYTHON_PATH = os.path.join(FUSIONCATCHER_TOOLS,'biopython')
-    BIOPYTHON_URL = 'http://pypi.python.org/packages/source/b/biopython/biopython-1.66.tar.gz'
+    BIOPYTHON_URL = 'http://biopython.org/DIST/biopython-1.68.tar.gz'
     # xlrd python
     XLRD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'xlrd')
     XLRD_URL = 'http://pypi.python.org/packages/source/x/xlrd/xlrd-0.9.4.tar.gz'
@@ -214,8 +214,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BLAT_VERSION = ('35x1',)
     # STAR
     STAR_PATH = os.path.join(FUSIONCATCHER_TOOLS,'star')
-    STAR_URL = 'http://github.com/alexdobin/STAR/archive/2.5.1b.tar.gz'
-    STAR_VERSION = ('STAR_2.5.1b',)
+    STAR_URL = 'http://github.com/alexdobin/STAR/archive/2.5.2b.tar.gz'
+    STAR_VERSION = ('STAR_2.5.2b',)
    # BWA
     BWA_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bwa')
     BWA_URL = 'http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2'
@@ -270,8 +270,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     # PICARD
     PICARD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'picard')
     #PICARD_URL = 'http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip'
-    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/2.2.2/picard-tools-2.2.2.zip'
-    PICARD_VERSION = ('2.2.2(20d49152d0840a960fcb97df76dbaca260b39244_1461168806)',)
+    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/2.5.0/picard-tools-2.5.0.zip'
+    PICARD_VERSION = ('2.5.0(2c370988aefe41f579920c8a6a678a201c5261c1_1466708365)',)
     # LiftOver
     LIFTOVER_PATH = os.path.join(FUSIONCATCHER_TOOLS,'liftover')
     LIFTOVER_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/liftOver'
@@ -689,7 +689,7 @@ def install_tool(name, url, path, verbose = True, exit = True, env_configure = [
             newdir = newdir[0]
         else:
             if verbose:
-                print >>sys.stderr, "ERROR: Cannot detect the directory where the archive has been decompressed!"
+                print >>sys.stderr, "ERROR: Cannot detect the directory where the archive has been decompressed! A potential solution is to delete entirely the previously FusionCatcher installation or to install FusionCatcher in a different path!"
             if exit:
                 sys.exit(1)
 
@@ -948,7 +948,7 @@ if __name__ == '__main__':
                   "<http://github.com/ndaniel/fusioncatcher>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 0.99.6a beta"
+    version = "%prog 0.99.7a beta"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -1048,7 +1048,7 @@ if __name__ == '__main__':
 ################################################################################
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "ensembl_v84"
+    v = "ensembl_v86"
     ############################################################################
     # List all dependencies
     ############################################################################
@@ -1680,16 +1680,24 @@ if __name__ == '__main__':
     ############################################################################
     print "Checking the shebang of FusionCatcher Python scripts..."
 #    if which('python') != PYTHON_EXE or os.getuid() == 0: # root
-    print "  * Updating the SHEBANG of Python scripts with '%s'" % (PYTHON_EXE,)
-    pies = [os.path.join(FUSIONCATCHER_BIN,f) for f in os.listdir(FUSIONCATCHER_BIN) if f.endswith('.py') and os.path.isfile(os.path.join(FUSIONCATCHER_BIN,f)) and not f.startswith('.')]
-    for f in pies:
-        d = file(f,'r').readlines()
-        if d:
-            d[0] = "#!%s\n" % (PYTHON_EXE,)
-        file(f,'w').writelines(d)
-    print "  * Done!"
-#    else:
-#        print "  * Ok!"
+    r = accept(question = "  Shall the shebang of all Python scripts, belonging to FusionCatcher, be set/hardcoded to use this '%s'?" % (PYTHON_EXE,),
+               yes = True,
+               no = False,
+               exit = False,
+               force = options.force_yes)
+    if not r:
+        print "  * The shebang of all Python scripts, belonging to FusionCatcher, is '#!/usr/bin/env python'!"
+    else:
+        print "  * Updating the SHEBANG of Python scripts with '%s'" % (PYTHON_EXE,)
+        pies = [os.path.join(FUSIONCATCHER_BIN,f) for f in os.listdir(FUSIONCATCHER_BIN) if f.endswith('.py') and os.path.isfile(os.path.join(FUSIONCATCHER_BIN,f)) and not f.startswith('.')]
+        for f in pies:
+            d = file(f,'r').readlines()
+            if d:
+                d[0] = "#!%s\n" % (PYTHON_EXE,)
+            file(f,'w').writelines(d)
+        print "  * Done!"
+    #    else:
+    #        print "  * Ok!"
 
     ############################################################################
     # FUSIONCATCHER CONFIGURATION

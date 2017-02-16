@@ -10,7 +10,7 @@ fi
 
 rm -rf "test_fusioncatcher"
 
-"$fbin/../bin/fusioncatcher.py" --input "$fbin/" --output "test_fusioncatcher"
+"$fbin/../bin/fusioncatcher.py" --input "$fbin/" --output "test_fusioncatcher" 
 
 if [ -f "$fbin/summary_candidate_fusions.txt" ]; then
     LC_ALL=C sort "$fbin/summary_candidate_fusions.txt" | grep "*" > "test_fusioncatcher/summary_candidate_fusions_a.txt"

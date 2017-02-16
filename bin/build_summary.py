@@ -7,7 +7,7 @@ It produces a very short summary of fusion genes and transcripts found.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
         for r in data:
             f1 = "%s--%s" % (r[1],r[0])
             f2 = "%s--%s" % (r[0],r[1])
-            if r[2].lower().find('known') != -1 or r[2].lower().find('tcga') != -1 or r[2].lower().find('cosmic') != -1 or r[2].lower().find('cell_lines') != -1 or r[2].lower().find('prostates') != -1 or r[2].lower().find('pancreases') != -1:
+            if r[2].lower().find('known') != -1 or r[2].lower().find('tcga') != -1 or r[2].lower().find('cosmic') != -1 or r[2].lower().find('cell_lines') != -1 or r[2].lower().find('prostates') != -1 or r[2].lower().find('pancreases') != -1 or r[2].lower().find('chimerdb') != -1:
                 known.add(f1)
                 known.add(f2)
 
@@ -153,7 +153,7 @@ if __name__ == '__main__':
         for r in data:
             f1 = "%s--%s" % (r[1],r[0])
             f2 = "%s--%s" % (r[0],r[1])
-            if r[2].lower().find('healthy') != -1 or r[2].lower().find('conjoing') != -1 or r[2].lower().find('hpa') != -1 or r[2].lower().find('banned') != -1 or r[2].lower().find('paralogs') != -1 or r[2].lower().find('overlap') != -1 :
+            if r[2].lower().find('healthy') != -1 or r[2].lower().find('conjoing') != -1 or r[2].lower().find('hpa') != -1 or r[2].lower().find('banned') != -1 or r[2].lower().find('paralogs') != -1 or r[2].lower().find('1000genomes') != -1 :
                 questionable.add(f1)
                 questionable.add(f2)
 

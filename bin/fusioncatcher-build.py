@@ -9,7 +9,7 @@ FusionCatcher-build downloads and builds the data necessary for FusionCatcher.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     epilog = ("\n" +
              "Author: Daniel Nicorici \n" +
              "Email: Daniel.Nicorici@gmail.com \n" +
-             "Copyright (c) 2009-2016 Daniel Nicorici \n " +
+             "Copyright (c) 2009-2017 Daniel Nicorici \n " +
              "\n")
 
     description = ("FusionCatcher-build downloads data from Ensembl database and "+
@@ -136,7 +136,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 0.99.6a beta"
+    version = "%prog 0.99.7a beta"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -244,7 +244,7 @@ if __name__ == '__main__':
                       help = "Number or processes/threads to be used. "+
                              "Default is '%default'.")
 
-    choices = ('cosmic','conjoing','chimerdb2','ticdb','cgp','cacg')
+    choices = ('cosmic','conjoing','chimerdb2','chimerdb3','ticdb','cgp','cacg')
     parser.add_option("--skip-database",
                       action = "store",
                       type = "string",
@@ -1070,6 +1070,34 @@ if __name__ == '__main__':
     job.add('',outdir('hpa.txt'),kind='output',command_line='no')
     job.run()
 
+    job.add('generate_1000genomes.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('--skip-filter-overlap',out_dir,kind='parameter')
+    job.add('',outdir('1000genomes.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add('generate_18cancers.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('--skip-filter-overlap',out_dir,kind='parameter')
+    job.add('',outdir('18cancers.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add('generate_oesophagus.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('--skip-filter-overlap',out_dir,kind='parameter')
+    job.add('',outdir('oesophagus.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add('generate_gliomas.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('--skip-filter-overlap',out_dir,kind='parameter')
+    job.add('',outdir('gliomas.txt'),kind='output',command_line='no')
+    job.run()
+
     job.add('get_celllines.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
@@ -1544,6 +1572,22 @@ if __name__ == '__main__':
                 "command line option '--skip-database chimerdb2'! This database is optional."))
     elif job.run():
         file(outdir('chimerdb2.txt'),'w').write('')
+
+    if 'chimerdb3' not in skip_database:
+        job.add('get_chimerdb3.py',kind='program')
+        job.add('--organism',options.organism,kind='parameter')
+        job.add('--output',out_dir,kind='output',checksum='no')
+        job.add('',outdir('chimerdb3kb.txt'),kind='output',command_line='no')
+        job.add('',outdir('chimerdb3pub.txt'),kind='output',command_line='no')
+        job.add('',outdir('chimerdb3seq.txt'),kind='output',command_line='no')
+        job.run(error_message = ("If this steps fails to run for whatever reason "+
+                "then it can be skipped by re-running fusioncatcher-build with "+
+                "command line option '--skip-database chimerdb3'! This database is optional."))
+    elif job.run():
+        file(outdir('chimerdb3kb.txt'),'w').write('')
+        file(outdir('chimerdb3pub.txt'),'w').write('')
+        file(outdir('chimerdb3seq.txt'),'w').write('')
+
 
     if 'ticdb' not in skip_database:
         job.add('get_ticdb.py',kind='program')

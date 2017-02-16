@@ -7,7 +7,7 @@ Protects a given list of genes against their own pseudogenes and other genes or 
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -414,7 +414,8 @@ if __name__ == '__main__':
                       "10\t133660000\t133774000\n", # dor DUX4
                       "Y\t11303500\t11335000\n", # for DUX4
                       "18\t95000\t130000\n", # for DUX4 (but it covers gene ROCK1P1 which has some parts similar to DUX4)
-                      "Y\t1187549\t1212750\n" # for CRLF2
+                      "Y\t1187549\t1212750\n", # for CRLF2
+                      "15\t30355260\t30377930\n" # for gene CHRFAM7A (erase the part of CHRFAM7A which is CHRNA7 in order to detect CHRNA7-FAM7A fusion)
                 ]
             file(os.path.join(options.output_directory,"shield_erase-regions.bed"),"w").writelines(eraser) # D4Z4 repeat region
 

@@ -35,8 +35,12 @@ contain a small selection of short reads from:
     Encyclopedia,
      https://gdc-portal.nci.nih.gov/legacy-archive/files/d6f97294-6cdd-4343-b40d-8277df996576
 
-These short reads were selected such that they cover 16 already known fusion genes,
-which are:
+[9] Homo sapiens capicua-like protein/double homeodomain 4 fusion protein 
+    (CIC/DUX4 fusion) mRNA, complete cds, Accession DQ388764,
+     https://www.ncbi.nlm.nih.gov/nuccore/DQ388764.1
+
+These short reads were selected such that they cover 16 already known fusion 
+genes, which are:
 - FGFR3-TACC3  (short reads from [2]),
 - FIP1L1-PDGFRA  (short reads from [3]),
 - GOPC-ROS1  (short reads from [4]),
@@ -49,7 +53,10 @@ which are:
 - EML4-ALK  (short reads from [1]),
 - AKAP9-BRAF  (short reads from [1]),
 - BRD4-NUT  (short reads from [1]), 
-- MALT1-IGH@ (short reads from [5]),
-- IGH@-CRLF2 (short reads from [6]),
-- DUX4-IGH@ (short reads from [7]), and
-- NPM1-ALK (short reads from [8]).
+- MALT1-IGH  (short reads from [5]),
+- IGH-CRLF2  (short reads from [6]),
+- DUX4-IGH  (short reads from [7]),
+- NPM1-ALK  (short reads from [8]), and
+- CIC-DUX4  (short reads from [9]).
+
+

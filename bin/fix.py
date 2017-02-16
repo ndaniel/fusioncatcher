@@ -5,7 +5,7 @@ It takes as input a list of pairs of genes and it orders it and removes the dupl
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -74,7 +74,7 @@ def main():
 
 Author: Daniel Nicorici
 Email: Daniel.Nicorici@gmail.com
-(c) 2009-2016 Daniel Nicorici.
+Copyright (c) 2009-2017 Daniel Nicorici
 
 """
 

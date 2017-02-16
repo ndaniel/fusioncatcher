@@ -7,7 +7,7 @@ It Reading the configuration file: "configuration.cfg".
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2016 Daniel Nicorici
+Copyright (c) 2009-2017 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -124,26 +124,25 @@ def manage(configuration_filename, skip_python = []):
         _envpath(CONF,config,"paths","fatotwobit")
         _envpath(CONF,config,"paths","velvet")
         _envpath(CONF,config,"paths","sratoolkit")
-        _envpath(CONF,config,"paths","bowtie")
-        _envpath(CONF,config,"paths","bowtie2")
         _envpath(CONF,config,"paths","blat")
         _envpath(CONF,config,"paths","liftover")
-        _envpath(CONF,config,"paths","scripts")
         _envpath(CONF,config,"paths","python")
+        _envpath(CONF,config,"paths","sra")
         _envpath(CONF,config,"paths","lzo")
         _envpath(CONF,config,"paths","lzop")
         _envpath(CONF,config,"paths","coreutils")
+        _envpath(CONF,config,"paths","parallel")
         _envpath(CONF,config,"paths","pigz")
         _envpath(CONF,config,"paths","pxz")
+        _envpath(CONF,config,"paths","scripts")
         _envpath(CONF,config,"paths","samtools")
-        _envpath(CONF,config,"paths","seqtk")
-        _envpath(CONF,config,"paths","star")
-        _envpath(CONF,config,"paths","bwa")
         _envpath(CONF,config,"paths","picard")
-        _envpath(CONF,config,"paths","sra")
         _envpath(CONF,config,"paths","bwa")
-        _envpath(CONF,config,"paths","parallel")
-
+        _envpath(CONF,config,"paths","bowtie2")
+        _envpath(CONF,config,"paths","star")
+        _envpath(CONF,config,"paths","bowtie")
+        _envpath(CONF,config,"paths","seqtk")
+        
         _path(CONF,config,"paths","data")
         _path(CONF,config,"paths","picard")
 
