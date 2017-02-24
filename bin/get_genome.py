@@ -157,14 +157,17 @@ if __name__ == '__main__':
 
     new_list_files=[]
     for filename in new_files:
-        f = gzip.open(filename, 'rb')
-        file_content = f.read()
-        f.close()
+#        f = gzip.open(filename, 'rb')
+#        file_content = f.read()
+#        f.close()
         fn = filename.replace('.fa.gz','.fa')
         new_list_files.append(fn)
-        fod = open(fn,'wb')
-        fod.write(file_content)
-        fod.close()
+#        fod = open(fn,'wb')
+#        fod.write(file_content)
+#        fod.close()
+        t = "gzip -d -f -c '%s' > '%s'" % (filename,fn)
+        print "Executing:  ",t
+        r = os.system(t)
         os.remove(filename)
 
     new_list_files = sorted(new_list_files)
