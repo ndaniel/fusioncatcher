@@ -1420,7 +1420,18 @@ if __name__ == '__main__':
                     strand = '1'
                 )
 
-
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001263',
+                    gene_symbol = 'SLC7A10', #  SLC7A10  Chromosome 19: 33225850-33208664 reverse strand.
+                    gene_id = 'ENSG00000130876',
+                    transcript_id = 'ENST09000001263',
+                    exon_id = 'ENSE09000001263',
+                    exon_number = '1',
+                    start = '33208664', #
+                    end =   '33245000', #
+                    chrom = '19',
+                    strand = '-1'
+                )
 
                 # transcript 2 - exon 1/4-- IGHM
                 add(outdir = options.output_directory,

@@ -242,7 +242,7 @@ description = ("FusionCatcher searches for novel and known somatic gene fusions 
                "Illumina HiSeq 2000, Illumina HiSeq X, Illumina NextSeq 500, \n"+
                "Illumina GAIIx, Illumina GAII, Illumina MiSeq, Illumina MiniSeq). \n")
 
-version = "%prog 0.99.7a beta"
+version = "%prog 0.99.7b beta"
 
 
 if __name__ == "__main__":
@@ -576,7 +576,7 @@ if __name__ == "__main__":
             'ensembl_fully_overlapping',
             'ensembl_partially_overlapping',
             'ensembl_same_strand_overlapping',
-            'ribosomal_protein',
+            'ribosomal',
             'cta_gene',
             'ctb_gene',
             'ctc_gene',
@@ -929,6 +929,15 @@ if __name__ == "__main__":
 #                             "Default is '%default'."
 )
 
+    parser.add_option("--ff-tryhard",
+                      action = "store_true",
+                      dest = "ff_tryhard",
+                      default = False,
+                      help = optparse.SUPPRESS_HELP
+#                      help = "If it is specified then '--tryhard' will be used for 'bowtie' when '--ff' is used. "+
+#                             "Default is '%default'."
+                             )
+
 
     parser.add_option("--aligners",
                       action = "store",
@@ -1028,7 +1037,7 @@ if __name__ == "__main__":
                       action = "store",
                       type = "int",
                       dest = "limit_bowtie",
-                      default = 2**31 - 100000, # 15.2.2017 was 2**32 - 100000
+                      default = 2**32 - 100000, # 15.2.2017 was 2**32 - 100000
                       help = optparse.SUPPRESS_HELP)
 #                      help = "The maximum limit of the genome's size which BOWTIE aligner "+
 #                             "is able to handle.  If the genome is larger than this limit "+
@@ -1064,7 +1073,7 @@ if __name__ == "__main__":
                       action = "store",
                       type = "int",
                       dest = "limit_star",
-                      default = 500*(10**6),#1,#30*(10**6), # 3 * (2**30)
+                      default = 500*(10**6),# original 17.2.2017 => 500*(10**6) ====>,#1,#30*(10**6), # 3 * (2**30)
                       help = optparse.SUPPRESS_HELP)
 #                      help = "The maximum limit of the genome's size which STAR aligner "+
 #                             "is able to handle.  If the genome is larger than this limit "+
@@ -2107,7 +2116,7 @@ if __name__ == "__main__":
 
     os.system("bowtie --version | head -1 > '%s'" % (outdir('bowtie_version.txt'),))
     last_line = file(outdir('bowtie_version.txt'),'r').readline().lower().rstrip("\r\n")
-    correct_version = 'bowtie version 1.1.2'
+    correct_version = 'bowtie-align version 1.2'
     if last_line != correct_version:
         job.close()
         os.system("which bowtie > '%s'" % (outdir('bowtie_path.txt'),))
@@ -3274,7 +3283,8 @@ if __name__ == "__main__":
         job.add('bowtie',kind='program')
         job.add('-t',kind='parameter')
         job.add('-v','1',kind='parameter') # options.mismatches
-        job.add('-X','800',kind='parameter')
+#        job.add('-X','800',kind='parameter')
+        job.add('-X','10000',kind='parameter')
         job.add('-p',options.processes,kind='parameter',checksum='no')
         job.add('-k','1',kind='parameter')
         job.add('--phred33-quals',kind='parameter')
@@ -5072,7 +5082,7 @@ if __name__ == "__main__":
     # label fusion genes -- ribosomal proteins
     job.add('label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_23.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','ribosomal_protein',kind='parameter')
+    job.add('--label','ribosomal',kind='parameter')
     job.add('--filter_genes',datadir('ribosomal_proteins.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_24.txt'),kind='output')
     job.run()
@@ -7109,7 +7119,7 @@ if __name__ == "__main__":
 #                    job.add('--ntoa',kind='parameter')
                     job.add('--offrate','1',kind='parameter')
                     job.add('--ftabchars','5',kind='parameter')
-                    job.add('',outdir('gene-gene_unique.fa'),kind='input',temp_path=temp_flag)
+                    job.add('',outdir('gene-gene_unique.fa'),kind='input')
                     job.add('',outdir('gene-gene_index/'),kind='output')
                     job.run()
 
@@ -7727,6 +7737,215 @@ if __name__ == "__main__":
                                 job.add('>',outdir('reads-refs_clip_star_psl_uniq.txt.')+str(i),kind='output')
                                 job.run()
 
+
+
+
+
+
+
+                                # some pre-filtering of splitting reads (filter out the split reads which map on one gene)
+                                job.add('LC_ALL=C',kind='program')
+                                job.add('cat',kind='parameter')
+                                job.add('',outdir('reads-refs_clip_star_psl_uniq.txt.')+str(i),kind='input')
+                                job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
+                                job.add('tr',kind='parameter')
+                                job.add('"|"',kind='parameter')
+                                job.add('"\\t"',kind='parameter')
+                                job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
+                                job.add('cut',kind='parameter')
+                                job.add('-f',"1,2",kind='parameter')
+                                job.add('|',kind='parameter')
+                                job.add('tr',kind='parameter')
+                                job.add('"\\t"',kind='parameter')
+                                job.add('"\\n"',kind='parameter')
+                                job.add('|',kind='parameter')
+                                job.add('sort',kind='parameter')
+                                job.add('-u',kind='parameter') # unique
+                                job.add('|',kind='parameter')
+                                job.add('sed',kind='parameter')
+                                job.add("'1{/^$/d}'",kind='parameter') # delete first line if it empty (that contains only newline)
+                                job.add('>',outdir('reads-refs_clip_star_psl_uniq_more.txt.')+str(i),kind='output')
+                                job.run()
+
+                                gdau = "%s_bowtie_star_unique.fa" % (part,)
+                                job.add('seqtk',kind='program')
+                                job.add('subseq',kind='parameter')
+                                job.add('',outdir('gene-gene_unique.fa'),kind='input')
+                                job.add('',outdir('reads-refs_clip_star_psl_uniq_more.txt.')+str(i),kind='input',temp_path=temp_flag)
+                                job.add('>',gdau,kind='output')
+                                job.run()
+
+                                gdbu = "%s_bowtie_star_unique/" % (part,)
+                                job.add('bowtie-build',kind='program')
+                                job.add('-f',kind='parameter')
+                                job.add('--quiet',kind='parameter')
+        #                        job.add('--ntoa',kind='parameter')
+                                job.add('--offrate','1',kind='parameter')
+                                job.add('--ftabchars','5',kind='parameter')
+                                #job.add('',outdir('gene-gene.fa'),kind='input')
+                                job.add('',gdau,kind='input',temp_path=temp_flag)
+                                job.add('',gdbu,kind='output',checksum='no')
+                                job.add('',gdbu,kind='output',command_line='no')
+                                job.run()
+
+
+                                # map using bowtie
+                                # filter out reads not mapping
+                                ms = min(options.mismatches,2)
+                                job.add('seqtk',kind='program')
+                                job.add('mergepe',kind='parameter')
+                                job.add('',outdir('reads-ids_clip_star_psl_r1.fq.')+str(i),kind='input')
+                                job.add('',outdir('reads-ids_clip_star_psl_r2.fq.')+str(i),kind='input')
+                                job.add('|',kind='parameter')
+                                job.add('bowtie',kind='parameter')
+                                job.add('-t',kind='parameter')
+                                job.add('-k','1',kind='parameter')
+                                job.add('-v',ms,kind='parameter')
+                                job.add('-p',options.processes,kind='parameter',checksum='no')
+                                job.add('--tryhard',kind='parameter')
+                                job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+                                job.add('--suppress','2,3,4,5,6,7,8',kind='parameter')
+                                if os.path.isfile(os.path.join(gdbu,'.1.ebwtl')):
+                                    job.add('--large-index',kind='parameter')
+                                job.add('',gdbu,kind='input')
+                                job.add('-',kind='parameter')
+                                job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star-temp.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
+                                job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
+                                job.add('uniq',kind='parameter')
+                                job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
+                                job.add('sort',kind='parameter')
+                                job.add('-u',kind='parameter')
+                                if sort_buffer:
+                                    job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+                                if sort_parallel:
+                                    job.add('--parallel',options.processes,kind='parameter',checksum='no')
+                                if sort_lzop_compress:
+                                    job.add('--compress-program','lzop',kind='parameter',checksum='no')
+                                elif sort_gzip_compress:
+                                    job.add('--compress-program','gzip',kind='parameter',checksum='no')
+                                job.add('-T',tmp_dir,kind='parameter',checksum='no')
+                                job.add('|',kind='parameter')
+                                if eporcrlf2igh == False:
+                                    job.add('awk',kind='parameter')
+                                    job.add('',"""'{n=length($0); if (olde=="a" && substr($0,0,n-1)==old && substr($0,n,1)=="b") {print old"a\\n"$0; old="";} {old=substr($0,0,n-1); olde=substr($0,n,1);}}'""",kind='parameter')
+                                else:
+                                    job.add('awk',kind='parameter')
+                                    job.add("""'{n=length($0); r=substr($0,1,n-1); print r"a"; print r"b"}'""",kind='parameter')
+                                    job.add('|',kind='parameter')
+                                    job.add('LC_ALL=C',kind='parameter')
+                                    job.add('uniq',kind='parameter')
+                                    job.add('|',kind='parameter')
+                                    job.add('LC_ALL=C',kind='parameter')
+                                    job.add('sort',kind='parameter')
+                                    job.add('-u',kind='parameter')
+                                    if sort_buffer:
+                                        job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+                                    if sort_parallel:
+                                        job.add('--parallel',options.processes,kind='parameter',checksum='no')
+                                    if sort_lzop_compress:
+                                        job.add('--compress-program','lzop',kind='parameter',checksum='no')
+                                    elif sort_gzip_compress:
+                                        job.add('--compress-program','gzip',kind='parameter',checksum='no')
+                                    job.add('-T',tmp_dir,kind='parameter',checksum='no')
+                                job.add('>',outdir('reads_filtered_unique_cuts_star.txt.')+str(i),kind='output')
+                                job.run()
+
+                                job.add('seqtk',kind='program')
+                                job.add('subseq',kind='parameter')
+                                job.add('',outdir('reads-ids_clip_star_psl_r1.fq.')+str(i),kind='input')
+                                job.add('',outdir('reads_filtered_unique_cuts_star.txt.')+str(i),kind='input')
+                                job.add('>',outdir('reads-ids_clip_star_psl_r1r1.fq.')+str(i),kind='output')
+                                job.run()
+
+                                job.add('seqtk',kind='program')
+                                job.add('subseq',kind='parameter')
+                                job.add('',outdir('reads-ids_clip_star_psl_r2.fq.')+str(i),kind='input')
+                                job.add('',outdir('reads_filtered_unique_cuts_star.txt.')+str(i),kind='input',temp_path=temp_flag)
+                                job.add('>',outdir('reads-ids_clip_star_psl_r2r2.fq.')+str(i),kind='output')
+                                job.run()
+
+                                # this is for the case when the out from the previous command is empty (then it takes the first read)
+                                if job.iff(empty(outdir('reads-ids_clip_star_psl_r1r1.fq.')+str(i)),id = "##reads-ids_clip_star_psl_r1r1.fq."+str(i)+"##"):
+                                    job.add('head',kind='program')
+                                    job.add('-4',outdir('reads-ids_clip_star_psl_r1.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                    job.add('>',outdir('reads-ids_clip_star_psl_r1r1-t.fq.')+str(i),kind='output')
+                                    job.run()
+
+                                    job.add('head',kind='program')
+                                    job.add('-4',outdir('reads-ids_clip_star_psl_r2.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                    job.add('>',outdir('reads-ids_clip_star_psl_r2r2-t.fq.')+str(i),kind='output')
+                                    job.run()
+
+                                    job.clean(outdir('reads-ids_clip_star_psl_r1r1.fq.')+str(i),temp_path=temp_flag)
+                                    job.clean(outdir('reads-ids_clip_star_psl_r2r2.fq.')+str(i),temp_path=temp_flag)
+
+                                else:
+                                    job.link(outdir('reads-ids_clip_star_psl_r1r1.fq.')+str(i),
+                                             outdir('reads-ids_clip_star_psl_r1r1-t.fq.')+str(i),
+                                             temp_path=temp_flag)
+                                    job.link(outdir('reads-ids_clip_star_psl_r2r2.fq.')+str(i),
+                                             outdir('reads-ids_clip_star_psl_r2r2-t.fq.')+str(i),
+                                             temp_path=temp_flag)
+
+
+
+                                # map using bowtie
+                                ms = min(options.mismatches,2)
+                                job.add('bowtie',kind='program')
+                                job.add('-t',kind='parameter')
+                                job.add('-k','1',kind='parameter')
+                                job.add('-v',ms,kind='parameter')
+                                job.add('-p',options.processes,kind='parameter',checksum='no')
+                                job.add('-X',maxlens[i],kind='parameter',from_file="yes")
+                                job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+                                job.add('--ff',kind='parameter')
+                                job.add('--un',outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'.fq'),kind='output',checksum='no') # unmapped reads
+                                job.add('--un',outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_1.fq'),kind='output',command_line='no') # unmapped reads
+                                job.add('--un',outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_2.fq'),kind='output',command_line='no') # unmapped reads
+                                job.add('--max',outdir('reads-ids_clip_star_psl_max_filtered.fq.')+str(i),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
+                                if os.path.isfile(os.path.join(gdbu,'.1.ebwtl')):
+                                    job.add('--large-index',kind='parameter')
+                                job.add('',gdbu,kind='input',temp_path=temp_flag)
+                                job.add('-1',outdir('reads-ids_clip_star_psl_r1r1-t.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                job.add('-2',outdir('reads-ids_clip_star_psl_r2r2-t.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                job.add('',outdir('split_gene-gene_star_filtered.sam.')+str(i),kind='output',temp_path=temp_flag)
+                                job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
+                                job.run()
+
+                                
+                                # this is for the case when the out from the previous command is empty (then it takes the first read)
+                                if job.iff(empty(outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_1.fq')),id = "##reads-ids_clip_star_psl_unmapped_filtered-"+str(i)+"_1.fq##"):
+                                    job.add('head',kind='program')
+                                    job.add('-4',outdir('reads-ids_clip_star_psl_r1.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                    job.add('>',outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_1_t.fq'),kind='output')
+                                    job.run()
+
+                                    job.add('head',kind='program')
+                                    job.add('-4',outdir('reads-ids_clip_star_psl_r2.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                    job.add('>',outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_2_t.fq'),kind='output')
+                                    job.run()
+
+                                    job.clean(outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_1.fq'),temp_path=temp_flag)
+                                    job.clean(outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_2.fq'),temp_path=temp_flag)
+
+                                else:
+                                    job.link(outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_1.fq'),
+                                             outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_1_t.fq'),
+                                             temp_path=temp_flag)
+                                    job.link(outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_2.fq'),
+                                             outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_2_t.fq'),
+                                             temp_path=temp_flag)
+
+                                job.clean(outdir('reads-ids_clip_star_psl_r1.fq.')+str(i),temp_path=temp_flag)
+                                job.clean(outdir('reads-ids_clip_star_psl_r2.fq.')+str(i),temp_path=temp_flag)
+
+
+
+
                                 gda = "%s_bowtie_star.fa" % (part,)
                                 job.add('seqtk',kind='program')
                                 job.add('subseq',kind='parameter')
@@ -7759,7 +7978,8 @@ if __name__ == "__main__":
                                 if os.path.isfile(os.path.join(gdb,'.1.ebwtl')):
                                     job.add('--large-index',kind='parameter')
                                 job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
-                                job.add('--tryhard',kind='parameter')
+                                if options.ff_tryhard:
+                                    job.add('--tryhard',kind='parameter')
                                 job.add('--best',kind='parameter')
                                 job.add('--strata',kind='parameter')
                                 job.add('--sam',kind='parameter')
@@ -7771,8 +7991,8 @@ if __name__ == "__main__":
                                 #job.add('-X',outdir('gene-gene_longest.txt'),kind='parameter',from_file="yes")
                                 job.add('-X',maxlens[i],kind='parameter',from_file="yes")
                                 job.add('',gdb,kind='input')
-                                job.add('-1',outdir('reads-ids_clip_star_psl_r1.fq.')+str(i),kind='input',temp_path=temp_flag)
-                                job.add('-2',outdir('reads-ids_clip_star_psl_r2.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                job.add('-1',outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_1_t.fq'),kind='input',temp_path=temp_flag)
+                                job.add('-2',outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_2_t.fq'),kind='input',temp_path=temp_flag)
                                 job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
                                 job.add('|',kind='parameter')
                                 job.add('LC_ALL=C',kind='parameter')
@@ -8326,6 +8546,205 @@ if __name__ == "__main__":
                             job.add('>',outdir('reads-refs_clip_star_psl_uniq.txt'),kind='output')
                             job.run()
 
+                            # some pre-filtering of splitting reads (filter out the split reads which map on one gene)
+                            job.add('LC_ALL=C',kind='program')
+                            job.add('cat',kind='parameter')
+                            job.add('',outdir('reads-refs_clip_star_psl_uniq.txt'),kind='input')
+                            job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
+                            job.add('tr',kind='parameter')
+                            job.add('"|"',kind='parameter')
+                            job.add('"\\t"',kind='parameter')
+                            job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
+                            job.add('cut',kind='parameter')
+                            job.add('-f',"1,2",kind='parameter')
+                            job.add('|',kind='parameter')
+                            job.add('tr',kind='parameter')
+                            job.add('"\\t"',kind='parameter')
+                            job.add('"\\n"',kind='parameter')
+                            job.add('|',kind='parameter')
+                            job.add('sort',kind='parameter')
+                            job.add('-u',kind='parameter') # unique
+                            job.add('|',kind='parameter')
+                            job.add('sed',kind='parameter')
+                            job.add("'1{/^$/d}'",kind='parameter') # delete first line if it empty (that contains only newline)
+                            job.add('>',outdir('reads-refs_clip_star_psl_uniq_more.txt'),kind='output')
+                            job.run()
+                            
+                            job.add('seqtk',kind='program')
+                            job.add('subseq',kind='parameter')
+                            job.add('',outdir('gene-gene_unique.fa'),kind='input')
+                            job.add('',outdir('reads-refs_clip_star_psl_uniq_more.txt'),kind='input',temp_path=temp_flag)
+                            job.add('>',outdir('gene-gene-bowtie_star_unique.fa'),kind='output')
+                            job.run()
+
+                            job.add('bowtie-build',kind='program')
+                            job.add('-f',kind='parameter')
+                            job.add('--quiet',kind='parameter')
+    #                        job.add('--ntoa',kind='parameter')
+                            job.add('--offrate','1',kind='parameter')
+                            job.add('--ftabchars','5',kind='parameter')
+                            #job.add('',outdir('gene-gene.fa'),kind='input')
+                            job.add('',outdir('gene-gene-bowtie_star_unique.fa'),kind='input',temp_path=temp_flag)
+                            job.add('',outdir('gene-gene-bowtie_star_unique/'),kind='output',checksum='no')
+                            job.add('',outdir('gene-gene-bowtie_star_unique/'),kind='output',command_line='no')
+                            job.run()
+
+                            # map using bowtie
+                            # filter out reads not mapping
+                            ms = min(options.mismatches,2)
+                            job.add('seqtk',kind='program')
+                            job.add('mergepe',kind='parameter')
+                            job.add('',outdir('reads-ids_clip_star_psl_r1.fq'),kind='input')
+                            job.add('',outdir('reads-ids_clip_star_psl_r2.fq'),kind='input')
+                            job.add('|',kind='parameter')
+                            job.add('bowtie',kind='parameter')
+                            job.add('-t',kind='parameter')
+                            job.add('-k','1',kind='parameter')
+                            job.add('-v',ms,kind='parameter')
+                            job.add('-p',options.processes,kind='parameter',checksum='no')
+                            job.add('--tryhard',kind='parameter')
+                            job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+                            job.add('--suppress','2,3,4,5,6,7,8',kind='parameter')
+                            if os.path.isfile(os.path.join(outdir('gene-gene-bowtie_star_unique'),'.1.ebwtl')):
+                                job.add('--large-index',kind='parameter')
+                            job.add('',outdir('gene-gene-bowtie_star_unique/'),kind='input')
+                            job.add('-',kind='parameter')
+                            job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star-temp.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
+                            job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
+                            job.add('uniq',kind='parameter')
+                            job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
+                            job.add('sort',kind='parameter')
+                            job.add('-u',kind='parameter')
+                            if sort_buffer:
+                                job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+                            if sort_parallel:
+                                job.add('--parallel',options.processes,kind='parameter',checksum='no')
+                            if sort_lzop_compress:
+                                job.add('--compress-program','lzop',kind='parameter',checksum='no')
+                            elif sort_gzip_compress:
+                                job.add('--compress-program','gzip',kind='parameter',checksum='no')
+                            job.add('-T',tmp_dir,kind='parameter',checksum='no')
+                            job.add('|',kind='parameter')
+                            if eporcrlf2igh == False:
+                                job.add('awk',kind='parameter')
+                                job.add('',"""'{n=length($0); if (olde=="a" && substr($0,0,n-1)==old && substr($0,n,1)=="b") {print old"a\\n"$0; old="";} {old=substr($0,0,n-1); olde=substr($0,n,1);}}'""",kind='parameter')
+                            else:
+                                job.add('awk',kind='parameter')
+                                job.add("""'{n=length($0); r=substr($0,1,n-1); print r"a"; print r"b"}'""",kind='parameter')
+                                job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
+                                job.add('uniq',kind='parameter')
+                                job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
+                                job.add('sort',kind='parameter')
+                                job.add('-u',kind='parameter')
+                                if sort_buffer:
+                                    job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+                                if sort_parallel:
+                                    job.add('--parallel',options.processes,kind='parameter',checksum='no')
+                                if sort_lzop_compress:
+                                    job.add('--compress-program','lzop',kind='parameter',checksum='no')
+                                elif sort_gzip_compress:
+                                    job.add('--compress-program','gzip',kind='parameter',checksum='no')
+                                job.add('-T',tmp_dir,kind='parameter',checksum='no')
+                            job.add('>',outdir('reads_filtered_unique_cuts_star.txt'),kind='output')
+                            job.run()
+
+                            job.add('seqtk',kind='program')
+                            job.add('subseq',kind='parameter')
+                            job.add('',outdir('reads-ids_clip_star_psl_r1.fq'),kind='input')
+                            job.add('',outdir('reads_filtered_unique_cuts_star.txt'),kind='input')
+                            job.add('>',outdir('reads-ids_clip_star_psl_r1r1.fq'),kind='output')
+                            job.run()
+
+                            job.add('seqtk',kind='program')
+                            job.add('subseq',kind='parameter')
+                            job.add('',outdir('reads-ids_clip_star_psl_r2.fq'),kind='input')
+                            job.add('',outdir('reads_filtered_unique_cuts_star.txt'),kind='input',temp_path=temp_flag)
+                            job.add('>',outdir('reads-ids_clip_star_psl_r2r2.fq'),kind='output')
+                            job.run()
+
+                            # this is for the case when the out from the previous command is empty (then it takes the first read)
+                            if job.iff(empty(outdir('reads-ids_clip_star_psl_r1r1.fq')),id = "##reads-ids_clip_star_psl_r1r1.fq##"):
+                                job.add('head',kind='program')
+                                job.add('-4',outdir('reads-ids_clip_star_psl_r1.fq'),kind='input',temp_path=temp_flag)
+                                job.add('>',outdir('reads-ids_clip_star_psl_r1r1-t.fq'),kind='output')
+                                job.run()
+
+                                job.add('head',kind='program')
+                                job.add('-4',outdir('reads-ids_clip_star_psl_r2.fq'),kind='input',temp_path=temp_flag)
+                                job.add('>',outdir('reads-ids_clip_star_psl_r2r2-t.fq'),kind='output')
+                                job.run()
+                                
+                                job.clean(outdir('reads-ids_clip_star_psl_r1r1.fq'),temp_path=temp_flag)
+                                job.clean(outdir('reads-ids_clip_star_psl_r2r2.fq'),temp_path=temp_flag)
+
+                            else:
+                                job.link(outdir('reads-ids_clip_star_psl_r1r1.fq'),
+                                         outdir('reads-ids_clip_star_psl_r1r1-t.fq'),
+                                         temp_path=temp_flag)
+                                job.link(outdir('reads-ids_clip_star_psl_r2r2.fq'),
+                                         outdir('reads-ids_clip_star_psl_r2r2-t.fq'),
+                                         temp_path=temp_flag)
+
+
+                            # map using bowtie
+                            ms = min(options.mismatches,2)
+                            job.add('bowtie',kind='program')
+                            job.add('-t',kind='parameter')
+                            job.add('-k','1',kind='parameter')
+                            job.add('-v',ms,kind='parameter')
+                            job.add('-p',options.processes,kind='parameter',checksum='no')
+                            job.add('-X',outdir('gene-gene_longest.txt'),kind='parameter',from_file="yes")
+                            job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+                            job.add('--ff',kind='parameter')
+                            job.add('--un',outdir('reads-ids_clip_star_psl_unmapped_filtered.fq'),kind='output',checksum='no') # unmapped reads
+                            job.add('--un',outdir('reads-ids_clip_star_psl_unmapped_filtered_1.fq'),kind='output',command_line='no') # unmapped reads
+                            job.add('--un',outdir('reads-ids_clip_star_psl_unmapped_filtered_2.fq'),kind='output',command_line='no') # unmapped reads
+                            job.add('--max',outdir('reads-ids_clip_star_psl_max_filtered.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
+                            if os.path.isfile(os.path.join(outdir('gene-gene-bowtie_star_unique'),'.1.ebwtl')):
+                                job.add('--large-index',kind='parameter')
+                            job.add('',outdir('gene-gene-bowtie_star_unique/'),kind='input',temp_path=temp_flag)
+                            job.add('-1',outdir('reads-ids_clip_star_psl_r1r1-t.fq'),kind='input',temp_path=temp_flag)
+                            job.add('-2',outdir('reads-ids_clip_star_psl_r2r2-t.fq'),kind='input',temp_path=temp_flag)
+                            job.add('',outdir('split_gene-gene_star_filtered.sam'),kind='output',temp_path=temp_flag)
+                            job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
+                            job.run()
+                            
+                            
+                            # this is for the case when the out from the previous command is empty (then it takes the first read)
+                            if job.iff(empty(outdir('reads-ids_clip_star_psl_unmapped_filtered_1.fq')),id = "##reads-ids_clip_star_psl_unmapped_filtered_1.fq##"):
+                                job.add('head',kind='program')
+                                job.add('-4',outdir('reads-ids_clip_star_psl_r1.fq'),kind='input',temp_path=temp_flag)
+                                job.add('>',outdir('reads-ids_clip_star_psl_unmapped_filtered_1_t.fq'),kind='output')
+                                job.run()
+
+                                job.add('head',kind='program')
+                                job.add('-4',outdir('reads-ids_clip_star_psl_r2.fq'),kind='input',temp_path=temp_flag)
+                                job.add('>',outdir('reads-ids_clip_star_psl_unmapped_filtered_2_t.fq'),kind='output')
+                                job.run()
+
+                                job.clean(outdir('reads-ids_clip_star_psl_unmapped_filtered_1.fq'),temp_path=temp_flag)
+                                job.clean(outdir('reads-ids_clip_star_psl_unmapped_filtered_2.fq'),temp_path=temp_flag)
+                                
+
+                            else:
+                                job.link(outdir('reads-ids_clip_star_psl_unmapped_filtered_1.fq'),
+                                         outdir('reads-ids_clip_star_psl_unmapped_filtered_1_t.fq'),
+                                         temp_path=temp_flag)
+                                job.link(outdir('reads-ids_clip_star_psl_unmapped_filtered_2.fq'),
+                                         outdir('reads-ids_clip_star_psl_unmapped_filtered_2_t.fq'),
+                                         temp_path=temp_flag)
+
+
+                            job.clean(outdir('reads-ids_clip_star_psl_r1.fq'),temp_path=temp_flag)
+                            job.clean(outdir('reads-ids_clip_star_psl_r2.fq'),temp_path=temp_flag)
+
+
                             job.add('seqtk',kind='program')
                             job.add('subseq',kind='parameter')
                             job.add('',outdir('gene-gene.fa'),kind='input')
@@ -8353,10 +8772,11 @@ if __name__ == "__main__":
                             job.add('-k','500',kind='parameter')
                             job.add('-v',options.mismatches,kind='parameter')
                             job.add('-p',options.processes,kind='parameter',checksum='no')
-                            if os.path.isfile(os.path.join(outdir('gene-gene-bowtie'),'.1.ebwtl')):
+                            if os.path.isfile(os.path.join(outdir('gene-gene-bowtie_star'),'.1.ebwtl')):
                                 job.add('--large-index',kind='parameter')
                             job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
-                            job.add('--tryhard',kind='parameter')
+                            if options.ff_tryhard:
+                                job.add('--tryhard',kind='parameter')
                             job.add('--best',kind='parameter')
                             job.add('--strata',kind='parameter')
                             job.add('--sam',kind='parameter')
@@ -8367,8 +8787,8 @@ if __name__ == "__main__":
                             job.add('--max',outdir('reads-ids_clip_star_psl_max.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
                             job.add('-X',outdir('gene-gene_longest.txt'),kind='parameter',from_file="yes")
                             job.add('',outdir('gene-gene-bowtie_star/'),kind='input')
-                            job.add('-1',outdir('reads-ids_clip_star_psl_r1.fq'),kind='input',temp_path=temp_flag)
-                            job.add('-2',outdir('reads-ids_clip_star_psl_r2.fq'),kind='input',temp_path=temp_flag)
+                            job.add('-1',outdir('reads-ids_clip_star_psl_unmapped_filtered_1_t.fq'),kind='input',temp_path=temp_flag)
+                            job.add('-2',outdir('reads-ids_clip_star_psl_unmapped_filtered_2_t.fq'),kind='input',temp_path=temp_flag)
                             job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
                             job.add('|',kind='parameter')
                             job.add('LC_ALL=C',kind='parameter')
@@ -8376,6 +8796,8 @@ if __name__ == "__main__":
                             job.add('>',outdir('split_gene-gene_star.sam'),kind='output')
                             job.run()
 
+
+                            
                             job.add('merge-sam.py',kind='program')
                             job.add('--input',outdir('split_gene-gene_star.sam'),kind='input',temp_path=temp_flag)
                             job.add('--output',outdir('split_gene-gene_star_patch.sam'),kind='output')
@@ -8506,7 +8928,7 @@ if __name__ == "__main__":
                                     #job.add('-v',options.mismatches,kind='parameter')
                                     job.add('-v',options.mismatches+1,kind='parameter') # 2 here is not enough for IGH!!!!
                                     job.add('-p',options.processes,kind='parameter',checksum='no')
-                                    if os.path.isfile(os.path.join(outdir('gene-gene-bowtie'),'.1.ebwtl')):
+                                    if os.path.isfile(os.path.join(outdir('gene-gene-bowtie_star'),'.1.ebwtl')):
                                         job.add('--large-index',kind='parameter')
                                     job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
                                     ##job.add('--tryhard',kind='parameter') #????
@@ -8996,6 +9418,200 @@ if __name__ == "__main__":
                             job.add('>',outdir('reads-refs_clip_bowtie2_psl_uniq.txt.')+str(i),kind='output')
                             job.run()
 
+
+
+
+
+
+
+
+
+
+                            # some pre-filtering of splitting reads (filter out the split reads which map on one gene)
+                            job.add('LC_ALL=C',kind='program')
+                            job.add('cat',kind='parameter')
+                            job.add('',outdir('reads-refs_clip_bowtie2_psl_uniq.txt.')+str(i),kind='input')
+                            job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
+                            job.add('tr',kind='parameter')
+                            job.add('"|"',kind='parameter')
+                            job.add('"\\t"',kind='parameter')
+                            job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
+                            job.add('cut',kind='parameter')
+                            job.add('-f',"1,2",kind='parameter')
+                            job.add('|',kind='parameter')
+                            job.add('tr',kind='parameter')
+                            job.add('"\\t"',kind='parameter')
+                            job.add('"\\n"',kind='parameter')
+                            job.add('|',kind='parameter')
+                            job.add('sort',kind='parameter')
+                            job.add('-u',kind='parameter') # unique
+                            job.add('|',kind='parameter')
+                            job.add('sed',kind='parameter')
+                            job.add("'1{/^$/d}'",kind='parameter') # delete first line if it empty (that contains only newline)
+                            job.add('>',outdir('reads-refs_clip_bowtie2_psl_uniq_more.txt.')+str(i),kind='output')
+                            job.run()
+
+                            gdau = "%s_bowtie_bowtie2_unique.fa" % (part,)
+                            job.add('seqtk',kind='program')
+                            job.add('subseq',kind='parameter')
+                            job.add('',outdir('gene-gene_unique.fa'),kind='input')
+                            job.add('',outdir('reads-refs_clip_bowtie2_psl_uniq_more.txt.')+str(i),kind='input',temp_path=temp_flag)
+                            job.add('>',gdau,kind='output')
+                            job.run()
+
+                            gdbu = "%s_bowtie_bowtie2_unique/" % (part,)
+                            job.add('bowtie-build',kind='program')
+                            job.add('-f',kind='parameter')
+                            job.add('--quiet',kind='parameter')
+    #                        job.add('--ntoa',kind='parameter')
+                            job.add('--offrate','1',kind='parameter')
+                            job.add('--ftabchars','5',kind='parameter')
+                            #job.add('',outdir('gene-gene.fa'),kind='input')
+                            job.add('',gdau,kind='input',temp_path=temp_flag)
+                            job.add('',gdbu,kind='output',checksum='no')
+                            job.add('',gdbu,kind='output',command_line='no')
+                            job.run()
+
+
+                            # map using bowtie
+                            # filter out reads not mapping
+                            ms = min(options.mismatches,2)
+                            job.add('seqtk',kind='program')
+                            job.add('mergepe',kind='parameter')
+                            job.add('',outdir('reads-ids_clip_bowtie2_psl_r1.fq.')+str(i),kind='input')
+                            job.add('',outdir('reads-ids_clip_bowtie2_psl_r2.fq.')+str(i),kind='input')
+                            job.add('|',kind='parameter')
+                            job.add('bowtie',kind='parameter')
+                            job.add('-t',kind='parameter')
+                            job.add('-k','1',kind='parameter')
+                            job.add('-v',ms,kind='parameter')
+                            job.add('-p',options.processes,kind='parameter',checksum='no')
+                            job.add('--tryhard',kind='parameter')
+                            job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+                            job.add('--suppress','2,3,4,5,6,7,8',kind='parameter')
+                            if os.path.isfile(os.path.join(gdbu,'.1.ebwtl')):
+                                job.add('--large-index',kind='parameter')
+                            job.add('',gdbu,kind='input')
+                            job.add('-',kind='parameter')
+                            job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2-temp.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
+                            job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
+                            job.add('uniq',kind='parameter')
+                            job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
+                            job.add('sort',kind='parameter')
+                            job.add('-u',kind='parameter')
+                            if sort_buffer:
+                                job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+                            if sort_parallel:
+                                job.add('--parallel',options.processes,kind='parameter',checksum='no')
+                            if sort_lzop_compress:
+                                job.add('--compress-program','lzop',kind='parameter',checksum='no')
+                            elif sort_gzip_compress:
+                                job.add('--compress-program','gzip',kind='parameter',checksum='no')
+                            job.add('-T',tmp_dir,kind='parameter',checksum='no')
+                            job.add('|',kind='parameter')
+                            job.add('awk',kind='parameter')
+                            job.add('',"""'{n=length($0); if (olde=="a" && substr($0,0,n-1)==old && substr($0,n,1)=="b") {print old"a\\n"$0; old="";} {old=substr($0,0,n-1); olde=substr($0,n,1);}}'""",kind='parameter')
+                            job.add('>',outdir('reads_filtered_unique_cuts_bowtie2.txt.')+str(i),kind='output')
+                            job.run()
+
+                            job.add('seqtk',kind='program')
+                            job.add('subseq',kind='parameter')
+                            job.add('',outdir('reads-ids_clip_bowtie2_psl_r1.fq.')+str(i),kind='input')
+                            job.add('',outdir('reads_filtered_unique_cuts_bowtie2.txt.')+str(i),kind='input')
+                            job.add('>',outdir('reads-ids_clip_bowtie2_psl_r1r1.fq.')+str(i),kind='output')
+                            job.run()
+
+                            job.add('seqtk',kind='program')
+                            job.add('subseq',kind='parameter')
+                            job.add('',outdir('reads-ids_clip_bowtie2_psl_r2.fq.')+str(i),kind='input')
+                            job.add('',outdir('reads_filtered_unique_cuts_bowtie2.txt.')+str(i),kind='input',temp_path=temp_flag)
+                            job.add('>',outdir('reads-ids_clip_bowtie2_psl_r2r2.fq.')+str(i),kind='output')
+                            job.run()
+
+                            # this is for the case when the out from the previous command is empty (then it takes the first read)
+                            if job.iff(empty(outdir('reads-ids_clip_bowtie2_psl_r1r1.fq.')+str(i)),id = "##reads-ids_clip_bowtie2_psl_r1r1.fq."+str(i)+"##"):
+                                job.add('head',kind='program')
+                                job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r1.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                job.add('>',outdir('reads-ids_clip_bowtie2_psl_r1r1-t.fq.')+str(i),kind='output')
+                                job.run()
+
+                                job.add('head',kind='program')
+                                job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r2.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                job.add('>',outdir('reads-ids_clip_bowtie2_psl_r2r2-t.fq.')+str(i),kind='output')
+                                job.run()
+
+                                job.clean(outdir('reads-ids_clip_bowtie2_psl_r1r1.fq.')+str(i),temp_path=temp_flag)
+                                job.clean(outdir('reads-ids_clip_bowtie2_psl_r2r2.fq.')+str(i),temp_path=temp_flag)
+
+                            else:
+                                job.link(outdir('reads-ids_clip_bowtie2_psl_r1r1.fq.')+str(i),
+                                         outdir('reads-ids_clip_bowtie2_psl_r1r1-t.fq.')+str(i),
+                                         temp_path=temp_flag)
+                                job.link(outdir('reads-ids_clip_bowtie2_psl_r2r2.fq.')+str(i),
+                                         outdir('reads-ids_clip_bowtie2_psl_r2r2-t.fq.')+str(i),
+                                         temp_path=temp_flag)
+
+
+
+
+                            # map using bowtie
+                            ms = min(options.mismatches,2)
+                            job.add('bowtie',kind='program')
+                            job.add('-t',kind='parameter')
+                            job.add('-k','1',kind='parameter')
+                            job.add('-v',ms,kind='parameter')
+                            job.add('-p',options.processes,kind='parameter',checksum='no')
+                            job.add('-X',maxlens[i],kind='parameter',from_file="yes")
+                            job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+                            job.add('--ff',kind='parameter')
+                            job.add('--un',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'.fq'),kind='output',checksum='no') # unmapped reads
+                            job.add('--un',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_1.fq'),kind='output',command_line='no') # unmapped reads
+                            job.add('--un',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_2.fq'),kind='output',command_line='no') # unmapped reads
+                            job.add('--max',outdir('reads-ids_clip_bowtie2_psl_max_filtered.fq.')+str(i),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
+                            if os.path.isfile(os.path.join(gdbu,'.1.ebwtl')):
+                                job.add('--large-index',kind='parameter')
+                            job.add('',gdbu,kind='input',temp_path=temp_flag)
+                            job.add('-1',outdir('reads-ids_clip_bowtie2_psl_r1r1-t.fq.')+str(i),kind='input',temp_path=temp_flag)
+                            job.add('-2',outdir('reads-ids_clip_bowtie2_psl_r2r2-t.fq.')+str(i),kind='input',temp_path=temp_flag)
+                            job.add('',outdir('split_gene-gene_bowtie2_filtered.sam.')+str(i),kind='output',temp_path=temp_flag)
+                            job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
+                            job.run()
+
+                            
+                            # this is for the case when the out from the previous command is empty (then it takes the first read)
+                            if job.iff(empty(outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_1.fq')),id = "##reads-ids_clip_bowtie2_psl_unmapped_filtered-"+str(i)+"_1.fq##"):
+                                job.add('head',kind='program')
+                                job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r1.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                job.add('>',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_1_t.fq'),kind='output')
+                                job.run()
+
+                                job.add('head',kind='program')
+                                job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r2.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                job.add('>',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_2_t.fq'),kind='output')
+                                job.run()
+
+                                job.clean(outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_1.fq'),temp_path=temp_flag)
+                                job.clean(outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_2.fq'),temp_path=temp_flag)
+
+                            else:
+                                job.link(outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_1.fq'),
+                                         outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_1_t.fq'),
+                                         temp_path=temp_flag)
+                                job.link(outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_2.fq'),
+                                         outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_2_t.fq'),
+                                         temp_path=temp_flag)
+
+
+                            job.clean(outdir('reads-ids_clip_bowtie2_psl_r1.fq.')+str(i),temp_path=temp_flag)
+                            job.clean(outdir('reads-ids_clip_bowtie2_psl_r2.fq.')+str(i),temp_path=temp_flag)
+
+
+
+
                             gda = "%s_bowtie_bowtie2.fa" % (part,)
                             job.add('seqtk',kind='program')
                             job.add('subseq',kind='parameter')
@@ -9029,7 +9645,8 @@ if __name__ == "__main__":
                             if os.path.isfile(os.path.join(gdb,'.1.ebwtl')):
                                 job.add('--large-index',kind='parameter')
                             job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
-                            job.add('--tryhard',kind='parameter')
+                            if options.ff_tryhard:
+                                job.add('--tryhard',kind='parameter')
                             job.add('--best',kind='parameter')
                             job.add('--strata',kind='parameter')
                             job.add('--sam',kind='parameter')
@@ -9037,8 +9654,8 @@ if __name__ == "__main__":
                             #job.add('-X',outdir('gene-gene_longest.txt'),kind='parameter',from_file="yes")
                             job.add('-X',maxlens[i],kind='parameter',from_file="yes")
                             job.add('',gdb,kind='input',temp_path=temp_flag)
-                            job.add('-1',outdir('reads-ids_clip_bowtie2_psl_r1.fq.')+str(i),kind='input',temp_path=temp_flag)
-                            job.add('-2',outdir('reads-ids_clip_bowtie2_psl_r2.fq.')+str(i),kind='input',temp_path=temp_flag)
+                            job.add('-1',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_1_t.fq'),kind='input',temp_path=temp_flag)
+                            job.add('-2',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_2_t.fq'),kind='input',temp_path=temp_flag)
                             job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
                             job.add('|',kind='parameter')
                             job.add('LC_ALL=C',kind='parameter')
@@ -9259,6 +9876,190 @@ if __name__ == "__main__":
 #                        job.add('uniq',kind='parameter')
                         job.add('>',outdir('reads-refs_clip_bowtie2_psl_uniq.txt'),kind='output')
                         job.run()
+                        
+                        
+                        
+
+                        # some pre-filtering of splitting reads (filter out the split reads which map on one gene)
+                        job.add('LC_ALL=C',kind='program')
+                        job.add('cat',kind='parameter')
+                        job.add('',outdir('reads-refs_clip_bowtie2_psl_uniq.txt'),kind='input')
+                        job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
+                        job.add('tr',kind='parameter')
+                        job.add('"|"',kind='parameter')
+                        job.add('"\\t"',kind='parameter')
+                        job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
+                        job.add('cut',kind='parameter')
+                        job.add('-f',"1,2",kind='parameter')
+                        job.add('|',kind='parameter')
+                        job.add('tr',kind='parameter')
+                        job.add('"\\t"',kind='parameter')
+                        job.add('"\\n"',kind='parameter')
+                        job.add('|',kind='parameter')
+                        job.add('sort',kind='parameter')
+                        job.add('-u',kind='parameter') # unique
+                        job.add('|',kind='parameter')
+                        job.add('sed',kind='parameter')
+                        job.add("'1{/^$/d}'",kind='parameter') # delete first line if it empty (that contains only newline)
+                        job.add('>',outdir('reads-refs_clip_bowtie2_psl_uniq_more.txt'),kind='output')
+                        job.run()
+                        
+                        job.add('seqtk',kind='program')
+                        job.add('subseq',kind='parameter')
+                        job.add('',outdir('gene-gene_unique.fa'),kind='input')
+                        job.add('',outdir('reads-refs_clip_bowtie2_psl_uniq_more.txt'),kind='input',temp_path=temp_flag)
+                        job.add('>',outdir('gene-gene-bowtie_bowtie2_unique.fa'),kind='output')
+                        job.run()
+
+                        job.add('bowtie-build',kind='program')
+                        job.add('-f',kind='parameter')
+                        job.add('--quiet',kind='parameter')
+#                        job.add('--ntoa',kind='parameter')
+                        job.add('--offrate','1',kind='parameter')
+                        job.add('--ftabchars','5',kind='parameter')
+                        #job.add('',outdir('gene-gene.fa'),kind='input')
+                        job.add('',outdir('gene-gene-bowtie_bowtie2_unique.fa'),kind='input',temp_path=temp_flag)
+                        job.add('',outdir('gene-gene-bowtie_bowtie2_unique/'),kind='output',checksum='no')
+                        job.add('',outdir('gene-gene-bowtie_bowtie2_unique/'),kind='output',command_line='no')
+                        job.run()
+
+                        # map using bowtie
+                        # filter out reads not mapping
+                        ms = min(options.mismatches,2)
+                        job.add('seqtk',kind='program')
+                        job.add('mergepe',kind='parameter')
+                        job.add('',outdir('reads-ids_clip_bowtie2_psl_r1.fq'),kind='input')
+                        job.add('',outdir('reads-ids_clip_bowtie2_psl_r2.fq'),kind='input')
+                        job.add('|',kind='parameter')
+                        job.add('bowtie',kind='parameter')
+                        job.add('-t',kind='parameter')
+                        job.add('-k','1',kind='parameter')
+                        job.add('-v',ms,kind='parameter')
+                        job.add('-p',options.processes,kind='parameter',checksum='no')
+                        job.add('--tryhard',kind='parameter')
+                        job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+                        job.add('--suppress','2,3,4,5,6,7,8',kind='parameter')
+                        if os.path.isfile(os.path.join(outdir('gene-gene-bowtie_bowtie2_unique'),'.1.ebwtl')):
+                            job.add('--large-index',kind='parameter')
+                        job.add('',outdir('gene-gene-bowtie_bowtie2_unique/'),kind='input')
+                        job.add('-',kind='parameter')
+                        job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2-temp.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
+                        job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
+                        job.add('uniq',kind='parameter')
+                        job.add('|',kind='parameter')
+                        job.add('LC_ALL=C',kind='parameter')
+                        job.add('sort',kind='parameter')
+                        job.add('-u',kind='parameter')
+                        if sort_buffer:
+                            job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+                        if sort_parallel:
+                            job.add('--parallel',options.processes,kind='parameter',checksum='no')
+                        if sort_lzop_compress:
+                            job.add('--compress-program','lzop',kind='parameter',checksum='no')
+                        elif sort_gzip_compress:
+                            job.add('--compress-program','gzip',kind='parameter',checksum='no')
+                        job.add('-T',tmp_dir,kind='parameter',checksum='no')
+                        job.add('|',kind='parameter')
+                        job.add('awk',kind='parameter')
+                        job.add('',"""'{n=length($0); if (olde=="a" && substr($0,0,n-1)==old && substr($0,n,1)=="b") {print old"a\\n"$0; old="";} {old=substr($0,0,n-1); olde=substr($0,n,1);}}'""",kind='parameter')
+                        job.add('>',outdir('reads_filtered_unique_cuts_bowtie2.txt'),kind='output')
+                        job.run()
+
+                        job.add('seqtk',kind='program')
+                        job.add('subseq',kind='parameter')
+                        job.add('',outdir('reads-ids_clip_bowtie2_psl_r1.fq'),kind='input')
+                        job.add('',outdir('reads_filtered_unique_cuts_bowtie2.txt'),kind='input')
+                        job.add('>',outdir('reads-ids_clip_bowtie2_psl_r1r1.fq'),kind='output')
+                        job.run()
+
+                        job.add('seqtk',kind='program')
+                        job.add('subseq',kind='parameter')
+                        job.add('',outdir('reads-ids_clip_bowtie2_psl_r2.fq'),kind='input')
+                        job.add('',outdir('reads_filtered_unique_cuts_bowtie2.txt'),kind='input',temp_path=temp_flag)
+                        job.add('>',outdir('reads-ids_clip_bowtie2_psl_r2r2.fq'),kind='output')
+                        job.run()
+
+                        # this is for the case when the out from the previous command is empty (then it takes the first read)
+                        if job.iff(empty(outdir('reads-ids_clip_bowtie_psl_r1r1.fq')),id = "##reads-ids_clip_bowtie2_psl_r1r1.fq##"):
+                            job.add('head',kind='program')
+                            job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r1.fq'),kind='input',temp_path=temp_flag)
+                            job.add('>',outdir('reads-ids_clip_bowtie2_psl_r1r1-t.fq'),kind='output')
+                            job.run()
+
+                            job.add('head',kind='program')
+                            job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r2.fq'),kind='input',temp_path=temp_flag)
+                            job.add('>',outdir('reads-ids_clip_bowtie2_psl_r2r2-t.fq'),kind='output')
+                            job.run()
+
+                            job.clean(outdir('reads-ids_clip_bowtie2_psl_r1r1.fq'),temp_path=temp_flag)
+                            job.clean(outdir('reads-ids_clip_bowtie2_psl_r2r2.fq'),temp_path=temp_flag)
+
+                        else:
+                            job.link(outdir('reads-ids_clip_bowtie2_psl_r1r1.fq'),
+                                     outdir('reads-ids_clip_bowtie2_psl_r1r1-t.fq'),
+                                     temp_path=temp_flag)
+                            job.link(outdir('reads-ids_clip_bowtie2_psl_r2r2.fq'),
+                                     outdir('reads-ids_clip_bowtie2_psl_r2r2-t.fq'),
+                                     temp_path=temp_flag)
+
+
+
+
+                        # map using bowtie
+                        ms = min(options.mismatches,2)
+                        job.add('bowtie',kind='program')
+                        job.add('-t',kind='parameter')
+                        job.add('-k','1',kind='parameter')
+                        job.add('-v',ms,kind='parameter')
+                        job.add('-p',options.processes,kind='parameter',checksum='no')
+                        job.add('-X',outdir('gene-gene_longest.txt'),kind='parameter',from_file="yes")
+                        job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+                        job.add('--ff',kind='parameter')
+                        job.add('--un',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered.fq'),kind='output',checksum='no') # unmapped reads
+                        job.add('--un',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_1.fq'),kind='output',command_line='no') # unmapped reads
+                        job.add('--un',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_2.fq'),kind='output',command_line='no') # unmapped reads
+                        job.add('--max',outdir('reads-ids_clip_bowtie2_psl_max_filtered.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
+                        if os.path.isfile(os.path.join(outdir('gene-gene-bowtie_bowtie2_unique'),'.1.ebwtl')):
+                            job.add('--large-index',kind='parameter')
+                        job.add('',outdir('gene-gene-bowtie_bowtie2_unique/'),kind='input',temp_path=temp_flag)
+                        job.add('-1',outdir('reads-ids_clip_bowtie2_psl_r1r1-t.fq'),kind='input',temp_path=temp_flag)
+                        job.add('-2',outdir('reads-ids_clip_bowtie2_psl_r2r2-t.fq'),kind='input',temp_path=temp_flag)
+                        job.add('',outdir('split_gene-gene_bowtie2_filtered.sam'),kind='output',temp_path=temp_flag)
+                        job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
+                        job.run()
+                        
+                        
+                        # this is for the case when the out from the previous command is empty (then it takes the first read)
+                        if job.iff(empty(outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_1.fq')),id = "##reads-ids_clip_bowtie2_psl_unmapped_filtered_1.fq##"):
+                            job.add('head',kind='program')
+                            job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r1.fq'),kind='input',temp_path=temp_flag)
+                            job.add('>',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_1_t.fq'),kind='output')
+                            job.run()
+
+                            job.add('head',kind='program')
+                            job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r2.fq'),kind='input',temp_path=temp_flag)
+                            job.add('>',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_2_t.fq'),kind='output')
+                            job.run()
+
+
+                            job.clean(outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_1.fq'),temp_path=temp_flag)
+                            job.clean(outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_2.fq'),temp_path=temp_flag)
+
+
+                        else:
+                            job.link(outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_1.fq'),
+                                     outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_1_t.fq'),
+                                     temp_path=temp_flag)
+                            job.link(outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_2.fq'),
+                                     outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_2_t.fq'),
+                                     temp_path=temp_flag)
+
+                        job.clean(outdir('reads-ids_clip_bowtie2_psl_r1.fq'),temp_path=temp_flag)
+                        job.clean(outdir('reads-ids_clip_bowtie2_psl_r2.fq'),temp_path=temp_flag)
+
 
                         job.add('seqtk',kind='program')
                         job.add('subseq',kind='parameter')
@@ -9286,18 +10087,19 @@ if __name__ == "__main__":
                         job.add('-k','500',kind='parameter')
                         job.add('-v',options.mismatches,kind='parameter')
                         job.add('-p',options.processes,kind='parameter',checksum='no')
-                        if os.path.isfile(os.path.join(outdir('gene-gene-bowtie'),'.1.ebwtl')):
+                        if os.path.isfile(os.path.join(outdir('gene-gene-bowtie_bowtie2'),'.1.ebwtl')):
                             job.add('--large-index',kind='parameter')
                         job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
-                        job.add('--tryhard',kind='parameter')
+                        if options.ff_tryhard:
+                            job.add('--tryhard',kind='parameter')
                         job.add('--best',kind='parameter')
                         job.add('--strata',kind='parameter')
                         job.add('--sam',kind='parameter')
                         job.add('--ff',kind='parameter')
                         job.add('-X',outdir('gene-gene_longest.txt'),kind='parameter',from_file="yes")
                         job.add('',outdir('gene-gene-bowtie_bowtie2/'),kind='input',temp_path=temp_flag)
-                        job.add('-1',outdir('reads-ids_clip_bowtie2_psl_r1.fq'),kind='input',temp_path=temp_flag)
-                        job.add('-2',outdir('reads-ids_clip_bowtie2_psl_r2.fq'),kind='input',temp_path=temp_flag)
+                        job.add('-1',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_1_t.fq'),kind='input',temp_path=temp_flag)
+                        job.add('-2',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_2_t.fq'),kind='input',temp_path=temp_flag)
                         job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
                         job.add('|',kind='parameter')
                         job.add('LC_ALL=C',kind='parameter')
@@ -9612,7 +10414,8 @@ if __name__ == "__main__":
                         if os.path.isfile(os.path.join(gdb,'.1.ebwtl')):
                             job.add('--large-index',kind='parameter')
                         job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
-                        job.add('--tryhard',kind='parameter')
+                        if options.ff_tryhard:
+                            job.add('--tryhard',kind='parameter')
                         job.add('--best',kind='parameter')
                         job.add('--strata',kind='parameter')
                         job.add('--sam',kind='parameter')
@@ -9877,6 +10680,8 @@ if __name__ == "__main__":
     job.clean(to_delete,list_file='yes',temp_path=temp_flag)
     
     to_delete = [
+        outdir('gene-gene-bowtie_star_unique.fa'),
+        outdir('gene-gene-bowtie_bowtie2_unique.fa'),
         outdir('exon-exon_junction_cut_split.fa'),
         outdir('eporcrlf2.txt'),
         outdir('gene-gene_split_blat.fa'),

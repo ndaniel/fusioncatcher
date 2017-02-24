@@ -136,7 +136,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 0.99.7a beta"
+    version = "%prog 0.99.7b beta"
 
     parser = MyOptionParser(
                 usage       = usage,

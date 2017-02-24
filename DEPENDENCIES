@@ -9,7 +9,6 @@ Required dependencies:
  - Bowtie2 64-bit version 2.2.9  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
  - STAR version 2.5.2b <http://github.com/alexdobin/STAR/releases>
  - SEQTK version 1.0-r82b-dirty  <http://github.com/ndaniel/seqtk>
- - BWA version 0.7.12  <http://sourceforge.net/projects/bio-bwa/>
 
 Optional dependencies:
 - strongly recommended (expected by default to be installed but their use can
@@ -32,7 +31,8 @@ Optional dependencies:
      order to parse the Excel file XLS from the ChimerDB 2.0 database.
    * Python library openpyxl <http://pypi.python.org/pypi/openpyxl> . This is
      needed for parsing the Excel file XLSX from the ConjoinG database.
-
+   * BWA version 0.7.12  <http://sourceforge.net/projects/bio-bwa/>
+ 
 Genomic Databases (used/installed automatically by FusionCatcher):
 - ENSEMBL database <http://www.ensembl.org>
 - COSMIC database <http://cancer.sanger.ac.uk/cancergenome/projects/cosmic/>

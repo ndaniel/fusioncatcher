@@ -948,7 +948,7 @@ if __name__ == '__main__':
                   "<http://github.com/ndaniel/fusioncatcher>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 0.99.7a beta"
+    version = "%prog 0.99.7b beta"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,

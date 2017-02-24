@@ -6799,8 +6799,23 @@ if __name__ == '__main__':
         ['ZC3H12A','CAPZB'],
         ['ZNF322A','SLC12A2'],
         ['ZNF790','COX7A1'],
-        ['ZNRF3','BCR']
-
+        ['ZNRF3','BCR'],
+        ['ACACA','ERBB2'],
+        ['STIP1','CREB3L1'],
+        ['ZDHHC5','GPR137'],
+        ['STIP1','CREB3L1'],
+        ['ZDHHC5','GPR137'],
+        ['CELF1','DDIAS'],
+        ['CELF1','C11ORF82'],
+        ['THADA','AC079780.3'],
+        ['KIAA1737','NGFR'],
+        ['RUNDC1','BRAF'],
+        ['NF1','RAB11FIP4'],
+        ['TCF4','MAML3'],
+        ['UBTF','MAML3'],
+        ['FAM53B','SLC7A10'],
+        ['HTN3','MSANTD3'],
+        ['PRB3','ZNF217']
 
 ]
 
