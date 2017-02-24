@@ -2,6 +2,13 @@ Version Release History for FusionCatcher
 =========================================
 
 
+Version 0.99.7b beta - February 24, 2017
+---------------------------------------
+ * fixed a rare bug affecting 'bowtie --ff --tryhard'
+ * fixed several minor bugs
+ * updated manual
+
+
 Version 0.99.7a beta - February 17, 2017
 ---------------------------------------
  * added support for Ensembl version 86

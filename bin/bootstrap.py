@@ -177,8 +177,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
     
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7a.zip'
-    FUSIONCATCHER_VERSION = "0.99.7a beta"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7b.zip'
+    FUSIONCATCHER_VERSION = "0.99.7b beta"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -202,8 +202,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     SETUPTOOLS_URL = 'http://pypi.python.org/packages/source/s/setuptools/setuptools-20.9.0.tar.gz'
     # BOWTIE
     BOWTIE_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie')
-    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-linux-x86_64.zip'
-    BOWTIE_VERSION = ('1.1.2',)
+    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.0/bowtie-1.2-linux-x86_64.zip'
+    BOWTIE_VERSION = ('1.2.0',)
     # BOWTIE2
     BOWTIE2_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie2')
     BOWTIE2_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.9/bowtie2-2.2.9-linux-x86_64.zip'
