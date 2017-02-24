@@ -52,7 +52,6 @@ For running *FusionCatcher* it is needed a computer with:
   * organism specific  data from [Ensembl](http://www.ensembl.org) database release 86 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed) (will be installed by `boostrap.py`)
   * **STAR** version 2.5.2b https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases (will be installed by `boostrap.py`)
   * **BOWTIE2** version 2.2.9 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml (will be installed by `boostrap.py`)
-  * **BWA** version 0.7.12 http://sourceforge.net/projects/bio-bwa/ (will be installed by `boostrap.py`)
 
 ## 2.2 - Optional dependencies
 
@@ -72,7 +71,7 @@ Note: If one does not want to install BLAT (whilst installing *FusionCatcher* au
   * **pigz** version 2.3.1 http://zlib.net/pigz/ for using GZIP on several CPUs in parallel (other older versions might support this) (will be installed by `boostrap.py`)
   * **SAMTools** version 1.19 http://www.htslib.org/ (will be installed by `boostrap.py`)
   * **Picard tools** version 2.2.2 http://broadinstitute.github.io/picard/ (will be installed by `boostrap.py`)
-
+  * **BWA** version 0.7.12 http://sourceforge.net/projects/bio-bwa/ (will be installed by `boostrap.py`)
 
 ## 2.3 - Genomic Databases
 These are used (downloaded and parsed) automatically by `boostrap.py` of *FusionCatcher*:
