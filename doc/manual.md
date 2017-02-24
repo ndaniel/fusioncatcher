@@ -434,7 +434,7 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
    threads = 0
    aligners = blat,star
    [versions]
-   fusioncatcher = 0.99.6a beta
+   fusioncatcher = 0.99.7b beta
    ```
    
    * *Choice B*: Add the paths for the needed tools to the `PATH` variable by editing, for example, the `.bashrc` file (type: `nano ~/.bashrc` at command line) and add the following lines at the end:
@@ -754,7 +754,7 @@ For mouse genome, one has
 fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
 ```
 
-**NOTE**: *FusionCatcher* version 0.99.6a needs a newer **build data** than the previous version (that is 0.99.5a) of 'fusioncatcher-build'.
+**NOTE**: *FusionCatcher* version 0.99.7a needs a newer **build data** than the previous version (that is 0.99.7a) of 'fusioncatcher-build'.
 
 ---
 
