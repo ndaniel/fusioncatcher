@@ -44,7 +44,7 @@ For running *FusionCatcher* it is needed a computer with:
 
 
 ## 2.1 - Required dependencies
-  * **Linux/Unix** 64-bit (e.g. Ubuntu version 12.04/14.04 or newer)
+  * **Linux/Unix** 64-bit (e.g. Ubuntu version 12.04/14.04/16.04 or newer)
   * **Python** version 2.7.6 (>=2.6.0 and < 3.0 is fine)
   * **BioPython** version 1.66 (>=1.50 is fine)
   * **Bowtie** 64-bit version 1.2.0 http://bowtie-bio.sourceforge.net/index.shtml (will be installed by `boostrap.py`)
