@@ -50,7 +50,7 @@ For running *FusionCatcher* it is needed a computer with:
   * **Bowtie** 64-bit version 1.2.0 http://bowtie-bio.sourceforge.net/index.shtml (will be installed by `boostrap.py`)
   * **SeqTK** version 1.0-r82b-dirty  http://github.com/ndaniel/seqtk (will be installed by `boostrap.py`)
   * organism specific  data from [Ensembl](http://www.ensembl.org) database release 86 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed) (will be installed by `boostrap.py`)
-  * **STAR** version 2.5.1b https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases (will be installed by `boostrap.py`)
+  * **STAR** version 2.5.2b https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases (will be installed by `boostrap.py`)
   * **BOWTIE2** version 2.2.9 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml (will be installed by `boostrap.py`)
   * **BWA** version 0.7.12 http://sourceforge.net/projects/bio-bwa/ (will be installed by `boostrap.py`)
 
@@ -295,12 +295,12 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   ln -s seqtk-1.0-r82b seqtk
   ```
   
-  * installing **STAR** version 2.5.1b (required)
+  * installing **STAR** version 2.5.2b (required)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://github.com/alexdobin/STAR/archive/2.5.1b.tar.gz -O 2.5.1b.tar.gz
-  tar zxvf 2.5.1b.tar.gz
-  cd 2.5.1b
+  wget http://github.com/alexdobin/STAR/archive/2.5.1b.tar.gz -O 2.5.2b.tar.gz
+  tar zxvf 2.5.2b.tar.gz
+  cd 2.5.2b
   cd source
   rm -f STAR
   cp ../bin/Linux_x86_64_static/STAR .
@@ -314,7 +314,7 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   and continue with
   ```
   cd ..
-  ln -s 2.5.1b star
+  ln -s 2.5.2b star
   ```
   
   * installing **Velvet** version 1.2.10 (optional)
