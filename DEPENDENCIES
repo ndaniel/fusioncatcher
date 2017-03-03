@@ -82,4 +82,6 @@ sudo yum install tbb-devel
 sudo yum install python-devel
 sudo yum install python-biopython
 sudo yum install python-numpy
+sudo yum install python-xlrd
+sudo yum install python-openpyxl
 ```
