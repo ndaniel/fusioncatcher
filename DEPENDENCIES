@@ -1,6 +1,8 @@
 All dependecies listed below (except Linux, Python, and BioPython) may be 
 installed automatically by using 'bootstrap.py' provided here.
 
+Administrators, please see the end of this document!
+
 Required dependencies:
  - Linux 64-bit (e.g. Ubuntu 12.04/14.04/16.04 or newer) with a minimum of 24 GB RAM
  - Python version 2.7.x (>=2.6.0 and < 3.0 is fine)
@@ -46,4 +48,21 @@ Genomic Databases (used/installed automatically by FusionCatcher):
 - Illumina BodyMap2 RNA-seq database <http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/>
 - RNA-seq database of 95 human individuals representing 27 different tissues <http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-1733/>
 
-
+In cases that one wants to install FusionCatcher on a bare bone Linux machine, one can look at the following hints.
+For an Ubuntu distro, installing these before installing FusionCatcher might make the installation smoother:
+```
+sudo apt-get install build-essential
+sudo apt-get install gcc
+sudo apt-get install zlib-dev
+sudo apt-get install libtbb-dev
+sudo apt-get install wget
+sudo apt-get install curl
+sudo apt-get install cmake
+sudo apt-get install pigz
+sudo apt-get install python-dev
+sudo apt-get install python-numpy
+sudo apt-get install python-biopython
+sudo apt-get install libpthread-stubs0-dev [for pthreads in bowtie2???]
+sudo apt-get install python-xlrd
+sudo apt-get install python-openpyxl
+```
