@@ -49,7 +49,8 @@ Genomic Databases (used/installed automatically by FusionCatcher):
 - RNA-seq database of 95 human individuals representing 27 different tissues <http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-1733/>
 
 In cases that one wants to install FusionCatcher on a bare bone Linux machine, one can look at the following hints.
-For an Ubuntu distro, installing these before installing FusionCatcher might make the installation smoother:
+Install these before installing FusionCatcher (would make the installation smoother), for
+- Ubuntu distro 
 ```
 sudo apt-get install build-essential
 sudo apt-get install libncurses5-dev
@@ -67,7 +68,7 @@ sudo apt-get install python-biopython
 sudo apt-get install python-xlrd
 sudo apt-get install python-openpyxl
 ```
-For an RedHat/CentOS distro, installing these before installing FusionCatcher might make the installation smoother:
+- RedHat/CentOS distro
 ```
 sudo yum groupinstall "Development Tools"
 sudo yum install ncurses-devel
