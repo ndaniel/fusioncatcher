@@ -202,6 +202,18 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   ```
   sudo apt-get install build-essential
   sudo apt-get install python-dev
+  sudo apt-get install python-numpy
+  sudo apt-get install gcc
+  sudo apt-get install zlib-dev
+  sudo apt-get install libtbb-dev
+  sudo apt-get install wget
+  sudo apt-get install curl
+  sudo apt-get install cmake
+  sudo apt-get install pigz
+  sudo apt-get install libpthread-stubs0-dev
+  sudo apt-get install python-biopython
+  sudo apt-get install python-xlrd
+  sudo apt-get install python-openpyxl
   ```
   
   and for [RedHat](http://www.redhat.com)/[CentOS](http://www.centos.org) this would be required
@@ -209,8 +221,16 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
   sudo yum groupinstall "Development Tools"
   sudo yum install gcc
   sudo yum install ncurses-devel
-  sudo yum install python-devel
   sudo yum install zlib-devel
+  sudo yum install cmake
+  sudo yum install pigz
+  sudo yum install wget
+  sudo yum install curl
+  sudo yum install tbb-devel
+  sudo yum install python-devel
+  sudo yum install python-biopython
+  sudo yum install python-numpy
+
   ```
   
   and for [OpenSUSE](http://www.opensuse.org) this would be required
