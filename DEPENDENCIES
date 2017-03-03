@@ -52,13 +52,15 @@ In cases that one wants to install FusionCatcher on a bare bone Linux machine, o
 For an Ubuntu distro, installing these before installing FusionCatcher might make the installation smoother:
 ```
 sudo apt-get install build-essential
+sudo apt-get install libncurses5-dev
 sudo apt-get install gcc
+sudo apt-get install make
 sudo apt-get install cmake
 sudo apt-get install zlib-dev
-sudo apt-get install libtbb-dev
 sudo apt-get install wget
 sudo apt-get install curl
 sudo apt-get install pigz
+sudo apt-get install libtbb-dev
 sudo apt-get install python-dev
 sudo apt-get install python-numpy
 sudo apt-get install python-biopython
@@ -68,9 +70,10 @@ sudo apt-get install python-openpyxl
 For an RedHat/CentOS distro, installing these before installing FusionCatcher might make the installation smoother:
 ```
 sudo yum groupinstall "Development Tools"
-sudo yum install gcc
-sudo yum install cmake
 sudo yum install ncurses-devel
+sudo yum install gcc
+sudo yum install make
+sudo yum install cmake
 sudo yum install zlib-devel
 sudo yum install pigz
 sudo yum install wget
