@@ -1099,12 +1099,13 @@ If one uses the `--visualization-psl` command line option of the *FusionCatcher*
   * `supporting-reads_gene-fusions_BWA.zip`.
 The files with names ending in `_reads.psl` may be used further for visualization of the candidate fusion genes using [UCSC Genome Browser](http://genome.ucsc.edu/), [IGV (Integrative Genome Viewer)](http://www.broadinstitute.org/igv/) or any other viewer/browser which supports the [PSL](http://genome.ucsc.edu/FAQ/FAQformat.html#format2) format.
 
-Note: If one **downloaded the build files** then the command line option `--visualization-psl` will not work an it needs to be enabled by creating manually first the file `fusioncatcher/data/current/genome.2bit` for FusionCatcher, something like this:
+Note: If one generated the build files using `fusioncatcher-build.py` the command line `--visualization-psl` option should work just fine. If one **downloaded the build files** then the command line option `--visualization-psl` will not work an it needs to be enabled by creating manually first the file `fusioncatcher/data/current/genome.2bit` for FusionCatcher, something like this (here the assumption is that the build files for one's organism of interest are in `fusioncatcher/data/current/`):
 ```
 # re-build the genome index using BLAT where the genome is given FASTA file genome.fa
 fusioncatcher/tools/bowtie/bowtie-inspect fusioncatcher/data/current/genome_index/ > fusioncatcher/data/current/genome.fa
 fusioncatcher/tools/blat/faToTwoBit fusioncatcher/data/current/genome.fa fusioncatcher/data/current/genome.2bit -noMask
 ```
+
 
 
 ### 6.3.3 - SAM format
