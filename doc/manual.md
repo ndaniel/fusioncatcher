@@ -1176,6 +1176,23 @@ samtools view -bS Aligned.out.sam | samtools sort - fusion_genes.sorted
 samtools index fusion_genes.sorted.bam
     ```
 
+  * [BLAT](http://users.soe.ucsc.edu/~kent/src/) aligner (where `your_choice_of_genome_blat_index` should be built according to the [BLAT's examples](https://genome.ucsc.edu/goldenpath/help/blatSpec.html))
+    ```
+# build the genome index using BLAT where the genome is given FASTA file genome.fa
+faToTwoBit genome.fa genome.2bit -noMask
+
+
+# align the supporting reads given by FusionCatcher (the FASTA 
+# file for your fusion of interest can be found in ZIP files 
+# generated as output by FusionCatcher, 
+# e.g. EML4--ALK__42264951--29223528_reads.fa) using BLAT aligner
+blat -stepSize=5 -repMatch=2253 -minScore=0 -minIdentity=0 genome.2bit supporting_reads.fa supporting_reads_mapped.psl 
+
+# visualize the PSL file supporting_reads_mapped.psl  in IGV => run IGV
+
+
+    ```
+
 Further, the files `fusion_genes.sorted.bam` and `fusion_genes.sorted.bam.bai` may be used with your favourite NGS visualizer!
 
 ### 6.3.4 - Chimera `R/BioConductor` package
