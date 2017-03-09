@@ -1118,6 +1118,7 @@ If one uses the `--visualization-sam` command line option of the *FusionCatcher*
   * `supporting-reads_gene-fusions_STAR.zip`,
   * `supporting-reads_gene-fusions_BOWTIE2.zip`, and
   * `supporting-reads_gene-fusions_BWA.zip`.
+
 The files with names ending in `_reads.sam` (please note, that they still needed to be converted to BAM, coordiante sorted and indexed first) may be used further for visualization of the candidate fusion genes using [UCSC Genome Browser](http://genome.ucsc.edu/), [IGV (Integrative Genome Viewer)](http://www.broadinstitute.org/igv/) or any other viewer/browser which supports the [SAM](http://samtools.github.io/hts-specs/SAMv1.pdf) format.
 
 #### 6.3.3.2 - Manual method
@@ -1198,8 +1199,8 @@ faToTwoBit genome.fa genome.2bit -noMask
 # e.g. EML4--ALK__42264951--29223528_reads.fa) using BLAT aligner
 blat -stepSize=5 -repMatch=2253 -minScore=0 -minIdentity=0 genome.2bit supporting_reads.fa supporting_reads_mapped.psl 
 
-# visualize the PSL file supporting_reads_mapped.psl  in IGV => run IGV
-
+# visualize the PSL file supporting_reads_mapped.pslin IGV or run psl2sam.pl to convert it into SAM format
+psl2sam.pl supporting_reads_mapped.psl > supporting_reads_mapped.sam
 
     ```
 
