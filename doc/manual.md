@@ -1091,13 +1091,21 @@ These supporting reads (given as FASTA and FASTQ files) may be used for further 
 For example, the sequences of supporting reads for a given candidate fusion gene may be visualized using [UCSC Genome Browser](http://genome.ucsc.edu/) by aligning them using the [UCSC Genome Browser](http://genome.ucsc.edu/)'s  BLAT aligner (i.e. copy and paste the reads here: [BLAT tool of UCSC Genome Browser](http://genome.ucsc.edu/cgi-bin/hgBlat?command=start) --> click the button **Submit** --> navigate into the [UCSC Genome Browser](http://genome.ucsc.edu/) to the genes that form the fusion genes). Also zooming out several times gives better view here.
 
 ### 6.3.2 - PSL format
-If one uses the `--blat-visualization` command line option of the *FusionCatcher* then the BLAT alignment of the supporting reads will be done automatically by the *FusionCatcher* and the results are saved as [PSL](http://genome.ucsc.edu/FAQ/FAQformat.html#format2) files with names that are ending with `_reads.psl` in the:
+If one uses the `--visualization-psl` command line option of the *FusionCatcher* then the BLAT alignment of the supporting reads will be done automatically by the *FusionCatcher* and the results are saved in [PSL](http://genome.ucsc.edu/FAQ/FAQformat.html#format2) format files with names that are ending with `_reads.psl` in the:
   * `supporting-reads_gene-fusions_BOWTIE.zip`,
   * `supporting-reads_gene-fusions_BLAT.zip`,
   * `supporting-reads_gene-fusions_STAR.zip`, and
   * `supporting-reads_gene-fusions_BOWTIE2.zip`, and
   * `supporting-reads_gene-fusions_BWA.zip`.
 The files with names ending in `_reads.psl` may be used further for visualization of the candidate fusion genes using [UCSC Genome Browser](http://genome.ucsc.edu/), [IGV (Integrative Genome Viewer)](http://www.broadinstitute.org/igv/) or any other viewer/browser which supports the [PSL](http://genome.ucsc.edu/FAQ/FAQformat.html#format2) format.
+
+Note: If one **downloaded the build files** then the command line option `--visualization-psl` will not work an it needs to be enabled by creating manually first the file `fusioncatcher/data/current/genome.2bit` for FusionCatcher, something like this:
+```
+# re-build the genome index using BLAT where the genome is given FASTA file genome.fa
+fusioncatcher/tools/bowtie/bowtie-inspect fusioncatcher/data/current/genome_index/ > fusioncatcher/data/current/genome.fa
+fusioncatcher/tools/blat/faToTwoBit fusioncatcher/data/current/genome.fa fusioncatcher/data/current/genome.2bit -noMask
+```
+
 
 ### 6.3.3 - SAM format
 
