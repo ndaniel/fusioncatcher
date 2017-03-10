@@ -78,15 +78,16 @@ sudo apt-get install python-openpyxl
 ```
 sudo yum groupinstall "Development Tools"
 sudo yum install ncurses-devel
-sudo yum install awk
+sudo yum install gawk
 sudo yum install gcc
+sudo yum install g++
 sudo yum install make
 sudo yum install cmake
-sudo yum install zlib-devel
 sudo yum install gzip
 sudo yum install pigz
 sudo yum install wget
 sudo yum install curl
+sudo yum install zlib-devel
 sudo yum install tbb-devel
 sudo yum install python-devel
 sudo yum install python-biopython
