@@ -63,8 +63,10 @@ sudo apt-get install unzip
 sudo apt-get install zip
 sudo apt-get install tar
 sudo apt-get install gzip
+sudo apt-get install pigz
 sudo apt-get install build-essential
 sudo apt-get install libncurses5-dev
+sudo apt-get install zlib-dev
 sudo apt-get install python
 sudo apt-get install python-dev
 sudo apt-get install python-numpy
