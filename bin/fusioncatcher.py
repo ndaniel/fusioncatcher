@@ -7871,12 +7871,12 @@ if __name__ == "__main__":
                                 # this is for the case when the out from the previous command is empty (then it takes the first read)
                                 if job.iff(empty(outdir('reads-ids_clip_star_psl_r1r1.fq.')+str(i)),id = "##reads-ids_clip_star_psl_r1r1.fq."+str(i)+"##"):
                                     job.add('head',kind='program')
-                                    job.add('-4',outdir('reads-ids_clip_star_psl_r1.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                    job.add('-4',outdir('reads-ids_clip_star_psl_r1.fq.')+str(i),kind='input')
                                     job.add('>',outdir('reads-ids_clip_star_psl_r1r1-t.fq.')+str(i),kind='output')
                                     job.run()
 
                                     job.add('head',kind='program')
-                                    job.add('-4',outdir('reads-ids_clip_star_psl_r2.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                    job.add('-4',outdir('reads-ids_clip_star_psl_r2.fq.')+str(i),kind='input')
                                     job.add('>',outdir('reads-ids_clip_star_psl_r2r2-t.fq.')+str(i),kind='output')
                                     job.run()
 
@@ -8671,12 +8671,12 @@ if __name__ == "__main__":
                             # this is for the case when the out from the previous command is empty (then it takes the first read)
                             if job.iff(empty(outdir('reads-ids_clip_star_psl_r1r1.fq')),id = "##reads-ids_clip_star_psl_r1r1.fq##"):
                                 job.add('head',kind='program')
-                                job.add('-4',outdir('reads-ids_clip_star_psl_r1.fq'),kind='input',temp_path=temp_flag)
+                                job.add('-4',outdir('reads-ids_clip_star_psl_r1.fq'),kind='input')
                                 job.add('>',outdir('reads-ids_clip_star_psl_r1r1-t.fq'),kind='output')
                                 job.run()
 
                                 job.add('head',kind='program')
-                                job.add('-4',outdir('reads-ids_clip_star_psl_r2.fq'),kind='input',temp_path=temp_flag)
+                                job.add('-4',outdir('reads-ids_clip_star_psl_r2.fq'),kind='input')
                                 job.add('>',outdir('reads-ids_clip_star_psl_r2r2-t.fq'),kind='output')
                                 job.run()
                                 
@@ -9535,12 +9535,12 @@ if __name__ == "__main__":
                             # this is for the case when the out from the previous command is empty (then it takes the first read)
                             if job.iff(empty(outdir('reads-ids_clip_bowtie2_psl_r1r1.fq.')+str(i)),id = "##reads-ids_clip_bowtie2_psl_r1r1.fq."+str(i)+"##"):
                                 job.add('head',kind='program')
-                                job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r1.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r1.fq.')+str(i),kind='input')
                                 job.add('>',outdir('reads-ids_clip_bowtie2_psl_r1r1-t.fq.')+str(i),kind='output')
                                 job.run()
 
                                 job.add('head',kind='program')
-                                job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r2.fq.')+str(i),kind='input',temp_path=temp_flag)
+                                job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r2.fq.')+str(i),kind='input')
                                 job.add('>',outdir('reads-ids_clip_bowtie2_psl_r2r2-t.fq.')+str(i),kind='output')
                                 job.run()
 
@@ -9985,12 +9985,12 @@ if __name__ == "__main__":
                         # this is for the case when the out from the previous command is empty (then it takes the first read)
                         if job.iff(empty(outdir('reads-ids_clip_bowtie_psl_r1r1.fq')),id = "##reads-ids_clip_bowtie2_psl_r1r1.fq##"):
                             job.add('head',kind='program')
-                            job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r1.fq'),kind='input',temp_path=temp_flag)
+                            job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r1.fq'),kind='input')
                             job.add('>',outdir('reads-ids_clip_bowtie2_psl_r1r1-t.fq'),kind='output')
                             job.run()
 
                             job.add('head',kind='program')
-                            job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r2.fq'),kind='input',temp_path=temp_flag)
+                            job.add('-4',outdir('reads-ids_clip_bowtie2_psl_r2.fq'),kind='input')
                             job.add('>',outdir('reads-ids_clip_bowtie2_psl_r2r2-t.fq'),kind='output')
                             job.run()
 

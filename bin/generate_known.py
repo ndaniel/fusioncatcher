@@ -6815,7 +6815,17 @@ if __name__ == '__main__':
         ['UBTF','MAML3'],
         ['FAM53B','SLC7A10'],
         ['HTN3','MSANTD3'],
-        ['PRB3','ZNF217']
+        ['PRB3','ZNF217'],
+        ['YWHAE','NUTM2E'],
+        ['BCOR','CCNB3'],
+        ['EWSR1','ERG'],
+        ['CIC','LEUTX'],
+        ['IGH@','DUX4'],
+        ['ERG','DUX4'],
+        ['CIC','NUTM1'],
+        ['CIC','FOXO4'],
+        ['TNIP1','PDGFRB'],
+        ['NUTM2A','CIC']
 
 ]
 

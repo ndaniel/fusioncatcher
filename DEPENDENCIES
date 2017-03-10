@@ -54,8 +54,10 @@ Install these before installing FusionCatcher (would make the installation smoot
 ```
 sudo apt-get install build-essential
 sudo apt-get install libncurses5-dev
+sudo apt-get install awk
 sudo apt-get install gcc
 sudo apt-get install make
+sudo apt-get install gzip
 sudo apt-get install cmake
 sudo apt-get install zlib-dev
 sudo apt-get install wget
@@ -72,10 +74,12 @@ sudo apt-get install python-openpyxl
 ```
 sudo yum groupinstall "Development Tools"
 sudo yum install ncurses-devel
+sudo yum install awk
 sudo yum install gcc
 sudo yum install make
 sudo yum install cmake
 sudo yum install zlib-devel
+sudo yum install gzip
 sudo yum install pigz
 sudo yum install wget
 sudo yum install curl
