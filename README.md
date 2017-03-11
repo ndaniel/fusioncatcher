@@ -20,6 +20,12 @@ For more installing options, see:
 bootstrap.py --help
 ```
 
+In Ubuntu running this command before installing FusionCatcher would make the installation smoother:
+
+```bash
+sudo apt-get install wget gawk gcc g++ make cmake curl unzip zip tar gzip pigz build-essential libncurses5-dev zlib1g-dev python python-dev python-numpy python-biopython python-xlrd python-openpyxl
+```
+
 Description
 -----------
 FusionCatcher searches for novel/known somatic fusion genes, translocations, and
