@@ -14,7 +14,7 @@ Use this one-line command:
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py -t --download
 ```
 
-For more installing options, see:
+If one wants to have all the questions asked by `boostrap.py` answered automatically with *yes* then add `-y` to command above. For more installing options, see:
 
 ```bash
 bootstrap.py --help
