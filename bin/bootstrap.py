@@ -580,17 +580,17 @@ def install_module(package, url, path, exe = '', pythonpath = '', verbose = True
     if os.getuid() == 0:
         if verbose:
             print "Installing Python package '%s' as root..." % (package,)
-        f,r = cmds([['apt-get']], verbose = False, exit = False)
+        f,r = cmd([(['apt-get','--help'],False)], verbose = False, exit = False)
         if f:
-            cmds.append(['apt-get','install',package],False)
+            cmds = cmds + [(['apt-get','--yes','install',package],False)]
         else:
-            f,r = cmds([['yum']], verbose = False, exit = False)
+            f,r = cmd([(['yum','--help'],False)], verbose = False, exit = False)
             if f:
-                cmds.append(['yum','install',package],False)
+                cmds = cmds +[(['yum','install',package],False)]
             else:
-                f,r = cmds([['easy_install','--version']], verbose = False, exit = False)
+                f,r = cmds([(['easy_install','--version'],False)], verbose = False, exit = False)
                 if f:
-                    cmds.append((apython,'easy_install',package.lstrip('python').lstrip('-')),False)
+                    cmds = cmds +[([apython,'easy_install',package.lstrip('python').lstrip('-')],False)]
                 if verbose:
                     print >>sys.stderr, "  * ERROR: No idea how to install the Python module '%s' using other package " % (module,)
                     print >>sys.stderr, "           managers than 'apt-get', 'yum', or 'easy_install'!"
@@ -1504,13 +1504,13 @@ if __name__ == '__main__':
                  install = options.install_all or options.install_all_tools,
                  custom_install = ["#!/usr/bin/env bash",
                                    "rm -f source/STAR",
-                                   "cp bin/Linux_x86_64/STAR source/STAR",
-                                   "cd source",
-                                   "make",
-                                   "if ! ./STAR --version; then",
-                                   "    rm -f STAR",
-                                   "    cp ../bin/Linux_x86_64_static/STAR .",
-                                   "fi",
+                                   "cp -f bin/Linux_x86_64/STAR source/STAR",
+#                                   "cd source",
+#                                   "make",
+#                                   "if ! ./STAR --version; then",
+#                                   "    rm -f STAR",
+#                                   "    cp ../bin/Linux_x86_64_static/STAR .",
+#                                   "fi",
                                    "exit 0"])
         if r:
             STAR_PATH = r

@@ -14,7 +14,8 @@ Use this one-line command:
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py -t --download
 ```
 
-If one wants to have all the questions asked by `boostrap.py` answered automatically with *yes* then add `-y` to command above. For more installing options, see:
+If one wants to have all the questions asked by boostrap.py answered automatically with yes then add -y to the 
+command above. For more installing options, see:
 
 ```bash
 bootstrap.py --help
@@ -23,7 +24,7 @@ bootstrap.py --help
 In Ubuntu running this command before installing FusionCatcher would make the installation smoother:
 
 ```bash
-sudo apt-get install wget gawk gcc g++ make cmake curl unzip zip tar gzip pigz build-essential libncurses5-dev zlib1g-dev libtbb2 libtbb-dev python python-dev python-numpy python-biopython python-xlrd python-openpyxl
+sudo apt-get install wget gawk gcc g++ make cmake automake curl unzip zip bzip2 tar gzip pigz parallel build-essential libncurses5-dev zlib1g zlib1g-dev libtbb-dev libtbb2 python python-dev python-numpy python-biopython python-xlrd python-openpyxl
 ```
 
 Description
