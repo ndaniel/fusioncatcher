@@ -22,7 +22,6 @@ RUN apt-get -y clean \
     make \
     parallel \
     pigz \
-    parallel \
     python \
     python-dev \
     python-biopython \
