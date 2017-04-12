@@ -38,7 +38,7 @@ FusionCatcher by forcing not use the BLAT aligner by specifying the option
 Please, note that FusionCatcher does not require BLAT in order to find
 candidate fusion genes!
 
-This file is not running/executing/using BLAT.
+This file is running/executing/using BLAT.
 
 """
 import sys
@@ -121,7 +121,7 @@ def delete_file(some_file):
     elif os.path.isdir(some_file):
         shutil.rmtree(some_file)
 
-def give_me_psl(fasta, twobit, tmp_dir = None, align_type = 'web'):
+def give_me_psl(fasta, twobit, blat_dir = None, tmp_dir = None, align_type = 'web'):
     # give as input a file as a list of strings it runs BLAT and it returns
     # the PSL output as a list of strings
     fasta_file = give_me_temp_filename(tmp_dir = tmp_dir)
@@ -147,9 +147,14 @@ def give_me_psl(fasta, twobit, tmp_dir = None, align_type = 'web'):
     # as –fine and -repMatch = 1000000. –fastmap option and –ooc option should
     # be avoided for mapping short reads. In addition –minIdentity may be set
     # to 95%.
+    
+    _BT_ = ""
+    if blat_dir and blat_dir.strip():
+        _BT_ = blat_dir.rstrip("/")+"/"
+    
     cmd = None
     if align_type == 'web':
-        cmd = ['blat',
+        cmd = [_BT_+'blat',
                '-stepSize=5', # 5
                '-repMatch=2253', # 2253
                '-minScore=0',  # 0
@@ -158,7 +163,7 @@ def give_me_psl(fasta, twobit, tmp_dir = None, align_type = 'web'):
                fasta_file,
                psl_file]
     elif align_type == 'sensitive':
-        cmd = ['blat',
+        cmd = [_BT_+'blat',
                '-stepSize=5', # 5
                '-repMatch=2253', # 2253
                '-minScore=0',  # 0
@@ -197,15 +202,18 @@ def give_me_psl(fasta, twobit, tmp_dir = None, align_type = 'web'):
 
 
 
-def give_me_sam(fastq, anchor, bowtie2index, tmp_dir = None, cpus = 1):
+def give_me_sam(fastq, anchor, bowtie2index, bowtie2_dir = None, tmp_dir = None, cpus = 1):
     # give as input a file as a list of strings it runs BOWTIE2 and it returns
     # the SAM output as a list of strings
     fastq_file = give_me_temp_filename(tmp_dir = tmp_dir)
     sam_file = give_me_temp_filename(tmp_dir = tmp_dir)
     file(fastq_file,'w').writelines(fastq)
 
+    _B2_ = ""
+    if bowtie2_dir and bowtie2_dir.strip():
+        _B2_ = bowtie2_dir.rstrip("/")+"/"
 
-    cmd = ['bowtie2',
+    cmd = [_B2_+'bowtie2',
            '-p',str(cpus),
            '--local',
            '-k','10',
@@ -239,7 +247,7 @@ def mygenes(t):
 def ordmygenes(t):
     return myorder(mygenes(t))
 
-def give_me_assembly(fasta, kmer = 31, tmp_dir = None):
+def give_me_assembly(fasta, kmer = 31, velvet_dir = None, tmp_dir = None):
     # use Velvet to assembl the supporting reads
     #
     # velveth /tmp/velvet-unmapped-reads/ 17 -fasta -short myfasta.fa
@@ -253,15 +261,19 @@ def give_me_assembly(fasta, kmer = 31, tmp_dir = None):
             os.rmtree(ase_dir)
         os.makedirs(ase_dir)
         file(fasta_file,'w').writelines(fasta)
-
-        cmd = ['velveth',
+        
+        _VT_ = ""
+        if velvet_dir and velvet_dir.strip():
+            _VT_ = velvet_dir.rstrip("/")+"/"
+        
+        cmd = [_VT_+'velveth',
                ase_dir,
                str(kmer),
                '-fasta',
                '-short',
                fasta_file,
                ';',
-               'velvetg',
+               _VT_+'velvetg',
                ase_dir,
                '>',
                '/dev/null',
@@ -367,6 +379,12 @@ if __name__ == '__main__':
                              "are ['"+"','".join(choices)+"']. "+
                              "Default is '%default'.")
 
+    parser.add_option("--blat-dir",
+                      action = "store",
+                      type = "string",
+                      dest = "blat_directory",
+                      help = """Path to Blat's executable.""")
+
 
     parser.add_option("--sam_alignment",
                       action = "store",
@@ -375,6 +393,11 @@ if __name__ == '__main__':
                       default = 10,
                       help = """If set then a SAM file will be generated using BOWTIE2. Default is '%default'.""")
 
+    parser.add_option("--bowtie2-dir",
+                      action = "store",
+                      type = "string",
+                      dest = "bowtie2_directory",
+                      help = """Path to Bowtie2's executable.""")
 
     parser.add_option("--mismatches",
                       action = "store",
@@ -418,6 +441,11 @@ if __name__ == '__main__':
                       default = False,
                       help = """If used then the supporting reads from the FASTA file are assembled using VELVET. Default is '%default'.""")
 
+    parser.add_option("--velvet-dir",
+                      action = "store",
+                      type = "string",
+                      dest = "velvet_directory",
+                      help = """Path to Velvet's executable.""")
 
 
     (options, args) = parser.parse_args()
@@ -644,6 +672,7 @@ if __name__ == '__main__':
         if options.input_genome_2bit:
             psl = give_me_psl(da,
                               options.input_genome_2bit,
+                              blat_dir = options.blat_directory,
                               tmp_dir = options.tmp_directory,
                               align_type = options.psl_search_type)
             archive.writestr("%s_reads.psl" % (gg,), ''.join(psl))
@@ -651,6 +680,7 @@ if __name__ == '__main__':
         if options.velvet:
             ase = give_me_assembly(da,
                                    17,
+                                   velvet_dir = options.velvet_directory,
                                    tmp_dir = options.tmp_directory)
             archive.writestr("%s_assembly.fa" % (gg,), ''.join(ase))
         # write the reads in FASTQ file
@@ -669,6 +699,7 @@ if __name__ == '__main__':
             sam = give_me_sam(da,
                               options.sam_alignment,
                               options.input_genome_bowtie2,
+                              bowtie2_dir = options.bowtie2_directory,
                               tmp_dir = options.tmp_directory,
                               cpus = options.processes)
             archive.writestr("%s_reads.sam" % (gg,), ''.join(sam))

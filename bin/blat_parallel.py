@@ -89,8 +89,20 @@ if __name__ == '__main__':
     if not cmd:
         print >>sys.stderr,"It runs BLAT in parallel by dividing the input file into equal parts."
         print >>sys.stderr,"The temporary directory where the splitting is done can be specified using the option '--tmp_dir', e.g. '--tmp_dir=/some/temp/dir/'. If it is not specified the OS temporary directory is used."
+        print >>sys.stderr,"The blat directory where the blat executable is placed, '--blat_dir', e.g. '--blat_dir=/some/blat/dir/'."
         print >>sys.stderr,"The option '--cpus' specifies the number of  CPUs to be used, e.g. '--cpus=10'. If it is not specified then all the CPUs found will be used."
         print >>sys.stderr,"The option '--filter-fusion' forces that all the lines in the PSL output are filtered according to finding gene fusions. If it is not specified then no filtering is done."
+
+
+    blat_dir = [el for el in cmd if el.startswith('--blat_dir=')]
+    if blat_dir:
+        blat_dir = blat_dir[0][11:]
+    else:
+        blat_dir = None
+    
+    _BT_ = ""
+    if blat_dir:
+        _BT_ = blat_dir.rstrip("/")+"/"
 
     tmp_dir = [el for el in cmd if el.startswith('--tmp_dir=')]
     if tmp_dir:
@@ -115,6 +127,7 @@ if __name__ == '__main__':
     # remove the --tmp_dir and --cpus from the commands to be pass to BLAT
     cmd = [el for el in cmd if ((not el.startswith('--tmp_dir=')) and
                                 (not el.startswith('--cpus=')) and
+                                (not el.startswith('--blat_dir=')) and
                                 (not el.startswith('--filter-fusion')))]
 
     if not tmp_dir:
@@ -189,9 +202,10 @@ if __name__ == '__main__':
         for i in xrange(j+1):
             if empty_flag[i]:
                 continue
-            parameters = ['blat'] + cmd + [quote(database_filename), quote(list_input_temp_files[i]), quote(list_output_temp_files[i])]
+            parameters = [_BT_+'blat'] + cmd + [quote(database_filename), quote(list_input_temp_files[i]), quote(list_output_temp_files[i])]
             if filtered:
                 parameters = [os.path.abspath(os.path.dirname(__file__))+'/blat-filter-fusion.sh',
+                              _BT_ if _BT_ else '-',
                               quote(database_filename),
                               quote(list_input_temp_files[i]),
                               quote(pipes[i]),

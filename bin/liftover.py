@@ -91,6 +91,12 @@ if __name__=='__main__':
                       dest="chain_filename",
                       help="""The chain files needed by liftOver to do the conversion.""")
 
+    parser.add_option("--path-liftover","-p",
+                      action="store",
+                      type="string",
+                      dest="path_liftover",
+                      help="""Path to the liftover executable.""")
+
     parser.add_option("--tmp_dir",
                       action="store",
                       type="string",
@@ -150,7 +156,10 @@ if __name__=='__main__':
         filetemp2 = give_me_temp_filename(options.tmp_dir) #"temp2.bed"
         filetemp3 = give_me_temp_filename(options.tmp_dir) #"temp3.bed"
         file(filetemp1,'w').writelines(bed)
-        cmd = ['liftOver',filetemp1,options.chain_filename,filetemp2,filetemp3]
+        _LR_ = ""
+        if options.path_liftover:
+            _LR_ = options.path_liftover.rstrip("/")+"/"
+        cmd = [_LR_+'liftOver',filetemp1,options.chain_filename,filetemp2,filetemp3]
         cmd = ' '.join(cmd)
         r = os.system(cmd)
         if r:

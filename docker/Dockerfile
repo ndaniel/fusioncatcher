@@ -2,7 +2,7 @@ FROM ubuntu:14.04
 
 MAINTAINER daniel.nicorici@gmail.com
 
-LABEL Description="This image is used to run FusionCatcher" Version="0.99.7b"
+LABEL Description="This image is used to run FusionCatcher" Version="0.99.7c"
 
 RUN apt-get -y clean \
     && apt-get -y update \
@@ -16,6 +16,7 @@ RUN apt-get -y clean \
     gawk \
     gcc \
     gzip  \
+    libc6-dev \
     libncurses5-dev \
     libtbb2 \
     libtbb-dev \
@@ -44,6 +45,6 @@ WORKDIR /opt
 ######################
 
 RUN wget --no-check-certificate http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py \
-    && python bootstrap.py -t --download -y -i /opt/fusioncatcher/v0997b/
+    && python bootstrap.py -t --download -y -i /opt/fusioncatcher/v0997c/
 
 

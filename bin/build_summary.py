@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
 
     top_virus = ''
-    if options.input_viruses_filename:
+    if options.input_viruses_filename and os.path.exists(options.input_viruses_filename):
         viruses = [line.rstrip("\r\n").strip().split(" ") for line in file(options.input_viruses_filename,'r') if line.rstrip("\r\n")]
         viruses.pop(0)
         if viruses:

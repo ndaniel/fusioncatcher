@@ -590,6 +590,8 @@ def get_psl(sam, lens, use_cigar_13=True , replace_string = ''):
             if not tag_nm_i:
                 tag_nm_i = [e.partition("nM:i:")[2] for e in sam[sam_TAG:] if e.startswith('nM:i:')] # nM is not good because but is better than nothing because it is mismatches per fragment and not per read!
             tag_nm_i = int(tag_nm_i[0]) if tag_nm_i else 0
+            if tag_nm_i > float(0.90)*seq_len:
+                tag_nm_i = 0
             #print >>sys.stderr,"tag NM:i:",tag_nm_i
 
             # compute the matches and mismatches (include also the clipping as mismatches)
@@ -709,7 +711,7 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = """It takes as input a file in SAM format and it converts into a PSL format file."""
-    version = "%prog 0.12 beta"
+    version = "%prog 0.14 beta"
 
     parser = optparse.OptionParser(usage = usage, description = description, version = version)
 

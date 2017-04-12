@@ -340,7 +340,7 @@ a candidate list of fusion genes (where short reads have been aligned using BLAT
 
     seq_dict = None
     if options.input_genegene_fasta_filename:
-        print "Reading the all gene-gene's sequences...",options.input_genegene_fasta_filename
+        print "Reading all gene-gene's sequences...",options.input_genegene_fasta_filename
         input_seq_iterator = Bio.SeqIO.parse(open(options.input_genegene_fasta_filename, "rU"), "fasta")
         seq_dict = dict((record.id,str(record.seq)) for record in input_seq_iterator)
 

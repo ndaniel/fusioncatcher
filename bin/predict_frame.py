@@ -186,6 +186,7 @@ def predict_frame(gtf_file,
                   transcripts_file,
                   input_file,
                   output_file,
+                  compress_transcripts = True,
                   verbose = True):
 
 
@@ -260,6 +261,7 @@ def predict_frame(gtf_file,
         result = ['Predicted_effect']
         transcript = ['Predicted_fused_transcripts']
         protein = ['Predicted_fused_proteins']
+        transcript_full = ['Predicted_fused_transcripts']
         for i in xrange(len(fusion1)):
             f1 = fusion1[i]
             f2 = fusion2[i]
@@ -268,6 +270,7 @@ def predict_frame(gtf_file,
             tr = ''
             t3 = ''
             pr = ''
+            trf = ''
             if t1 == t2 and t1 == 'CDS' and info1 and info2:
                 r = [(elem[0][1], # transcript 1 id
                       elem[0][4]+elem[0][0], # end position in transcript 1
@@ -283,6 +286,7 @@ def predict_frame(gtf_file,
                     tr = ';'.join(rr)
                     if tr2fa:
                         pr = []
+                        trf = []
                         for el in r:
                             if el[4] == 0:
                                 s1 = tr2fa.get(el[0],None)
@@ -293,16 +297,20 @@ def predict_frame(gtf_file,
                                     t = p1+p2
                                     p = dna2prot(t)
                                     #pr.append("%s/%s*%s"% (p,p1,p2))
-                                    pr.append("%s"% (p))
+                                    pr.append("%s" % (p,))
+                                    trf.append("%s" % (t,))
                                 else:
                                     pr.append("")
+                                    trf.append("")
                         pr = ';'.join(pr)
+                        trf = ';'.join(trf)
                 else:
                     t3 = 'out-of-frame'
                     rr = ["%s:%d/%s:%d" % (el[0],el[1],el[2],el[3]) for el in r if el[4] != 0]
                     tr = ';'.join(rr)
                     if tr2fa:
                         pr = []
+                        trf = []
                         for el in r:
                             if el[4] != 0:
                                 s1 = tr2fa.get(el[0],None)
@@ -313,10 +321,13 @@ def predict_frame(gtf_file,
                                     t = p1+p2
                                     p = dna2prot(t)
                                     #pr.append("%s/%s*%s"% (p,p1,p2))
-                                    pr.append("%s"% (p))
+                                    pr.append("%s"% (p,))
+                                    trf.append("%s" % (t,))
                                 else:
                                     pr.append("")
+                                    trf.append("")
                         pr = ';'.join(pr)
+                        trf = ';'.join(trf)
             else:
                 if t1 == 'CDS' and t2 != 'CDS':
                     t1 = 'CDS(truncated)'
@@ -338,9 +349,13 @@ def predict_frame(gtf_file,
             result.append(y)
             transcript.append(tr)
             protein.append(pr)
+            transcript_full.append(trf)
         data = zip(*data)
         data.append(result)
-        data.append(transcript)
+        if compress_transcripts:
+            data.append(transcript)
+        else:
+            data.append(transcript_full)
         data.append(protein)
         data = zip(*data)
         file(output_file,'w').writelines(['\t'.join(line)+'\n' for line in data])
@@ -377,7 +392,7 @@ Copyright (c) 2009-2017 Daniel Nicorici
 
 
 
-    version = "%prog 0.03 beta"
+    version = "%prog 0.04 beta"
 
     parser = MyOptionParser(usage       = usage,
                             epilog      = epilog,
@@ -412,6 +427,11 @@ Copyright (c) 2009-2017 Daniel Nicorici
                       dest = "output_filename",
                       help = """The output file where the frame predictions are written. """)
 
+    parser.add_option("-c", "--compress-transcripts",
+                      action = "store_true",
+                      dest = "compress_transcripts",
+                      default = False,
+                      help = "Compress the transcript sequences.")
 
     parser.add_option("-q", "--quiet",
                       action = "store_false",
@@ -442,8 +462,12 @@ Copyright (c) 2009-2017 Daniel Nicorici
                   options.transcripts_filename,
                   options.input_filename,
                   options.output_filename,
+                  options.compress_transcripts,
                   options.verbose)
 
 
 if __name__ == '__main__':
     main()
+    
+    
+#    

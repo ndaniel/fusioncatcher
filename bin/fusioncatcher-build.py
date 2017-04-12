@@ -136,7 +136,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 0.99.7b beta"
+    version = "%prog 0.99.7c beta"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -154,16 +154,6 @@ if __name__ == '__main__':
                       help = "The output directory where all the outputs files "+
                              " and directories will be written.")
 
-    parser.add_option("--config","-c",
-                      action = "store",
-                      type = "string",
-                      dest = "configuration_filename",
-                      default = os.path.join(pipeline_path,"..","etc","configuration.cfg") + "," + os.path.join(pipeline_path,"configuration.cfg"),
-                      help = "Configuration file containing the paths to external "+
-                             "tools (e.g. Bowtie, etc.) in case that they are not "+
-                             "in PATH! "+
-                             "Default is '%default'.")
-
     parser.add_option("--organism","-g",
                       action = "store",
                       type = "string",
@@ -174,6 +164,26 @@ if __name__ == '__main__':
                              "'mus_musculus', 'rattus_norvegicus', 'canis_familiaris', " +
                              "etc. "+
                              "Default is '%default'.")
+
+    parser.add_option("--config","-c",
+                      action = "store",
+                      type = "string",
+                      dest = "configuration_filename",
+                      default = os.path.join(pipeline_path,"..","etc","configuration.cfg") + "," + os.path.join(pipeline_path,"configuration.cfg"),
+                      help = "Configuration file containing the paths to external "+
+                             "tools (e.g. Bowtie, etc.) in case that they are not "+
+                             "in PATH! "+
+                             "Default is '%default'.")
+
+    parser.add_option("--force-paths","-F",
+                      action = "store_true",
+                      dest = "force_paths",
+                      default = False,
+                      help = "If it is specified then all external tools and all Python tools "+
+                             "will be executed by FusionCatcher by using their corresponding absolute paths, "+
+                             "which will be obined from the fusioncatcher/bin/configuration.cfg file. "+
+                             "By default no paths are specified when executing tools/scripts. "+
+                             "Default is '%default'. ")
 
     parser.add_option("--web","-w",
                       action = "store",
@@ -375,6 +385,24 @@ if __name__ == '__main__':
             print >>sys.stderr,"................................................................................"
             sys.exit(1)
 
+    # getting absolute paths for the tools and scripts from configuration.cfg
+    _B2_ = confs.get("BOWTIE2").rstrip("/")+"/" if options.force_paths else ''
+    _BA_ = confs.get("BWA").rstrip("/")+"/" if options.force_paths else ''
+    _BE_ = confs.get("BOWTIE").rstrip("/")+"/" if options.force_paths else ''
+    _BT_ = confs.get("BLAT").rstrip("/")+"/" if options.force_paths else ''
+    _FC_ = confs.get("SCRIPTS").rstrip("/")+"/" if options.force_paths else ''
+    _FT_ = confs.get("FATOTWOBIT").rstrip("/")+"/" if options.force_paths else ''
+    _JA_ = confs.get("JAVA").rstrip("/")+"/" if options.force_paths else ''
+    _LR_ = confs.get("LIFTOVER").rstrip("/")+"/" if options.force_paths else ''
+    _PD_ = confs.get("PICARD").rstrip("/")+"/" if options.force_paths else ''
+    _PL_ = confs.get("PARALLEL").rstrip("/")+"/" if options.force_paths else ''
+    _PZ_ = confs.get("PIGZ").rstrip("/")+"/" if options.force_paths else ''
+    _SA_ = confs.get("SRA").rstrip("/")+"/" if options.force_paths else ''
+    _SK_ = confs.get("SEQTK").rstrip("/")+"/" if options.force_paths else ''
+    _SS_ = confs.get("SAMTOOLS").rstrip("/")+"/" if options.force_paths else ''
+    _SR_ = confs.get("STAR").rstrip("/")+"/" if options.force_paths else ''
+    _VT_ = confs.get("VELVET").rstrip("/")+"/" if options.force_paths else ''
+
     # skipped databases
     skip_database = set([el for el in options.skip_database.lower().split(',') if el])
 
@@ -393,13 +421,13 @@ if __name__ == '__main__':
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
 
     # save version of Python used to analyze this data
-    job.add('python_version.py',kind='program')
+    job.add(_FC_+'python_version.py',kind='program')
     job.run(error_message=("Please, check if 'Python' (from "+
         "<http://python.org/>) is installed (or if 'configuration.cfg' file "+
         "is set up correctly)!"))
 
     # save version of BioPython used to analyze this data
-    job.add('biopython_version.py',kind='program')
+    job.add(_FC_+'biopython_version.py',kind='program')
     job.run(error_message=("Please, check if 'BioPython' (from "+
         "<http://biopython.org/>) is installed (or if 'configuration.cfg' file "+
         "is set up correctly)!"))
@@ -409,7 +437,7 @@ if __name__ == '__main__':
     job.add('>',outdir('organism.txt'),kind='output')
     job.run()
 
-    job.add('get_genome.py',kind='program')
+    job.add(_FC_+'get_genome.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.ftp_ensembl,kind='parameter')
     if options.ftp_ensembl_path:
@@ -419,13 +447,13 @@ if __name__ == '__main__':
     job.add('',outdir('mt.fa'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_chrom_lens.py',kind='program')
+    job.add(_FC_+'generate_chrom_lens.py',kind='program')
     job.add('--input_genome',outdir('genome.fa'),kind='output')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('chromosomes_lengths.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_gtf.py',kind='program')
+    job.add(_FC_+'get_gtf.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.ftp_ensembl,kind='parameter')
     if options.ftp_ensembl_path:
@@ -440,7 +468,7 @@ if __name__ == '__main__':
 #    job.add('',outdir('phix174.fa'),kind='output',command_line='no')
 #    job.run()
 
-    job.add('get_viruses.py',kind='program')
+    job.add(_FC_+'get_viruses.py',kind='program')
     job.add('--server',options.ftp_ncbi,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('viruses.fa'),kind='output',command_line='no')
@@ -452,7 +480,7 @@ if __name__ == '__main__':
     job.add('>',outdir('viruses-noblanks.fa'),kind='output')
     job.run()
 
-    job.add('get_synonyms.py',kind='program')
+    job.add(_FC_+'get_synonyms.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.ftp_ensembl,kind='parameter')
     if options.ftp_ensembl_path:
@@ -461,13 +489,13 @@ if __name__ == '__main__':
     job.add('',outdir('synonyms.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_genes_symbols.py',kind='program')
+    job.add(_FC_+'generate_genes_symbols.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('genes_symbols.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_genes_descriptions.py',kind='program')
+    job.add(_FC_+'get_genes_descriptions.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.web_ensembl,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
@@ -483,7 +511,7 @@ if __name__ == '__main__':
 
 
 
-    job.add('get_exons_positions.py',kind='program')
+    job.add(_FC_+'get_exons_positions.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.web_ensembl,kind='parameter')
     job.add('--threshold_length','150',kind='parameter')
@@ -494,63 +522,63 @@ if __name__ == '__main__':
 
     job.link(outdir('genes.txt'),outdir('genes_backup.txt'),kind='copy')
 
-    job.add('get_biotypes.py',kind='program')
+    job.add(_FC_+'get_biotypes.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.web_ensembl,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('biotypes.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_paralogs.py',kind='program')
+    job.add(_FC_+'get_paralogs.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.web_ensembl,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('paralogs.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_mtrna.py',kind='program')
+    job.add(_FC_+'get_mtrna.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.web_ensembl,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('mtrna.fa'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_rrna.py',kind='program')
+    job.add(_FC_+'get_rrna.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.web_ensembl,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('rrna.fa'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_trna.py',kind='program')
+    job.add(_FC_+'get_trna.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.web_ensembl,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('trna.fa'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_ucsc.py',kind='program')
+    job.add(_FC_+'get_ucsc.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.ftp_ucsc,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('ucsc_genes.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_refseq.py',kind='program')
+    job.add(_FC_+'get_refseq.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.ftp_ucsc,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('refseq_genes.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_refseq_ensembl.py',kind='program')
+    job.add(_FC_+'get_refseq_ensembl.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--server',options.web_ensembl,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('refseq_ids.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_gencode.py',kind='program')
+    job.add(_FC_+'get_gencode.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
 #    job.add('--server',options.ftp_ucsc,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
@@ -570,7 +598,7 @@ if __name__ == '__main__':
 
 
 #    if 'hla' not in skip_database:
-#        job.add('get_hla.py',kind='program')
+#        job.add(_FC_+'get_hla.py',kind='program')
 #        job.add('--organism',options.organism,kind='parameter')
 #        job.add('--output',out_dir,kind='output',checksum='no')
 #        job.add('',outdir('hla.fa'),kind='output',command_line='no')
@@ -585,7 +613,7 @@ if __name__ == '__main__':
 #        job.run()
 
     # adds some missing genes to Ensembl Database
-    job.add('add_custom_gene.py',kind='program')
+    job.add(_FC_+'add_custom_gene.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('exons.txt'),kind='output',command_line='no')
@@ -593,7 +621,7 @@ if __name__ == '__main__':
     job.add('',outdir('genes_symbols.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_overlapping_genes.py',kind='program')
+    job.add(_FC_+'generate_overlapping_genes.py',kind='program')
     job.add('--input_genes',outdir('genes.txt'),kind='input')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('--head','ensembl-1_',kind='parameter')
@@ -602,7 +630,7 @@ if __name__ == '__main__':
     job.add('',outdir('ensembl-1_same_strand_overlapping_genes.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('remove_custom_feature.py',kind='program')
+    job.add(_FC_+'remove_custom_feature.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('exons.txt'),kind='output',command_line='no')
@@ -613,7 +641,7 @@ if __name__ == '__main__':
 
 
     # again
-    job.add('generate_overlapping_genes.py',kind='program')
+    job.add(_FC_+'generate_overlapping_genes.py',kind='program')
     job.add('--input_genes',outdir('genes.txt'),kind='input')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('--head','ensembl_',kind='parameter')
@@ -673,7 +701,7 @@ if __name__ == '__main__':
     job.run()
 
 
-    job.add('generate_overlapping_genes.py',kind='program')
+    job.add(_FC_+'generate_overlapping_genes.py',kind='program')
     job.add('--input_genes',outdir('ucsc_genes.txt'),kind='input')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('--head','ucsc-temp_',kind='parameter')
@@ -682,19 +710,19 @@ if __name__ == '__main__':
     job.add('',outdir('ucsc-temp_same_strand_overlapping_genes.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('convert_pairs_symbols.py',kind='program')
+    job.add(_FC_+'convert_pairs_symbols.py',kind='program')
     job.add('--input',outdir('ucsc-temp_fully_overlapping_genes.txt'),kind='input')
     job.add('--filter',outdir('ensembl_removed-overlapping-genes.txt'),kind='input')
     job.add('--output',outdir('ucsc_fully_overlapping_genes.txt'),kind='output')
     job.run()
 
-    job.add('convert_pairs_symbols.py',kind='program')
+    job.add(_FC_+'convert_pairs_symbols.py',kind='program')
     job.add('--input',outdir('ucsc-temp_partially_overlapping_genes.txt'),kind='input')
     job.add('--filter',outdir('ensembl_removed-overlapping-genes.txt'),kind='input')
     job.add('--output',outdir('ucsc_partially_overlapping_genes.txt'),kind='output')
     job.run()
 
-    job.add('convert_pairs_symbols.py',kind='program')
+    job.add(_FC_+'convert_pairs_symbols.py',kind='program')
     job.add('--input',outdir('ucsc-temp_same_strand_overlapping_genes.txt'),kind='input')
     job.add('--filter',outdir('ensembl_removed-overlapping-genes.txt'),kind='input')
     job.add('--output',outdir('ucsc_same_strand_overlapping_genes.txt'),kind='output')
@@ -702,7 +730,7 @@ if __name__ == '__main__':
 
 
 
-    job.add('generate_overlapping_genes.py',kind='program')
+    job.add(_FC_+'generate_overlapping_genes.py',kind='program')
     job.add('--input_genes',outdir('refseq_genes.txt'),kind='input')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('--head','refseq-temp_',kind='parameter')
@@ -711,19 +739,19 @@ if __name__ == '__main__':
     job.add('',outdir('refseq-temp_same_strand_overlapping_genes.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('convert_pairs_symbols.py',kind='program')
+    job.add(_FC_+'convert_pairs_symbols.py',kind='program')
     job.add('--input',outdir('refseq-temp_fully_overlapping_genes.txt'),kind='input')
     job.add('--filter',outdir('ensembl_removed-overlapping-genes.txt'),kind='input')
     job.add('--output',outdir('refseq_fully_overlapping_genes.txt'),kind='output')
     job.run()
 
-    job.add('convert_pairs_symbols.py',kind='program')
+    job.add(_FC_+'convert_pairs_symbols.py',kind='program')
     job.add('--input',outdir('refseq-temp_partially_overlapping_genes.txt'),kind='input')
     job.add('--filter',outdir('ensembl_removed-overlapping-genes.txt'),kind='input')
     job.add('--output',outdir('refseq_partially_overlapping_genes.txt'),kind='output')
     job.run()
 
-    job.add('convert_pairs_symbols.py',kind='program')
+    job.add(_FC_+'convert_pairs_symbols.py',kind='program')
     job.add('--input',outdir('refseq-temp_same_strand_overlapping_genes.txt'),kind='input')
     job.add('--filter',outdir('ensembl_removed-overlapping-genes.txt'),kind='input')
     job.add('--output',outdir('refseq_same_strand_overlapping_genes.txt'),kind='output')
@@ -731,7 +759,7 @@ if __name__ == '__main__':
 
 
 
-    job.add('generate_overlapping_genes.py',kind='program')
+    job.add(_FC_+'generate_overlapping_genes.py',kind='program')
     job.add('--input_genes',outdir('gencode_genes.txt'),kind='input')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('--head','gencode-temp_',kind='parameter')
@@ -740,19 +768,19 @@ if __name__ == '__main__':
     job.add('',outdir('gencode-temp_same_strand_overlapping_genes.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('convert_pairs_symbols.py',kind='program')
+    job.add(_FC_+'convert_pairs_symbols.py',kind='program')
     job.add('--input',outdir('gencode-temp_fully_overlapping_genes.txt'),kind='input')
     job.add('--filter',outdir('ensembl_removed-overlapping-genes.txt'),kind='input')
     job.add('--output',outdir('gencode_fully_overlapping_genes.txt'),kind='output')
     job.run()
 
-    job.add('convert_pairs_symbols.py',kind='program')
+    job.add(_FC_+'convert_pairs_symbols.py',kind='program')
     job.add('--input',outdir('gencode-temp_partially_overlapping_genes.txt'),kind='input')
     job.add('--filter',outdir('ensembl_removed-overlapping-genes.txt'),kind='input')
     job.add('--output',outdir('gencode_partially_overlapping_genes.txt'),kind='output')
     job.run()
 
-    job.add('convert_pairs_symbols.py',kind='program')
+    job.add(_FC_+'convert_pairs_symbols.py',kind='program')
     job.add('--input',outdir('gencode-temp_same_strand_overlapping_genes.txt'),kind='input')
     job.add('--filter',outdir('ensembl_removed-overlapping-genes.txt'),kind='input')
     job.add('--output',outdir('gencode_same_strand_overlapping_genes.txt'),kind='output')
@@ -815,7 +843,7 @@ if __name__ == '__main__':
 #        job.run()
 
     if options.enlarge_genes:
-        job.add('enlarge_genes.py',kind='program')
+        job.add(_FC_+'enlarge_genes.py',kind='program')
         job.add('--enlargement-size','5000',kind='parameter') # 5000
         job.add('--full-cover','10000000',kind='parameter')
         job.add('--gene-short','250',kind='parameter')
@@ -825,13 +853,13 @@ if __name__ == '__main__':
         job.add('',outdir('genes.txt'),kind='output',command_line='no')
         job.run()
     elif options.organism == 'homo_sapiens':
-        job.add('generate_enlarge.py',kind='program')
+        job.add(_FC_+'generate_enlarge.py',kind='program')
         job.add('--organism',options.organism,kind='parameter')
         job.add('--output',out_dir,kind='output',checksum='no')
         job.add('',outdir('enlarge.txt'),kind='output',command_line='no')
         job.run()
 
-        job.add('enlarge_genes.py',kind='program')
+        job.add(_FC_+'enlarge_genes.py',kind='program')
         job.add('--enlargement-size','5000',kind='parameter') # 5000
         job.add('--full-cover','10000000',kind='parameter')
         job.add('--gene-short','250',kind='parameter')
@@ -841,7 +869,7 @@ if __name__ == '__main__':
         job.add('',outdir('genes.txt'),kind='output',command_line='no')
         job.run()
 
-    job.add('generate_known.py',kind='program')
+    job.add(_FC_+'generate_known.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('known.txt'),kind='output',command_line='no')
@@ -886,7 +914,7 @@ if __name__ == '__main__':
     job.add('>',outdir('ribosomal_proteins.txt'),kind='output')
     job.run()
 
-    job.add('shield_genes.py',kind='program')
+    job.add(_FC_+'shield_genes.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--read-len','500',kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
@@ -897,7 +925,7 @@ if __name__ == '__main__':
 
     if not empty(outdir('shield_erase-regions.bed')):
 
-        job.add('seqtk',kind='program')
+        job.add(_SK_+'seqtk',kind='program')
         job.add('seq',kind='parameter')
         job.add('-n','A',kind='parameter')
         #job.add('-M',outdir('shield_against_pseudo-genes.bed'),kind='input') # this erases only the pseudogenes associated with a manually given list of genes
@@ -906,7 +934,7 @@ if __name__ == '__main__':
         job.add('>',outdir('genome2.fa'),kind='output')
         job.run()
         
-        job.add('seqtk',kind='program')
+        job.add(_SK_+'seqtk',kind='program')
         job.add('seq',kind='parameter')
         job.add('-n','A',kind='parameter')
         job.add('-M',outdir('shield_erase-regions.bed'),kind='input')
@@ -986,44 +1014,44 @@ if __name__ == '__main__':
 #        job.link(outdir('genome3.fa'),outdir('genome.fa'),temp_path='yes')
 
 
-    job.add('generate_rrna_unit.py',kind='program')
+    job.add(_FC_+'generate_rrna_unit.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('rrna_unit.fa'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_banned.py',kind='program')
+    job.add(_FC_+'generate_banned.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('banned.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_healthy.py',kind='program')
+    job.add(_FC_+'generate_healthy.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('healthy.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_nontumor.py',kind='program')
+    job.add(_FC_+'generate_nontumor.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('non-tumor_cells.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_noncancer.py',kind='program')
+    job.add(_FC_+'get_noncancer.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('non-cancer_tissues.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_exons.py',kind='program')
+    job.add(_FC_+'generate_exons.py',kind='program')
     job.add('--input_exons',outdir('exons.txt'),kind='input')
     job.add('--input_genome',outdir('genome.fa'),kind='input')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('exons.fa'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_genes.py',kind='program')
+    job.add(_FC_+'generate_genes.py',kind='program')
     job.add('--input_genes',outdir('genes.txt'),kind='input')
     job.add('--input_genome',outdir('genome.fa'),kind='input')
     job.add('--output',out_dir,kind='output',checksum='no')
@@ -1031,86 +1059,86 @@ if __name__ == '__main__':
     job.run()
 
 
-    job.add('generate_adjacent_genes.py',kind='program')
+    job.add(_FC_+'generate_adjacent_genes.py',kind='program')
     job.add('--input_genes',outdir('genes.txt'),kind='input')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('adjacent_genes.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_pairs_pseudogenes.py',kind='program')
+    job.add(_FC_+'generate_pairs_pseudogenes.py',kind='program')
     job.add('--input',outdir('descriptions.txt'),kind='input')
     job.add('--paralogs',outdir('paralogs.txt'),kind='input')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('pairs_pseudogenes.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_genes_with_no_proteins.py',kind='program')
+    job.add(_FC_+'generate_genes_with_no_proteins.py',kind='program')
     job.add('--input',outdir('exons.txt'),kind='input')
     job.add('--output',outdir('genes_with_no_proteins.txt'),kind='output')
     job.add('',outdir('genes_with_no_proteins.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_tcga.py',kind='program')
+    job.add(_FC_+'generate_tcga.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('tcga.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_bodymap2.py',kind='program')
+    job.add(_FC_+'generate_bodymap2.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('--skip-filter-overlap',out_dir,kind='parameter')
     job.add('',outdir('bodymap2.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_hpa.py',kind='program')
+    job.add(_FC_+'generate_hpa.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('--skip-filter-overlap',out_dir,kind='parameter')
     job.add('',outdir('hpa.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_1000genomes.py',kind='program')
+    job.add(_FC_+'generate_1000genomes.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('--skip-filter-overlap',out_dir,kind='parameter')
     job.add('',outdir('1000genomes.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_18cancers.py',kind='program')
+    job.add(_FC_+'generate_18cancers.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('--skip-filter-overlap',out_dir,kind='parameter')
     job.add('',outdir('18cancers.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_oesophagus.py',kind='program')
+    job.add(_FC_+'generate_oesophagus.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('--skip-filter-overlap',out_dir,kind='parameter')
     job.add('',outdir('oesophagus.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('generate_gliomas.py',kind='program')
+    job.add(_FC_+'generate_gliomas.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('--skip-filter-overlap',out_dir,kind='parameter')
     job.add('',outdir('gliomas.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_celllines.py',kind='program')
+    job.add(_FC_+'get_celllines.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('celllines.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_prostates.py',kind='program')
+    job.add(_FC_+'get_prostates.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('prostates.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_pancreases.py',kind='program')
+    job.add(_FC_+'get_pancreases.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('pancreases.txt'),kind='output',command_line='no')
@@ -1365,7 +1393,7 @@ if __name__ == '__main__':
     job.add('-f1',kind='parameter')
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
-    job.add('>',outdir('yrnas.txt'),kind='output')
+    job.add('>',outdir('rnas_y.txt'),kind='output')
     job.run()
 
     job.add('grep',kind='program')
@@ -1524,7 +1552,7 @@ if __name__ == '__main__':
     job.add('>',outdir('rp.txt'),kind='output')
     job.run()
 
-    job.add('generate_transcripts.py',kind='program')
+    job.add(_FC_+'generate_transcripts.py',kind='program')
     job.add('--input_fasta_exons',outdir('exons.fa'),kind='input')
     job.add('--input_database',outdir('exons.txt'),kind='input')
     job.add('--skip',outdir('mirnas.txt'),kind='input')
@@ -1552,7 +1580,7 @@ if __name__ == '__main__':
 #    job.run()
 
     if 'cosmic' not in skip_database:
-        job.add('get_cosmic.py',kind='program')
+        job.add(_FC_+'get_cosmic.py',kind='program')
         job.add('--organism',options.organism,kind='parameter')
         job.add('--output',out_dir,kind='output',checksum='no')
         job.add('',outdir('cosmic.txt'),kind='output',command_line='no')
@@ -1563,7 +1591,7 @@ if __name__ == '__main__':
         file(outdir('cosmic.txt'),'w').write('')
 
     if 'chimerdb2' not in skip_database:
-        job.add('get_chimerdb2.py',kind='program')
+        job.add(_FC_+'get_chimerdb2.py',kind='program')
         job.add('--organism',options.organism,kind='parameter')
         job.add('--output',out_dir,kind='output',checksum='no')
         job.add('',outdir('chimerdb2.txt'),kind='output',command_line='no')
@@ -1574,7 +1602,7 @@ if __name__ == '__main__':
         file(outdir('chimerdb2.txt'),'w').write('')
 
     if 'chimerdb3' not in skip_database:
-        job.add('get_chimerdb3.py',kind='program')
+        job.add(_FC_+'get_chimerdb3.py',kind='program')
         job.add('--organism',options.organism,kind='parameter')
         job.add('--output',out_dir,kind='output',checksum='no')
         job.add('',outdir('chimerdb3kb.txt'),kind='output',command_line='no')
@@ -1590,7 +1618,7 @@ if __name__ == '__main__':
 
 
     if 'ticdb' not in skip_database:
-        job.add('get_ticdb.py',kind='program')
+        job.add(_FC_+'get_ticdb.py',kind='program')
         job.add('--organism',options.organism,kind='parameter')
         job.add('--output',out_dir,kind='output',checksum='no')
         job.add('',outdir('ticdb.txt'),kind='output',command_line='no')
@@ -1601,7 +1629,7 @@ if __name__ == '__main__':
         file(outdir('ticdb.txt'),'w').write('')
 
     if 'conjoing' not in skip_database:
-        job.add('get_conjoing.py',kind='program')
+        job.add(_FC_+'get_conjoing.py',kind='program')
         job.add('--organism',options.organism,kind='parameter')
         job.add('--output',out_dir,kind='output',checksum='no')
         job.add('',outdir('conjoing.txt'),kind='output',command_line='no')
@@ -1631,7 +1659,7 @@ if __name__ == '__main__':
         file(outdir('conjoing.txt'),'w').write('')
 
     if 'cgp' not in skip_database:
-        job.add('get_cgp.py',kind='program')
+        job.add(_FC_+'get_cgp.py',kind='program')
         job.add('--organism',options.organism,kind='parameter')
         job.add('--output',out_dir,kind='output',checksum='no')
         job.add('',outdir('cgp.txt'),kind='output',command_line='no')
@@ -1642,7 +1670,7 @@ if __name__ == '__main__':
         file(outdir('cgp.txt'),'w').write('')
 
     if 'cacg' not in skip_database:
-        job.add('get_cacg.py',kind='program')
+        job.add(_FC_+'get_cacg.py',kind='program')
         job.add('--organism',options.organism,kind='parameter')
         job.add('--output',out_dir,kind='output',checksum='no')
         job.add('',outdir('cacg.txt'),kind='output',command_line='no')
@@ -1652,19 +1680,19 @@ if __name__ == '__main__':
     elif job.run():
         file(outdir('cacg.txt'),'w').write('')
 
-    job.add('get_dgd.py',kind='program')
+    job.add(_FC_+'get_dgd.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('dgd.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('get_gtex.py',kind='program')
+    job.add(_FC_+'get_gtex.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('gtex.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add('concatenate.py',kind='program')
+    job.add(_FC_+'concatenate.py',kind='program')
     job.add('',outdir('trna.fa'),kind='input')
     job.add('',outdir('rrna.fa'),kind='input')
     job.add('',outdir('rrna_unit.fa'),kind='input')
@@ -1673,21 +1701,21 @@ if __name__ == '__main__':
     job.add('',outdir('rtrna_mt.fa'),kind='output')
     job.run()
 
-    job.add('concatenate.py',kind='program')
+    job.add(_FC_+'concatenate.py',kind='program')
     job.add('',outdir('trna.fa'),kind='input')
     job.add('',outdir('rrna.fa'),kind='input')
     job.add('',outdir('rrna_unit.fa'),kind='input')
     job.add('',outdir('rtrna.fa'),kind='output')
     job.run()
 
-    job.add('generate_labels_descriptions.py',kind='program')
+    job.add(_FC_+'generate_labels_descriptions.py',kind='program')
     job.add('--output',out_dir,kind='output')
     job.add('',outdir('final-list_candidate-fusion-genes.caption.md.txt'),kind='output',command_line='no')
     job.run()
 
 
 
-    job.add('bowtie-build',kind='program')
+    job.add(_BE_+'bowtie-build',kind='program')
     job.add('-f',kind='parameter')
 #    job.add('--ntoa',kind='parameter')
     job.add('--quiet',kind='parameter')
@@ -1697,7 +1725,7 @@ if __name__ == '__main__':
     job.add('',outdir('rtrna_mt_index/'),kind='output')
     job.run(error_message = bowtie_error)
 
-    job.add('bowtie-build',kind='program')
+    job.add(_BE_+'bowtie-build',kind='program')
     job.add('-f',kind='parameter')
 #    job.add('--ntoa',kind='parameter')
     job.add('--quiet',kind='parameter')
@@ -1709,7 +1737,7 @@ if __name__ == '__main__':
 
 
 
-#    job.add('bowtie-build',kind='program')
+#    job.add(_BE_+'bowtie-build',kind='program')
 #    job.add('-f',kind='parameter')
 #    job.add('--quiet',kind='parameter')
 ##    job.add('--ntoa',kind='parameter')
@@ -1720,7 +1748,7 @@ if __name__ == '__main__':
 #    job.run(error_message = bowtie_error)
 
 
-#    job.add('bowtie-build',kind='program')
+#    job.add(_BE_+'bowtie-build',kind='program')
 #    job.add('-f',kind='parameter')
 #    job.add('--quiet',kind='parameter')
 ##    job.add('--ntoa',kind='parameter')
@@ -1730,7 +1758,7 @@ if __name__ == '__main__':
 #    job.add('',outdir('phix174_index/'),kind='output')
 #    job.run(error_message = bowtie_error)
 
-    job.add('bowtie-build',kind='program')
+    job.add(_BE_+'bowtie-build',kind='program')
     job.add('-f',kind='parameter')
     job.add('--quiet',kind='parameter')
 #    job.add('--ntoa',kind='parameter')
@@ -1740,7 +1768,7 @@ if __name__ == '__main__':
     job.add('',outdir('transcripts_index/'),kind='output')
     job.run(error_message = bowtie_error)
 
-    job.add('bowtie-build',kind='program')
+    job.add(_BE_+'bowtie-build',kind='program')
     job.add('-f',kind='parameter')
     job.add('--quiet',kind='parameter')
     job.add('--offrate','1',kind='parameter')
@@ -1749,7 +1777,7 @@ if __name__ == '__main__':
     job.add('',outdir('genome_index/'),kind='output')
     job.run(error_message = bowtie_error)
 
-    job.add('bowtie2-build',kind='program')
+    job.add(_B2_+'bowtie2-build',kind='program')
     job.add('-f',kind='parameter')
     job.add('--quiet',kind='parameter')
 #    job.add('--offrate','1',kind='parameter')
@@ -1760,7 +1788,7 @@ if __name__ == '__main__':
     job.run(error_message = bowtie2_error)
 
 
-    job.add('bowtie-build',kind='program')
+    job.add(_BE_+'bowtie-build',kind='program')
     job.add('-f',kind='parameter')
     job.add('--quiet',kind='parameter')
     job.add('--offrate','1',kind='parameter')
@@ -1770,7 +1798,7 @@ if __name__ == '__main__':
     job.run(error_message = bowtie_error)
 
     if not options.skip_blat:
-        job.add('faToTwoBit',kind='program')
+        job.add(_FT_+'faToTwoBit',kind='program')
         job.add('',outdir('genome.fa'),kind='input')
         job.add('',outdir('genome.2bit'),kind='output')
         job.add('-noMask',kind='parameter')

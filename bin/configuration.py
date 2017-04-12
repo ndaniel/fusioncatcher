@@ -101,6 +101,19 @@ def _path(p,c,k,v):
     if r:
         p[v.upper()] = _expand(r)
 
+#############################################
+def test_python_module(module):
+    """ Test is a given module is installed
+        Example:
+            module = 'Bio'
+    """
+    flag = True
+    try:
+        __import__(module)
+    except:
+        flag = False
+    return flag
+        
 
 def manage(configuration_filename, skip_python = []):
     #
@@ -113,16 +126,22 @@ def manage(configuration_filename, skip_python = []):
         config.read(configuration_filename)
 
         if "openpyxl" not in skip_python:
-            _pythonpath(CONF,config,"paths","openpyxl",last=True)
+            if not test_python_module("openpyxl"):
+                _pythonpath(CONF,config,"paths","openpyxl",last=True)
         if "xlrd" not in skip_python:
-            _pythonpath(CONF,config,"paths","xlrd")
-        _pythonpath(CONF,config,"paths","numpy",skip=True)
-        _pythonpath(CONF,config,"paths","biopython")
+            if not test_python_module("xlrd"):
+                _pythonpath(CONF,config,"paths","xlrd")
+        if not test_python_module("numpy"):
+            _pythonpath(CONF,config,"paths","numpy",skip=True)
+        if not test_python_module("Bio"):
+            _pythonpath(CONF,config,"paths","biopython")
         _pythonpath(CONF,config,"paths","scripts")
 
         _envpath(CONF,config,"paths","java")
+        _envpath(CONF,config,"paths","bbmap")
         _envpath(CONF,config,"paths","fatotwobit")
         _envpath(CONF,config,"paths","velvet")
+        _envpath(CONF,config,"paths","oases")
         _envpath(CONF,config,"paths","sratoolkit")
         _envpath(CONF,config,"paths","blat")
         _envpath(CONF,config,"paths","liftover")

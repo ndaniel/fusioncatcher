@@ -134,18 +134,18 @@ def reads_from_single_fastq_file(file_name_1, anchor_size = 20, size_read_buffer
         it = it + 1
         if it == 1:
             if line_1[:-1].endswith("/1"):
-                piece[it] = (line_1,line_2[:-2]+"2\n")
+                piece[it-1] = (line_1,line_1[:-2]+"2\n")
             elif line_1[:-1].endswith("/2"):
-                piece[it] = (line_1,line_2[:-2]+"1\n")
+                piece[it-1] = (line_1,line_1[:-2]+"1\n")
             else:
-                piece[it] = (line_1,line_2)
+                piece[it-1] = (line_1,line_1)
         elif it == 2:
             h = int(math.ceil(float(len(line_1) - 1)/float(2))) + anchor_size
             line_2 = dnaReverseComplement(line_1[:-1])
-            piece[it] = (line_1[0:h]+"\n",line_2[0:h]+"\n")
+            piece[it-1] = (line_1[0:h]+"\n",line_2[0:h]+"\n")
         elif it == 4:
             line_2 = line_1[0:-1][::-1]
-            piece[it] = (line_1[0:h]+"\n",line_2[0:h]+"\n")
+            piece[it-1] = (line_1[0:h]+"\n",line_2[0:h]+"\n")
 
             bucket = (
                 piece[0][0], # read 1 - id

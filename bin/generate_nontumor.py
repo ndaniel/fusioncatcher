@@ -5715,8 +5715,18 @@ if __name__ == '__main__':
         ['ZXDC','EEF1G'],
         ['ZYG11B','RBM12'],
         ['ZYX','NUP210'],
-        ['ZZZ3','OS9']
-        
+        ['ZZZ3','OS9'],
+        ['C5ORF34','EEF1A1'],
+        ['CAPZB','EEF2'],
+        ['EEF1A1','C5ORF34'],
+        ['IGH@','GRK2'],
+        ['IGH@','LDHA'],
+        ['IGH@','WDFY4'],
+        ['NCL','PTMA'],
+        ['RPL38','TTYH2'],
+        ['RRM2','C2ORF48'],
+        ['TTC7B','MVD']
+
         ]
 
 

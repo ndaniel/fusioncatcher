@@ -39,7 +39,7 @@ contain a small selection of short reads from:
     (CIC/DUX4 fusion) mRNA, complete cds, Accession DQ388764,
      https://www.ncbi.nlm.nih.gov/nuccore/DQ388764.1
 
-These short reads were selected such that they cover 16 already known fusion 
+These short reads were selected manually such that they cover 17 already known fusion 
 genes, which are:
 - FGFR3-TACC3  (short reads from [2]),
 - FIP1L1-PDGFRA  (short reads from [3]),

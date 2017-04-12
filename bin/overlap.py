@@ -44,7 +44,6 @@ import sys
 import os
 import datetime
 import optparse
-import Bio.pairwise2
 import multiprocessing
 import itertools
 import string
@@ -137,7 +136,7 @@ def reads_from_paired_fastq_file(file_name_1, file_name_2, nn, fail_gracefully =
             break
 
         elif len(pie1[1]) != nn or len(pie2[1]) != nn:
-            print >>sys.stderr, "ERROR: The input reads from the input FASTQ have different lengths compared to the rest of reads (it expects that all input reads have exatcly the same lengths)!"
+            print >>sys.stderr, "ERROR: The input reads from the input FASTQ have different lengths compared to the rest of reads (it expects that all input reads have exactly the same lengths)!"
             print >>sys.stderr, "   - read id from '%s' is '%s'" % (file_name_1,r1)
             print >>sys.stderr, "   - mate read id from '%s' is '%s'" % (file_name_2,r2)
             if fail_gracefully:
@@ -345,10 +344,12 @@ def overlap(input_1_filename,
             input_2_filename,
             output_stat_filename,
             output_alignment_filename = None,
+            merged = False,
             size_overlap = 15,
             cpus = 0,
             verbose = True,
             fail_gracefully = False):
+			
     o = size_overlap
     print >>sys.stderr,"overlap =", o
 
@@ -406,7 +407,7 @@ def overlap(input_1_filename,
                                      ):
             f = w[0]
             x = w[1]
-            y = w[2]
+            #y = w[2]
 
 
             if w[3] == 'myexit':
@@ -415,6 +416,7 @@ def overlap(input_1_filename,
 
             if f != -1:
                 library[f] = library.get(f,0) + 1
+            
             i = i + 1
             if i % 10000000 == 0:
                 print >>sys.stderr,"Reading... %d reads" % (i,)
@@ -442,14 +444,19 @@ def overlap(input_1_filename,
 
             if f != -1:
                 library[f] = library.get(f,0) + 1
-
-            log.add_lines([w[3],x,y,w[4],"mismatches = "+str(w[5]) ,"",""])
+            if merged:
+                if w[5] == -1:
+                    log.add_lines([";"])
+                else:
+                    log.add_lines(["%s;%s;%s" % (len(x),len(y),str(w[5]))] )
+            else:
+                log.add_lines([w[3],x,y,w[4],"mismatches = "+str(w[5]) ,"",""]) # read 1 id; read seq 1; read seq 2; read id 2; mismatches
 
             i = i + 1
             if i % 10000000 == 0:
                 print >>sys.stderr,"Reading... %d reads" % (i,)
         log.close()
-        
+
     pool.close()
     pool.join()
 
@@ -527,7 +534,7 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = """Gives information regarding the overlap of the mate-reads (i.e. library/fragment size) using two FASTQ files as input."""
-    version = "%prog 0.13 beta"
+    version = "%prog 0.14 beta"
 
     parser = optparse.OptionParser(usage       = usage,
                                    description = description,
@@ -556,6 +563,12 @@ if __name__ == '__main__':
                       type = "string",
                       dest = "output_alignment_filename",
                       help = """It outputs also the alignment for each found overlapping.""")
+
+    parser.add_option("-m","--merged",
+                      action = "store_true",
+                      dest = "merged",
+                      default = False,
+                      help = """It outputs in the alignment file, the info for merging the paired-end reads (len_read_1,len_read_2,mismatches_in_overlapping_region).""")
                       
     parser.add_option("-s","--fragment-size",
                       action = "store",
@@ -598,6 +611,7 @@ if __name__ == '__main__':
             options.input_2_filename,
             options.output_stat_filename,
             options.output_alignment_filename,
+            options.merged,
             size_overlap = options.overlap,
             cpus = options.processes,
             verbose = True, # verbose

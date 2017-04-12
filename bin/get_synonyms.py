@@ -180,7 +180,7 @@ if __name__ == '__main__':
     last_name = None
     idx = -1
     for line in sql:
-        if not line:
+        if (not line) or line.startswith("/*") or line.startswith("--") or line.lower().startswith("drop"):
             continue
         parts = line.split("`")
         n = len(parts)

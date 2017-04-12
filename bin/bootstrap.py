@@ -93,6 +93,9 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     global BWA_PATH
     global BWA_URL
     global BWA_VERSION
+    global BBMAP_PATH
+    global BBMAP_URL
+    global BBMAP_VERSION
     global SAMTOOLS_PATH
     global SAMTOOLS_URL
     global SAMTOOLS_VERSION
@@ -182,7 +185,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
-    FUSIONCATCHER_THREADS = '0'
+    FUSIONCATCHER_THREADS = '1'
     FUSIONCATCHER_TOOLS = expand(FUSIONCATCHER_PATH,'tools')
     FUSIONCATCHER_CONFIGURATION = expand(FUSIONCATCHER_BIN,'..','etc','configuration.cfg')
     # numpy
@@ -203,7 +206,11 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     # BOWTIE
     BOWTIE_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie')
     BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.0/bowtie-1.2-linux-x86_64.zip'
-    BOWTIE_VERSION = ('1.2.0',)
+    BOWTIE_VERSION = ('1.2',)
+    # BOWTIE
+    BOWTIE_OLD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie-old')
+    BOWTIE_OLD_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-linux-x86_64.zip'
+    BOWTIE_OLD_VERSION = ('1.1.2',)
     # BOWTIE2
     BOWTIE2_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie2')
     BOWTIE2_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.9/bowtie2-2.2.9-linux-x86_64.zip'
@@ -220,14 +227,17 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BWA_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bwa')
     BWA_URL = 'http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2'
     BWA_VERSION = ('0.7.10-r789',)
+   # BBMAP
+    BBMAP_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bbmap')
+    BBMAP_URL = 'http://sourceforge.net/projects/bbmap/files/BBMap_37.02.tar.gz'
+    BBMAP_VERSION = ('37','37.02')
     # faToTwoBit
     FATOTWOBIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'fatotwobit')
     FATOTWOBIT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/faToTwoBit'
     # SRATOOLKIT
     SRATOOLKIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'sratoolkit')
-    SRATOOLKIT_URL = 'http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.6.2/sratoolkit.2.6.2-centos_linux64.tar.gz'
-    SRATOOLKIT_VERSION = ('2.3.5-2','2.4.2','2.5.1','2.6.2')
-    # VELVET
+    SRATOOLKIT_URL = 'http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.1-3/sratoolkit.2.8.1-3-centos_linux64.tar.gz'
+    SRATOOLKIT_VERSION = ('2.3.5-2','2.4.2','2.5.1','2.6.2','2.8.0','2.8.1-3')
     VELVET_PATH = os.path.join(FUSIONCATCHER_TOOLS,'velvet')
     VELVET_URL = 'http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz'
     VELVET_VERSION = ('1.2.09','1.2.10')
@@ -270,8 +280,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     # PICARD
     PICARD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'picard')
     #PICARD_URL = 'http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip'
-    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/2.5.0/picard-tools-2.5.0.zip'
-    PICARD_VERSION = ('2.5.0(2c370988aefe41f579920c8a6a678a201c5261c1_1466708365)',)
+    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/2.9.0/picard.jar'
+    PICARD_VERSION = ('2.9',)
     # LiftOver
     LIFTOVER_PATH = os.path.join(FUSIONCATCHER_TOOLS,'liftover')
     LIFTOVER_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/liftOver'
@@ -378,22 +388,34 @@ def test_module(module, name = "", package = "", web = "", verbose = False, exit
             print >>sys.stderr, '         sudo yum groupinstall "Development Tools"'
             print >>sys.stderr, '         sudo yum install ncurses'
             print >>sys.stderr, '         sudo yum install ncurses-devel'
-            print >>sys.stderr, "         or"
+            print >>sys.stderr, "           or"
             print >>sys.stderr, '         sudo zypper install --type pattern Basis-Devel'
             print >>sys.stderr, '         sudo zypper in ncurses'
             print >>sys.stderr, '         sudo zypper in ncurses-devel'
             print >>sys.stderr, "     - Python development:"
             print >>sys.stderr, "         sudo apt-get install python-dev"
-            print >>sys.stderr, "         or"
+            print >>sys.stderr, "           or"
             print >>sys.stderr, "         sudo yum install python-devel"
             print >>sys.stderr, "     - GCC:"
             print >>sys.stderr, "         sudo apt-get install gcc"
-            print >>sys.stderr, "         or"
+            print >>sys.stderr, "           or"
             print >>sys.stderr, "         sudo yum install gcc"
             print >>sys.stderr, "     - ZLIB development:"
             print >>sys.stderr, "         sudo apt-get install zlib-dev"
-            print >>sys.stderr, "         or"
+            print >>sys.stderr, "           or"
             print >>sys.stderr, "         sudo yum install zlib-devel"
+            print >>sys.stderr, "     - NumPy library:"
+            print >>sys.stderr, "         sudo apt-get install python-numpy"
+            print >>sys.stderr, "           or"
+            print >>sys.stderr, "         sudo yum install python-numpy"
+            print >>sys.stderr, "     - BioPython library:"
+            print >>sys.stderr, "         sudo apt-get install python-biopython"
+            print >>sys.stderr, "           or"
+            print >>sys.stderr, "         sudo yum install python-biopython"
+            print >>sys.stderr, "     - TBB:"
+            print >>sys.stderr, "         sudo apt-get install libtbb-dev"
+            print >>sys.stderr, "           or"
+            print >>sys.stderr, "         sudo yum install libtbb-dev"
             print >>sys.stderr, ""
 
         if exit:
@@ -556,7 +578,7 @@ def cmd(cmds = [],
 #############################################
 # install a Python modules from source
 #############################################
-def install_module(package, url, path, exe = '', pythonpath = '', verbose = True, exit = True):
+def install_module(package, url, path, exe = '', pythonpath = '', root_aptget_install = False, verbose = True, exit = True):
     """
     module = module's name
     url =
@@ -577,7 +599,7 @@ def install_module(package, url, path, exe = '', pythonpath = '', verbose = True
     if pythonpath:
         pypath = 'PYTHONPATH=%s' % (pythonpath,)
     cmds = []
-    if os.getuid() == 0:
+    if os.getuid() == 0 and root_aptget_install:
         if verbose:
             print "Installing Python package '%s' as root..." % (package,)
         f,r = cmd([(['apt-get','--help'],False)], verbose = False, exit = False)
@@ -586,16 +608,21 @@ def install_module(package, url, path, exe = '', pythonpath = '', verbose = True
         else:
             f,r = cmd([(['yum','--help'],False)], verbose = False, exit = False)
             if f:
-                cmds = cmds +[(['yum','install',package],False)]
+                cmds = cmds +[(['yum','-y','install',package],False)]
             else:
                 f,r = cmds([(['easy_install','--version'],False)], verbose = False, exit = False)
                 if f:
-                    cmds = cmds +[([apython,'easy_install',package.lstrip('python').lstrip('-')],False)]
-                if verbose:
-                    print >>sys.stderr, "  * ERROR: No idea how to install the Python module '%s' using other package " % (module,)
-                    print >>sys.stderr, "           managers than 'apt-get', 'yum', or 'easy_install'!"
-                if exit:
-                    sys.exit(1)
+                    cmds = cmds +[([apython,'easy_install','-y',package.lstrip('python').lstrip('-')],False)]
+                else:
+                    f,r = cmds([(['pip','--version'],False)], verbose = False, exit = False)
+                    if f:
+                        cmds = cmds +[([apython,'pip','-y',package.lstrip('python').lstrip('-')],False)]
+                    else:
+                        if verbose:
+                            print >>sys.stderr, "  * ERROR: No idea how to install the Python module '%s' using other package " % (module,)
+                            print >>sys.stderr, "           managers than 'apt-get', 'yum', 'easy_install', or 'pip'!"
+                        if exit:
+                            sys.exit(1)
     else:
         if verbose:
             print "Installing Python module '%s' locally '%s'..." % (package,path)
@@ -748,7 +775,7 @@ def install_tool(name, url, path, verbose = True, exit = True, env_configure = [
 
             if os.path.isfile(os.path.join(newdir,'Makefile')):
                 cmds.append((["make","-C",newdir],False))
-            cmds.append((['chmod','-R','+rx',path],False))
+            cmds.append((['chmod','-R','+x',path],False))
 
             cmd(cmds,
                 verbose = verbose,
@@ -826,7 +853,8 @@ def module(module,
            url,
            path,
            install = False, # forced install
-           pythonpath = ''):
+           pythonpath = '',
+           root_aptget_install = False):
     r = False
     thepath = None
     if not install:
@@ -853,7 +881,8 @@ def module(module,
                        url = url,
                        path = path,
                        exe = PYTHON_EXE,
-                       pythonpath = pythonpath
+                       pythonpath = pythonpath,
+                       root_aptget_install = root_aptget_install
                       )
     return thepath
 
@@ -948,7 +977,7 @@ if __name__ == '__main__':
                   "<http://github.com/ndaniel/fusioncatcher>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 0.99.7b beta"
+    version = "%prog 0.99.7c beta"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -1022,6 +1051,13 @@ if __name__ == '__main__':
                       dest = "download",
                       help = """It downloads from <http://sourceforge.net/projects/fusioncatcher/files/> the build files for human organism, which are needed to run FusionCatcher. Default value is '%default'.""")
 
+    parser.add_option("-r","--root-apt-get-install",
+                      action = "store_true",
+                      default = False,
+                      dest = "root_aptget_install",
+                      help = """If specified and 'bootstrap.py' is run as root then 'bootstrap.py' will run 'apt-get install' in order to install some Python libraries. Default value is '%default'.""")
+
+
     parser.add_option("-x","--extra",
                       action = "store_true",
                       default = False,
@@ -1047,8 +1083,43 @@ if __name__ == '__main__':
 ################################################################################
 ################################################################################
 
+    hints = """
+On a Ubuntu running these before installing FusionCatcher might make the installation
+go smoother:
+    
+sudo apt-get -y install \
+build-essential\
+libncurses5-dev \
+gawk \
+gcc \
+g++ \
+bzip2 \
+make \
+cmake \
+automake \
+gzip \
+zip \
+unzip \
+zlib1g-dev \
+zlib1g \
+wget \
+curl \
+pigz \
+tar \
+parallel \
+libtbb-dev \
+libtbb2 \
+python \
+python-dev \
+python-numpy \
+python-biopython \
+python-xlrd \
+python-openpyxl
+"""
+    print hints
+
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "ensembl_v86"
+    v = "human_v87"
     ############################################################################
     # List all dependencies
     ############################################################################
@@ -1235,7 +1306,7 @@ if __name__ == '__main__':
                exit = False,
                force = options.force_yes)
     if r:
-        FUSIONCATCHER_THREADS = '0'
+        FUSIONCATCHER_THREADS = '1'
     else:
         p = raw_input("  Type the new default for number of threads: ")
         FUSIONCATCHER_THREADS = p
@@ -1248,26 +1319,42 @@ if __name__ == '__main__':
                  path = FUSIONCATCHER_BIN,
                  verbose = True,
                  custom_install = ["#!/usr/bin/env bash",
-                                   "rm -rf ../bin",
-                                   "rm -rf ../etc",
-                                   "rm -rf ../test",
-                                   "rm -rf ../doc",
-                                   "rm -rf ../VERSION",
-                                   "rm -rf ../README",
-                                   "rm -rf ../README.md",
-                                   "rm -rf ../NEWS",
-                                   "rm -rf ../LICENSE",
-                                   "rm -rf ../DEPENDENCIES",
-                                   "#mkdir -p ../etc",
-                                   "ln -s $(pwd)/etc ../etc",
-                                   "ln -s $(pwd)/bin ../bin",
-                                   "ln -s $(pwd)/test ../test",
-                                   "ln -s $(pwd)/doc ../doc",
-                                   "ln -s $(pwd)/VERSION ../VERSION",
-                                   "ln -s $(pwd)/NEWS ../NEWS",
-                                   "ln -s $(pwd)/LICENSE ../LICENSE",
-                                   "ln -s $(pwd)/README.md ../README.md",
-                                   "ln -s $(pwd)/DEPENDENCIES ../DEPENDENCIES"
+#                                   "rm -rf ../bin",
+#                                   "rm -rf ../etc",
+#                                   "rm -rf ../test",
+#                                   "rm -rf ../doc",
+#                                   "rm -rf ../tools",
+#                                   "rm -rf ../data",
+#                                   "rm -rf ../docker",
+#                                   "rm -rf ../VERSION",
+#                                   "rm -rf ../README",
+#                                   "rm -rf ../README.md",
+#                                   "rm -rf ../NEWS",
+#                                   "rm -rf ../LICENSE",
+#                                   "rm -rf ../DEPENDENCIES",
+#                                   "mkdir -p ../bin",
+#                                   "mkdir -p ../etc",
+#                                   "mkdir -p ../test",
+#                                   "mkdir -p ../doc",
+#                                   "mkdir -p ../tools",
+#                                   "mkdir -p ../data",
+#                                   "mkdir -p ../docker",
+#                                   "cp -f $(pwd)/etc/* ../etc/",
+#                                   "cp -f $(pwd)/bin/* ../bin/",
+#                                   "cp -f $(pwd)/test/* ../test/",
+#                                   "cp -f $(pwd)/doc/* ../doc/",
+#                                   "cp -f $(pwd)/docker/* ../docker/",
+                                   "cp -R -f $(pwd)/* ../",
+                                   "chmod +x ../bin/*.py",
+                                   "chmod +x ../bin/*.sh",
+                                   "chmod +r ../etc/configuration.cfg",
+                                   "chmod +x ../bin/fusioncatcher*",
+                                   "chmod +x ../bin/FC",
+                                   "chmod +x ../test/*.sh",
+                                   "chmod -R +r ../test/*",
+                                   "deleteme=$(pwd)",
+                                   "cd ..",
+                                   'rm -rf "$deleteme"'
                                    ]
                 )
 
@@ -1305,7 +1392,8 @@ if __name__ == '__main__':
                    force = options.force_yes,
                    url = BIOPYTHON_URL,
                    path = BIOPYTHON_PATH,
-                   install = options.install_all or options.install_all_py
+                   install = options.install_all or options.install_all_py,
+                   root_aptget_install = options.root_aptget_install
                    )
         if r:
             BIOPYTHON_PATH = r
@@ -1320,7 +1408,8 @@ if __name__ == '__main__':
                    force = options.force_yes,
                    url = XLRD_URL,
                    path = XLRD_PATH,
-                   install = options.install_all or options.install_all_py
+                   install = options.install_all or options.install_all_py,
+                   root_aptget_install = options.root_aptget_install
                    )
         if r:
             XLRD_PATH = r
@@ -1346,7 +1435,8 @@ if __name__ == '__main__':
                        force = options.force_yes,
                        url = SETUPTOOLS_URL,
                        path = SETUPTOOLS_PATH,
-                       install = options.install_all or options.install_all_py
+                       install = options.install_all or options.install_all_py,
+                       root_aptget_install = options.root_aptget_install
                       )
             if r:
                 SETUPTOOLS_PATH = r
@@ -1359,7 +1449,8 @@ if __name__ == '__main__':
                        url = OPENPYXL_URL,
                        path = OPENPYXL_PATH,
                        install = options.install_all or options.install_all_py,
-                       pythonpath = SETUPTOOLS_PATH)
+                       pythonpath = SETUPTOOLS_PATH,
+                       root_aptget_install = options.root_aptget_install)
             if r:
                 OPENPYXL_PATH = r
 
@@ -1378,6 +1469,21 @@ if __name__ == '__main__':
                  install = options.install_all or options.install_all_tools)
         if r:
             BOWTIE_PATH = r
+
+        ############################################################################
+        # BOWTIE (old version)
+        ############################################################################
+        r = tool(name = "BOWTIE (short read aligner) -- older version",
+                 exe = "bowtie",
+                 param = "--version",
+                 web = "<http://bowtie-bio.sourceforge.net/index.shtml>",
+                 versions = BOWTIE_OLD_VERSION,
+                 force = options.force_yes,
+                 url = BOWTIE_OLD_URL,
+                 path = BOWTIE_OLD_PATH,
+                 install = options.install_all or options.install_all_tools)
+        if r:
+            BOWTIE_OLD_PATH = r
 
         ############################################################################
         # BOWTIE2
@@ -1503,8 +1609,8 @@ if __name__ == '__main__':
                  path = STAR_PATH,
                  install = options.install_all or options.install_all_tools,
                  custom_install = ["#!/usr/bin/env bash",
-                                   "rm -f source/STAR",
-                                   "cp -f bin/Linux_x86_64/STAR source/STAR",
+#                                   "rm -f source/STAR",
+                                   "cp -f bin/Linux_x86_64_static/STAR source/STAR",
 #                                   "cd source",
 #                                   "make",
 #                                   "if ! ./STAR --version; then",
@@ -1515,6 +1621,33 @@ if __name__ == '__main__':
         if r:
             STAR_PATH = r
 
+        # BBMAP
+        r = tool(name = "BBMap short read aligner, and other bioinformatic tools.",
+                 exe = "bbmap.sh",
+                 param = "--version",
+                 web = "<https://sourceforge.net/projects/bbmap/>",
+                 versions = BBMAP_VERSION,
+                 force = options.force_yes,
+                 url = BBMAP_URL,
+                 path = BBMAP_PATH,
+                 install = options.install_all or options.install_all_tools,
+                 skip = True)
+        if r:
+            BBMAP_PATH = r
+
+        # PICARD (Java-based command-line utilities that manipulate SAM files)
+        r = tool(name = "PICARD (Java-based command-line utilities that manipulate SAM files)",
+                 exe = "java -jar picard.jar SamToFastq",
+                 param = "--version",
+                 web = "<http://github.com/broadinstitute/picard/>",
+                 versions = PICARD_VERSION,
+                 force = options.force_yes,
+                 url = PICARD_URL,
+                 path = PICARD_PATH,
+                 install = options.install_all or options.install_all_tools,
+                 skip = True)
+        if r:
+            PICARD_PATH = r
 
         ############################################################################
         # EXTRA (SORT and LZOP)
@@ -1646,19 +1779,6 @@ if __name__ == '__main__':
 #            if r:
 #                PXZ_PATH = r
 
-            # PICARD (Java-based command-line utilities that manipulate SAM files)
-            r = tool(name = "PICARD (Java-based command-line utilities that manipulate SAM files)",
-                     exe = "java -jar picard.jar SamToFastq",
-                     param = "--version",
-                     web = "<http://github.com/broadinstitute/picard/>",
-                     versions = PICARD_VERSION,
-                     force = options.force_yes,
-                     url = PICARD_URL,
-                     path = PICARD_PATH,
-                     install = options.install_all or options.install_all_tools,
-                     skip = True)
-            if r:
-                PICARD_PATH = r
 
             # GNU PARALLEL (shell tool for executing jobs in parallel)
             r = tool(name = "GNU PARALLEL (shell tool for executing jobs in parallel)",
@@ -1718,7 +1838,7 @@ if __name__ == '__main__':
     sra = update_path(SRATOOLKIT_PATH, 'fastq-dump','bin')
     coreutils = update_path(COREUTILS_PATH, 'sort','src')
     lzop = update_path(LZOP_PATH,'lzop','src')
-    star = update_path(STAR_PATH,'STAR','source')
+    star = update_path(STAR_PATH,'star','source')
     parallel2 = update_path(PARALLEL_PATH,'parallel','src')
         
 #    # update the SRATOOLKIT with 'bin'
@@ -1784,6 +1904,7 @@ if __name__ == '__main__':
     data.append("pigz = %s\n"%(PIGZ_PATH,))
     data.append("pxz = %s\n"%(PXZ_PATH,))
     data.append("picard = %s\n"%(PICARD_PATH,))
+    data.append("bbmap = %s\n"%(BBMAP_PATH,))
     data.append("parallel = %s\n"%(parallel2,))
     data.append("java = %s\n"%(JAVA_PATH,))
     data.append("\n")

@@ -3833,7 +3833,13 @@ if __name__ == '__main__':
         ['IGKC','TMED5'],
         ['KLF6','METAP1'],
         ['RNF216','XKR8'],
-        ['SARS','TLR8-AS1']
+        ['SARS','TLR8-AS1'],
+        ['AZGP1','GJC3'],
+        ['BCAP29','DUS4L'],
+        ['BRS3','HTATSF1'],
+        ['COQ8B','NUMBL'],
+        ['HSPE1','MOB4'],
+        ['SIDT2','TAGLN']
 ]
 
 
