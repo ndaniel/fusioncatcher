@@ -441,6 +441,7 @@ if __name__ == '__main__':
         ['A2M','AHNAK'],
         ['A2M','ALB'],
         ['A2M','AP2M1'],
+        ['DUS4L','BCAP29'],
         ['A2M','APLP2'],
         ['A2M','APP'],
         ['A2M','AQP1'],
@@ -14396,7 +14397,8 @@ if __name__ == '__main__':
         ['ZDHHC11','ZDHHC11B'],
         ['ZNF28','ZNF468'],
         ['ZNF510','ZNF782'],
-        ['ZNF587B','ZNF814']
+        ['ZNF587B','ZNF814'],
+        ['KANSL1','ARL17A']
         
         ]
 

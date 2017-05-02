@@ -306,7 +306,7 @@ def fast_alignment_adapter(sa, sb, len_adapter = 13, overlap = 13):
     for (pa,pb) in positions:
         if pb - pa < overlap - 1 or pb < 0 or pa < 0:
             break
-        p = sa.find(sb[pa:pb], 2)
+        p = sa.find(sb[pa:pb], 1, -1)
         if p != -1 and p < pa:
             lib =  p + nb - pa
             if lib > na:
@@ -357,7 +357,7 @@ def find_hard(ss,adp):
 #
 #
 #
-def fast_alignment(sa, sb, overlap = 13, wiggle = 2, adpt5 = "", adpt3 = ""):
+def fast_alignment(sa, sb, overlap = 13, wiggle = 1, adpt5 = "", adpt3 = ""):
     # align a read on top of its mate read if this is possible
     na = len(sa)
     nb = len(sb)
@@ -421,7 +421,7 @@ def fast_alignment(sa, sb, overlap = 13, wiggle = 2, adpt5 = "", adpt3 = ""):
         elif pb - pa < overlap - 1 or pa < 0 or pb < 0:
             break
         else:
-            p = sa.find(sb[pa:pb], wiggle)
+            p = sa.find(sb[pa:pb], wiggle, -wiggle)
             if p == -1 or p > pa:
                 continue
             else:
@@ -862,7 +862,7 @@ def trim_adapter(input_file_1,
 
         para = param()
         para.reads_overlap = reads_overlap
-        para.wiggle = 2
+        para.wiggle = 1
         para.adapter5 = adapter5
         para.adapter3 = adapter3
         para.flag_log = flag_log

@@ -209,7 +209,7 @@ a candidate list of fusion genes (where short reads have been aligned using BLAT
                       action="store",
                       type="float",
                       dest="threshold_overlap",
-                      default=17,
+                      default=30,
                       help="""The threshold for the minimum length of the read overlap over the fusion point (i.e. overhang/anchor). Default is '%default'.""")
 
 
@@ -314,24 +314,24 @@ a candidate list of fusion genes (where short reads have been aligned using BLAT
 
     otm = options.threshold_matches
     om = options.mismatches
-    print len(data_mappings)
+#    print len(data_mappings)
     # very quick pre-processing
     data = []
     for line in data_mappings:
-        fl10 = float(line[10])
-        fl0 = float(line[0])
-        il1 = int(line[1])
-        il17 = int(line[17])
-        il6 = int(line[6])
-        il4 = int(line[4])
+        fl10 = float(line[10]) # Query sequence size
+        fl0 = float(line[0]) # matches
+        il1 = int(line[1]) # mismatches
+        il17 = int(line[17]) # blockCount - Number of blocks in the alignment (a block contains no gaps)
+        il6 = int(line[6]) # tNumInsert - Number of inserts in target
+        il4 = int(line[4]) # qNumInsert - Number of inserts in query
         # fusion genes names and border
-        border = int(line[13].split('|')[2])
+        border = int(line[13].split('|')[2]) # tName - Target sequence name
         # strand
         #st = line[8]
-        tStart = int(line[15])
-        tEnd = int(line[16])
+        tStart = int(line[15]) # tStart
+        tEnd = int(line[16]) # tEnd
         if ( (fl0/fl10 >= otm) and
-             (il1 >= om) and
+             (il1 <= om) and
              (il17 > 1) and # blockCount
              (il17 < 9) and # blockCount
              (il6 > 0) and   # number inserts in target
@@ -342,18 +342,19 @@ a candidate list of fusion genes (where short reads have been aligned using BLAT
             ):
             data.append(line)
         else:
+            print "--------------------------------------------------------"
             print "excluded: -->",line
-
-    print data
-    print len(data)
-
-
-    flank = 50
+            print fl0/fl10,otm
+            print il1, om
+            print il17 
+            print il6
+            print il4
+            print tStart,border
+            print border, tEnd
 
     print >>sys.stderr,"Processing..."
     result = []
     for line in data:
-
 
         short_read = line[9] # read name
 
@@ -371,59 +372,112 @@ a candidate list of fusion genes (where short reads have been aligned using BLAT
         e1=0
         e2=0
 
-        #if strand == "+":
-        temp = map(int,line[20][:-1].split(',')) # start positions on target seq = tStarts
-        start_1 = temp[0] + 1
-        start_2 = temp[1] - border + 1
-        s1 = temp[0] + 1
-        s2 = temp[1] + 1
-
-        temp = map(int,line[18][:-1].split(',')) # blockSizes
-        end_1 = start_1 + temp[0] - 1
-        end_2 = start_2 + temp[1] - 1
-        e1 = temp[0] + s1 - 1
-        e2 = temp[1] + s2 - 1
-
-
         chr_1 = gene[gene_1]['chr']
         chr_2 = gene[gene_2]['chr']
 
         str_1 = gene[gene_1]['strand']
         str_2 = gene[gene_2]['strand']
 
-        coord_gene_1 = coord_gene2genome(gene_1,[start_1,end_1],gene)
-        coord_gene_2 = coord_gene2genome(gene_2,[start_2,end_2],gene)
+        # find the split
+        temp = map(int,line[20][:-1].split(',')) # start positions on target seq = tStarts
+        temp2 = map(int,line[18][:-1].split(',')) # blockSizes
+        start_1 = []
+        end_1 = []
+        start_2 = []
+        end_2 = []
+        coord_gene_1 = []
+#        coord_gene_1b = []
+        coord_gene_2 = []
+#        coord_gene_2b = []
+        anchor_length_1 = 0
+        anchor_length_2 = 0
+        for i in xrange(len(temp)):
+            if temp[i] < border:
+                start_1.append(temp[i] + 1)
+                s1 = temp[i] + 1
+                end_1.append(start_1[-1] + temp2[i] - 1)
+                cg1 = coord_gene2genome(gene_1,[start_1[-1],end_1[-1]],gene)
+                coord_gene_1.append(cg1[0])
+                coord_gene_1.append(cg1[1])
+                anchor_length_1 = anchor_length_1 + temp2[i]
+            else:
+                start_2.append(temp[i] - border + 1)
+                s2 = temp[i] + 1
+                end_2.append(start_2[-1] + temp2[i] - 1)
+                cg2 = coord_gene2genome(gene_1,[start_2[-1],end_2[-1]],gene)
+                coord_gene_2.append(cg2[0])
+                coord_gene_2.append(cg2[1])
+                anchor_length_2 = anchor_length_2 + temp2[i]
 
-        anchor_length = e1-s1+1 if e1-s1 < e2-s2 else e2-s2+1
+        anchor_length = min(anchor_length_1,anchor_length_2)
 
-        fs = ''
-        if seq_dict:
-            myseq = seq_dict.get(tsn,None)
-            if myseq:
-                e1flank = e1 - flank
-                if e1flank < 0:
-                    e1flank = 0
-                fs = '%s%s%s' % (myseq[e1flank:e1],options.separator,myseq[s2-1:s2-1+flank])
+        if options.threshold_overlap > anchor_length:
+            continue
+            
+        s = line[21] # sequence of the read
+        fs = "%s%s%s" % (s[0:anchor_length_1],options.separator,s[anchor_length_1:])
+        
+        coord_gene_1 = map(str,coord_gene_1)
+
+        coord_gene_2 = map(str,coord_gene_2)
+
+        start_1 = map(str,start_1)
+        end_1 = map(str,end_1)
+
+        start_2 = map(str,start_2)
+        end_2 = map(str,end_2)
+        
+        anchor_length = str(anchor_length)
+
+
+
+        #if strand == "+":
+#        temp = map(int,line[20][:-1].split(',')) # start positions on target seq = tStarts
+#        start_1 = temp[0] + 1
+#        start_2 = temp[1] - border + 1
+#        s1 = temp[0] + 1
+#        s2 = temp[1] + 1
+
+#        temp = map(int,line[18][:-1].split(',')) # blockSizes
+#        end_1 = start_1 + temp[0] - 1
+#        end_2 = start_2 + temp[1] - 1
+#        e1 = temp[0] + s1 - 1
+#        e2 = temp[1] + s2 - 1
+
+
+#        coord_gene_1 = coord_gene2genome(gene_1,[start_1,end_1],gene)
+#        coord_gene_2 = coord_gene2genome(gene_2,[start_2,end_2],gene)
+
+#        anchor_length = e1-s1+1 if e1-s1 < e2-s2 else e2-s2+1
+
+#        fs = ''
+#        if seq_dict:
+#            myseq = seq_dict.get(tsn,None)
+#            if myseq:
+#                e1flank = e1 - flank
+#                if e1flank < 0:
+#                    e1flank = 0
+#                fs = '%s%s%s' % (myseq[e1flank:e1],options.separator,myseq[s2-1:s2-1+flank])
 
         t = [gene_1,                 # 0
              gene[gene_1]['hugo'],   # 1
              chr_1,                  # 2
              str_1,                  # 3
-             coord_gene_1[0],        # 4
-             coord_gene_1[1],        # 5
+             ','.join(coord_gene_1),        # 4
+             coord_gene_1[-1],        # 5
              gene_2,                 # 6
              gene[gene_2]['hugo'],   # 7
              chr_2,                  # 8
              str_2,                  # 9
              coord_gene_2[0],        # 10
-             coord_gene_2[1],        # 11
+             ','.join(coord_gene_2),        # 11
              short_read,             # 12
              int(line[1]),           # 13 - mismatches
              int(line[10]),          # 14 -- read size
-             start_1,                # 15
-             end_1,                  # 16
-             start_2,                # 17
-             end_2,                  # 18
+             ','.join(start_1),                # 15
+             ','.join(end_1),                  # 16
+             ','.join(start_2),                # 17
+             ','.join(end_2),                  # 18
              anchor_length,          # 19
              fs                      # 20
              ]

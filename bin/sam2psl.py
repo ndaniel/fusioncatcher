@@ -403,6 +403,7 @@ psl_blockCount = 17
 psl_blockSizes = 18
 psl_qStarts = 19
 psl_tStarts = 20
+psl_seq = 21
 
 #
 psl_empty_line = [
@@ -535,7 +536,7 @@ def blocks(cigar, ig = 0, use_cigar_13 = True):
 
 
 #########################
-def get_psl(sam, lens, use_cigar_13=True , replace_string = ''):
+def get_psl(sam, lens, use_cigar_13=True , replace_string = '', read_sequence=False):
     # USE_CIGAR_13 - If True then the input CIGAR string is in format 1.4 then it will be converted into format 1.3
     #cig, qSize, tSize, tStart, strand):
     # returns PSL coordinates
@@ -628,6 +629,10 @@ def get_psl(sam, lens, use_cigar_13=True , replace_string = ''):
                 psl[psl_qStarts] = ','.join([str(e[0]) for e in interval_query])+','
                 psl[psl_tStarts] = ','.join([str(e[0]) for e in interval_ref])+','
 
+            if read_sequence:
+                if len(psl) < psl_seq + 1:
+                    psl.append(sam[sam_SEQ])
+
             psl = map(str,psl)
 
     return psl
@@ -668,7 +673,7 @@ def getlines(a_filename):
     fin.close()
 
 ############################
-def sam2psl(file_in,file_ou, use_cigar_13 = True,replace_string = ''):
+def sam2psl(file_in,file_ou, use_cigar_13 = True,replace_string = '',read_sequence=False):
     # It converts a SAM file to PSL file
     # USE_CIGAR_13 - If True then the input CIGAR string is in format 1.4 then it will be converted into format 1.3
     fou = None
@@ -690,7 +695,7 @@ def sam2psl(file_in,file_ou, use_cigar_13 = True,replace_string = ''):
             i = i + 1
             continue
         i = i + 1
-        temp = get_psl(line,lengths, use_cigar_13, replace_string)
+        temp = get_psl(line,lengths, use_cigar_13, replace_string, read_sequence)
         # saving
         if temp:
             psl.append('\t'.join(temp)+'\n')
@@ -731,6 +736,12 @@ if __name__ == '__main__':
                       "(i.e. there are no 'X' and '=' which are replaced with 'M') and afterwards into PSL format. "+
                       "Default is '%default'.")
 
+    parser.add_option("--read-seq","-s",
+                      action = "store_true",
+                      default = False,
+                      dest = "read_sequence",
+                      help = """It adds to the PSL output as column 22, the sequence of the read. This is not anymore a valid PSL format.""")
+
     parser.add_option("--replace-read-ids","-r",
                       action = "store",
                       type = "string",
@@ -754,12 +765,14 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
+    t = options.replace_reads_ids if options.replace_reads_ids else ''
 
     # running
     sam2psl(
         options.input_filename,
         options.output_filename, 
         use_cigar_13 = (not options.skip_conversion_cigar_13),
-        replace_string = options.replace_reads_ids if options.replace_reads_ids else ''
+        replace_string = t,
+        read_sequence = options.read_sequence
         )
     #

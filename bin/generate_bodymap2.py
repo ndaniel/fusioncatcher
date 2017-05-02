@@ -3839,6 +3839,16 @@ if __name__ == '__main__':
         ['BRS3','HTATSF1'],
         ['COQ8B','NUMBL'],
         ['HSPE1','MOB4'],
+        ['SIDT2','TAGLN'],
+        ['ADH1B','PTRF'],
+        ['ARHGAP27P1-BPTFP1-KPNA2P3','BPTF'],
+        ['AZGP1','GJC3'],
+        ['BCAP29','DUS4L'],
+        ['BPTF','KPNA2'],
+        ['BRS3','HTATSF1'],
+        ['COQ8B','NUMBL'],
+        ['HSPE1','MOB4'],
+        ['IGLV5-52','LL22NC03-80A10.6'],
         ['SIDT2','TAGLN']
 ]
 

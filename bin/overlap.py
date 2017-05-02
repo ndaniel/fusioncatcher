@@ -125,7 +125,7 @@ def reads_from_paired_fastq_file(file_name_1, file_name_2, nn, fail_gracefully =
             yield ('myexit','1','myexit','1')
             break
 
-        elif not (r1 == r2 or ((r1[-2:] == "/1" or r1[-2:] == "/2") and r1[:-2] == r2[:-2])):
+        elif not (r1 == r2 or ((r1[-1] == "1" or r1[-1] == "2") and (r1[-2] == '/' or r1[-2] == '.') and r1[:-2] == r2[:-2]) ):
             print >>sys.stderr, "ERROR: The input FASTQ files do not form a pair!"
             print >>sys.stderr, "   - read id from '%s' is '%s'" % (file_name_1,r1)
             if r2 == 'myexit':
@@ -209,9 +209,11 @@ def fast_alignment5(sa, sb, n, positions, wiggle = 2):
     misp = -1
     for (pa,pb) in positions:
         z = sa[pa:pb]
-        if z.find('N') != -1 or z.find('.') != -1:
+        nz = len(z)
+        if (not z) or (pb-pa != nz) or z.find('N') != -1 or z.find('.') != -1 or z[0]*nz == z:
             continue
-        p = sb.find(z,wiggle,-wiggle)
+        #p = sb.find(z,wiggle,-wiggle)
+        p = sb.find(z,0,-wiggle)
         if p != -1:
             if pa > p:
                 lib = pa + n - p
@@ -255,9 +257,11 @@ def fast_alignment3(sa, sb, n, positions, wiggle = 2):
     misp = -1
     for (pa,pb) in positions:
         z = sb[pa:pb]
-        if z.find('N') != -1 or z.find('.') != -1:
+        nz = len(z)
+        if (not z) or (pb-pa != nz) or z.find('N') != -1 or z.find('.') != -1 or z[0]*nz == z:
             continue
-        p = sa.find(z,wiggle,-wiggle)
+        #p = sa.find(z,wiggle,-wiggle)
+        p = sa.find(z,0,-wiggle)
         if p != -1:
             if p < pa:
                 lib =  n - pa + p
@@ -580,7 +584,7 @@ if __name__ == '__main__':
                       action = "store",
                       type = "int",
                       dest = "overlap",
-                      default = 15,
+                      default = 13,
                       help = """The minimum length of the region which is considered an overlap. Default is %default.""")
 
     parser.add_option("-f","--fail-gracefully",

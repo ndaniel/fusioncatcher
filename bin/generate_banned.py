@@ -334,6 +334,7 @@ if __name__ == '__main__':
         ['A2M','CRP'],
         ['A2M','EPAS1'],
         ['A2M','FGG'],
+        ['DUS4L','BCAP29'],
         ['A2M','HP'],
         ['A2M','MB'],
         ['A2M','SFTPA1'],
@@ -8075,7 +8076,31 @@ if __name__ == '__main__':
         ['NCL','PTMA'],
         ['RPL38','TTYH2'],
         ['RRM2','C2ORF48'],
-        ['TTC7B','MVD']
+        ['TTC7B','MVD'],
+        ['KANSL1','ARL17A'],
+        ['ADH1B','PTRF'],
+        ['ARHGAP27P1-BPTFP1-KPNA2P3','BPTF'],
+        ['AZGP1','GJC3'],
+        ['BCAP29','DUS4L'],
+        ['BPTF','KPNA2'],
+        ['BRS3','HTATSF1'],
+        ['COQ8B','NUMBL'],
+        ['HSPE1','MOB4'],
+        ['IGLV5-52','LL22NC03-80A10.6'],
+        ['SIDT2','TAGLN'],
+        ['ATP10B','LINC02159'],
+        ['ATP5I','MFSD7'],
+        ['AZGP1','GJC3'],
+        ['BCAP29','DUS4L'],
+        ['C2ORF27A','DUXAP8'],
+        ['CDC42EP2','POLA2'],
+        ['COQ8B','NUMBL'],
+        ['GSR','GTF2E2'],
+        ['MSMB','NCOA4'],
+        ['NACA','PRIM1'],
+        ['PSPC1','ZMYM5'],
+        ['SCNN1A','TNFRSF1A'],
+        ['SIDT2','TAGLN']
 
 
 
@@ -8100,7 +8125,7 @@ if __name__ == '__main__':
             g1 = gg[0]
             g2 = gg[1]
             if g1.upper() != g2.upper():
-                print g1,g2
+                #print g1,g2
                 ens1 = symbols.ensembl(g1.upper(),genes,loci)
                 ens2 = symbols.ensembl(g2.upper(),genes,loci)
                 if ens1 and ens2:
@@ -8108,7 +8133,7 @@ if __name__ == '__main__':
                         for e2 in ens2:
                             if e1 != e2:
                                 d.append([e1,e2])
-                                print '-->',e1,e2
+                                #print '-->',e1,e2
         # create a banned list of gene based on loci
         for v in loci.values():
             if v:

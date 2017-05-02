@@ -82,7 +82,7 @@ if __name__ == '__main__':
                       type="string",
                       dest="server",
                       default = "http://dgd.genouest.org",
-                      help="""The TICdb server from where the known fusion genes are downloaded. Default is '%default'.""")
+                      help="""The DGD server from where the known fusion genes are downloaded. Default is '%default'.""")
 
     (options,args) = parser.parse_args()
 

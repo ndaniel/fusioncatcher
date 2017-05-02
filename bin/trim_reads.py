@@ -110,7 +110,7 @@ if __name__ == '__main__':
     if options.trim_size and options.size:
         parser.error("Options --trim_size and --final_size are mutually exclusive!")
 
-    
+    fid = None
     if options.input_filename == '-':
         fid = sys.stdin
     elif options.input_filename.lower().endswith('.gz'):
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     else:
         fid = open(options.input_filename,'r')
     
-    
+    fod = None
     if options.output_filename == '-':
         fod = sys.stdout
     elif options.output_filename.lower().endswith('.gz'):
