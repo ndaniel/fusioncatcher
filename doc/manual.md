@@ -134,6 +134,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Brunetti M. et al., **Recurrent fusion transcripts in squamous cell carcinomas of the vulva**, Oncotarget, Feb. 2017, http://dx.doi.org/10.18632/oncotarget.15167
   * Sahm F. et al., **DNA methylation-based classification and grading system for meningioma: a multicentre, retrospective analysis**, The Lancet Oncology, March 2017, http://dx.doi.org/10.1016/S1470-2045(17)30155-9
   * Reshmi S.C. et al., **Targetable kinase gene fusions in high risk B-ALL: a study from the Children's Oncology Group**, Blood, April 2017, https://doi.org/10.1182/blood-2016-12-758979
+  * Tomic T.T. et al., **A new GTF2I-BRAF fusion mediating MAPK pathway activation in pilocytic astrocytoma**, PLOS One, April 2017, https://doi.org/10.1371/journal.pone.0175638
   
 ---
 
