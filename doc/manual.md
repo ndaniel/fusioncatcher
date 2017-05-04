@@ -135,6 +135,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Sahm F. et al., **DNA methylation-based classification and grading system for meningioma: a multicentre, retrospective analysis**, The Lancet Oncology, March 2017, http://dx.doi.org/10.1016/S1470-2045(17)30155-9
   * Reshmi S.C. et al., **Targetable kinase gene fusions in high risk B-ALL: a study from the Children's Oncology Group**, Blood, April 2017, https://doi.org/10.1182/blood-2016-12-758979
   * Tomic T.T. et al., **A new GTF2I-BRAF fusion mediating MAPK pathway activation in pilocytic astrocytoma**, PLOS One, April 2017, https://doi.org/10.1371/journal.pone.0175638
+  * Schwartzman O. et al., **Suppressors and activators of JAK-STAT signaling at diagnosis and relapse of acute lymphoblastic leukemia in Down syndrome**, PNAS, May 2017, https://doi.org/10.1073/pnas.1702489114
   
 ---
 
