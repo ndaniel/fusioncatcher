@@ -136,7 +136,8 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Reshmi S.C. et al., **Targetable kinase gene fusions in high risk B-ALL: a study from the Children's Oncology Group**, Blood, April 2017, https://doi.org/10.1182/blood-2016-12-758979
   * Tomic T.T. et al., **A new GTF2I-BRAF fusion mediating MAPK pathway activation in pilocytic astrocytoma**, PLOS One, April 2017, https://doi.org/10.1371/journal.pone.0175638
   * Schwartzman O. et al., **Suppressors and activators of JAK-STAT signaling at diagnosis and relapse of acute lymphoblastic leukemia in Down syndrome**, PNAS, May 2017, https://doi.org/10.1073/pnas.1702489114
-  
+  * Panagopoulos I. et al., **Identification of SETD2-NF1 fusion gene in a pediatric spindle cell tumor with the chromosomal translocation t(3;17)(p21;q12)**, Oncology Reports, May 2017, https://doi.org/10.3892/or.2017.5628
+  * Sorenson E.C. et al., **Genome and transcriptome profiling of fibrolamellar hepatocellular carcinoma demonstrates p53 and IGF2BP1 dysregulation**, PLOS One, May 2017, https://doi.org/10.1371/journal.pone.0176562
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
