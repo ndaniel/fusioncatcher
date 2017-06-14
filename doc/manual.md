@@ -138,6 +138,8 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Schwartzman O. et al., **Suppressors and activators of JAK-STAT signaling at diagnosis and relapse of acute lymphoblastic leukemia in Down syndrome**, PNAS, May 2017, https://doi.org/10.1073/pnas.1702489114
   * Panagopoulos I. et al., **Identification of SETD2-NF1 fusion gene in a pediatric spindle cell tumor with the chromosomal translocation t(3;17)(p21;q12)**, Oncology Reports, May 2017, https://doi.org/10.3892/or.2017.5628
   * Sorenson E.C. et al., **Genome and transcriptome profiling of fibrolamellar hepatocellular carcinoma demonstrates p53 and IGF2BP1 dysregulation**, PLOS One, May 2017, https://doi.org/10.1371/journal.pone.0176562
+  * Hettmer S. et al., **Epithelioid hemangioendotheliomas of the liver and lung in children and adolescents**, Pediatric Blood & Cancer, June 2017, https://doi.org/10.1002/pbc.26675
+  
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
