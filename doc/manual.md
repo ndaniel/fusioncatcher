@@ -207,37 +207,58 @@ This is an example (or one of the many ways) for installing *FusionCatcher* on a
 
   * check that Python 2.6.X or 2.7.X is installed and working properly! If not then install it together with its development environment and other (probably) needed dependencies (required):
   ```
-  sudo apt-get install build-essential
-  sudo apt-get install python-dev
-  sudo apt-get install python-numpy
-  sudo apt-get install gcc
-  sudo apt-get install zlib-dev
-  sudo apt-get install libtbb-dev
-  sudo apt-get install wget
-  sudo apt-get install curl
-  sudo apt-get install cmake
-  sudo apt-get install pigz
-  sudo apt-get install libpthread-stubs0-dev
-  sudo apt-get install python-biopython
-  sudo apt-get install python-xlrd
-  sudo apt-get install python-openpyxl
+sudo apt-get install build-essential
+sudo apt-get install libncurses5-dev
+sudo apt-get install gawk
+sudo apt-get install gcc
+sudo apt-get install g++
+sudo apt-get install make
+sudo apt-get install automake
+sudo apt-get install gzip
+sudo apt-get install bzip2
+sudo apt-get install cmake
+sudo apt-get install zlib1g-dev
+sudo apt-get install zlib1g
+sudo apt-get install wget
+sudo apt-get install curl
+sudo apt-get install pigz
+sudo apt-get install zip
+sudo apt-get install tar
+sudo apt-get install unzip
+sudo apt-get install libc6-dev
+sudo apt-get install default-jdk
+sudo apt-get install libtbb-dev
+sudo apt-get install libtbb2
+sudo apt-get install parallel
+sudo apt-get install python
+sudo apt-get install python-dev
+sudo apt-get install python-numpy
+sudo apt-get install python-biopython
+sudo apt-get install python-xlrd
+sudo apt-get install python-openpyxl
   ```
   
   and for [RedHat](http://www.redhat.com)/[CentOS](http://www.centos.org) this would be required
   ```
-  sudo yum groupinstall "Development Tools"
-  sudo yum install gcc
-  sudo yum install ncurses-devel
-  sudo yum install zlib-devel
-  sudo yum install cmake
-  sudo yum install pigz
-  sudo yum install wget
-  sudo yum install curl
-  sudo yum install tbb-devel
-  sudo yum install python-devel
-  sudo yum install python-biopython
-  sudo yum install python-numpy
-
+sudo yum groupinstall "Development Tools"
+sudo yum install ncurses-devel
+sudo yum install awk
+sudo yum install gcc
+sudo yum install make
+sudo yum install cmake
+sudo yum install glibc-devel
+sudo yum install zlib-devel
+sudo yum install gzip
+sudo yum install pigz
+sudo yum install wget
+sudo yum install curl
+sudo yum install tbb-devel
+sudo yum install python-devel
+sudo yum install python-biopython
+sudo yum install python-numpy
+sudo yum install python-xlrd
+sudo yum install python-openpyxl
+sudo yum install java-1.8.0-openjdk* (or other Java?)
   ```
   
   and for [OpenSUSE](http://www.opensuse.org) this would be required
