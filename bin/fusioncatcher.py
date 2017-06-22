@@ -367,7 +367,7 @@ if __name__ == "__main__":
                              "By default no paths are specified when executing tools/scripts. "+
                              "Default is '%default'. ")
 
-    parser.add_option("--skip-update-check","-z",
+    parser.add_option("--no-update-check","-Z",
                       action = "store_true",
                       dest = "skip_update_check",
                       default = False,
@@ -524,7 +524,7 @@ if __name__ == "__main__":
 #            'ucsc_same_strand_overlapping',
             'refseq_fully_overlapping',
             'refseq_same_strand_overlapping',
-            "distance1000bp",
+            "dist1000bp",
             "rrna",
             "trna",
             "mt",
@@ -533,12 +533,12 @@ if __name__ == "__main__":
             "7skrna",
             "snorna",
             "snrna",
-            "cta_gene",
-            "ctb_gene",
-            "ctc_gene",
-            "ctd_gene",
-            "rp_gene",
-            "rp11_gene",
+            "cta",
+            "ctb",
+            "ctc",
+            "ctd",
+            "rp",
+            "rp11",
             "banned",
             "healthy",
             "hla",
@@ -548,13 +548,14 @@ if __name__ == "__main__":
             "hpa",
             "1000genomes",
 #            "non_tumor_cells",
+            "multi",
             "fragments",
             "removed"])
     all_choices = sorted([
             'paralogs',
             'adjacent',
             'ambiguous',
-            'distance1000bp',
+            'dist1000bp',
             'chimerdb2',
             'chimerdb3kb',
             'chimerdb3pub',
@@ -580,16 +581,16 @@ if __name__ == "__main__":
             'snorna',
             'snrna',
             'pair_pseudo_genes',
-            'rp_gene',
-            'rp11_gene',
+            'rp',
+            'rp11',
             'ensembl_fully_overlapping',
             'ensembl_partially_overlapping',
             'ensembl_same_strand_overlapping',
             'ribosomal',
-            'cta_gene',
-            'ctb_gene',
-            'ctc_gene',
-            'ctd_gene',
+            'cta',
+            'ctb',
+            'ctc',
+            'ctd',
             'conjoing',
             'healthy',
             'ucsc_fully_overlapping',
@@ -601,8 +602,8 @@ if __name__ == "__main__":
             'gencode_fully_overlapping',
             'gencode_partially_overlapping',
             'gencode_same_strand_overlapping',
-            'distance10kbp',
-            'distance100kbp',
+            'dist10kbp',
+            'dist100kbp',
             'fragments',
             'banned',
             'hla',
@@ -810,14 +811,34 @@ if __name__ == "__main__":
 #                             "Fastq Illumina files. Default is '%default'."
                              )
 
-    parser.add_option("--skip-filter-ambiguous",
+    parser.add_option("--filter-ambiguous","-Y",
                       action = "store_true",
-                      dest = "skip_ambiguous_filtering",
+                      dest = "ambiguous_filtering",
+                      default = False,
+                      help = optparse.SUPPRESS_HELP
+#                      help = "If specified then it filters out the reads which "+
+#                             "maps ambiguously (i.e. same read map simultaneously on two "+
+#                             "locuses on genome/transcriptome within 0-3 mismatches. "
+#                             "Default is '%default'."
+                             )
+
+    parser.add_option("--skip-filter-genome","-G",
+                      action = "store_true",
+                      dest = "skip_genome_filtering",
                       default = False,
                       help = optparse.SUPPRESS_HELP
 #                      help = "If specified then it skips filtering out the reads which "+
-#                             "maps ambiguously (i.e. same read map simultaneously on two "+
-#                             "locuses on genome/transcriptome within 0-3 mismatches. "
+#                             "maps multiple times on genome. "+
+#                             "Default is '%default'."
+                             )
+
+    parser.add_option("--skip-filter-genome-transcriptome",
+                      action = "store_true",
+                      dest = "skip_genome_transcriptome_filtering",
+                      default = False,
+                      help = optparse.SUPPRESS_HELP
+#                      help = "If specified then it skips filtering out the reads which "+
+#                             "map better on genome than on transcriptome. "+
 #                             "Default is '%default'."
                              )
 
@@ -938,12 +959,6 @@ if __name__ == "__main__":
 #                             "Default is '%default'."
 )
 
-    parser.add_option("--compress-fusion-transcripts-sequences",
-                      action = "store_true",
-                      dest = "compress_fusion_transcripts",
-                      default = False,
-                      help = "Instead of DNA sequnces for the predicted fusion transcripts will be given the coordinates only, such that the final report is smaller in size.")
-
     parser.add_option("--ff-tryhard",
                       action = "store_true",
                       dest = "ff_tryhard",
@@ -1038,11 +1053,11 @@ if __name__ == "__main__":
                       action = "store_true",
                       dest = "skip_conversion_grch37",
                       default = False,
-                      help = optparse.SUPPRESS_HELP)
-#                      help = "If it is set then the fusion coordinates for human "+
-#                             "genome version GRCh38 (which is default) will NOT be "+
-#                             "reported also using version GRCh37. " +
-#                             "Default is '%default'.")
+#                      help = optparse.SUPPRESS_HELP,
+                      help = "If it is set then the fusion coordinates for human "+
+                             "genome version GRCh38 (which is default) will NOT be "+
+                             "reported also using version GRCh37/hg19. " +
+                             "Default is '%default'.")
 
 
     parser.add_option("--limit-blat",
@@ -1076,18 +1091,6 @@ if __name__ == "__main__":
                       default = 30*(10**6), # 300*(10**6)
                       help = optparse.SUPPRESS_HELP)
 #                      help = "The maximum limit of the genome's size which BOWTIE2 aligner "+
-#                             "is able to handle.  If the genome is larger than this limit "+
-#                             "then it will be split automatically in smaller pieces such that "+
-#                             "the aligner can handle them without an error. "+
-#                             "Default is '%default'.")
-
-#    parser.add_option("--limit-bwa",
-#                      action = "store",
-#                      type = "int",
-#                      dest = "limit_bwa",
-#                      default = 1,
-#                      help = optparse.SUPPRESS_HELP)
-#                      help = "The maximum limit of the genome's size which BWA aligner "+
 #                             "is able to handle.  If the genome is larger than this limit "+
 #                             "then it will be split automatically in smaller pieces such that "+
 #                             "the aligner can handle them without an error. "+
@@ -1713,7 +1716,7 @@ if __name__ == "__main__":
             
     # getting absolute paths for the tools and scripts from configuration.cfg
     _B2_ = confs.get("BOWTIE2").rstrip("/")+"/" if options.force_paths else ''
-#    _BA_ = confs.get("BWA").rstrip("/")+"/" if options.force_paths else ''
+    _BA_ = confs.get("BWA").rstrip("/")+"/" if options.force_paths else ''
     _BE_ = confs.get("BOWTIE").rstrip("/")+"/" if options.force_paths else ''
     _BT_ = confs.get("BLAT").rstrip("/")+"/" if options.force_paths else ''
     _BP_ = confs.get("BBMAP").rstrip("/")+"/" if options.force_paths else ''
@@ -1955,6 +1958,7 @@ if __name__ == "__main__":
             timeout = 10
             socket.setdefaulttimeout(timeout)
             serverversion  = urllib2.urlopen('http://fusioncatcher.hopto.org/fusioncatcher-version.txt').read()
+            #serverversion = None
             if serverversion:
                 serverversion = serverversion.splitlines()
                 serverversion = serverversion[0].strip()
@@ -2158,7 +2162,11 @@ if __name__ == "__main__":
 
     os.system(_BE_+"bowtie --version | head -1 > '%s'" % (outdir('bowtie_version.txt'),))
     last_line = file(outdir('bowtie_version.txt'),'r').readline().lower().rstrip("\r\n")
+    #correct_versions = set(['bowtie-align version 1.2.1','bowtie-align version 1.2.1.1','bowtie-align version 1.2','bowtie version 1.1.2'])
     correct_versions = set(['bowtie-align version 1.2','bowtie version 1.1.2'])
+    bowtie121 = False
+    if last_line.find("1.2.") != -1:
+        bowtie121 = True
     if last_line not in correct_versions:
         job.close()
         os.system("which bowtie > '%s'" % (outdir('bowtie_path.txt'),))
@@ -2184,6 +2192,17 @@ if __name__ == "__main__":
     job.add('>>',info_file,kind='output')
     job.run(error_message=("Please, check if 'Bowtie' (from "+
         "<http://bowtie-bio.sourceforge.net/index.shtml>) is installed and it "+
+        "is in the corresponding PATH!"))
+
+    job.add('printf',kind='program')
+    job.add('"\nBBMAP:\n------\n"',kind='parameter')
+    job.add('>>',info_file,kind='output')
+    job.run()
+    job.add(_BP_+'bbmap.sh',kind='program')
+    job.add('--version',kind='parameter')
+    job.add('2>>',info_file,kind='output')
+    job.run(error_message=("Please, check if 'BBMAP' (from "+
+        "<https://sourceforge.net/projects/bbmap>) is installed and it "+
         "is in the corresponding PATH!"))
 
     job.add('printf',kind='program')
@@ -2274,10 +2293,11 @@ if __name__ == "__main__":
     job.add('>>',info_file,kind='output')
     job.run()
     # check version
-    os.system(_SK_+"seqtk 2>&1 |head -3 | tail -1 > '%s'" % (outdir('seqtk_version.txt'),))
+    os.system(_SK_+"seqtk 2>&1 |head -3 |tail -1 > '%s'" % (outdir('seqtk_version.txt'),))
     last_line = file(outdir('seqtk_version.txt'),'r').readline().lower().rstrip("\r\n")
 #    correct_version = ('version: 1.0-r68e-dirty','version: 1.0-r82b-dirty')
-    correct_version = ('version: 1.0-r82b-dirty','version: 1.2-r101b-dirty')
+    #correct_version = ('version: 1.0-r82b-dirty','version: 1.2-r101b-dirty','version: 1.2-r101c-dirty')
+    correct_version = ('version: 1.2-r101c-dirty',)
     if last_line not in correct_version:
         job.close()
         os.system("which seqtk > '%s'" % (outdir('seqtk_path.txt'),))
@@ -2804,6 +2824,7 @@ if __name__ == "__main__":
             output_file = outdir('init-'+str(i)+'_'+os.path.basename(input_file))
             # link
             job.link(input_file, output_file, temp_path=temp_flag)
+
         else:
             print >> sys.stderr,"ERROR: unknown extension of the input file! '%s'" % (input_file,)
             print >> sys.stderr,"Supported extension files are:"
@@ -2825,13 +2846,15 @@ if __name__ == "__main__":
             sys.exit(1)
 
         new_list_input_files.append(output_file)
-        
+
+    list_input_files = new_list_input_files[:]
+
     if options.single_end and list_input_files:
         # single-end reads
         new_list_input_files = []
         for i,input_file in enumerate(list_input_files):
-            output_file_1 = outdir('single-'+str(i)+'_'+os.path.basename(input_file))
-            output_file_2 = outdir('single-'+str(i)+'_'+os.path.basename(input_file))
+            output_file_1 = outdir('single-1-'+str(i)+'_'+os.path.basename(input_file))
+            output_file_2 = outdir('single-2-'+str(i)+'_'+os.path.basename(input_file))
 
             # compute the read lengths for the input file
             job.add(_FC_+'lengths_reads.py',kind='program')
@@ -2848,30 +2871,45 @@ if __name__ == "__main__":
                     print >> sys.stderr,"ERROR: The input single-end reads are too short to be used by FusionCatcher!"
                     sys.exit(1)
 
-            job.add(_SK_+'seqtk',kind='program')
-            job.add('trimfq',kind='parameter')
-            job.add('-q','0.25',kind='parameter')
-            job.add('',input_file,kind='input',temp_path=temp_flag)
-            job.add('>',outdir('single-read--%d.fq' %(i,)),kind='output')
-            job.run()
-
-
-
-            job.add(_FC_+'fragment_fastq.py',kind='program')
-            job.add('-1',outdir('single-read--%d.fq' %(i,)),kind='input',temp_path=temp_flag)
-            job.add('-2','-',kind='parameter')
-            job.add('-f',output_file_1,kind='output')
-            job.add('-r',output_file_2,kind='output')
-            job.add('--window-size',options.trim_psl_3end_keep,kind='parameter')
-            job.add('--step-size',options.trim_psl_3end_keep-length_anchor_minimum+1,kind='parameter')
-            job.add('--threshold-read',options.trim_psl_3end_keep + 10,kind='parameter')
-            job.add('--anchors',options.bridges,kind='parameter')
-            job.add('--skip-short',options.trim_3end_keep,kind='parameter')
-            job.add('--trim-n',kind='parameter')
-            job.run()
+            use_fragment = False
             
-            fragments_flag = True
-            
+            if use_fragment:
+                job.add(_SK_+'seqtk',kind='program')
+                job.add('trimfq',kind='parameter')
+                job.add('-q','0.25',kind='parameter')
+                job.add('',input_file,kind='input',temp_path=temp_flag)
+                job.add('>',outdir('single-read--%d.fq' %(i,)),kind='output')
+                job.run()
+
+                job.add(_FC_+'fragment_fastq.py',kind='program')
+                job.add('-1',outdir('single-read--%d.fq' %(i,)),kind='input',temp_path=temp_flag)
+                job.add('-2','-',kind='parameter')
+                job.add('-f',output_file_1,kind='output')
+                job.add('-r',output_file_2,kind='output')
+                job.add('--window-size',options.trim_psl_3end_keep,kind='parameter')
+                job.add('--step-size',options.trim_psl_3end_keep-2*length_anchor_minimum+1,kind='parameter')
+                job.add('--threshold-read',options.trim_psl_3end_keep + 10,kind='parameter')
+                job.add('--anchors',options.bridges,kind='parameter')
+                job.add('--skip-short',options.trim_3end_keep,kind='parameter')
+                job.add('--trim-n',kind='parameter')
+                job.run()
+                
+                fragments_flag = True
+            else:
+                job.add(_SK_+'seqtk',kind='program')
+                job.add('trimfq',kind='parameter')
+                job.add('-q','0.25',kind='parameter')
+                job.add('',input_file,kind='input',temp_path=temp_flag)
+                job.add('>',output_file_1,kind='output')
+                job.run()
+
+                job.add(_SK_+'seqtk',kind='program')
+                job.add('seq',kind='parameter')
+                job.add('-r',kind='parameter')
+                job.add('',output_file_1,kind='input')
+                job.add('>',output_file_2,kind='output')
+                job.run()
+
             new_list_input_files.append(output_file_1)
             new_list_input_files.append(output_file_2)
             
@@ -2885,7 +2923,7 @@ if __name__ == "__main__":
     elif nif == 1 or options.skip_interleave_processing:
         pass
     else:
-        list_input_files = new_list_input_files[:]
+        #list_input_files = new_list_input_files[:]
         new_list_input_files = []
         pairs = [(list_input_files[i-1],list_input_files[i]) for i in xrange(1,len(list_input_files),2)]
 
@@ -2940,166 +2978,153 @@ if __name__ == "__main__":
             job.add('>>',info_file,kind='output')
             job.run()
 
-            job.add(_FC_+'overlap.py',kind='program')
-            job.add('--input_1',f,kind='input')
-            job.add('--input_2',r,kind='input')
-            job.add('--processes',options.processes,kind='parameter',checksum='no')
-            job.add('--fail-gracefully',kind='parameter',checksum='no')
-            job.add('--output',outdir('log_overlaps__%d.txt' % (i,)),kind='output')
-            job.add('2>',outdir('log_overlaps_error__%d.txt' % (i,)),kind='parameter',checksum='no')
-            job.run()
-
-            sizes = False
-            if os.path.exists(outdir('log_overlaps_error__%d.txt' % (i,))):
-                # find out if it failed because of the different reads sizes
-                sizes = True if [1 for line in file(outdir('log_overlaps_error__%d.txt' % (i,)),'r').readlines() if line.lower().find('different lengths') != -1] else False
-
-            if job.iff(sizes, id = "#different_sizes_of_reads_overlap_%d#" % (i,)):
-                # input FASTQ files contain reads of different sizes therefore they are paded so end up being the same size
-
-                job.clean(outdir('log_overlaps_error__%d.txt' % (i,)),temp_path=temp_flag)
-                job.clean(outdir('log_overlaps__%d.txt' % (i,)),temp_path=temp_flag)
-
-                job.add(_FC_+'lengths_reads.py',kind='program')
-                job.add('--input',f,kind='input')
-                job.add('--output',outdir('log_lengths_original_reads_f_%d.txt' % (i,)),kind='output')
-                job.run()
-
-                job.add(_FC_+'lengths_reads.py',kind='program')
-                job.add('--input',r,kind='input')
-                job.add('--output',outdir('log_lengths_original_reads_r_%d.txt' % (i,)),kind='output')
-                job.run()
-
-                #job.add('cat',kind='program')
-                #job.add('',outdir('log_lengths_original_reads_f_%d.txt' % (i,)),kind='input',temp_path=temp_flag)
-                #job.add('',outdir('log_lengths_original_reads_r_%d.txt' % (i,)),kind='input',temp_path=temp_flag)
-                #job.add('|',kind='parameter')
-                #job.add('LC_ALL=C',kind='parameter')
-                #job.add('sort',kind='parameter')
-                #if sort_buffer:
-                #    job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
-                #if sort_parallel:
-                #    job.add('--parallel',options.processes,kind='parameter',checksum='no')
-                #if sort_lzop_compress:
-                #    job.add('--compress-program','lzop',kind='parameter',checksum='no')
-                #elif sort_gzip_compress:
-                #    job.add('--compress-program','gzip',kind='parameter',checksum='no')
-                #job.add('-T',tmp_dir,kind='parameter',checksum='no')
-                #job.add('-nr',kind='parameter')
-                #job.add('|',kind='parameter')
-                #job.add('uniq',kind='parameter')
-                #job.add('>',outdir('log_lengths_original_reads_fr_%d.txt' % (i,)),kind='output')
-                #job.run()
-
-
-                x = outdir('log_lengths_original_reads_f_%d.txt' % (i,))
-                y = outdir('log_lengths_original_reads_r_%d.txt' % (i,))
-
-                if job.run():
-                    n1 = 0
-                    if os.path.isfile(x):
-                        n1 = int(file(x,'r').readline().strip())
-                    n2 = 0
-                    if os.path.isfile(y):
-                        n2 = int(file(y,'r').readline().strip())
-
-                    file(outdir('log_lengths_original_reads_fr_%d.txt' % (i,)),'w').write(str(min(n1,n2)))
-
-                job.clean(x,temp_path=temp_flag)
-                job.clean(y,temp_path=temp_flag)
-
-                ff = f[:]
-                rr = r[:]
-                f = outdir(os.path.basename(f).replace('init-','init-f-'))
-                r = outdir(os.path.basename(r).replace('init-','init-r-'))
-
-                # add A to the reads which are shorter in order to make all reads have the same length
-                job.add(_FC_+'padding-fastq.py',kind='program')
-                job.add('--input',ff,kind='input',temp_path=temp_flag)
-                job.add('--output',f,kind='output')
-                job.add('--size',outdir('log_lengths_original_reads_fr_%d.txt' % (i,)),kind='parameter',from_file='yes')
-                job.run()
-                job.add(_FC_+'padding-fastq.py',kind='program')
-                job.add('--input',rr,kind='input',temp_path=temp_flag)
-                job.add('--output',r,kind='output')
-                job.add('--size',outdir('log_lengths_original_reads_fr_%d.txt' % (i,)),kind='parameter',from_file='yes')
-                job.run()
-
-                job.clean(outdir('log_lengths_original_reads_fr_%d.txt' % (i,)),temp_path=temp_flag)
-
+            if options.single_end:
+                job.link(f,output_1_file,temp_path=temp_flag)
+                job.link(r,output_2_file,temp_path=temp_flag)
+            else:
                 job.add(_FC_+'overlap.py',kind='program')
                 job.add('--input_1',f,kind='input')
                 job.add('--input_2',r,kind='input')
                 job.add('--processes',options.processes,kind='parameter',checksum='no')
-                job.add('--output',outdir('log_overlaps_fr_%d.txt' % (i,)),kind='output')
+                job.add('--fail-gracefully',kind='parameter',checksum='no')
+                job.add('--output',outdir('log_overlaps__%d.txt' % (i,)),kind='output')
+                job.add('2>',outdir('log_overlaps_error__%d.txt' % (i,)),kind='parameter',checksum='no')
                 job.run()
 
-                info(job,
-                     fromfile = outdir('log_overlaps_fr_%d.txt' % (i,)),
-                     tofile = info_file,
-                     top = ["","","",
-                            "Pair-reads overlappings (after padding):",
-                            "----------------------------------------"],
-                     bottom = "\n\n\n",
-                     temp_path=temp_flag)
 
-            else:
-                info(job,
-                     fromfile = outdir('log_overlaps__%d.txt' % (i,)),
-                     tofile = info_file,
-                     top = ["","","",
-                            "Pair-reads overlappings:",
-                            "------------------------"],
-                     bottom = "\n\n\n",
-                     temp_path=temp_flag)
+                sizes = False
+                if os.path.exists(outdir('log_overlaps_error__%d.txt' % (i,))):
+                    # find out if it failed because of the different reads sizes
+                    sizes = True if [1 for line in file(outdir('log_overlaps_error__%d.txt' % (i,)),'r').readlines() if line.lower().find('different lengths') != -1] else False
 
-                job.clean(outdir('log_overlaps_error__%d.txt' % (i,)),temp_path=temp_flag)
+                if job.iff(sizes, id = "#different_sizes_of_reads_overlap_%d#" % (i,)):
+                    # input FASTQ files contain reads of different sizes therefore they are paded so end up being the same size
+
+                    job.clean(outdir('log_overlaps_error__%d.txt' % (i,)),temp_path=temp_flag)
+                    job.clean(outdir('log_overlaps__%d.txt' % (i,)),temp_path=temp_flag)
+
+                    job.add(_FC_+'lengths_reads.py',kind='program')
+                    job.add('--input',f,kind='input')
+                    job.add('--output',outdir('log_lengths_original_reads_f_%d.txt' % (i,)),kind='output')
+                    job.run()
+
+                    job.add(_FC_+'lengths_reads.py',kind='program')
+                    job.add('--input',r,kind='input')
+                    job.add('--output',outdir('log_lengths_original_reads_r_%d.txt' % (i,)),kind='output')
+                    job.run()
+
+                    #job.add('cat',kind='program')
+                    #job.add('',outdir('log_lengths_original_reads_f_%d.txt' % (i,)),kind='input',temp_path=temp_flag)
+                    #job.add('',outdir('log_lengths_original_reads_r_%d.txt' % (i,)),kind='input',temp_path=temp_flag)
+                    #job.add('|',kind='parameter')
+                    #job.add('LC_ALL=C',kind='parameter')
+                    #job.add('sort',kind='parameter')
+                    #if sort_buffer:
+                    #    job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+                    #if sort_parallel:
+                    #    job.add('--parallel',options.processes,kind='parameter',checksum='no')
+                    #if sort_lzop_compress:
+                    #    job.add('--compress-program','lzop',kind='parameter',checksum='no')
+                    #elif sort_gzip_compress:
+                    #    job.add('--compress-program','gzip',kind='parameter',checksum='no')
+                    #job.add('-T',tmp_dir,kind='parameter',checksum='no')
+                    #job.add('-nr',kind='parameter')
+                    #job.add('|',kind='parameter')
+                    #job.add('uniq',kind='parameter')
+                    #job.add('>',outdir('log_lengths_original_reads_fr_%d.txt' % (i,)),kind='output')
+                    #job.run()
 
 
-            if not options.skip_adapter_filtering:
+                    x = outdir('log_lengths_original_reads_f_%d.txt' % (i,))
+                    y = outdir('log_lengths_original_reads_r_%d.txt' % (i,))
 
-    #            job.add('printf',kind='program')
-    #            job.add('"\nPair-reads overlappings\n-------------------------\n"',kind='parameter')
-    #            job.add('>>',info_file,kind='output')
-    #            job.run()
-    #            job.add('cat',kind='program')
-    #            job.add('',outdir('log_overlaps.txt'),kind='input',temp_path=temp_flag)
-    #            job.add('>>',info_file,kind='output')
-    #            job.run()
+                    if job.run():
+                        n1 = 0
+                        if os.path.isfile(x):
+                            n1 = int(file(x,'r').readline().strip())
+                        n2 = 0
+                        if os.path.isfile(y):
+                            n2 = int(file(y,'r').readline().strip())
+
+                        file(outdir('log_lengths_original_reads_fr_%d.txt' % (i,)),'w').write(str(min(n1,n2)))
+
+                    job.clean(x,temp_path=temp_flag)
+                    job.clean(y,temp_path=temp_flag)
+
+                    ff = f[:]
+                    rr = r[:]
+                    f = outdir(os.path.basename(f).replace('init-','init-f-'))
+                    r = outdir(os.path.basename(r).replace('init-','init-r-'))
+
+                    # add A to the reads which are shorter in order to make all reads have the same length
+                    job.add(_FC_+'padding-fastq.py',kind='program')
+                    job.add('--input',ff,kind='input',temp_path=temp_flag)
+                    job.add('--output',f,kind='output')
+                    job.add('--size',outdir('log_lengths_original_reads_fr_%d.txt' % (i,)),kind='parameter',from_file='yes')
+                    job.run()
+                    job.add(_FC_+'padding-fastq.py',kind='program')
+                    job.add('--input',rr,kind='input',temp_path=temp_flag)
+                    job.add('--output',r,kind='output')
+                    job.add('--size',outdir('log_lengths_original_reads_fr_%d.txt' % (i,)),kind='parameter',from_file='yes')
+                    job.run()
+
+                    job.clean(outdir('log_lengths_original_reads_fr_%d.txt' % (i,)),temp_path=temp_flag)
+
+                    job.add(_FC_+'overlap.py',kind='program')
+                    job.add('--input_1',f,kind='input')
+                    job.add('--input_2',r,kind='input')
+                    job.add('--processes',options.processes,kind='parameter',checksum='no')
+                    job.add('--output',outdir('log_overlaps_fr_%d.txt' % (i,)),kind='output')
+                    job.run()
+
+                    info(job,
+                         fromfile = outdir('log_overlaps_fr_%d.txt' % (i,)),
+                         tofile = info_file,
+                         top = ["","","",
+                                "Pair-reads overlappings (after padding):",
+                                "----------------------------------------"],
+                         bottom = "\n\n\n",
+                         temp_path=temp_flag)
+
+                else:
+                    info(job,
+                         fromfile = outdir('log_overlaps__%d.txt' % (i,)),
+                         tofile = info_file,
+                         top = ["","","",
+                                "Pair-reads overlappings:",
+                                "------------------------"],
+                         bottom = "\n\n\n",
+                         temp_path=temp_flag)
+
+                    job.clean(outdir('log_overlaps_error__%d.txt' % (i,)),temp_path=temp_flag)
 
 
-                job.add(_FC_+'remove-adapter.py',kind='program')
-                job.add('--processes',options.processes,kind='parameter',checksum='no')
-                job.add('--input_1',f,kind='input',temp_path=temp_flag)
-                job.add('--input_2',r,kind='input',temp_path=temp_flag)
-                job.add('--output_1',output_1_file,kind='output')
-                job.add('--output_2',output_2_file,kind='output')
-                job.add('--trim-n',options.mismatches+1,kind='parameter')
-                job.add('--link','hard',kind='parameter',checksum='no')
-                job.add('>',outdir('log_adapters_%d.txt' % (i,)),kind='parameter',checksum='no')
-                job.add('2>&1',kind='parameter',checksum='no')
-                job.run()
+                if (not options.skip_adapter_filtering):
 
-                info(job,
-                     fromfile = outdir('log_adapters_%d.txt' % (i,)),
-                     tofile = info_file,
-                     top = ["",
-                            "Adapters information:",
-                            "--------------------"],
-                     bottom = "\n\n\n",
-                     temp_path = temp_flag)
+                    job.add(_FC_+'remove-adapter.py',kind='program')
+                    job.add('--processes',options.processes,kind='parameter',checksum='no')
+                    job.add('--input_1',f,kind='input',temp_path=temp_flag)
+                    job.add('--input_2',r,kind='input',temp_path=temp_flag)
+                    job.add('--output_1',output_1_file,kind='output')
+                    job.add('--output_2',output_2_file,kind='output')
+                    job.add('--trim-n',options.mismatches+1,kind='parameter')
+                    job.add('--link','hard',kind='parameter',checksum='no')
+                    job.add('>',outdir('log_adapters_%d.txt' % (i,)),kind='parameter',checksum='no')
+                    job.add('2>&1',kind='parameter',checksum='no')
+                    job.run()
 
-#                job.add('printf',kind='program')
-#                job.add('"\nAdapters\n---------\n"',kind='parameter')
-#                job.add('>>',info_file,kind='output')
-#                job.run()
-#                job.add('cat',kind='program')
-#                job.add('',outdir('log_adapters.txt'),kind='input',temp_path=temp_flag)
-#                job.add('>>',info_file,kind='output')
-#                job.run()
-            else:
-                job.link(f,output_1_file,temp_path=temp_flag)
-                job.link(r,output_2_file,temp_path=temp_flag)
+                    info(job,
+                         fromfile = outdir('log_adapters_%d.txt' % (i,)),
+                         tofile = info_file,
+                         top = ["",
+                                "Adapters information:",
+                                "--------------------"],
+                         bottom = "\n\n\n",
+                         temp_path = temp_flag)
+
+                else:
+                    job.link(f,output_1_file,temp_path=temp_flag)
+                    job.link(r,output_2_file,temp_path=temp_flag)
 
             in1 = output_1_file
             in2 = output_2_file
@@ -3344,32 +3369,63 @@ if __name__ == "__main__":
         job.add('-f',outdir('ox1.fq'),kind='output')
         job.add('-r',outdir('ox2.fq'),kind='output')
         job.run()
-    
-        # map reads on transcriptome for fast filtering
-        job.add(_BE_+'bowtie',kind='program')
-        job.add('-t',kind='parameter')
-        job.add('-v','1',kind='parameter') # options.mismatches
-#        job.add('-X','800',kind='parameter')
-        job.add('-X','10000',kind='parameter')
-        job.add('-p',options.processes,kind='parameter',checksum='no')
-        job.add('-k','1',kind='parameter')
-        job.add('--phred33-quals',kind='parameter')
-#        job.add('--tryhard',kind='parameter')
-        job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
-#        job.add('--best',kind='parameter')
-        #job.add('--strata',kind='parameter')
-        job.add('--un',outdir('ox.fq'),kind='output',checksum='no') # unmapped reads
-        job.add('--un',outdir('ox_1.fq'),kind='output',command_line='no') # unmapped reads
-        job.add('--un',outdir('ox_2.fq'),kind='output',command_line='no') # unmapped reads
-        job.add('--max',outdir('ox_multiple.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
-        if os.path.isfile(datadir('transcripts_index','.1.ebwtl')):
-            job.add('--large-index',kind='parameter')
-        job.add('',datadir('transcripts_index/'),kind='input')
-        job.add('-1',outdir('ox1.fq'),kind='input',temp_path=temp_flag)
-        job.add('-2',outdir('ox2.fq'),kind='input',temp_path=temp_flag)
-        job.add('',outdir('ox.map'),kind='output',temp_path=temp_flag)
-        job.add('2>',outdir('log_fast-filtering.stdout.txt'),kind='output',checksum='no')
-        job.run()
+
+        use_seed = True
+        
+        if use_seed:
+            # map reads on transcriptome for fast filtering
+            job.add(_BE_+'bowtie',kind='program')
+            job.add('-t',kind='parameter')
+            job.add('--seedmms','1',kind='parameter') # options.mismatches
+            job.add('--seedlen',options.trim_3end_keep,kind='parameter')
+            job.add('-X','10000',kind='parameter') # The maximum insert size for valid paired-end alignments. 
+            job.add('-p',options.processes,kind='parameter',checksum='no')
+            job.add('-k','1',kind='parameter')
+            job.add('--phred33-quals',kind='parameter')
+    #        job.add('--tryhard',kind='parameter')
+            job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+    #        job.add('--best',kind='parameter')
+            #job.add('--strata',kind='parameter')
+            job.add('--un',outdir('ox.fq'),kind='output',checksum='no') # unmapped reads
+            job.add('--un',outdir('ox_1.fq'),kind='output',command_line='no') # unmapped reads
+            job.add('--un',outdir('ox_2.fq'),kind='output',command_line='no') # unmapped reads
+            job.add('--max',outdir('oxx_multiple.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
+            if os.path.isfile(datadir('transcripts_index','.1.ebwtl')):
+                job.add('--large-index',kind='parameter')
+            job.add('',datadir('transcripts_index/'),kind='input')
+            job.add('-1',outdir('ox1.fq'),kind='input',temp_path=temp_flag)
+            job.add('-2',outdir('ox2.fq'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('ox.map'),kind='output',temp_path=temp_flag)
+            job.add('2>',outdir('log_fast-filtering.stdout.txt'),kind='output',checksum='no')
+            job.run()
+        else:
+            # this was the original one
+            # map reads on transcriptome for fast filtering
+            job.add(_BE_+'bowtie',kind='program')
+            job.add('-t',kind='parameter')
+            job.add('-v','1',kind='parameter') # options.mismatches
+    #        job.add('-X','800',kind='parameter')
+            job.add('-X','10000',kind='parameter') # The maximum insert size for valid paired-end alignments. 
+            job.add('-p',options.processes,kind='parameter',checksum='no')
+            job.add('-k','1',kind='parameter')
+            job.add('--phred33-quals',kind='parameter')
+    #        job.add('--tryhard',kind='parameter')
+            job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+    #        job.add('--best',kind='parameter')
+            #job.add('--strata',kind='parameter')
+            job.add('--un',outdir('ox.fq'),kind='output',checksum='no') # unmapped reads
+            job.add('--un',outdir('ox_1.fq'),kind='output',command_line='no') # unmapped reads
+            job.add('--un',outdir('ox_2.fq'),kind='output',command_line='no') # unmapped reads
+            job.add('--max',outdir('ox_multiple.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
+            if os.path.isfile(datadir('transcripts_index','.1.ebwtl')):
+                job.add('--large-index',kind='parameter')
+            job.add('',datadir('transcripts_index/'),kind='input')
+            job.add('-1',outdir('ox1.fq'),kind='input',temp_path=temp_flag)
+            job.add('-2',outdir('ox2.fq'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('ox.map'),kind='output',temp_path=temp_flag)
+            job.add('2>',outdir('log_fast-filtering.stdout.txt'),kind='output',checksum='no')
+            job.run()
+
 
         # save lengths reads
         info(job,
@@ -3541,7 +3597,7 @@ if __name__ == "__main__":
         job.add('-f',outdir('originala-t1.fq'),kind='output')
 #        job.add('-m',outdir('merged.txt'),kind='input',temp_path=temp_flag)
         job.add('--window-size',options.trim_psl_3end_keep,kind='parameter')
-        job.add('--step-size',options.trim_psl_3end_keep-length_anchor_minimum+1,kind='parameter')
+        job.add('--step-size',options.trim_psl_3end_keep-2*length_anchor_minimum+1,kind='parameter')
         job.add('--threshold-read',options.trim_psl_3end_keep + 10,kind='parameter')
         job.add('--anchors',options.bridges,kind='parameter')
         job.add('--skip-short',options.trim_3end_keep,kind='parameter')
@@ -3553,7 +3609,7 @@ if __name__ == "__main__":
         job.add('-2','-',kind='parameter')
         job.add('-f',outdir('originala-t2.fq'),kind='output')
         job.add('--window-size',options.trim_psl_3end_keep,kind='parameter')
-        job.add('--step-size',options.trim_psl_3end_keep-length_anchor_minimum+1,kind='parameter')
+        job.add('--step-size',options.trim_psl_3end_keep-2*length_anchor_minimum+1,kind='parameter')
         job.add('--threshold-read',options.trim_psl_3end_keep + 10,kind='parameter')
         job.add('--anchors',options.bridges,kind='parameter')
         job.add('--skip-short',options.trim_3end_keep,kind='parameter')
@@ -3775,7 +3831,7 @@ if __name__ == "__main__":
         job.add(_FC_+'trim_poly_tails.py',kind='parameter')
         #job.add('--input',outdir('reads_b2n2a.fq'),kind='input',temp_path=temp_flag)
         job.add('--input','-',kind='parameter')
-        job.add('--repeats','20',kind='parameter') # 12
+        job.add('--repeats',length_anchor_minimum - 1,kind='parameter') # 12
         #job.add('--skip_reads',kind='parameter')
         job.add('--output','-',kind='parameter')
         job.add('2>>',outdir('info.txt'),kind='output')
@@ -3968,7 +4024,7 @@ if __name__ == "__main__":
                 job.add('"\nAdjusted automatically spanning_pairs, spanning_reads, and length_anchor (%d,%d,%d,%d) for count of reads [15000000,3500000) and reads shorter than 60bp.\n\n"' % (spanning_pairs_bowtie,spanning_reads_bowtie,length_anchor_bowtie,length_anchor_spotlight),kind='parameter')
                 job.add('>>',info_file,kind='output')
                 job.run()
-            if no_reads < 15000000 and no_reads >= 1000000 and max_len_reads < 60:
+            elif no_reads < 15000000 and no_reads >= 2 and max_len_reads < 75:
                 spanning_pairs_bowtie = 2
                 spanning_pairs_minimum = min([spanning_pairs_bowtie,spanning_pairs_blat,spanning_pairs_star,spanning_pairs_bowtie2,spanning_pairs_spotlight])
                 spanning_reads_bowtie = 2
@@ -3979,7 +4035,7 @@ if __name__ == "__main__":
                 job.add('"\nAdjusted automatically spanning_pairs, spanning_reads, and length_anchor (%d,%d,%d,%d) for count of reads [1000000,15000000) and reads shorter than 60bp.\n\n"' % (spanning_pairs_bowtie,spanning_reads_bowtie,length_anchor_bowtie,length_anchor_spotlight),kind='parameter')
                 job.add('>>',info_file,kind='output')
                 job.run()
-            if no_reads < 20000000 and no_reads >= 1000000 and max_len_reads > 74:
+            elif no_reads < 35000000 and no_reads >= 2 and max_len_reads > 74:
                 spanning_pairs_bowtie = 2
                 spanning_pairs_minimum = min([spanning_pairs_bowtie,spanning_pairs_blat,spanning_pairs_star,spanning_pairs_bowtie2,spanning_pairs_spotlight])
                 spanning_reads_bowtie = 2
@@ -4040,7 +4096,9 @@ if __name__ == "__main__":
     #job.add('-q',kind='parameter')
     #job.add('-a',kind='parameter')
     #job.add('-v',options.filter_mismatches,kind='parameter') #options.mismatches
-    job.add('-v','1',kind='parameter') #options.mismatches
+    job.add('--seedmms','1',kind='parameter') # options.mismatches
+    job.add('--seedlen',options.trim_3end_keep,kind='parameter')
+    #job.add('-v','1',kind='parameter') #options.mismatches
     job.add('-p',options.processes,kind='parameter',checksum='no')
     #job.add('-m','1',kind='parameter')
     job.add('-k','1',kind='parameter')
@@ -4050,9 +4108,9 @@ if __name__ == "__main__":
     job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
     #job.add('--best',kind='parameter')
     #job.add('--strata',kind='parameter')
-    if len_reads > 40 and options.trim_wiggle:
-        job.add('--trim3',options.trim_wiggle,kind='parameter') # trim on the fly 5bp from 3' end
-        job.add('--trim5',options.trim_wiggle,kind='parameter') # trim the 5
+#    if len_reads > 40 and options.trim_wiggle:
+#        job.add('--trim3',options.trim_wiggle,kind='parameter') # trim on the fly 5bp from 3' end
+#        job.add('--trim5',options.trim_wiggle,kind='parameter') # trim the 5
 #    job.add('--suppress','1,2,3,4,5,6,7,8',kind='parameter')
     job.add('--un',outdir('reads-filtered_temp.fq'),kind='output') # here is the result
     job.add('--max',outdir('reads-filtered_temp_multiple.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
@@ -4061,9 +4119,9 @@ if __name__ == "__main__":
             job.add('--large-index',kind='parameter')
         job.add('',datadir('rtrna_index/'),kind='input')
     else:
-        if os.path.isfile(datadir('rtrna_mt_index','.1.ebwtl')):
+        if os.path.isfile(datadir('rtrna_hla_mt_index','.1.ebwtl')):
             job.add('--large-index',kind='parameter')
-        job.add('',datadir('rtrna_mt_index/'),kind='input')
+        job.add('',datadir('rtrna_hla_mt_index/'),kind='input')
     job.add('',outdir('reads_acgt.fq'),kind='input',temp_path=temp_flag)
     job.add('',outdir('reads-filtered.map'),kind='output',temp_path=temp_flag)
 #    job.add('','/dev/null',kind='parameter')
@@ -4250,263 +4308,270 @@ if __name__ == "__main__":
         job.close()
         sys.exit(1)
 
-
-    ##############################################################################
-    # MAPPING short reads against the genome
-    ##############################################################################
-    # map using the genome index (not aligned, unique alignment, multiple alignments); results in MAP BOWTIE format
-    job.add(_BE_+'bowtie',kind='program')
-    job.add('-t',kind='parameter')
-    #job.add('-q',kind='parameter')
-    #job.add('-a',kind='parameter')
-    #job.add('-k','2',kind='parameter')
-    job.add('-k','200',kind='parameter')
-    job.add('-v','1',kind='parameter') # options.filter_mismatches # stjude
-    ##job.add('-v','0',kind='parameter') # options.filter_mismatches # stjude
-    job.add('-p',options.processes,kind='parameter',checksum='no')
-    job.add('-m','1',kind='parameter')
-    #job.add('-m','2',kind='parameter')
-    #job.add('-k','1',kind='parameter')
-    job.add('--suppress','5,6,7',kind='parameter')
-    #job.add('--solexa1.3-quals',kind='parameter')
-    job.add('--phred33-quals',kind='parameter')
-    job.add('--best',kind='parameter')
-    job.add('--strata',kind='parameter')
-    job.add('--tryhard',kind='parameter') # ??? really necessary? stjude
-    job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
-    job.add('--un',outdir('reads_filtered_not-mapped-genome.fq'),kind='output')
-    job.add('--max',outdir('reads-filtered_multiple-mappings-genome.fq'),kind='output') # if this is missing then these reads are going to '--un'
-    if os.path.isfile(datadir('genome_index','.1.ebwtl')):
-        job.add('--large-index',kind='parameter')
-    job.add('',datadir('genome_index/'),kind='input')
-    job.add('',outdir('reads-filtered.fq'),kind='input')
-    job.add('',outdir('reads_filtered_genome.map'),kind='output') # <== best mappings on genome #######
-    job.add('2>',outdir('log_bowtie_reads_mapped-genome.stdout.txt'),kind='parameter',checksum='no')
-    #job.add('2>&1',kind='parameter',checksum='no')
-    job.run()
-
-    info(job,
-         fromfile = outdir('log_bowtie_reads_mapped-genome.stdout.txt'),
-         tofile = info_file,
-         top = ["Mapping the filtered reads on genome:",
-                "-------------------------------------"],
-         bottom = "\n\n\n")
-
-
-
-#    job.add('printf',kind='program')
-#    job.add(('"\n\nMapping the filtered reads on genome:\n'+
-#             '-----------------------------------------------\n"'),kind='parameter')
-#    job.add('>>',info_file,kind='output')
-#    job.run()
-#    job.add('cat',kind='program')
-#    job.add('',outdir('log_bowtie_reads_mapped-genome.stdout.txt'),kind='input')
-#    job.add('>>',info_file,kind='output')
-#    job.run()
-#    job.add('printf',kind='program')
-#    job.add('"\n\n\n"',kind='parameter')
-#    job.add('>>',info_file,kind='output')
-#    job.run()
-
-    # extract the names of the short reads which mapped on the genome
-
- 
-    job.add('LC_ALL=C',kind='program')
-    job.add('cut',kind='parameter')
-    job.add('-f','1',kind='parameter')
-    job.add('',outdir('reads_filtered_genome.map'),kind='input')
-    job.add('|',kind='parameter')
-    job.add('LC_ALL=C',kind='parameter')
-    job.add('uniq',kind='parameter')
-    job.add('|',kind='parameter')
-    job.add('LC_ALL=C',kind='parameter')
-    job.add('sort',kind='parameter')
-    job.add('-u',kind='parameter')
-    if sort_buffer:
-        job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
-    if sort_parallel:
-        job.add('--parallel',options.processes,kind='parameter',checksum='no')
-    if sort_lzop_compress:
-        job.add('--compress-program','lzop',kind='parameter',checksum='no')
-    elif sort_gzip_compress:
-        job.add('--compress-program','gzip',kind='parameter',checksum='no')
-    job.add('-T',tmp_dir,kind='parameter',checksum='no')
-#    job.add('|',kind='parameter')
-#    job.add('LC_ALL=C',kind='parameter')
-#    job.add('uniq',kind='parameter')
-    job.add('>',outdir('list-names-reads-filtered_genome.txt'),kind='output')
-    job.run()
-
-
-
-    if not options.split_seqtk_subseq:
-        #extract the short reads which mapped on genome
-        job.add(_FC_+'extract_short_reads.py',kind='program')
-        job.add('--input',outdir('reads-filtered.fq'),kind='input')
-        job.add('--list',outdir('list-names-reads-filtered_genome.txt'),kind='input')
-        job.add('--output',outdir('reads_filtered_unique-mapped-genome.fq'),kind='output')
-        job.add('--buffer-size',options.extract_buffer_size,kind='parameter',checksum='no')
-        job.run(error_message = ("If this fails (again?) due to a memory error (e.g. not enough free memory) then lowering the "+
-                                 "buffer size for specifically this script might help. This can be done by using the FusionCatcher's "+
-                                 "command line option '--extra-buffer-size "+str(int(options.extract_buffer_size)/2)+"' ."))
-    elif options.split_seqtk_subseq == 1:
-        #extract the short reads which mapped on genome
-        job.add(_SK_+'seqtk',kind='program')
-        job.add('subseq',kind='parameter')
-        job.add('',outdir('reads-filtered.fq'),kind='input')
-        job.add('',outdir('list-names-reads-filtered_genome.txt'),kind='input')
-        job.add('>',outdir('reads_filtered_unique-mapped-genome.fq'),kind='output')
-        job.run(error_message=("ERROR: Most likely this fails because there is not enough free RAM memory for running SEQTK SUBSEQ tool <https://github.com/lh3/seqtk> on this computer. "+
-            "Please, try to (i) run it on a server/computer with larger amount of memory, or (ii) using command line option '--no-seqtk-subseq' !"))
-    elif options.split_seqtk_subseq > 1:
-        #extract the short reads which mapped on genome
-        job.add(_FC_+'seqtk-subseq.sh',kind='program')
-        job.add('',_SK_ if _SK_ else '-',kind='parameter')
-        job.add('',_PL_ if _PL_ else '-',kind='parameter')
-        job.add('',options.split_seqtk_subseq,kind='parameter')
-        job.add('',outdir('reads-filtered.fq'),kind='input')
-        job.add('',outdir('list-names-reads-filtered_genome.txt'),kind='input')
-        job.add('',outdir('reads_filtered_unique-mapped-genome.fq'),kind='output')
-        job.run(error_message=("ERROR: Most likely this fails because there is not enough free RAM memory for running SEQTK SUBSEQ tool <https://github.com/lh3/seqtk> on this computer. "+
-            "Please, try to (i) run it on a server/computer with larger amount of memory, or (ii) using command line option '--no-seqtk-subseq' !"))
-
-    job.clean(outdir('reads-filtered.fq'),temp_path=temp_flag)
-    job.clean(outdir('list-names-reads-filtered_genome.txt'),temp_path=temp_flag)
-
-        #IDEA
-        # cat list-names-reads-filtered_genome.txt | gnu_parallel --part -k -j1 --block 10G seqtk subseq reads-filtered.fq - > reads_filtered_unique-mapped-genome.fq
-
-
-    # sed 's/^/^@/g' ids.txt > aha.txt ; cat /apps/reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl-pp.fq | paste - - - - | /apps/tools/parallel-20140822/src/parallel --pipe --no-notice grep -f aha.txt - | tr "\t" "\n" > result.fq
-
-    ##############################################################################
-    # MAPPING short reads which do not map on genome against the transcriptome
-    ##############################################################################
-
-    if job.iff(empty(outdir('reads_filtered_not-mapped-genome.fq')),id = "#reads_filtered_not-mapped-genome.fq#"):
-#        job.add('echo',kind='program')
-#        job.add('-n','""',kind='parameter')
-#        job.add('>',outdir('reads_filtered_not-mapped-genome_transcriptome.map'),kind='output')
-#        job.run()
-
-        job.add('touch',kind='program')
-        job.add('',outdir('reads_filtered_not-mapped-genome_transcriptome.map'),kind='output')
-        job.run()
-
-        job.add('printf',kind='program')
-        job.add('"\nMapping on transcriptome the filtered reads which did not map on genome:\n------------------------------------------------------------------------\nNo reads and no alignments!\n\n\n"', kind='parameter')
-        job.add('>>',log_file,kind='output')
-        job.run()
-
-    else:
-        # map using the transcript index (not mapped, unique alignment, multiple alignments)
+    if not options.skip_genome_filtering:
+        ##############################################################################
+        # MAPPING short reads against the genome
+        ##############################################################################
+        # map using the genome index (not aligned, unique alignment, multiple alignments); results in MAP BOWTIE format
         job.add(_BE_+'bowtie',kind='program')
         job.add('-t',kind='parameter')
         #job.add('-q',kind='parameter')
         #job.add('-a',kind='parameter')
-        job.add('-k','500',kind='parameter')
-        job.add('-v',options.mismatches,kind='parameter')
+        #job.add('-k','2',kind='parameter')
+        job.add('-k','200',kind='parameter')
+        #job.add('-v','1',kind='parameter') # options.filter_mismatches # stjude
+        job.add('-v','0',kind='parameter') # options.filter_mismatches # stjude
         job.add('-p',options.processes,kind='parameter',checksum='no')
+        job.add('-m','20',kind='parameter')
+        #job.add('-m','2',kind='parameter')
+        #job.add('-k','1',kind='parameter')
+        job.add('--suppress','5,6,7',kind='parameter')
         #job.add('--solexa1.3-quals',kind='parameter')
         job.add('--phred33-quals',kind='parameter')
-        job.add('--suppress','5,6,7',kind='parameter')
-        job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
-        job.add('--tryhard',kind='parameter')
         job.add('--best',kind='parameter')
         job.add('--strata',kind='parameter')
-        job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome.fq'),kind='output') # <== reads which do not map on transcriptome and genome! #######
-        job.add('--max',outdir('reads_filtered_genome-transcriptome_multiple.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
-        if os.path.isfile(datadir('transcripts_index','.1.ebwtl')):
+#        job.add('--tryhard',kind='parameter') # ??? really necessary? stjude
+        job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+        job.add('--un',outdir('reads_filtered_not-mapped-genome.fq'),kind='output')
+        job.add('--max',outdir('reads-filtered_multiple-mappings-genome.fq'),kind='output') # if this is missing then these reads are going to '--un'
+        if os.path.isfile(datadir('genome_index','.1.ebwtl')):
             job.add('--large-index',kind='parameter')
-        job.add('',datadir('transcripts_index/'),kind='input')
-        job.add('',outdir('reads_filtered_not-mapped-genome.fq'),kind='input')
-        job.add('',outdir('reads_filtered_not-mapped-genome_transcriptome.map'),kind='output')
-        job.add('2>',outdir('log_bowtie_reads_not-mapped-genome_but_mapped-transcriptome.stdout.txt'),kind='parameter',checksum='no')
+        job.add('',datadir('genome_index/'),kind='input')
+        job.add('',outdir('reads-filtered.fq'),kind='input')
+        job.add('',outdir('reads_filtered_genome.map'),kind='output') # <== best mappings on genome #######
+        job.add('2>',outdir('log_bowtie_reads_mapped-genome.stdout.txt'),kind='parameter',checksum='no')
         #job.add('2>&1',kind='parameter',checksum='no')
         job.run()
 
         info(job,
-             fromfile = outdir('log_bowtie_reads_not-mapped-genome_but_mapped-transcriptome.stdout.txt'),
+             fromfile = outdir('log_bowtie_reads_mapped-genome.stdout.txt'),
              tofile = info_file,
-             top = ["Mapping on transcriptome the filtered reads which did not map on genome:",
-                    "------------------------------------------------------------------------"],
+             top = ["Mapping the filtered reads on genome:",
+                    "-------------------------------------"],
              bottom = "\n\n\n")
 
-#    job.add('printf',kind='program')
-#    job.add(('"\n\nMapping on transcriptome the filtered reads which did not map on genome:\n'+
-#                  '------------------------------------------------------------------------\n"'),kind='parameter')
-#    job.add('>>',info_file,kind='output')
-#    job.run()
-#    job.add('cat',kind='program')
-#    job.add('',outdir('log_bowtie_reads_not-mapped-genome_but_mapped-transcriptome.stdout.txt'),kind='input')
-#    job.add('>>',info_file,kind='output')
-#    job.run()
-#    job.add('printf',kind='program')
-#    job.add('"\n\n\n"',kind='parameter')
-#    job.add('>>',info_file,kind='output')
-#    job.run()
-
-    # extract ids of short reads which mapped on the transcriptome
-    job.add('LC_ALL=C',kind='program')
-    job.add('cut',kind='parameter')
-    job.add('-f','1',kind='parameter')
-    job.add('',outdir('reads_filtered_not-mapped-genome_transcriptome.map'),kind='input')
-    job.add('|',kind='parameter')
-    job.add('LC_ALL=C',kind='parameter')
-    job.add('uniq',kind='parameter')
-    job.add('|',kind='parameter')
-    job.add('LC_ALL=C',kind='parameter')
-    job.add('sort',kind='parameter')
-    job.add('-u',kind='parameter')
-    if sort_buffer:
-        job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
-    if sort_parallel:
-        job.add('--parallel',options.processes,kind='parameter',checksum='no')
-    if sort_lzop_compress:
-        job.add('--compress-program','lzop',kind='parameter',checksum='no')
-    elif sort_gzip_compress:
-        job.add('--compress-program','gzip',kind='parameter',checksum='no')
-#    job.add('-T',tmp_dir,kind='parameter',checksum='no')
-#    job.add('|',kind='parameter')
-#    job.add('LC_ALL=C',kind='parameter')
-#    job.add('uniq',kind='parameter')
-    job.add('>',outdir('list-names-reads-filtered_not-mapped-genome_mapped-transcriptome.txt'),kind='output')
-    job.run()
 
 
-    if not options.split_seqtk_subseq:
-        #extract the short reads which mapped on the transcriptome and do not map on genome
-        job.add(_FC_+'extract_short_reads.py',kind='program')
-        job.add('--input',outdir('reads_filtered_not-mapped-genome.fq'),kind='input')
-        job.add('--list',outdir('list-names-reads-filtered_not-mapped-genome_mapped-transcriptome.txt'),kind='input')
-        job.add('--output',outdir('reads_filtered_not-mapped-genome_mapped-transcriptome.fq'),kind='output')
-        job.add('--buffer-size',options.extract_buffer_size,kind='parameter',checksum='no')
-        job.run(error_message = ("If this fails (again?) due to a memory error (e.g. not enough free memory) then lowering the "+
-                                 "buffer size for specifically this script might help. This can be done by using the FusionCatcher's "+
-                                 "command line option '--extra-buffer-size "+str(int(options.extract_buffer_size)/2)+"' ."))
-    elif options.split_seqtk_subseq == 1:
-        #extract the short reads which mapped on the transcriptome and do not map on genome
-        job.add(_SK_+'seqtk',kind='program')
-        job.add('subseq',kind='parameter')
-        job.add('',outdir('reads_filtered_not-mapped-genome.fq'),kind='input')
-        job.add('',outdir('list-names-reads-filtered_not-mapped-genome_mapped-transcriptome.txt'),kind='input')
-        job.add('>',outdir('reads_filtered_not-mapped-genome_mapped-transcriptome.fq'),kind='output')
-        job.run(error_message=("ERROR: Most likely this fails because there is not enough free RAM memory for running SEQTK SUBSEQ tool <https://github.com/lh3/seqtk> on this computer. "+
-            "Please, try to (i) run it on a server/computer with larger amount of memory, or (ii) using command line option '--no-seqtk-subseq' !"))
-    elif options.split_seqtk_subseq > 1:
-        #extract the short reads which mapped on the transcriptome and do not map on genome
-        job.add(_FC_+'seqtk-subseq.sh',kind='program')
-        job.add('',_SK_ if _SK_ else '-',kind='parameter')
-        job.add('',_PL_ if _PL_ else '-',kind='parameter')
-        job.add('',options.split_seqtk_subseq,kind='parameter')
-        job.add('',outdir('reads_filtered_not-mapped-genome.fq'),kind='input')
-        job.add('',outdir('list-names-reads-filtered_not-mapped-genome_mapped-transcriptome.txt'),kind='input')
+    #    job.add('printf',kind='program')
+    #    job.add(('"\n\nMapping the filtered reads on genome:\n'+
+    #             '-----------------------------------------------\n"'),kind='parameter')
+    #    job.add('>>',info_file,kind='output')
+    #    job.run()
+    #    job.add('cat',kind='program')
+    #    job.add('',outdir('log_bowtie_reads_mapped-genome.stdout.txt'),kind='input')
+    #    job.add('>>',info_file,kind='output')
+    #    job.run()
+    #    job.add('printf',kind='program')
+    #    job.add('"\n\n\n"',kind='parameter')
+    #    job.add('>>',info_file,kind='output')
+    #    job.run()
+
+        # extract the names of the short reads which mapped on the genome
+
+     
+        job.add('LC_ALL=C',kind='program')
+        job.add('cut',kind='parameter')
+        job.add('-f','1',kind='parameter')
+        job.add('',outdir('reads_filtered_genome.map'),kind='input')
+        job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
+        job.add('uniq',kind='parameter')
+        job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
+        job.add('sort',kind='parameter')
+        job.add('-u',kind='parameter')
+        if sort_buffer:
+            job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+        if sort_parallel:
+            job.add('--parallel',options.processes,kind='parameter',checksum='no')
+        if sort_lzop_compress:
+            job.add('--compress-program','lzop',kind='parameter',checksum='no')
+        elif sort_gzip_compress:
+            job.add('--compress-program','gzip',kind='parameter',checksum='no')
+        job.add('-T',tmp_dir,kind='parameter',checksum='no')
+    #    job.add('|',kind='parameter')
+    #    job.add('LC_ALL=C',kind='parameter')
+    #    job.add('uniq',kind='parameter')
+        job.add('>',outdir('list-names-reads-filtered_genome.txt'),kind='output')
+        job.run()
+
+
+
+        if not options.split_seqtk_subseq:
+            #extract the short reads which mapped on genome
+            job.add(_FC_+'extract_short_reads.py',kind='program')
+            job.add('--input',outdir('reads-filtered.fq'),kind='input')
+            job.add('--list',outdir('list-names-reads-filtered_genome.txt'),kind='input')
+            job.add('--output',outdir('reads_filtered_unique-mapped-genome.fq'),kind='output')
+            job.add('--buffer-size',options.extract_buffer_size,kind='parameter',checksum='no')
+            job.run(error_message = ("If this fails (again?) due to a memory error (e.g. not enough free memory) then lowering the "+
+                                     "buffer size for specifically this script might help. This can be done by using the FusionCatcher's "+
+                                     "command line option '--extra-buffer-size "+str(int(options.extract_buffer_size)/2)+"' ."))
+        elif options.split_seqtk_subseq == 1:
+            #extract the short reads which mapped on genome
+            job.add(_SK_+'seqtk',kind='program')
+            job.add('subseq',kind='parameter')
+            job.add('',outdir('reads-filtered.fq'),kind='input')
+            job.add('',outdir('list-names-reads-filtered_genome.txt'),kind='input')
+            job.add('>',outdir('reads_filtered_unique-mapped-genome.fq'),kind='output')
+            job.run(error_message=("ERROR: Most likely this fails because there is not enough free RAM memory for running SEQTK SUBSEQ tool <https://github.com/lh3/seqtk> on this computer. "+
+                "Please, try to (i) run it on a server/computer with larger amount of memory, or (ii) using command line option '--no-seqtk-subseq' !"))
+        elif options.split_seqtk_subseq > 1:
+            #extract the short reads which mapped on genome
+            job.add(_FC_+'seqtk-subseq.sh',kind='program')
+            job.add('',_SK_ if _SK_ else '-',kind='parameter')
+            job.add('',_PL_ if _PL_ else '-',kind='parameter')
+            job.add('',options.split_seqtk_subseq,kind='parameter')
+            job.add('',outdir('reads-filtered.fq'),kind='input')
+            job.add('',outdir('list-names-reads-filtered_genome.txt'),kind='input')
+            job.add('',outdir('reads_filtered_unique-mapped-genome.fq'),kind='output')
+            job.run(error_message=("ERROR: Most likely this fails because there is not enough free RAM memory for running SEQTK SUBSEQ tool <https://github.com/lh3/seqtk> on this computer. "+
+                "Please, try to (i) run it on a server/computer with larger amount of memory, or (ii) using command line option '--no-seqtk-subseq' !"))
+
+        job.clean(outdir('reads-filtered.fq'),temp_path=temp_flag)
+        job.clean(outdir('list-names-reads-filtered_genome.txt'),temp_path=temp_flag)
+
+            #IDEA
+            # cat list-names-reads-filtered_genome.txt | gnu_parallel --part -k -j1 --block 10G seqtk subseq reads-filtered.fq - > reads_filtered_unique-mapped-genome.fq
+
+
+        # sed 's/^/^@/g' ids.txt > aha.txt ; cat /apps/reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl-pp.fq | paste - - - - | /apps/tools/parallel-20140822/src/parallel --pipe --no-notice grep -f aha.txt - | tr "\t" "\n" > result.fq
+
+        ##############################################################################
+        # MAPPING short reads which do not map on genome against the transcriptome
+        ##############################################################################
+
+        if job.iff(empty(outdir('reads_filtered_not-mapped-genome.fq')),id = "#reads_filtered_not-mapped-genome.fq#"):
+    #        job.add('echo',kind='program')
+    #        job.add('-n','""',kind='parameter')
+    #        job.add('>',outdir('reads_filtered_not-mapped-genome_transcriptome.map'),kind='output')
+    #        job.run()
+
+            job.add('touch',kind='program')
+            job.add('',outdir('reads_filtered_not-mapped-genome_transcriptome.map'),kind='output')
+            job.run()
+
+            job.add('printf',kind='program')
+            job.add('"\nMapping on transcriptome the filtered reads which did not map on genome:\n------------------------------------------------------------------------\nNo reads and no alignments!\n\n\n"', kind='parameter')
+            job.add('>>',log_file,kind='output')
+            job.run()
+
+        else:
+            # map using the transcript index (not mapped, unique alignment, multiple alignments)
+            job.add(_BE_+'bowtie',kind='program')
+            job.add('-t',kind='parameter')
+            #job.add('-q',kind='parameter')
+            #job.add('-a',kind='parameter')
+            job.add('-k','500',kind='parameter')
+            job.add('-v',options.mismatches,kind='parameter')
+            job.add('-p',options.processes,kind='parameter',checksum='no')
+            #job.add('--solexa1.3-quals',kind='parameter')
+            job.add('--phred33-quals',kind='parameter')
+            job.add('--suppress','5,6,7',kind='parameter')
+            job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+            job.add('--tryhard',kind='parameter')
+            job.add('--best',kind='parameter')
+            job.add('--strata',kind='parameter')
+            job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome.fq'),kind='output') # <== reads which do not map on transcriptome and genome! #######
+            job.add('--max',outdir('reads_filtered_genome-transcriptome_multiple.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
+            if os.path.isfile(datadir('transcripts_index','.1.ebwtl')):
+                job.add('--large-index',kind='parameter')
+            job.add('',datadir('transcripts_index/'),kind='input')
+            job.add('',outdir('reads_filtered_not-mapped-genome.fq'),kind='input')
+            job.add('',outdir('reads_filtered_not-mapped-genome_transcriptome.map'),kind='output')
+            job.add('2>',outdir('log_bowtie_reads_not-mapped-genome_but_mapped-transcriptome.stdout.txt'),kind='parameter',checksum='no')
+            #job.add('2>&1',kind='parameter',checksum='no')
+            job.run()
+
+            info(job,
+                 fromfile = outdir('log_bowtie_reads_not-mapped-genome_but_mapped-transcriptome.stdout.txt'),
+                 tofile = info_file,
+                 top = ["Mapping on transcriptome the filtered reads which did not map on genome:",
+                        "------------------------------------------------------------------------"],
+                 bottom = "\n\n\n")
+
+    #    job.add('printf',kind='program')
+    #    job.add(('"\n\nMapping on transcriptome the filtered reads which did not map on genome:\n'+
+    #                  '------------------------------------------------------------------------\n"'),kind='parameter')
+    #    job.add('>>',info_file,kind='output')
+    #    job.run()
+    #    job.add('cat',kind='program')
+    #    job.add('',outdir('log_bowtie_reads_not-mapped-genome_but_mapped-transcriptome.stdout.txt'),kind='input')
+    #    job.add('>>',info_file,kind='output')
+    #    job.run()
+    #    job.add('printf',kind='program')
+    #    job.add('"\n\n\n"',kind='parameter')
+    #    job.add('>>',info_file,kind='output')
+    #    job.run()
+
+        # extract ids of short reads which mapped on the transcriptome
+        job.add('LC_ALL=C',kind='program')
+        job.add('cut',kind='parameter')
+        job.add('-f','1',kind='parameter')
+        job.add('',outdir('reads_filtered_not-mapped-genome_transcriptome.map'),kind='input')
+        job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
+        job.add('uniq',kind='parameter')
+        job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
+        job.add('sort',kind='parameter')
+        job.add('-u',kind='parameter')
+        if sort_buffer:
+            job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+        if sort_parallel:
+            job.add('--parallel',options.processes,kind='parameter',checksum='no')
+        if sort_lzop_compress:
+            job.add('--compress-program','lzop',kind='parameter',checksum='no')
+        elif sort_gzip_compress:
+            job.add('--compress-program','gzip',kind='parameter',checksum='no')
+    #    job.add('-T',tmp_dir,kind='parameter',checksum='no')
+    #    job.add('|',kind='parameter')
+    #    job.add('LC_ALL=C',kind='parameter')
+    #    job.add('uniq',kind='parameter')
+        job.add('>',outdir('list-names-reads-filtered_not-mapped-genome_mapped-transcriptome.txt'),kind='output')
+        job.run()
+
+
+        if not options.split_seqtk_subseq:
+            #extract the short reads which mapped on the transcriptome and do not map on genome
+            job.add(_FC_+'extract_short_reads.py',kind='program')
+            job.add('--input',outdir('reads_filtered_not-mapped-genome.fq'),kind='input')
+            job.add('--list',outdir('list-names-reads-filtered_not-mapped-genome_mapped-transcriptome.txt'),kind='input')
+            job.add('--output',outdir('reads_filtered_not-mapped-genome_mapped-transcriptome.fq'),kind='output')
+            job.add('--buffer-size',options.extract_buffer_size,kind='parameter',checksum='no')
+            job.run(error_message = ("If this fails (again?) due to a memory error (e.g. not enough free memory) then lowering the "+
+                                     "buffer size for specifically this script might help. This can be done by using the FusionCatcher's "+
+                                     "command line option '--extra-buffer-size "+str(int(options.extract_buffer_size)/2)+"' ."))
+        elif options.split_seqtk_subseq == 1:
+            #extract the short reads which mapped on the transcriptome and do not map on genome
+            job.add(_SK_+'seqtk',kind='program')
+            job.add('subseq',kind='parameter')
+            job.add('',outdir('reads_filtered_not-mapped-genome.fq'),kind='input')
+            job.add('',outdir('list-names-reads-filtered_not-mapped-genome_mapped-transcriptome.txt'),kind='input')
+            job.add('>',outdir('reads_filtered_not-mapped-genome_mapped-transcriptome.fq'),kind='output')
+            job.run(error_message=("ERROR: Most likely this fails because there is not enough free RAM memory for running SEQTK SUBSEQ tool <https://github.com/lh3/seqtk> on this computer. "+
+                "Please, try to (i) run it on a server/computer with larger amount of memory, or (ii) using command line option '--no-seqtk-subseq' !"))
+        elif options.split_seqtk_subseq > 1:
+            #extract the short reads which mapped on the transcriptome and do not map on genome
+            job.add(_FC_+'seqtk-subseq.sh',kind='program')
+            job.add('',_SK_ if _SK_ else '-',kind='parameter')
+            job.add('',_PL_ if _PL_ else '-',kind='parameter')
+            job.add('',options.split_seqtk_subseq,kind='parameter')
+            job.add('',outdir('reads_filtered_not-mapped-genome.fq'),kind='input')
+            job.add('',outdir('list-names-reads-filtered_not-mapped-genome_mapped-transcriptome.txt'),kind='input')
+            job.add('',outdir('reads_filtered_not-mapped-genome_mapped-transcriptome.fq'),kind='output')
+            job.run(error_message=("ERROR: Most likely this fails because there is not enough free RAM memory for running SEQTK SUBSEQ tool <https://github.com/lh3/seqtk> on this computer. "+
+                "Please, try to (i) run it on a server/computer with larger amount of memory, or (ii) using command line option '--no-seqtk-subseq' !"))
+
+        job.clean(outdir('reads_filtered_not-mapped-genome.fq'),temp_path=temp_flag)
+        job.clean(outdir('list-names-reads-filtered_not-mapped-genome_mapped-transcriptome.txt'),temp_path=temp_flag)
+
+    else:
+        job.link(outdir('reads-filtered.fq'),outdir('reads_filtered_unique-mapped-genome.fq'),temp_path=temp_flag)
+
+        job.add('touch',kind='program')
         job.add('',outdir('reads_filtered_not-mapped-genome_mapped-transcriptome.fq'),kind='output')
-        job.run(error_message=("ERROR: Most likely this fails because there is not enough free RAM memory for running SEQTK SUBSEQ tool <https://github.com/lh3/seqtk> on this computer. "+
-            "Please, try to (i) run it on a server/computer with larger amount of memory, or (ii) using command line option '--no-seqtk-subseq' !"))
-
-    job.clean(outdir('reads_filtered_not-mapped-genome.fq'),temp_path=temp_flag)
-    job.clean(outdir('list-names-reads-filtered_not-mapped-genome_mapped-transcriptome.txt'),temp_path=temp_flag)
+        job.run()
 
     ##############################################################################
     # MAPPING short reads (which map uniquely on genome) against the transcriptome
@@ -4543,14 +4608,18 @@ if __name__ == "__main__":
                 "------------------------------------------------------------------------"],
          bottom = "\n\n\n")
 
-    # filter the mapped reads on transcriptome wich mapped also on genome using mismatches
-    job.add(_FC_+'remove_reads_genome_transcriptome.py',kind='program')
-    job.add('--input_map_1',outdir('reads_filtered_genome.map'),kind='input',temp_path=temp_flag)
-    job.add('--input_map_2',outdir('reads_filtered_unique-mapped-genome_transcriptome_temp.map'),kind='input',temp_path=temp_flag)
-    job.add('--mismatches_column','5',kind='parameter')
-    job.add('--output',outdir('reads_filtered_unique-mapped-genome_transcriptome.map'),kind='output')
-    job.add('--tmp_dir',tmp_dir,kind='parameter',checksum='no')
-    job.run()
+    if job.iff((not options.skip_genome_transcriptome_filtering) and (not empty(outdir('reads_filtered_genome.map'))),id="#genome_transcriptome_filtering#"):
+        # filter the mapped reads on transcriptome wich mapped also on genome using mismatches
+        job.add(_FC_+'remove_reads_genome_transcriptome.py',kind='program')
+        job.add('--input_map_1',outdir('reads_filtered_genome.map'),kind='input',temp_path=temp_flag)
+        job.add('--input_map_2',outdir('reads_filtered_unique-mapped-genome_transcriptome_temp.map'),kind='input',temp_path=temp_flag)
+        job.add('--mismatches_column','5',kind='parameter')
+        job.add('--output',outdir('reads_filtered_unique-mapped-genome_transcriptome.map'),kind='output')
+        job.add('--tmp_dir',tmp_dir,kind='parameter',checksum='no')
+        job.run()
+    else:
+        job.link(outdir('reads_filtered_unique-mapped-genome_transcriptome_temp.map'),outdir('reads_filtered_unique-mapped-genome_transcriptome.map'),temp_path=temp_flag)
+        job.clean(outdir('reads_filtered_genome.map'),temp_path=temp_flag)
 
     # extract the names of the short reads which mapped on the transcriptome
     job.add('LC_ALL=C',kind='program')
@@ -4637,11 +4706,16 @@ if __name__ == "__main__":
 
     # group reads which map on transcriptome in one FASTQ file
     #job.add('concatenate.py',kind='program')
-    job.add('cat',kind='program')
-    job.add('',outdir('reads_filtered_not-mapped-genome_mapped-transcriptome.fq'),kind='input',temp_path=temp_flag)
-    job.add('',outdir('reads_filtered_unique-mapped-genome_mapped-transcriptome.fq'),kind='input',temp_path=temp_flag)
-    job.add('>',outdir('reads_filtered_mapped-transcriptome.fq'),kind='output')
-    job.run()
+    if job.iff(empty(outdir('reads_filtered_not-mapped-genome_mapped-transcriptome.fq')),id="###reads_filtered_not-mapped-genome_mapped-transcriptome.fq###"):
+        job.link(
+            outdir('reads_filtered_unique-mapped-genome_mapped-transcriptome.fq'),
+            outdir('reads_filtered_mapped-transcriptome.fq'),temp_path=temp_flag)
+    else:
+        job.add('cat',kind='program')
+        job.add('',outdir('reads_filtered_not-mapped-genome_mapped-transcriptome.fq'),kind='input',temp_path=temp_flag)
+        job.add('',outdir('reads_filtered_unique-mapped-genome_mapped-transcriptome.fq'),kind='input',temp_path=temp_flag)
+        job.add('>',outdir('reads_filtered_mapped-transcriptome.fq'),kind='output')
+        job.run()
 
 
 #    job.add('printf',kind='program')
@@ -4690,7 +4764,7 @@ if __name__ == "__main__":
 #    job.add('>',outdir('reads_filtered_transcriptome_sorted-read.map.gz'),kind='output')
     job.run()
 
-    if ( (options.homolog > 0 or (not options.skip_ambiguous_filtering)) and
+    if ( (options.homolog > 0 or (options.ambiguous_filtering)) and
          job.iff(not empty(outdir('reads_filtered_mapped-transcriptome.fq')),id = "#reads_filtered_mapped-transcriptome.fq#")
          ):
         ##############################################################################
@@ -4742,13 +4816,13 @@ if __name__ == "__main__":
             job.add('LC_ALL=C',kind='parameter')
             job.add('awk',kind='parameter')
             job.add("""'{print $1"\\t"substr($2,index($2,";")+1)"\\t"gsub(">","",$3)}'""",kind='parameter')
-        job.add('|',kind='parameter') # XXX
-        job.add('LC_ALL=C',kind='parameter')
-        job.add('uniq',kind='parameter') # XXX
-        #job.add('|',kind='parameter') # XXX
+#        job.add('|',kind='parameter') # XXX
+#        job.add('LC_ALL=C',kind='parameter')
+#        job.add('uniq',kind='parameter') # XXX
         job.add('>',outdir('reads_filtered_all-possible-mappings-transcriptome.map'),kind='output') # <== best mappings on transcriptome ####### XXX
         job.run()
         #
+        
         job.add('LC_ALL=C',kind='program') # XXX
         job.add('sort',kind='parameter')
         if sort_buffer:
@@ -4789,13 +4863,12 @@ if __name__ == "__main__":
         if not classic_1:
             job.add('--d1',kind='parameter') # stjude -- only 1 mismatch away
         #job.add('--output_offending_reads',outdir('list_offending_reads.txt'),kind='output')
+#        if options.ambiguous_filtering:
         job.add('--output_offending_pair_reads',outdir('list_offending_reads_.txt'),kind='output')
-        if options.homolog > 0:
-            job.add('--output',outdir('list_candidates_ambiguous_homologous_genes_1.txt'),kind='output') # <== list of genes that might be homologous #######
-        else:
-            job.add('--output',outdir('list_candidates_ambiguous_homologous_genes_1.txt'),kind='output',temp_path=temp_flag) # <== list of genes that might be homologous #######
+        job.add('--output',outdir('list_candidates_ambiguous_homologous_genes_1.txt'),kind='output',temp_path='no' if options.homolog > 0 else temp_flag) # <== list of genes that might be homologous #######
         job.run()
 
+#        if options.ambiguous_filtering:
         job.add('LC_ALL=C',kind='program')
         job.add('sort',kind='parameter')
         job.add('-u',kind='parameter')
@@ -4953,36 +5026,53 @@ if __name__ == "__main__":
         job.add('--input_2',outdir('list_candidates_ambiguous_homologous_genes_2.txt'),kind='input',temp_path=temp_flag)
         job.add('--reads',outdir('log_number_of_reads_processed.txt'),kind='parameter',from_file='yes')
         job.add('--all',outdir('all_ambiguous_genes.txt'),kind='output')
-        if options.homolog > 0:
-            job.add('--output',outdir('list_candidates_ambiguous_homologous_genes.txt'),kind='output') # <== list of genes that might be homologous #######
-        else:
-            job.add('--output',outdir('list_candidates_ambiguous_homologous_genes.txt'),kind='output',temp_path=temp_flag) # <== list of genes that might be homologous #######
+        job.add('--output',outdir('list_candidates_ambiguous_homologous_genes.txt'),kind='output',temp_path='no' if options.homolog else temp_flag) # <== list of genes that might be homologous #######
         job.run()
 
 
-        if not options.skip_ambiguous_filtering:
-            # remove the offending reads from the transcriptome mapping
-#            job.add('reads_from_map.py',kind='program')
-#            job.add('--input_reads',outdir('list_offending_reads.txt'),kind='input',temp_path=temp_flag)
-#            job.add('--input_map',outdir('reads_filtered_transcriptome_sorted-read.map'),kind='input')
-#            job.add('--output_map',outdir('reads_filtered_transcriptome_sorted-read_no-offending-reads.map'),kind='output')
-#            job.add('--operation','remove',kind='parameter')
-#            job.run()
-            job.add('LC_ALL=C',kind='program')
-            job.add('join',kind='parameter')
-            job.add('-1','1',kind='parameter')
-            job.add('-2','1',kind='parameter')
-            job.add('-v','2',kind='parameter')
-            job.add('-t',"'\t'",kind='parameter')
-            job.add('',outdir('list_offending_reads.txt'),kind='input',temp_path=temp_flag)
-            job.add('',outdir('reads_filtered_transcriptome_sorted-read.map'),kind='input')
-            job.add('>',outdir('reads_filtered_transcriptome_sorted-read_no-offending-reads.map'),kind='output')
-            job.run()
-        else:
-            job.link(outdir('reads_filtered_transcriptome_sorted-read.map'), outdir('reads_filtered_transcriptome_sorted-read_no-offending-reads.map'),temp_path='no')
-            job.clean(outdir('list_offending_reads.txt'),temp_path=temp_flag)
+        # remove the offending reads from the transcriptome mapping
+        job.add('LC_ALL=C',kind='program')
+        job.add('join',kind='parameter')
+        job.add('-1','1',kind='parameter')
+        job.add('-2','1',kind='parameter')
+        job.add('-v','2',kind='parameter')
+        job.add('-t',"'\t'",kind='parameter')
+        job.add('',outdir('list_offending_reads.txt'),kind='input',temp_path=temp_flag)
+        job.add('',outdir('reads_filtered_transcriptome_sorted-read.map'),kind='input')
+        job.add('>',outdir('reads_filtered_transcriptome_sorted-read_no-offending-reads.map'),kind='output')
+        job.run()
+
+        job.add(_FC_+'find_fusion_genes_map.py',kind='program')
+        job.add('--input',outdir('reads_filtered_transcriptome_sorted-read_no-offending-reads.map'),kind='input',temp_path=temp_flag)
+        job.add('--input_hugo',datadir('genes_symbols.txt'),kind='input')
+        job.add('--output_fusion_genes',outdir('candidate_fusion-genes_no-offending-reads.txt'),kind='output')
+        job.add('--output_fusion_reads',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),kind='output',temp_path=temp_flag)
+        job.run()
+        
+        
+#        job.add('LC_ALL=C',kind='program')
+#        job.add('join',kind='parameter')
+#        job.add('-1','1',kind='parameter')
+#        job.add('-2','1',kind='parameter')
+#        job.add('-t',"'\t'",kind='parameter')
+#        job.add('',outdir('list_offending_reads.txt'),kind='input',temp_path=temp_flag)
+#        job.add('',outdir('reads_filtered_transcriptome_sorted-read.map'),kind='input')
+#        job.add('>',outdir('reads_filtered_transcriptome_sorted-read_only-offending-reads.map'),kind='output')
+#        job.run()
+
+        
+#        job.add(_FC_+'find_fusion_genes_map.py',kind='program')
+#        job.add('--input',outdir('reads_filtered_transcriptome_sorted-read_only-offending-reads.map'),kind='input',temp_path=temp_flag)
+#        job.add('--input_hugo',datadir('genes_symbols.txt'),kind='input')
+#        job.add('--output_fusion_genes',outdir('candidate_fusion-genes_only-offending-reads.txt'),kind='output')
+#        job.add('--output_fusion_reads',outdir('candidate_fusion-genes_only-offending-reads_supporting_paired-reads.txt'),kind='output')
+#        job.run()
+
+#        job.link(outdir('reads_filtered_transcriptome_sorted-read.map'), outdir('reads_filtered_transcriptome_sorted-read_no-offending-reads.map'),temp_path='no')
+#        job.clean(outdir('list_offending_reads.txt'),temp_path=temp_flag)
     else:
-        job.link(outdir('reads_filtered_transcriptome_sorted-read.map'), outdir('reads_filtered_transcriptome_sorted-read_no-offending-reads.map'),temp_path='no')
+        job.link(outdir('reads_filtered_transcriptome_sorted-read.map'), 
+                 outdir('reads_filtered_transcriptome_sorted-read_no-offending-reads.map'),temp_path='no')
 
 
     ##############################################################################
@@ -4992,10 +5082,10 @@ if __name__ == "__main__":
     # find ALL fusion genes and transcripts where the offending reads have been removed
     # (offending reads = reads which map at least on two different genes)
     job.add(_FC_+'find_fusion_genes_map.py',kind='program')
-    job.add('--input',outdir('reads_filtered_transcriptome_sorted-read_no-offending-reads.map'),kind='input',temp_path=temp_flag)
+    job.add('--input',outdir('reads_filtered_transcriptome_sorted-read.map'),kind='input')
     job.add('--input_hugo',datadir('genes_symbols.txt'),kind='input')
-    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_no-offending-reads.txt'),kind='output')
-    job.add('--output_fusion_reads',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),kind='output')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes.txt'),kind='output')
+    job.add('--output_fusion_reads',outdir('candidate_fusion-genes_supporting_paired-reads.txt'),kind='output')
     if options.reads_preliminary_fusions:
         job.add('--output_fusion_reads_split',outdir('pre-fusion'),kind='output')
     #job.add('--output_fusion_reads_simple',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads_only-ids.txt'),kind='output')
@@ -5004,7 +5094,7 @@ if __name__ == "__main__":
 
     if fragments_flag:
         job.add(_FC_+'fragments_fusion_genes.py',kind='program')
-        job.add('--fusion-reads',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),kind='input')
+        job.add('--fusion-reads',outdir('candidate_fusion-genes_supporting_paired-reads.txt'),kind='input')
         job.add('--minimum',spanning_pairs_minimum,kind='parameter')
         job.add('--fragments',outdir('candidate_fusion-genes_fragments.txt'), kind='output')
         job.run()
@@ -5017,6 +5107,8 @@ if __name__ == "__main__":
         job.add('touch',kind='program')
         job.add('',outdir('candidate_fusion-genes_fragments.txt'), kind='output')
         job.run()
+
+
 
     if options.reads_preliminary_fusions:
         job.add(_FC_+'concatenate.py',kind='program')
@@ -5058,25 +5150,40 @@ if __name__ == "__main__":
             job.run()
             
         job.clean(outdir('originala-pre-fusion.fq'),temp_path=temp_flag)
-        
+
+
+    # label fusion genes -- known fusions
+    job.add(_FC_+'label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','banned',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('banned.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_01.txt'),kind='output')
+    job.run()
+    # label fusion genes -- banned fusions
+    job.add(_FC_+'label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_01.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','known',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('known.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_02.txt'),kind='output')
+    job.run()
     # label fusion genes -- no protein product
     job.add(_FC_+'label_fusion_genes.py',kind='program')
-    job.add('--input',outdir('candidate_fusion-genes_no-offending-reads.txt'),kind='input',temp_path=temp_flag)
+    job.add('--input',outdir('candidate_fusion-genes_02.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','no_protein',kind='parameter')
     job.add('--similar_gene_symbols',kind='parameter')
     job.add('--filter_genes',datadir('genes_with_no_proteins.txt'),kind='input')
-    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_01.txt'),kind='output')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_02a.txt'),kind='output')
     job.run()
     # label fusion genes -- paralogs
     job.add(_FC_+'label_fusion_genes.py',kind='program')
-    job.add('--input',outdir('candidate_fusion-genes_01.txt'),kind='input',temp_path=temp_flag)
+    job.add('--input',outdir('candidate_fusion-genes_02a.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','paralogs',kind='parameter')
     job.add('--filter_gene_pairs',datadir('paralogs.txt'),kind='input')
-    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_02.txt'),kind='output')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_02b.txt'),kind='output')
     job.run()
     # label fusion genes -- potential readthrough
     job.add(_FC_+'label_fusion_genes.py',kind='program')
-    job.add('--input',outdir('candidate_fusion-genes_02.txt'),kind='input',temp_path=temp_flag)
+    job.add('--input',outdir('candidate_fusion-genes_02b.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','adjacent',kind='parameter')
     job.add('--filter_gene_pairs',datadir('adjacent_genes.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_03.txt'),kind='output')
@@ -5120,7 +5227,7 @@ if __name__ == "__main__":
     # label fusion genes -- minimum distance between genes on the same strand
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_08.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','distance1000bp',kind='parameter')
+    job.add('--label','dist1000bp',kind='parameter')
     job.add('--min_dist_gene_gene','1000',kind='parameter')
     job.add('--min_dist_gene_gene_database',datadir('exons.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_09.txt'),kind='output')
@@ -5128,7 +5235,7 @@ if __name__ == "__main__":
     # label fusion genes -- minimum distance between genes on the same strand
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_09.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','distance10kbp',kind='parameter')
+    job.add('--label','dist10kbp',kind='parameter')
     job.add('--min_dist_gene_gene','10000',kind='parameter')
     job.add('--min_dist_gene_gene_database',datadir('exons.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_10.txt'),kind='output')
@@ -5136,7 +5243,7 @@ if __name__ == "__main__":
     # label fusion genes -- minimum distance between genes on the same strand
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_10.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','distance100kbp',kind='parameter')
+    job.add('--label','dist100kbp',kind='parameter')
     job.add('--min_dist_gene_gene','100000',kind='parameter')
     job.add('--min_dist_gene_gene_database',datadir('exons.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_11.txt'),kind='output')
@@ -5236,19 +5343,12 @@ if __name__ == "__main__":
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_24.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','oncogene',kind='parameter')
-    job.add('--filter_genes',datadir('oncogenes.txt'),kind='input')
+    job.add('--filter_genes',datadir('oncogenes_more.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_25.txt'),kind='output')
-    job.run()
-    # label fusion genes -- known fusions
-    job.add(_FC_+'label_fusion_genes.py',kind='program')
-    job.add('--input',outdir('candidate_fusion-genes_25.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','known',kind='parameter')
-    job.add('--filter_gene_pairs',datadir('known.txt'),kind='input')
-    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_26.txt'),kind='output')
     job.run()
     # label fusion genes -- cosmic
     job.add(_FC_+'label_fusion_genes.py',kind='program')
-    job.add('--input',outdir('candidate_fusion-genes_26.txt'),kind='input',temp_path=temp_flag)
+    job.add('--input',outdir('candidate_fusion-genes_25.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','cosmic',kind='parameter')
     job.add('--filter_gene_pairs',datadir('cosmic.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_27.txt'),kind='output')
@@ -5284,42 +5384,42 @@ if __name__ == "__main__":
     # label fusion genes -- RP11-... genes
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_31.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','rp11_gene',kind='parameter')
+    job.add('--label','rp11',kind='parameter')
     job.add('--filter_genes',datadir('rp11.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_32.txt'),kind='output')
     job.run()
     # label fusion genes -- CTA-... genes
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_32.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','cta_gene',kind='parameter')
+    job.add('--label','cta',kind='parameter')
     job.add('--filter_genes',datadir('cta.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_33.txt'),kind='output')
     job.run()
     # label fusion genes -- CTB-... genes
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_33.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','ctb_gene',kind='parameter')
+    job.add('--label','ctb',kind='parameter')
     job.add('--filter_genes',datadir('ctb.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_34.txt'),kind='output')
     job.run()
     # label fusion genes -- CTD-... genes
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_34.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','ctd_gene',kind='parameter')
+    job.add('--label','ctd',kind='parameter')
     job.add('--filter_genes',datadir('ctd.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_35.txt'),kind='output')
     job.run()
     # label fusion genes -- CTC-... genes
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_35.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','ctc_gene',kind='parameter')
+    job.add('--label','ctc',kind='parameter')
     job.add('--filter_genes',datadir('ctc.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_36.txt'),kind='output')
     job.run()
     # label fusion genes -- RP??-... genes
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_36.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','rp_gene',kind='parameter')
+    job.add('--label','rp',kind='parameter')
     job.add('--filter_genes',datadir('rp.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_37.txt'),kind='output')
     job.run()
@@ -5487,7 +5587,7 @@ if __name__ == "__main__":
     # label fusion genes -- minimum distance between genes on the same strand
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_59.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','distance200kbp',kind='parameter')
+    job.add('--label','dist200kbp',kind='parameter')
     job.add('--min_dist_gene_gene','200000',kind='parameter')
     job.add('--min_dist_gene_gene_database',datadir('exons.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_60.txt'),kind='output')
@@ -5555,15 +5655,29 @@ if __name__ == "__main__":
     job.run()
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_69.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','oesophagus',kind='parameter')
-    job.add('--filter_gene_pairs',datadir('oesophagus.txt'),kind='input')
+    job.add('--label','cancer',kind='parameter')
+    job.add('--filter_genes',datadir('cancer_genes.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_70.txt'),kind='output')
+    job.run()
+    job.add(_FC_+'label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_70.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','tumor',kind='parameter')
+    job.add('--filter_genes',datadir('tumor_genes.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_71.txt'),kind='output')
+    job.run()
+    # add label multi-mappers
+    job.add(_FC_+'label_multi.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_71.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','m,multi',kind='parameter')
+    job.add('--pairs',spanning_pairs_minimum,kind='parameter')
+    job.add('--data',outdir('candidate_fusion-genes_no-offending-reads.txt'),kind='input',temp_path=temp_flag)
+    job.add('--output',outdir('candidate_fusion-genes_72.txt'),kind='output')
     job.run()
     # label fusion genes -- pancreatic
     job.add(_FC_+'label_fusion_genes.py',kind='program')
-    job.add('--input',outdir('candidate_fusion-genes_70.txt'),kind='input',temp_path=temp_flag)
+    job.add('--input',outdir('candidate_fusion-genes_72.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','pancreases',kind='parameter')
-    job.add('--filter_genes',datadir('pancreases.txt'),kind='input')
+    job.add('--filter_gene_pairs',datadir('pancreases.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_1000.txt'),kind='output')
     job.run()
     #
@@ -5600,8 +5714,8 @@ if __name__ == "__main__":
     # label fusion genes -- banned
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_custom___last.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','banned',kind='parameter')
-    job.add('--filter_gene_pairs',datadir('banned.txt'),kind='output')
+    job.add('--label','oesophagus',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('oesophagus.txt'),kind='output')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_last.txt'),kind='output')
     job.run()
 
@@ -5614,7 +5728,7 @@ if __name__ == "__main__":
     # extract the relevant fusion genes from the found list for further analysis
     job.add(_FC_+'extract_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_last.txt'),kind='input',temp_path=temp_flag)
-    job.add('--input_fusion_reads',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),kind='input')
+    job.add('--input_fusion_reads',outdir('candidate_fusion-genes_supporting_paired-reads.txt'),kind='input')
     job.add('--threshold_pairs',spanning_pairs_minimum,kind='parameter') # considers only the fusion genes candidates with more than 3 paired-end reads
     job.add('--threshold_pairs_known',spk,kind='parameter') # considers only the fusion genes candidates with more than 3 paired-end reads
     job.add('--threshold_count',options.spanning_pairs_count,kind='parameter')
@@ -5694,9 +5808,9 @@ if __name__ == "__main__":
     job.run()
 
     candidates = True
-    if job.iff((empty(outdir('candidate_fusion-genes_exon-exon.txt')) or
-                empty(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome.fq'))),
+    if job.iff(empty(outdir('candidate_fusion-genes_exon-exon.txt'))  ,
                 id = "#no-candidate-fusion-genes-found-1#"):
+                # or                 empty(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome.fq')
         candidates = False
         t = ["="*80,
              "WARNING: No candidate fusion genes have been found (due to no paired-reads",
@@ -5732,7 +5846,7 @@ if __name__ == "__main__":
         job.clean(outdir('original.fq.gz'),temp_path=temp_flag)
         job.clean(outdir('originala.fq.gz'),temp_path=temp_flag if options.skip_spotlight else 'no')
         job.clean(outdir('candidate_fusion-genes_missing_mates.txt'),temp_path=temp_flag)
-        job.clean(outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),temp_path=temp_flag if options.skip_spotlight else 'no')
+        job.clean(outdir('candidate_fusion-genes_supporting_paired-reads.txt'),temp_path=temp_flag if options.skip_spotlight else 'no')
         #job.clean(outdir('candidate_fusion-genes_exon-exon.txt'))
 
     #if candidates or options.keep_viruses: # this has been removed in order to get always the viruses statistics
@@ -5752,7 +5866,7 @@ if __name__ == "__main__":
     ##############################################################################
 
 
-    if job.iff( not empty(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome.fq')),
+    if job.iff(not empty(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome.fq')),
                 id = "#no-candidate-fusion-genes-found-1A#"):
         #
         # FIND the FUSION POINT
@@ -5858,9 +5972,9 @@ if __name__ == "__main__":
                 #job.add('-q',kind='parameter')
                 #job.add('-a',kind='parameter')
                 job.add('-k','200',kind='parameter')
-                job.add('-v','2',kind='parameter') #options.mismatches # stjude # it was 3 before
+                job.add('-v','0',kind='parameter') #options.mismatches # stjude # it was 3 before
                 job.add('-p',options.processes,kind='parameter',checksum='no')
-                job.add('-m','1',kind='parameter')
+                job.add('-m','20',kind='parameter')
                 job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
                 job.add('--tryhard',kind='parameter')
                 job.add('--best',kind='parameter')
@@ -5902,7 +6016,7 @@ if __name__ == "__main__":
         # trim the poly tails
         job.add(_FC_+'trim_poly_tails.py',kind='program')
         job.add('--input',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end.fq'),kind='input',temp_path=temp_flag)
-        job.add('--repeats','12',kind='parameter') # 12
+        job.add('--repeats',length_anchor_minimum - 1,kind='parameter') # 12
         #job.add('--skip_reads',kind='parameter')
         job.add('--output',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end-f2b.fq'),kind='output')
         job.run()
@@ -5968,10 +6082,14 @@ if __name__ == "__main__":
                 job.run()
 
                 job.add(_BE_+'bowtie',kind='program')
+                if bowtie121:
+                    job.add('--no-unal',kind='parameter')
                 job.add('-t',kind='parameter')
                 #job.add('-q',kind='parameter')
                 #job.add('-v',options.filter_mismatches,kind='parameter') #options.mismatches
-                job.add('-v','0',kind='parameter')
+                #job.add('-v','0',kind='parameter')
+                job.add('--seedmms','0',kind='parameter') # options.mismatches
+                job.add('--seedlen',options.trim_3end_keep,kind='parameter')
                 job.add('-p',options.processes,kind='parameter',checksum='no')
                 #job.add('-m','1',kind='parameter')
                 #job.add('-a',kind='parameter')
@@ -5983,9 +6101,9 @@ if __name__ == "__main__":
                 #job.add('--tryhard',kind='parameter')
                 #job.add('--best',kind='parameter')
                 #job.add('--strata',kind='parameter')
-                if len_reads > 40 and options.trim_wiggle:
-                    job.add('--trim3',options.trim_wiggle,kind='parameter') # trim on the fly 5bp from 3' end
-                    job.add('--trim5',options.trim_wiggle,kind='parameter') # trim the 5
+#                if len_reads > 40 and options.trim_wiggle:
+#                    job.add('--trim3',options.trim_wiggle,kind='parameter') # trim on the fly 5bp from 3' end
+#                    job.add('--trim5',options.trim_wiggle,kind='parameter') # trim the 5
                 if os.path.isfile(datadir('viruses_index','.1.ebwtl')):
                     job.add('--large-index',kind='parameter')
                 job.add('',datadir('viruses_index/'),kind='input')
@@ -5993,9 +6111,10 @@ if __name__ == "__main__":
                 #job.add('',outdir('reads-mapped-on-viruses.sam'),kind='output')
                 job.add('2>',outdir('log_sam-viruses.stdout.txt'),kind='output',checksum='no')
                 job.add('|',kind='parameter')
-                job.add('LC_ALL=C',kind='parameter')
-                job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
-                job.add('|',kind='parameter')
+                if not bowtie121:
+                    job.add('LC_ALL=C',kind='parameter')
+                    job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
+                    job.add('|',kind='parameter')
                 if pigz:
                     job.add(_PZ_+'pigz',kind='parameter')
                     job.add('-p',options.processes,kind='parameter',checksum='no')
@@ -6027,7 +6146,9 @@ if __name__ == "__main__":
             #job.add('-q',kind='parameter')
             #job.add('-a',kind='parameter')
             #job.add('-v',options.filter_mismatches,kind='parameter') #options.mismatches
-            job.add('-v','0',kind='parameter') #options.mismatches
+            #job.add('-v','0',kind='parameter') #options.mismatches
+            job.add('--seedmms','0',kind='parameter') # options.mismatches
+            job.add('--seedlen',options.trim_3end_keep,kind='parameter')
             job.add('-p',options.processes,kind='parameter',checksum='no')
             #job.add('-m','1',kind='parameter')
             job.add('-k','1',kind='parameter')
@@ -6037,9 +6158,9 @@ if __name__ == "__main__":
 #            job.add('--tryhard',kind='parameter')
             #job.add('--best',kind='parameter')
             #job.add('--strata',kind='parameter')
-            if len_reads > 40 and options.trim_wiggle:
-                job.add('--trim3',options.trim_wiggle,kind='parameter') # trim on the fly 5bp from 3' end
-                job.add('--trim5',options.trim_wiggle,kind='parameter') # trim the 5
+#            if len_reads > 40 and options.trim_wiggle:
+#                job.add('--trim3',options.trim_wiggle,kind='parameter') # trim on the fly 5bp from 3' end
+#                job.add('--trim5',options.trim_wiggle,kind='parameter') # trim the 5
             job.add('--suppress','1,2,4,5,6,7,8',kind='parameter') # originally was: '2,3,4,5,6,7,8'
             job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end-f5.fq'),kind='output') # here is the result
             job.add('--max',outdir('reads-filtered_temp_multiple-viruses.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
@@ -6130,18 +6251,18 @@ if __name__ == "__main__":
         job.add('-t',kind='parameter')
         #job.add('-q',kind='parameter')
 #        job.add('-a',kind='parameter')
-        job.add('-v','1',kind='parameter') #options.mismatches
+        job.add('-v','0',kind='parameter') #options.mismatches
         job.add('-p',options.processes,kind='parameter',checksum='no')
 #        job.add('-m','1',kind='parameter')
-        job.add('-k','1',kind='parameter')
+        job.add('-k','10',kind='parameter')
         job.add('--tryhard',kind='parameter')
         job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
 #        job.add('--best',kind='parameter')
 #        job.add('--strata',kind='parameter')
         if len_reads > 40:
-            job.add('--trim5', length_anchor_minimum - 4, kind='parameter') # trim 11 bp on the fly
-        else:
             job.add('--trim5', length_anchor_minimum - 7, kind='parameter') # trim 11 bp on the fly
+        else:
+            job.add('--trim5', length_anchor_minimum - 9, kind='parameter') # trim 11 bp on the fly
 #        job.add('--suppress','1,2,3,4,5,6,7,8',kind='parameter')
         job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.fq'),kind='output') # here is the result
         job.add('--max',outdir('reads_filtered_not-mapped_multiple_end2.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
@@ -6191,12 +6312,16 @@ if __name__ == "__main__":
 #        job.add('2>&1',kind='parameter',checksum='no')
 #        job.run()
 
+    double_bowtie = False
+    if max_len_reads > min_len_reads:
+        double_bowtie = True
+
     if job.iff(empty(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.fq')),
                id="#no-candidate-fusion-genes-found-2#"):
 
-        if candidates:
+        if candidates and (not double_bowtie):
             t = ["="*80,
-                 "WARNING: No candidate fusion genes have been found (no unmapped reads found)!",
+                 "WARNING: No candidate fusion genes have been found (no unmapped reads found and reads are not long enough either)!",
                  "="*80
                 ]
             job.write(t, stderr=True)
@@ -6222,7 +6347,7 @@ if __name__ == "__main__":
 
         candidates = False
 
-        job.clean(outdir('reads_filtered_transcriptome_sorted-read.map'),temp_path=temp_flag)
+        job.clean(outdir('reads_filtered_transcriptome_sorted-read.map'),temp_path='no' if double_bowtie and not candidates else temp_flag)
         #
         #job.link(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.fq'),
         #         outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq')
@@ -6269,6 +6394,86 @@ if __name__ == "__main__":
 #        job.add('-c',outdir('unmapped-reads.fq'),kind='input',temp_path=temp_flag)
 #        job.add('>',outdir('unmapped-reads.fq.gz'),kind='output')
 #        job.run()
+
+
+    if double_bowtie and (not candidates):
+        job.add('LC_ALL=C',kind='program')
+        job.add('cat',kind='parameter')
+        job.add('',outdir('candidate_fusion-genes_further_paired-reads.txt'),kind='input')
+        job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
+        job.add('uniq',kind='parameter')
+        job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
+        job.add('sort',kind='parameter')
+        job.add('-u',kind='parameter')
+        if sort_buffer:
+            job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+        if sort_parallel:
+            job.add('--parallel',options.processes,kind='parameter',checksum='no')
+        if sort_lzop_compress:
+            job.add('--compress-program','lzop',kind='parameter',checksum='no')
+        elif sort_gzip_compress:
+            job.add('--compress-program','gzip',kind='parameter',checksum='no')
+        job.add('-T',tmp_dir,kind='parameter',checksum='no')
+        job.add('>',outdir('original_important.txt'),kind='output')
+        job.run()
+
+        if not options.split_seqtk_subseq:
+            job.add(_FC_+'extract_short_reads.py',kind='program')
+            job.add('--buffer-size',options.extract_buffer_size,kind='parameter',checksum='no')
+            job.add('--input',outdir('originala.fq.gz'),kind='input')
+            job.add('--list',outdir('original_important.txt'),kind='input')
+            job.add('--output',outdir('original_important.fq.gz'),kind='output')
+            job.run(error_message = ("If this fails (again?) due to a memory error (e.g. not enough free memory) then lowering the "+
+                                     "buffer size for specifically this script might help. This can be done by using the FusionCatcher's "+
+                                     "command line option '--extra-buffer-size "+str(int(options.extract_buffer_size)/2)+"' ."))
+        elif options.split_seqtk_subseq == 1:
+            job.add(_SK_+'seqtk',kind='program')
+            job.add('subseq',kind='parameter')
+            job.add('',outdir('originala.fq.gz'),kind='input')
+            job.add('',outdir('original_important.txt'),kind='input')
+            job.add('|',kind='parameter')
+            if pigz:
+                job.add(_PZ_+'pigz',kind='parameter')
+                job.add('-p',options.processes,kind='parameter',checksum='no')
+            else:
+                job.add('gzip',kind='parameter')
+            job.add('--fast',kind='parameter')
+            #job.add('-c',outdir('unmapped-reads.fq'),kind='input',temp_path=temp_flag)
+            job.add('>',outdir('original_important.fq.gz'),kind='output')
+            job.run()
+        elif options.split_seqtk_subseq > 1:
+            #extract the short reads which mapped on genome
+            job.add(_FC_+'seqtk-subseq.sh',kind='program')
+            job.add('',_SK_ if _SK_ else '-',kind='parameter')
+            job.add('',_PL_ if _PL_ else '-',kind='parameter')
+            job.add('',options.split_seqtk_subseq,kind='parameter')
+            job.add('',outdir('originala.fq.gz'),kind='input')
+            job.add('',outdir('original_important.txt'),kind='input')
+            job.add('-',kind='parameter')
+            job.add('|',kind='parameter')
+            if pigz:
+                job.add(_PZ_+'pigz',kind='parameter')
+                job.add('-p',options.processes,kind='parameter',checksum='no')
+            else:
+                job.add('gzip',kind='parameter')
+            job.add('--fast',kind='parameter')
+            #job.add('-c',outdir('unmapped-reads.fq'),kind='input',temp_path=temp_flag)
+            job.add('>',outdir('original_important.fq.gz'),kind='output')
+            job.run(error_message=("ERROR: Most likely this fails because there is not enough free RAM memory for running SEQTK SUBSEQ tool <https://github.com/lh3/seqtk> on this computer. "+
+                "Please, try to (i) run it on a server/computer with larger amount of memory, or (ii) using command line option '--no-seqtk-subseq' !"))
+        job.clean(outdir('originala.fq.gz'),temp_path=temp_flag)
+
+        job.add('LC_ALL=C',kind='program')
+        job.add('join',kind='parameter')
+        job.add('-1','1',kind='parameter')
+        job.add('-2','1',kind='parameter')
+        job.add('-t',"'\t'",kind='parameter')
+        job.add('',outdir('original_important.txt'),kind='input',temp_path=temp_flag)
+        job.add('',outdir('reads_filtered_transcriptome_sorted-read.map'),kind='input',temp_path=temp_flag)
+        job.add('>',outdir('reads_filtered_transcriptome_sorted-read_end_important.map'),kind='output')
+        job.run()
 
 
 
@@ -6507,6 +6712,7 @@ if __name__ == "__main__":
                      outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final_plus.fq'),
                      temp_path=temp_flag)
 
+
         # generate the exon-exon junctions
         job.add(_FC_+'generate_exon-exon_junctions.py',kind='program')
         job.add('--input_fusion_genes',outdir('candidate_fusion-genes_exon-exon.txt'),kind='input')
@@ -6521,7 +6727,12 @@ if __name__ == "__main__":
         job.run()
 
         nucleotides_ee = int(file(outdir('exon-exon_junction_cut__nuc.txt'),"r").readline().strip())
+        
+#        double_bowtie = False
+#        if max_len_reads > min_len_reads:
+#            double_bowtie = True
 
+        parts = []
         if nucleotides_ee > options.limit_bowtie:
 
             job.add(_FC_+'split-fasta.py',kind='program')
@@ -6537,8 +6748,12 @@ if __name__ == "__main__":
                 # map the reads which do not align anywhere on the exon-exon junctions from fusion-genes
                 # build index
                 job.add(_BE_+'bowtie-build',kind='program')
+                if bowtie121:
+                    job.add('--threads',options.processes,kind='parameter')
                 job.add('-f',kind='parameter')
                 job.add('--quiet',kind='parameter')
+                if bowtie121:
+                    job.add('--threads',options.processes,kind='parameter')
 #                job.add('--ntoa',kind='parameter')
                 job.add('--offrate','1',kind='parameter')
                 job.add('--ftabchars','5',kind='parameter')
@@ -6557,11 +6772,11 @@ if __name__ == "__main__":
                     job.add('--large-index',kind='parameter')
                 job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
                 #job.add('--solexa1.3-quals',kind='parameter')
-                job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'),kind='output') # here is the result
+                job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq.'+str(i)),kind='output',dest_list='exonexon_un') # here is the result
                 job.add('--tryhard',kind='parameter')
                 #job.add('--best',kind='parameter')
-                job.add('',part+'_dir/',kind='input',temp_path=temp_flag)
-                job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final_plus.fq'),kind='input',temp_path=temp_flag)
+                job.add('',part+'_dir/',kind='input',temp_path='no' if double_bowtie else temp_flag)
+                job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final_plus.fq'),kind='input')
                 #job.add('',outdir('reads_mapped-exon-exon-fusion-genes.map'),kind='output') # <== mappings on exon-exon junctions for fusion genes ####### # XXX
                 job.add('2>',outdir('log_bowtie_reads_mapped-exon-exon-fusion-genes_map.stdout.txt.'+str(i)),kind='output',checksum='no')
                 #job.add('2>&1',kind='parameter',checksum='no')
@@ -6588,24 +6803,38 @@ if __name__ == "__main__":
                 job.run()
 
                 job.clean(outdir('log_bowtie_reads_mapped-exon-exon-fusion-genes_map.stdout.txt.'+str(i)),temp_path=temp_flag)
+                
+                if job.iff(empty(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq.'+str(i))),id="###reads_fnmgnmteef.fq."+str(i)+"###"):
+                    job.add('touch',kind='program')
+                    job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq.'+str(i)),kind='output')
+                    job.run()
+
+            job.clean(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final_plus.fq'),temp_path=temp_flag)
 
             job.sink(job.exonexon, outdir('exonexon.txt'))
-
             job.add(_FC_+'concatenate.py',kind='program')
             job.add('-f',outdir('exonexon.txt'),kind='input',temp_path=temp_flag)
             job.add('',outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref.map'),kind='output')
             job.run()
-
-#            for ft in job.exonexon:
-#                job.clean(ft,temp_path=temp_flag)
             job.clean(job.exonexon,temp_path=temp_flag)
+            
+            job.sink(job.exonexon_un, outdir('exonexon_un.txt'))
+            job.add(_FC_+'concatenate.py',kind='program')
+            job.add('-f',outdir('exonexon_un.txt'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'),kind='output')
+            job.run()
+            job.clean(job.exonexon_un,temp_path=temp_flag)
             
         else:
             # map the reads which do not align anywhere on the exon-exon junctions from fusion-genes
             # build index
             job.add(_BE_+'bowtie-build',kind='program')
+            if bowtie121:
+                job.add('--threads',options.processes,kind='parameter')
             job.add('-f',kind='parameter')
             job.add('--quiet',kind='parameter')
+            if bowtie121:
+                job.add('--threads',options.processes,kind='parameter')
 #            job.add('--ntoa',kind='parameter')
             job.add('--offrate','1',kind='parameter')
             job.add('--ftabchars','5',kind='parameter')
@@ -6627,7 +6856,7 @@ if __name__ == "__main__":
             job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'),kind='output') # here is the result
             job.add('--tryhard',kind='parameter')
             #job.add('--best',kind='parameter')
-            job.add('',outdir('exon-exon_fusion-genes/'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('exon-exon_fusion-genes/'),kind='input',temp_path='no' if double_bowtie else temp_flag)
             job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final_plus.fq'),kind='input',temp_path=temp_flag)
             #job.add('',outdir('reads_mapped-exon-exon-fusion-genes.map'),kind='output') # <== mappings on exon-exon junctions for fusion genes ####### # XXX
             job.add('2>',outdir('log_bowtie_reads_mapped-exon-exon-fusion-genes_map.stdout.txt'),kind='output',checksum='no')
@@ -6656,13 +6885,391 @@ if __name__ == "__main__":
 
             job.clean(outdir('log_bowtie_reads_mapped-exon-exon-fusion-genes_map.stdout.txt'),temp_path=temp_flag)
 
+            if job.iff(empty(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq')),id="###reads_fnmgnmteef.fq###"):
+                job.add('touch',kind='program')
+                job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'),kind='output')
+                job.run()
+
+
+
+    if candidates and (not double_bowtie):
+        job.link(outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref.map'),
+                 outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref_big.map'),
+                 temp_path=temp_flag)
+        job.link(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'),
+                 outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final_big.fq'),
+                 temp_path=temp_flag)
+                 
+
+    if double_bowtie:
+        ########
+        # do again bowtie aligning if the reads are longer than my trimming
+        ##########
+        if job.iff(not(empty(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'))),id="###reads-filtered-ng-nt-ex-ex-final###"):
+            # here the un-mapped reads
+            # extract reads ids
+            job.add('LC_ALL=C',kind='program')
+            job.add('awk',kind='parameter')
+            job.add("'NR%4==1 {print substr($0,2)}'",outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'),kind='input',temp_path=temp_flag)
+            job.add('|',kind='parameter')
+            job.add('LC_ALL=C',kind='parameter')
+            job.add('uniq',kind='parameter')
+            job.add('|',kind='parameter')
+            job.add('LC_ALL=C',kind='parameter')
+            job.add('sort',kind='parameter')
+            job.add('-u',kind='parameter')
+            if sort_buffer:
+                job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+            if sort_parallel:
+                job.add('--parallel',options.processes,kind='parameter',checksum='no')
+            if sort_lzop_compress:
+                job.add('--compress-program','lzop',kind='parameter',checksum='no')
+            elif sort_gzip_compress:
+                job.add('--compress-program','gzip',kind='parameter',checksum='no')
+            job.add('-T',tmp_dir,kind='parameter',checksum='no')
+            job.add('>',outdir('reads_transcriptome22.txt'),kind='output')
+            job.run()
+        else:
+            job.add('touch',kind='program')
+            job.add('',outdir('reads_transcriptome22.txt'),kind='output')
+            job.run()
+
+        job.add('cat',kind='program')
+        job.add('',outdir('reads_transcriptome22.txt'),kind='input')
+        job.add('',outdir('candidate_fusion-genes_further_paired-reads.txt'),kind='input')
+        job.add('>',outdir('reads_transcriptome22_more.txt'),kind='output')
+        job.run()
+
+        if not options.split_seqtk_subseq:
+            job.add(_FC_+'extract_short_reads.py',kind='program')
+            job.add('--buffer-size',options.extract_buffer_size,kind='parameter',checksum='no')
+            job.add('--input',outdir('original_important.fq.gz'),kind='input')
+            job.add('--list',outdir('reads_transcriptome22_more.txt'),kind='input',temp_path=temp_flag)
+            job.add('--output',outdir('reads_filtered_psl_temp22.fq'),kind='output')
+            job.run(error_message = ("If this fails (again?) due to a memory error (e.g. not enough free memory) then lowering the "+
+                                     "buffer size for specifically this script might help. This can be done by using the FusionCatcher's "+
+                                     "command line option '--extra-buffer-size "+str(int(options.extract_buffer_size)/2)+"' ."))
+        elif options.split_seqtk_subseq == 1:
+            job.add(_SK_+'seqtk',kind='program')
+            job.add('subseq',kind='parameter')
+            job.add('',outdir('original_important.fq.gz'),kind='input')
+            job.add('',outdir('reads_transcriptome22_more.txt'),kind='input',temp_path=temp_flag)
+            job.add('>',outdir('reads_filtered_psl_temp22.fq'),kind='output')
+            job.run(error_message=("ERROR: Most likely this fails because there is not enough free RAM memory for running SEQTK SUBSEQ tool <https://github.com/lh3/seqtk> on this computer. "+
+                       "Please, try to (i) run it on a server/computer with larger amount of memory, or (ii) using command line option '--no-seqtk-subseq' !"))
+        elif options.split_seqtk_subseq > 1:
+            job.add(_FC_+'seqtk-subseq.sh',kind='program')
+            job.add('',_SK_ if _SK_ else '-',kind='parameter')
+            job.add('',_PL_ if _PL_ else '-',kind='parameter')
+            job.add('',options.split_seqtk_subseq,kind='parameter')
+            job.add('',outdir('original_important.fq.gz'),kind='input')
+            job.add('',outdir('reads_transcriptome22_more.txt'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('reads_filtered_psl_temp22.fq'),kind='output')
+            job.run(error_message=("ERROR: Most likely this fails because there is not enough free RAM memory for running SEQTK SUBSEQ tool <https://github.com/lh3/seqtk> on this computer. "+
+                       "Please, try to (i) run it on a server/computer with larger amount of memory, or (ii) using command line option '--no-seqtk-subseq' !"))
+
+
+        if not candidates:
+            # generate the exon-exon junctions
+            job.add(_FC_+'generate_exon-exon_junctions.py',kind='program')
+            job.add('--input_fusion_genes',outdir('candidate_fusion-genes_exon-exon.txt'),kind='input')
+            job.add('--input_fasta_transcripts',datadir('transcripts.fa'),kind='input')
+            job.add('--input_database_transcripts',datadir('transcripts.txt'),kind='input')
+            job.add('--overlap_read',length_anchor_bowtie,kind='parameter') # :-)
+            job.add('--unique_cut_sequences_same_pair',kind='parameter') #added
+            job.add('--length_reads_filename',outdir('log_lengths_reads.txt'),kind='input')
+            job.add('--output_cut_junction',outdir('exon-exon_junction_cut.fa'),kind='output')
+            job.add('--output_count_seq',outdir('exon-exon_junction_cut__seq.txt'),kind='output')
+            job.add('--output_count_nuc',outdir('exon-exon_junction_cut__nuc.txt'),kind='output')
+            job.run()
+
+            nucleotides_ee = int(file(outdir('exon-exon_junction_cut__nuc.txt'),"r").readline().strip())
+    
+
+        job.add(_SK_+'seqtk',kind='program')
+        job.add('trimfq',kind='parameter')
+        job.add('-l','1',kind='parameter')
+        job.add('-E',options.trim_3end_keep,kind='parameter')
+        job.add('',outdir('reads_filtered_psl_temp22.fq'),kind='input')
+        job.add('|',kind='parameter')
+        job.add(_SK_+'seqtk',kind='parameter')
+        job.add('seq',kind='parameter')
+        job.add('-L',options.trim_3end_keep,kind='parameter')
+        job.add('-',kind='parameter')
+        job.add('>',outdir('reads_filtered_psl_0.fq'),kind='output')
+        job.run()
+
+        step = options.trim_3end_keep - 2 * length_anchor_bowtie
+        cuts = [c for c in range(0,max_len_reads,step) if c!=0 and c+options.trim_3end_keep<max_len_reads]
+        if not cuts:
+            job.link(outdir('reads_filtered_psl_0.fq'),
+                     outdir('reads_filtered_psl.fq'),temp_path=temp_flag)
+        else:
+            for i,c in enumerate(cuts):
+                job.add(_SK_+'seqtk',kind='program')
+                job.add('trimfq',kind='parameter')
+                job.add('-l','1',kind='parameter')
+                job.add('-B',c+options.trim_3end_keep,kind='parameter')
+                job.add('',outdir('reads_filtered_psl_temp22.fq'),kind='input')
+                job.add('|',kind='parameter')
+                job.add(_SK_+'seqtk',kind='parameter')
+                job.add('trimfq',kind='parameter')
+                job.add('-l','1',kind='parameter')
+                job.add('-E',options.trim_3end_keep,kind='parameter')
+                job.add('-',kind='parameter')
+                job.add('|',kind='parameter')
+                job.add(_SK_+'seqtk',kind='parameter')
+                job.add('seq',kind='parameter')
+                job.add('-L',options.trim_3end_keep,kind='parameter')
+                job.add('-',kind='parameter')
+                job.add('>',outdir('reads_filtered_psl.fq.')+str(i),kind='output',dest_list='trim22')
+                job.run()
+
+            job.sink(job.trim22, outdir('trim22.txt'))
+            job.add(_FC_+'concatenate.py',kind='program')
+            job.add('-f',outdir('trim22.txt'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('reads_filtered_psl_1.fq'),kind='output')
+            job.run()
+            job.clean(job.trim22,temp_path=temp_flag)
+
+            job.add('cat',kind='program')
+            job.add('',outdir('reads_filtered_psl_0.fq'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('reads_filtered_psl_1.fq'),kind='input',temp_path=temp_flag)
+            job.add('>',outdir('reads_filtered_psl.fq'),kind='output')
+            job.run()
+
+        job.clean(outdir('reads_filtered_psl_temp22.fq'),temp_path=temp_flag)
+
+        if nucleotides_ee > options.limit_bowtie:
+
+            if not candidates:
+                job.add(_FC_+'split-fasta.py',kind='program')
+                job.add('--size',outdir('exon-exon_junction_cut__nuc.txt'),kind='input')
+                job.add('--seqs',outdir('exon-exon_junction_cut__seq.txt'),kind='input')
+                job.add('--threshold',options.limit_bowtie,kind='parameter')
+                job.add('-i',outdir('exon-exon_junction_cut.fa'),kind='input')
+                job.add('-o',outdir('exon-exon_junction_cut_split.fa'),kind='output')
+                job.run()
+
+                parts = [el.strip() for el in file(outdir('exon-exon_junction_cut_split.fa'),'r').readlines()]
+                
+                
+            for i,part in enumerate(parts):
+
+                if not candidates:
+                    job.add(_BE_+'bowtie-build',kind='program')
+                    if bowtie121:
+                        job.add('--threads',options.processes,kind='parameter')
+                    job.add('-f',kind='parameter')
+                    job.add('--quiet',kind='parameter')
+    #                job.add('--ntoa',kind='parameter')
+                    job.add('--offrate','1',kind='parameter')
+                    job.add('--ftabchars','5',kind='parameter')
+                    job.add('',part,kind='input')
+                    job.add('',part+'_dir/',kind='output')
+                    job.run()
+
+                job.add(_BE_+'bowtie',kind='program')
+                job.add('-t',kind='parameter')
+                job.add('-k','1000',kind='parameter')
+                job.add('-v',options.mismatches,kind='parameter')
+                job.add('-p',options.processes,kind='parameter',checksum='no')
+                if os.path.isfile(os.path.join(part+'_dir','.1.ebwtl')):
+                    job.add('--large-index',kind='parameter')
+                job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+                job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final22.fq.'+str(i)),kind='output',dest_list='exonexon22_un') # here is the result
+                job.add('--tryhard',kind='parameter')
+                job.add('',part+'_dir/',kind='input',temp_path=temp_flag)
+                job.add('',outdir('reads_filtered_psl.fq'),kind='input',temp_path=temp_flag)
+                job.add('2>',outdir('log_bowtie_reads_mapped-exon-exon-fusion-genes_map22.stdout.txt.'+str(i)),kind='output',checksum='no')
+                job.add('|',kind='parameter')
+                job.add('LC_ALL=C',kind='parameter')
+                job.add('sort',kind='parameter')
+                if sort_buffer:
+                    job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+                if sort_parallel:
+                    job.add('--parallel',options.processes,kind='parameter',checksum='no')
+                if sort_lzop_compress:
+                    job.add('--compress-program','lzop',kind='parameter',checksum='no')
+                elif sort_gzip_compress:
+                    job.add('--compress-program','gzip',kind='parameter',checksum='no')
+                job.add('-T',tmp_dir,kind='parameter',checksum='no')
+                job.add('-t',"'\t'",kind='parameter')
+                job.add('-k','3,3',kind='parameter')
+                job.add('>',outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref22.map.'+str(i)),kind='output',dest_list='exonexon22')
+                job.run()
+
+                job.clean(outdir('log_bowtie_reads_mapped-exon-exon-fusion-genes_map22.stdout.txt.'+str(i)),temp_path=temp_flag)
+
+                if job.iff(empty(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final22.fq.'+str(i))),id="###reads_fnmgnmteef22.fq."+str(i)+"###"):
+                    job.add('touch',kind='program')
+                    job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final22.fq.'+str(i)),kind='output')
+                    job.run()
+
+            job.sink(job.exonexon22, outdir('exonexon22.txt'))
+            job.add(_FC_+'concatenate.py',kind='program')
+            job.add('-f',outdir('exonexon22.txt'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref22.map'),kind='output')
+            job.run()
+            job.clean(job.exonexon22,temp_path=temp_flag)
+            
+            job.sink(job.exonexon22_un, outdir('exonexon22_un.txt'))
+            job.add(_FC_+'concatenate.py',kind='program')
+            job.add('-f',outdir('exonexon22_un.txt'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final22.fq'),kind='output')
+            job.run()
+            job.clean(job.exonexon22_un,temp_path=temp_flag)
+            
+        else:
+
+            if not candidates:
+                job.add(_BE_+'bowtie-build',kind='program')
+                if bowtie121:
+                    job.add('--threads',options.processes,kind='parameter')
+                job.add('-f',kind='parameter')
+                job.add('--quiet',kind='parameter')
+    #            job.add('--ntoa',kind='parameter')
+                job.add('--offrate','1',kind='parameter')
+                job.add('--ftabchars','5',kind='parameter')
+                job.add('',outdir('exon-exon_junction_cut.fa'),kind='input')
+                job.add('',outdir('exon-exon_fusion-genes/'),kind='output')
+                job.run()
+
+            job.add(_BE_+'bowtie',kind='program')
+            job.add('-t',kind='parameter')
+            job.add('-k','1000',kind='parameter')
+            job.add('-v',options.mismatches,kind='parameter')
+            job.add('-p',options.processes,kind='parameter',checksum='no')
+            if os.path.isfile(outdir('exon-exon_fusion-genes','.1.ebwtl')):
+                job.add('--large-index',kind='parameter')
+            job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+            job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final22.fq'),kind='output') # here is the result
+            job.add('--tryhard',kind='parameter')
+            job.add('',outdir('exon-exon_fusion-genes/'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('reads_filtered_psl.fq'),kind='input',temp_path=temp_flag)
+            job.add('2>',outdir('log_bowtie_reads_mapped-exon-exon-fusion-genes_map22.stdout.txt'),kind='output',checksum='no')
+            job.add('|',kind='parameter')
+            job.add('LC_ALL=C',kind='parameter')
+            job.add('sort',kind='parameter')
+            if sort_buffer:
+                job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+            if sort_parallel:
+                job.add('--parallel',options.processes,kind='parameter',checksum='no')
+            if sort_lzop_compress:
+                job.add('--compress-program','lzop',kind='parameter',checksum='no')
+            elif sort_gzip_compress:
+                job.add('--compress-program','gzip',kind='parameter',checksum='no')
+            job.add('-T',tmp_dir,kind='parameter',checksum='no')
+            job.add('-t',"'\t'",kind='parameter')
+            job.add('-k','3,3',kind='parameter')
+            job.add('>',outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref22.map'),kind='output')
+            job.run()
+
+            job.clean(outdir('log_bowtie_reads_mapped-exon-exon-fusion-genes_map22.stdout.txt'),temp_path=temp_flag)
+
+            if job.iff(empty(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final22.fq')),id="###reads_fnmgnmteef22.fq###"):
+                job.add('touch',kind='program')
+                job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final22.fq'),kind='output')
+                job.run()
+                
+
+        if job.iff(empty(outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref.map')),id="###reads-mapped-ref.map###"):
+            job.link(outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref22.map'),
+                     outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref_big.map'),
+                     temp_path=temp_flag)
+        else:
+            job.add('cat',kind='program')
+            job.add('',outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref.map'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref22.map'),kind='input',temp_path=temp_flag)
+            job.add('|',kind='parameter')
+            job.add('LC_ALL=C',kind='parameter')
+            job.add('sort',kind='parameter')
+            if sort_buffer:
+                job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+            if sort_parallel:
+                job.add('--parallel',options.processes,kind='parameter',checksum='no')
+            if sort_lzop_compress:
+                job.add('--compress-program','lzop',kind='parameter',checksum='no')
+            elif sort_gzip_compress:
+                job.add('--compress-program','gzip',kind='parameter',checksum='no')
+            job.add('-T',tmp_dir,kind='parameter',checksum='no')
+            job.add('-t',"'\t'",kind='parameter')
+            job.add('-k','3,3',kind='parameter')
+            job.add('-k','1,1',kind='parameter')
+            job.add('>',outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref_big.map'),kind='output')
+            job.run()
+
+
+
+            
+        # this fixes a bug for options.trim-psl
+        if options.trim_psl:
+            job.link(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'),
+                     outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final_big.fq'),
+                     temp_path=temp_flag)
+                
+            job.clean(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final22.fq'),temp_path=temp_flag)
+        else:
+            job.clean(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'),temp_path=temp_flag)
+            # most the time is going thru this
+            job.add(_SK_+'seqtk',kind='program') # get rid of the pairs reads which support the fusion
+            job.add('subseq',kind='parameter')
+            job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final22.fq'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('reads_transcriptome22.txt'),kind='input',temp_path=temp_flag)
+            job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final_big_.fq'),kind='output')
+            job.run(error_message=("ERROR: Most likely this fails because there is not enough free RAM memory for running SEQTK SUBSEQ tool <https://github.com/lh3/seqtk>"))
+
+            # remove the mapped reads which may look unmapped when the trimming has happened
+            job.add('LC_ALL=C',kind='program')
+            job.add('cut',kind='parameter')
+            job.add('-f','1',kind='parameter')
+            job.add('',outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref_big.map'),kind='input')
+            job.add('|',kind='parameter')
+            job.add('LC_ALL=C',kind='parameter')
+            job.add('uniq',kind='parameter')
+            job.add('|',kind='parameter')
+            job.add('LC_ALL=C',kind='parameter')
+            job.add('sort',kind='parameter')
+            job.add('-u',kind='parameter')
+            if sort_buffer:
+                job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+            if sort_parallel:
+                job.add('--parallel',options.processes,kind='parameter',checksum='no')
+            if sort_lzop_compress:
+                job.add('--compress-program','lzop',kind='parameter',checksum='no')
+            elif sort_gzip_compress:
+                job.add('--compress-program','gzip',kind='parameter',checksum='no')
+            job.add('>',outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref_big.txt'),kind='output')
+            job.run()
+            
+            job.add(_SK_+'seqtk',kind='program')
+            job.add('subseq',kind='parameter')
+            job.add('-e',kind='parameter')
+            job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final_big_.fq'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref_big.txt'),kind='input',temp_path=temp_flag)
+            job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final_big.fq'),kind='output')
+            job.run()
+
+#                job.link(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final22.fq'),
+#                         outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final_big.fq'),
+#                         temp_path=temp_flag)
+
+
+
+
+  
+    if candidates or double_bowtie:
+        
+
+        # continuing the original stuff
+        #
         # more filtering -- remove the reads from the exon-exon junctions which
         # have the pair read mapping on a totally different gene than those
         # involved in the exon-exon junction
         job.add(_FC_+'remove_reads_exon_exon_map.py',kind='program')
         if not options.all_reads_junction:
             job.add('--only_pairs',kind='parameter')
-        job.add('--input_exon_exon',outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref.map'),kind='input',temp_path=temp_flag)
+        job.add('--input_exon_exon',outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref_big.map'),kind='input',temp_path=temp_flag)
         job.add('--input_transcriptome',
                 outdir('reads_filtered_transcriptome_sorted-read_end_important.map'),
                 kind = 'input',
@@ -6693,10 +7300,10 @@ if __name__ == "__main__":
         job.add('--tmp_dir',tmp_dir,kind='parameter',checksum='no')
         if (not options.skip_blat) or (not options.skip_star) or (not options.skip_bowtie2):
             job.add('--input_fastq',outdir('original_important.fq.gz'),kind='input') # needed for BLAT later
-            job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),kind='input')
+            job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_supporting_paired-reads.txt'),kind='input')
         else:
             job.add('--input_fastq',outdir('original_important.fq.gz'),kind='input',temp_path=temp_flag if options.skip_spotlight else 'no')
-            job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),kind='input',temp_path=temp_flag if options.skip_spotlight else 'no')
+            job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_supporting_paired-reads.txt'),kind='input',temp_path=temp_flag if options.skip_spotlight else 'no')
         if options.psl_visualization and not empty(datadir('genome.2bit')):
             job.add('--input_genome_2bit',datadir('genome.2bit'),kind='input')
             job.add('--psl_alignment_type','web',kind='parameter')
@@ -6724,7 +7331,7 @@ if __name__ == "__main__":
 ##################################################################################
 ##################################################################################
 
-    if ((not options.skip_blat) or (not options.skip_star) or (not options.skip_bowtie2)) and candidates:
+    if ((not options.skip_blat) or (not options.skip_star) or (not options.skip_bowtie2)) and (candidates or double_bowtie):
         # generate the gene-gene junctions in FASTA format
         job.add(_FC_+'generate_gene-gene_junctions.py',kind='program')
         job.add('--input',outdir('candidate_fusion-genes_exon-exon.txt'),kind='input',temp_path=temp_flag)
@@ -6762,7 +7369,7 @@ if __name__ == "__main__":
 
         if options.trim_psl:
             # link
-            job.link(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'),
+            job.link(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final_big.fq'),
                      outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl.fq'),
                      temp_path = temp_flag)
         else:
@@ -6773,7 +7380,7 @@ if __name__ == "__main__":
             # extract reads ids
             job.add('LC_ALL=C',kind='program')
             job.add('awk',kind='parameter')
-            job.add("'NR%4==1 {print substr($0,2)}'",outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'),kind='input',temp_path=temp_flag)
+            job.add("'NR%4==1 {print substr($0,2)}'",outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final_big.fq'),kind='input',temp_path=temp_flag)
             job.add('|',kind='parameter')
             job.add('LC_ALL=C',kind='parameter')
             job.add('uniq',kind='parameter')
@@ -6806,7 +7413,7 @@ if __name__ == "__main__":
 #                         "buffer size (to 50% or 25%) using the command line option --extra-buffer-size "+
 #                         "of FusionCatcher and running it again might help!"))
 
-            if min(max_len_reads,options.trim_psl_3end_keep) > min_len_reads + 9:
+            if min(max_len_reads,options.trim_psl_3end_keep) > min_len_reads :
                 # add also the reads of the paired reads which support the candidate fusion genes (some of them might overlap the fusion junction)
                 job.add('LC_ALL=C',kind='program')
                 job.add('cat',kind='parameter')
@@ -6886,7 +7493,7 @@ if __name__ == "__main__":
 
         job.add(_FC_+'trim_poly_tails.py',kind='program')
         job.add('--input',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl.fq'),kind='input',temp_path=temp_flag)
-        job.add('--repeats','12',kind='parameter')
+        job.add('--repeats',length_anchor_minimum - 1,kind='parameter')
         #job.add('--skip_reads',kind='parameter')
         #job.add('--replace',kind='parameter') # test eml4
         job.add('--output',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl-plus_b.fq'),kind='output')
@@ -7223,6 +7830,8 @@ if __name__ == "__main__":
                     for i,part in enumerate(parts):
                         # build index
                         job.add(_BE_+'bowtie-build',kind='program')
+                        if bowtie121:
+                            job.add('--threads',options.processes,kind='parameter')
                         job.add('-f',kind='parameter')
                         job.add('--quiet',kind='parameter')
 #                        job.add('--ntoa',kind='parameter')
@@ -7288,6 +7897,8 @@ if __name__ == "__main__":
                 else:
                     # build index
                     job.add(_BE_+'bowtie-build',kind='program')
+                    if bowtie121:
+                        job.add('--threads',options.processes,kind='parameter')
                     job.add('-f',kind='parameter')
                     job.add('--quiet',kind='parameter')
 #                    job.add('--ntoa',kind='parameter')
@@ -7639,7 +8250,7 @@ if __name__ == "__main__":
                 job.add(_FC_+'build_report_fusions_psl.py',kind='program')
                 job.add('--suporting_unique_reads',spanning_reads_blat,kind='parameter')
                 job.add('--anchor2',length_anchor2,kind='parameter')
-                job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),kind='input',temp_path=temp_flag if options.skip_star and options.skip_bowtie2 and options.skip_spotlight  else 'no')
+                job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_supporting_paired-reads.txt'),kind='input',temp_path=temp_flag if options.skip_star and options.skip_bowtie2 and options.skip_spotlight  else 'no')
                 job.add('--input_fastq',outdir('original_important.fq.gz'),kind='input',temp_path=temp_flag if options.skip_star and options.skip_bowtie2 and options.skip_spotlight else 'no')
                 job.add('--input_fusion_psl',outdir('candidates_fusion_genes_reads_blat.txt'),kind='input',temp_path=temp_flag)
                 job.add('--tmp_dir',tmp_dir,kind='parameter',checksum='no')
@@ -7960,6 +8571,8 @@ if __name__ == "__main__":
 
                                 gdbu = "%s_bowtie_star_unique/" % (part,)
                                 job.add(_BE_+'bowtie-build',kind='program')
+                                if bowtie121:
+                                    job.add('--threads',options.processes,kind='parameter')
                                 job.add('-f',kind='parameter')
                                 job.add('--quiet',kind='parameter')
         #                        job.add('--ntoa',kind='parameter')
@@ -8145,6 +8758,8 @@ if __name__ == "__main__":
 
                                 gdb = "%s_bowtie_star/" % (part,)
                                 job.add(_BE_+'bowtie-build',kind='program')
+                                if bowtie121:
+                                    job.add('--threads',options.processes,kind='parameter')
                                 job.add('-f',kind='parameter')
                                 job.add('--quiet',kind='parameter')
     #                            job.add('--ntoa',kind='parameter')
@@ -8161,6 +8776,8 @@ if __name__ == "__main__":
                                 job.add('-t',kind='parameter')
                                 #job.add('-q',kind='parameter')
                                 #job.add('-a',kind='parameter')
+                                if bowtie121:
+                                    job.add('--no-unal',kind='parameter')
                                 job.add('-k','500',kind='parameter')
                                 job.add('-v',options.mismatches,kind='parameter')
                                 job.add('-p',options.processes,kind='parameter',checksum='no')
@@ -8182,11 +8799,15 @@ if __name__ == "__main__":
                                 job.add('',gdb,kind='input')
                                 job.add('-1',outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_1_t.fq'),kind='input',temp_path=temp_flag)
                                 job.add('-2',outdir('reads-ids_clip_star_psl_unmapped_filtered-'+str(i)+'_2_t.fq'),kind='input',temp_path=temp_flag)
-                                job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
-                                job.add('|',kind='parameter')
-                                job.add('LC_ALL=C',kind='parameter')
-                                job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
-                                job.add('>',outdir('split_gene-gene_star.sam.')+str(i),kind='output')
+                                if bowtie121:
+                                    job.add('',outdir('split_gene-gene_star.sam.')+str(i),kind='output')
+                                    job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
+                                else:
+                                    job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
+                                    job.add('|',kind='parameter')
+                                    job.add('LC_ALL=C',kind='parameter')
+                                    job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
+                                    job.add('>',outdir('split_gene-gene_star.sam.')+str(i),kind='output')
                                 job.run()
 
                                 job.add(_FC_+'merge-sam.py',kind='program')
@@ -8271,7 +8892,7 @@ if __name__ == "__main__":
                                         job.add('|',kind='parameter')
                                         job.add(_FC_+'trim_poly_tails.py',kind='parameter')
                                         job.add('--input','-',kind='parameter')
-                                        job.add('--repeats','20',kind='parameter') # 12
+                                        job.add('--repeats',length_anchor_minimum - 1,kind='parameter') # 12
                                         job.add('--output','-',kind='parameter')
                                         job.add('|',kind='parameter')
                                         job.add(_FC_+'clip_quality.py',kind='parameter')
@@ -8313,6 +8934,8 @@ if __name__ == "__main__":
 
                                         # map using bowtie
                                         job.add(_BE_+'bowtie',kind='program')
+                                        if bowtie121:
+                                            job.add('--no-unal',kind='parameter')
                                         job.add('-t',kind='parameter')
                                         #job.add('-q',kind='parameter')
                                         #job.add('-a',kind='parameter')
@@ -8332,11 +8955,15 @@ if __name__ == "__main__":
                                         job.add('',gdb,kind='input',temp_path=temp_flag)
                                         job.add('-1',outdir('reads-ids_clip_star_psl_unmapped_s_1.fq.')+str(i),kind='input',temp_path=temp_flag)
                                         job.add('-2',outdir('reads-ids_clip_star_psl_unmapped_s_2.fq.')+str(i),kind='input',temp_path=temp_flag)
-                                        job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star-unampped.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
-                                        job.add('|',kind='parameter')
-                                        job.add('LC_ALL=C',kind='parameter')
-                                        job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
-                                        job.add('>',outdir('split_gene-gene_star_unmapped.sam.')+str(i),kind='output')
+                                        if bowtie121:
+                                            job.add('',outdir('split_gene-gene_star_unmapped.sam.')+str(i),kind='output')
+                                            job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star-unampped.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
+                                        else:
+                                            job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star-unampped.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
+                                            job.add('|',kind='parameter')
+                                            job.add('LC_ALL=C',kind='parameter')
+                                            job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
+                                            job.add('>',outdir('split_gene-gene_star_unmapped.sam.')+str(i),kind='output')
                                         job.run()
                                         
                                     else:
@@ -8769,6 +9396,8 @@ if __name__ == "__main__":
                             job.run()
 
                             job.add(_BE_+'bowtie-build',kind='program')
+                            if bowtie121:
+                                job.add('--threads',options.processes,kind='parameter')
                             job.add('-f',kind='parameter')
                             job.add('--quiet',kind='parameter')
     #                        job.add('--ntoa',kind='parameter')
@@ -8950,6 +9579,8 @@ if __name__ == "__main__":
                             job.run()
 
                             job.add(_BE_+'bowtie-build',kind='program')
+                            if bowtie121:
+                                job.add('--threads',options.processes,kind='parameter')
                             job.add('-f',kind='parameter')
                             job.add('--quiet',kind='parameter')
     #                        job.add('--ntoa',kind='parameter')
@@ -8963,6 +9594,8 @@ if __name__ == "__main__":
 
                             # map using bowtie
                             job.add(_BE_+'bowtie',kind='program')
+                            if bowtie121:
+                                job.add('--no-unal',kind='parameter')
                             job.add('-t',kind='parameter')
                             #job.add('-q',kind='parameter')
                             #job.add('-a',kind='parameter')
@@ -8986,11 +9619,15 @@ if __name__ == "__main__":
                             job.add('',outdir('gene-gene-bowtie_star/'),kind='input')
                             job.add('-1',outdir('reads-ids_clip_star_psl_unmapped_filtered_1_t.fq'),kind='input',temp_path=temp_flag)
                             job.add('-2',outdir('reads-ids_clip_star_psl_unmapped_filtered_2_t.fq'),kind='input',temp_path=temp_flag)
-                            job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
-                            job.add('|',kind='parameter')
-                            job.add('LC_ALL=C',kind='parameter')
-                            job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
-                            job.add('>',outdir('split_gene-gene_star.sam'),kind='output')
+                            if bowtie121:
+                                job.add('',outdir('split_gene-gene_star.sam'),kind='output')
+                                job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
+                            else:
+                                job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
+                                job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
+                                job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
+                                job.add('>',outdir('split_gene-gene_star.sam'),kind='output')
                             job.run()
 
 
@@ -9076,7 +9713,7 @@ if __name__ == "__main__":
                                     job.add('|',kind='parameter')
                                     job.add(_FC_+'trim_poly_tails.py',kind='parameter')
                                     job.add('--input','-',kind='parameter')
-                                    job.add('--repeats','20',kind='parameter') # 12
+                                    job.add('--repeats',length_anchor_minimum - 1,kind='parameter') # 12
                                     job.add('--output','-',kind='parameter')
                                     job.add('|',kind='parameter')
                                     job.add(_FC_+'clip_quality.py',kind='parameter')
@@ -9118,6 +9755,8 @@ if __name__ == "__main__":
                                     
                                     # map using bowtie
                                     job.add(_BE_+'bowtie',kind='program')
+                                    if bowtie121:
+                                        job.add('--no-unal',kind='parameter')
                                     job.add('-t',kind='parameter')
                                     #job.add('-q',kind='parameter')
                                     #job.add('-a',kind='parameter')
@@ -9137,11 +9776,15 @@ if __name__ == "__main__":
                                     job.add('',outdir('gene-gene-bowtie_star/'),kind='input',temp_path=temp_flag)
                                     job.add('-1',outdir('reads-ids_clip_star_psl_unmapped_s_1.fq'),kind='input',temp_path=temp_flag)
                                     job.add('-2',outdir('reads-ids_clip_star_psl_unmapped_s_2.fq'),kind='input',temp_path=temp_flag)
-                                    job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star-unampped.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
-                                    job.add('|',kind='parameter')
-                                    job.add('LC_ALL=C',kind='parameter')
-                                    job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
-                                    job.add('>',outdir('split_gene-gene_star_unmapped.sam'),kind='output')
+                                    if bowtie121:
+                                        job.add('',outdir('split_gene-gene_star_unmapped.sam'),kind='output')
+                                        job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star-unampped.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
+                                    else:
+                                        job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-star-unampped.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
+                                        job.add('|',kind='parameter')
+                                        job.add('LC_ALL=C',kind='parameter')
+                                        job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
+                                        job.add('>',outdir('split_gene-gene_star_unmapped.sam'),kind='output')
                                     job.run()
                                 else:
                                     
@@ -9416,7 +10059,7 @@ if __name__ == "__main__":
                 job.add('--anchor2',length_anchor2,kind='parameter')
                 job.add('--mismatches',options.mismatches_psl+1,kind='parameter')
                 job.add('--mismatches-gap',options.mismatches_gap,kind='parameter')
-                job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),kind='input',temp_path=temp_flag if options.skip_bowtie2 and options.skip_spotlight else 'no')
+                job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_supporting_paired-reads.txt'),kind='input',temp_path=temp_flag if options.skip_bowtie2 and options.skip_spotlight else 'no')
                 job.add('--input_fastq',outdir('original_important.fq.gz'),kind='input',temp_path=temp_flag if options.skip_bowtie2 and options.skip_spotlight else 'no')
                 job.add('--input_fusion_psl',outdir('candidates_fusion_genes_reads_star_last.txt'),kind='input',temp_path=temp_flag)
                 job.add('--tmp_dir',tmp_dir,kind='parameter',checksum='no')
@@ -9663,6 +10306,8 @@ if __name__ == "__main__":
 
                             gdbu = "%s_bowtie_bowtie2_unique/" % (part,)
                             job.add(_BE_+'bowtie-build',kind='program')
+                            if bowtie121:
+                                job.add('--threads',options.processes,kind='parameter')
                             job.add('-f',kind='parameter')
                             job.add('--quiet',kind='parameter')
     #                        job.add('--ntoa',kind='parameter')
@@ -9831,6 +10476,8 @@ if __name__ == "__main__":
 
                             gdb = "%s_bowtie_bowtie2/" % (part,)
                             job.add(_BE_+'bowtie-build',kind='program')
+                            if bowtie121:
+                                job.add('--threads',options.processes,kind='parameter')
                             job.add('-f',kind='parameter')
                             job.add('--quiet',kind='parameter')
 #                            job.add('--ntoa',kind='parameter')
@@ -9844,6 +10491,8 @@ if __name__ == "__main__":
 
                             # map using bowtie
                             job.add(_BE_+'bowtie',kind='program')
+                            if bowtie121:
+                                job.add('--no-unal',kind='parameter')
                             job.add('-t',kind='parameter')
                             #job.add('-q',kind='parameter')
                             #job.add('-a',kind='parameter')
@@ -9864,11 +10513,15 @@ if __name__ == "__main__":
                             job.add('',gdb,kind='input',temp_path=temp_flag)
                             job.add('-1',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_1_t.fq'),kind='input',temp_path=temp_flag)
                             job.add('-2',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered-'+str(i)+'_2_t.fq'),kind='input',temp_path=temp_flag)
-                            job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
-                            job.add('|',kind='parameter')
-                            job.add('LC_ALL=C',kind='parameter')
-                            job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
-                            job.add('>',outdir('split_gene-gene_bowtie2.sam.')+str(i),kind='output')
+                            if bowtie121:
+                                job.add('',outdir('split_gene-gene_bowtie2.sam.')+str(i),kind='output')
+                                job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
+                            else:
+                                job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2.stdout.txt.')+str(i),kind='output',checksum='no',temp_path=temp_flag)
+                                job.add('|',kind='parameter')
+                                job.add('LC_ALL=C',kind='parameter')
+                                job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
+                                job.add('>',outdir('split_gene-gene_bowtie2.sam.')+str(i),kind='output')
                             job.run()
 
                             job.add(_FC_+'merge-sam.py',kind='program')
@@ -10122,6 +10775,8 @@ if __name__ == "__main__":
                         job.run()
 
                         job.add(_BE_+'bowtie-build',kind='program')
+                        if bowtie121:
+                            job.add('--threads',options.processes,kind='parameter')
                         job.add('-f',kind='parameter')
                         job.add('--quiet',kind='parameter')
 #                        job.add('--ntoa',kind='parameter')
@@ -10285,6 +10940,8 @@ if __name__ == "__main__":
                         job.run()
 
                         job.add(_BE_+'bowtie-build',kind='program')
+                        if bowtie121:
+                            job.add('--threads',options.processes,kind='parameter')
                         job.add('-f',kind='parameter')
                         job.add('--quiet',kind='parameter')
 #                        job.add('--ntoa',kind='parameter')
@@ -10297,6 +10954,8 @@ if __name__ == "__main__":
 
                         # map using bowtie
                         job.add(_BE_+'bowtie',kind='program')
+                        if bowtie121:
+                            job.add('--no-unal',kind='parameter')
                         job.add('-t',kind='parameter')
                         #job.add('-q',kind='parameter')
                         #job.add('-a',kind='parameter')
@@ -10316,11 +10975,15 @@ if __name__ == "__main__":
                         job.add('',outdir('gene-gene-bowtie_bowtie2/'),kind='input',temp_path=temp_flag)
                         job.add('-1',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_1_t.fq'),kind='input',temp_path=temp_flag)
                         job.add('-2',outdir('reads-ids_clip_bowtie2_psl_unmapped_filtered_2_t.fq'),kind='input',temp_path=temp_flag)
-                        job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
-                        job.add('|',kind='parameter')
-                        job.add('LC_ALL=C',kind='parameter')
-                        job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
-                        job.add('>',outdir('split_gene-gene_bowtie2.sam'),kind='output')
+                        if bowtie121:
+                            job.add('',outdir('split_gene-gene_bowtie2.sam'),kind='output')
+                            job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
+                        else:
+                            job.add('2>',outdir('log_bowtie_reads_mapped-gene-gene-bowtie2.stdout.txt'),kind='output',checksum='no',temp_path=temp_flag)
+                            job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
+                            job.add('awk',"""'$3 == "*" { next } { print }'""",kind='parameter')
+                            job.add('>',outdir('split_gene-gene_bowtie2.sam'),kind='output')
                         job.run()
 
                         job.add(_FC_+'merge-sam.py',kind='program')
@@ -10420,7 +11083,7 @@ if __name__ == "__main__":
                 job.add(_FC_+'build_report_fusions_psl.py',kind='program')
                 job.add('--suporting_unique_reads',spanning_reads_bowtie2,kind='parameter')
                 job.add('--anchor2',length_anchor2,kind='parameter')
-                job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),kind='input',temp_path=temp_flag if options.skip_spotlight else 'no')
+                job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_supporting_paired-reads.txt'),kind='input',temp_path=temp_flag if options.skip_spotlight else 'no')
                 job.add('--input_fastq',outdir('original_important.fq.gz'),kind='input',temp_path=temp_flag if options.skip_spotlight else 'no')
                 job.add('--input_fusion_psl',outdir('candidates_fusion_genes_reads_bowtie2.txt'),kind='input',temp_path=temp_flag)
                 job.add('--tmp_dir',tmp_dir,kind='parameter',checksum='no')
@@ -10450,7 +11113,7 @@ if __name__ == "__main__":
             ###
             job.add('prep-1by1.py',kind='program')
             job.add('-i',outdir('candidate_fusion-genes_further_eporcrlf2igh.txt'),kind='input') # outdir('candidate_fusion-genes_further.txt')
-            job.add('-r',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),kind='input')
+            job.add('-r',outdir('candidate_fusion-genes_supporting_paired-reads.txt'),kind='input')
             job.add('-1',outdir('candidate_focus_genes.txt'),kind='output')
             job.add('-2',outdir('candidate_focus_reads.txt'),kind='output')
             job.run()
@@ -10556,8 +11219,23 @@ if __name__ == "__main__":
                 job.add('>',freads[i]+'_merged.fq',kind='output')
                 job.run()
 
+                job.add('LC_ALL=C',kind='program')
+                job.add('cat',kind='parameter')
+                job.add('',freads[i]+'_merged.fq',kind='input')
+                job.add('|',kind='parameter')
+                job.add("echo $((`wc -l`/4))",kind='parameter')
+                job.add('>>',freads[i]+'_merged_count.txt',kind='output')
+                job.run()
+                
+                mc = -1
+                uf = freads[i]+'_merged_count.txt'
+                if os.path.exists(uf):
+                    mc = int(file(uf,"r").readline().strip())
+
+                job.clean(uf,temp_path=temp_flag)
+
                 fqm = freads[i]+'_merged.fq'
-                if job.iff(not empty(fqm), id = "#freads_"+str(i)+"_merged.fq#"):
+                if job.iff((not empty(fqm)) and (mc >= spanning_reads_spotlight), id = "#freads_"+str(i)+"_merged.fq#"):
 
 #####################################################################
 # VELVET stuff
@@ -10601,26 +11279,84 @@ if __name__ == "__main__":
                     ## DEBUG
                     #temp_flag = 'no'
 
-                    use_bbmap = False
-                    use_star = True
+                    use_bbmap = True
+                    use_star = False
                     use_bowtie2 = False
-                    
+                    use_libssw = False
+                    use_bwa = False
+
+                    if use_bwa:
+
+                        bd = outdir("focus_bwa.%d/" % (i,))
+                        
+                        job.add(_BA_+'bwa',kind='program')
+                        job.add('index',kind='parameter')
+                        job.add('-p',bd,kind='output')
+                        job.add('-p',bd+'.amb',kind='output',command_line='no')
+                        job.add('',outdir('genegene.fa.'+str(i)),kind='input')
+                        job.run()
+
+                        job.add(_BA_+'bwa',kind='program')
+                        job.add('mem',kind='parameter')
+                        job.add('-O','2',kind='parameter') # original 6
+                        job.add('-A','2',kind='parameter') # original 2
+                        job.add('-E','1',kind='parameter') # original 1
+                        job.add('-L','100',kind='parameter') # original 5
+#                        job.add('-a',kind='parameter')
+#                        job.add('-T','1',kind='parameter')
+                        job.add('-t',options.processes,kind='parameter',checksum='no')
+                        job.add('',bd,kind='input')
+                        job.add('',bd+'.amb',kind='input',command_line='no',temp_path=temp_flag)
+                        job.add('',bd+'.ann',kind='input',command_line='no',temp_path=temp_flag)
+                        job.add('',bd+'.bwt',kind='input',command_line='no',temp_path=temp_flag)
+                        job.add('',bd+'.pac',kind='input',command_line='no',temp_path=temp_flag)
+                        job.add('',bd+'.sa',kind='input',command_line='no',temp_path=temp_flag)
+                        job.add('',fqm,kind='input')
+                        job.add('>',outdir('focus-bwa.sam.'+str(i)),kind='output')
+                        #job.add('2>',outdir('log_bwa_reads-gene-gene.stdout.txt.')+str(i),kind='output',checksum='no')
+                        job.run()
+
+                        job.clean(outdir('genegene_longest.txt.'+str(i)),temp_path=temp_flag)
+                        job.link(outdir('focus-bwa.sam.'+str(i)),outdir('focus.sam.'+str(i)),temp_path=temp_flag)
+                        
+                        sys.exit(1)
+                        
+                    if use_libssw:
+                        ##########
+                        # LIBSSW
+                        #########
+
+                        _LS_ = ''
+                        # align the unmapped reads using BOWTIE2 on candidate fusion gene-gene
+                        job.add(_LS_+'ssw_test',kind='program')
+                        job.add('-c',kind='parameter')
+                        job.add('-r',kind='parameter')
+                        job.add('-s',kind='parameter')
+                        job.add('',outdir('genegene.fa.'+str(i)),kind='input')
+                        job.add('',fqm,kind='input')
+                        job.add('>',outdir('focus-libssw.sam.'+str(i)),kind='output')
+                        job.run()
+                        
+
+                        job.clean(outdir('genegene_longest.txt.'+str(i)),temp_path=temp_flag)
+                        job.link(outdir('focus-libssw.sam.'+str(i)),outdir('focus.sam.'+str(i)),temp_path=temp_flag)
+
                     if use_bbmap:
                         ##########
                         # BBMAP
                         #########
                         bd = outdir("focus_bbmap.%d/" % (i,))
                         # build the BBMAP index
-                        job.add('bbmap.sh',kind='program')
+                        job.add(_BP_+'bbmap.sh',kind='program')
                         job.add('ref=',outdir('genegene.fa.'+str(i)),kind='input',space='no',temp_path=temp_flag)
                         job.add('path=',bd,kind='output',space='no')
                         job.add('samplerate=','1',kind='parameter',space='no')
                         job.add('threads=',options.processes,kind='parameter',space='no',checksum='no')
                         #job.add('k=','11',kind='parameter',space='no') # default is 13 # if this is specified somehow the mappgoes wrong
-                        job.add('-Xmx24g',kind='parameter',checksum='no')
+                        #job.add('-Xmx24g',kind='parameter',checksum='no')
                         job.run()
                         # align the unmapped reads using BBMAP on candidate fusion gene-gene
-                        job.add('bbmap.sh',kind='program')
+                        job.add(_BP_+'bbmap.sh',kind='program')
                         job.add('path=',bd,kind='input',space='no',temp_path=temp_flag)
                         job.add('sam=','1.3',kind='parameter',space='no')
                         job.add('slow=','t',kind='parameter',space='no')
@@ -10633,7 +11369,7 @@ if __name__ == "__main__":
     #                    job.add('in=',vel+'transcripts.fa',kind='input',space='no') # this is for oases
                         #job.add('in=',vel+'contigs.fa',kind='input',space='no') # this is for velvet
                         job.add('out=',outdir('focus-bbmap.sam.'+str(i)),kind='output',space='no')
-                        job.add('-Xmx24g',kind='parameter',checksum='no')
+                        #job.add('-Xmx24g',kind='parameter',checksum='no')
                         job.run()
                         
 
@@ -10787,6 +11523,7 @@ if __name__ == "__main__":
                         job.link(outdir('focus-bowtie2.sam.'+str(i)),outdir('focus.sam.'+str(i)),temp_path=temp_flag)
 
 
+
                     job.add('sam2psl.py',kind='program')
                     job.add('--input',outdir('focus.sam.'+str(i)),kind='input',temp_path=temp_flag)
                     job.add('--read-seq',kind='parameter')
@@ -10848,7 +11585,7 @@ if __name__ == "__main__":
             job.add('--suporting_unique_reads',spanning_reads_spotlight,kind='parameter')
             job.add('--trim-complex',length_anchor_spotlight,kind='parameter')
             job.add('--anchor2',length_anchor2_spotlight,kind='parameter')
-            job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),kind='input')
+            job.add('--input_candidate_fusion_genes_reads',outdir('candidate_fusion-genes_supporting_paired-reads.txt'),kind='input')
             job.add('--input_fastq',outdir('focus.fq'),kind='input',temp_path=temp_flag)
             job.add('--input_fusion_psl',outdir('candidates_fusion_genes_reads_spotlight.txt'),kind='input',temp_path=temp_flag)
             job.add('--mismatches-gap',mismatches_spotlight,kind='parameter')
@@ -10913,15 +11650,50 @@ if __name__ == "__main__":
     job.add('--label','readthrough',kind='parameter')
     job.run()
 
+    # label exon-exon borders
+    job.add(_FC_+'label_exonexon.py',kind='program')
+    job.add('--gtf',datadir('organism.gtf'),kind='input')
+    job.add('--input',outdir('final-list_candidate-fusion-genes-t2.txt'),kind='input',temp_path=temp_flag)
+    job.add('--output',outdir('final-list_candidate-fusion-genes-t3.txt'),kind='output')
+    job.run()
+
     # predict effect of fusion
     job.add(_FC_+'predict_frame.py',kind='program')
     job.add('--gtf',datadir('organism.gtf'),kind='input')
     job.add('--transcripts',datadir('transcripts.fa'),kind='input')
-    job.add('--input',outdir('final-list_candidate-fusion-genes-t2.txt'),kind='input',temp_path=temp_flag)
-    job.add('--output',outdir('final-list_candidate-fusion-genes.txt'),kind='output')
-    if options.compress_fusion_transcripts:
-        job.add('--compress-transcripts',kind='parameter')
+    job.add('--input',outdir('final-list_candidate-fusion-genes-t3.txt'),kind='input',temp_path=temp_flag)
+    job.add('--output',outdir('final-list_candidate-fusion-genes_sequences.txt'),kind='output')
+    #fusion_transcripts_sequences:
+    #job.add('--compress-transcripts',kind='parameter')
     job.run()
+
+
+    job.add('zip',kind='program')
+    job.add('-j',kind='parameter')
+    job.add('',outdir('final-list_candidate-fusion-genes_sequences.txt.zip'),kind='output')
+    job.add('',outdir('final-list_candidate-fusion-genes_sequences.txt'),kind='input')
+    job.run()
+
+    job.add('cut',kind='program')
+    job.add('-f','1-16',kind='parameter')
+    job.add('',outdir('final-list_candidate-fusion-genes_sequences.txt'),kind='input',temp_path=temp_flag)
+    job.add('>',outdir('final-list_candidate-fusion-genes.txt'),kind='output')
+    job.run()
+
+    if not options.skip_conversion_grch37:
+        human = [line for line in file(datadir('version.txt'),'r').readlines() if line.lower().find('homo sapiens')!=-1 or line.lower().find('grch38')!=-1]
+        #print "Human Genome GRCh38 found!"
+        if human and len(human) == 2:
+            # predict effect of fusion
+            job.add(_FC_+'liftover.py',kind='program')
+            job.add('--input',outdir('final-list_candidate-fusion-genes.txt'),kind='input')
+            job.add('--chain',datadir('hg38ToHg19.over.chain.gz'),kind='input')
+            job.add('--output',outdir('final-list_candidate-fusion-genes.hg19.txt'),kind='output')
+            if _LR_:
+                job.add('--path-liftover',_LR_,kind='parameter',checksum='no')
+            job.add('--tmp_dir',tmp_dir,kind='parameter',checksum='no')
+            job.run()
+
 
     # predict effect of fusion
     job.add(_FC_+'build_summary.py',kind='program')
@@ -10935,20 +11707,6 @@ if __name__ == "__main__":
              temp_path = 'no',
              kind = 'copy')
 
-    if not options.skip_conversion_grch37:
-        human = [line for line in file(datadir('version.txt'),'r').readlines() if line.lower().find('homo sapiens')!=-1 or line.lower().find('grch38')!=-1]
-        #print "Human Genome GRCh38 found!"
-        if human and len(human) == 2:
-            # predict effect of fusion
-            job.add(_FC_+'liftover.py',kind='program')
-            job.add('--input',outdir('final-list_candidate-fusion-genes.txt'),kind='input')
-            job.add('--chain',datadir('hg38ToHg19.over.chain.gz'),kind='input')
-            job.add('--output',outdir('final-list_candidate-fusion-genes.GRCh37.txt'),kind='output')
-            if _LR_:
-                job.add('--path-liftover',_LR_,kind='parameter',checksum='no')
-            job.add('--tmp_dir',tmp_dir,kind='parameter',checksum='no')
-            job.run()
-
     job.add('LC_ALL=C',kind='program')
     job.add('awk',kind='parameter')
     job.add("""'(NR==1) || (($3>%d) && ($7=="skipped"))'""" % (spanning_pairs_minimum-1,),outdir('preliminary-list_candidate-fusion-genes.txt'),kind='input')
@@ -10960,8 +11718,6 @@ if __name__ == "__main__":
     job.add('LC_ALL=C',kind='parameter')
     job.add('tr',kind='parameter')
     job.add("'\\t'","'/'",kind='parameter')
-#    job.add('|',kind='parameter')
-#    job.add('sort',kind='parameter')
     job.add('|',kind='parameter')
     job.add('LC_ALL=C',kind='parameter')
     job.add('uniq',kind='parameter')
@@ -10988,15 +11744,23 @@ if __name__ == "__main__":
         job.clean(job.gg2seq,temp_path=temp_flag)
         job.clean(job.gg2nuc,temp_path=temp_flag)
     
-    
-    to_delete = [
+    to_delete_list_files = [
+        outdir('gene-gene_split_blat.fa'),
         outdir('gene-gene_split_blat.len'),
-        outdir('candidate_fusion-genes_further.txt'),
-        outdir('candidate_fusion-genes_no-offending-reads_supporting_paired-reads.txt'),
-        outdir('candidate_fusion-genes_further_eporcrlf2igh.txt'),
+        outdir('gene-gene_split_bowtie2.fa'),
         outdir('gene-gene_split_bowtie2.len'),
-        outdir('gene-gene_split_bwa.len'),
         outdir('gene-gene_split_star.len'),
+        outdir('gene-gene_split_star.fa'),
+        outdir('gene-gene_split_bwa.fa'),
+        outdir('gene-gene_split_bwa.len')
+    ]
+    job.clean(to_delete_list_files,list_file = "yes",temp_path=temp_flag)
+
+    to_delete = [
+        outdir('reads_mapped-exon-exon-fusion-genes_sorted-ref.map'),
+        outdir('candidate_fusion-genes_further.txt'),
+        outdir('candidate_fusion-genes_supporting_paired-reads.txt'),
+        outdir('candidate_fusion-genes_further_eporcrlf2igh.txt'),
         outdir('pre-fusion'),
         outdir('candidate_focus_genes.txt'),
         outdir('candidate_focus_reads.txt'),
@@ -11004,10 +11768,6 @@ if __name__ == "__main__":
         outdir('gene-gene-bowtie_bowtie2_unique.fa'),
         outdir('exon-exon_junction_cut_split.fa'),
         outdir('eporcrlf2.txt'),
-        outdir('gene-gene_split_blat.fa'),
-        outdir('gene-gene_split_bowtie2.fa'),
-        outdir('gene-gene_split_bwa.fa'),
-        outdir('gene-gene_split_star.fa'),
         outdir('all_ambiguous_genes.txt'),
         outdir('candidate_fusion-genes_exon-exon.txt'),
         outdir('candidate_fusion-genes_further.txt'),
@@ -11032,6 +11792,7 @@ if __name__ == "__main__":
         outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl-p.fq'),
         outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_psl-pp.fq'),
         outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final.fq'),
+        outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_ex-ex_final_big.fq'),
         outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.fq'),
         outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome.fq'),
         outdir('reads_filtered_transcriptome_sorted-read_end.map'),
@@ -11078,6 +11839,7 @@ if __name__ == "__main__":
         outdir('split_gene-gene_bwa_final.psl'),
         outdir('single/'),
         outdir('restart.sh')]
+        
     job.clean(to_delete,temp_path=temp_flag)
     
     if urls:

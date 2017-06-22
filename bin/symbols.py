@@ -175,7 +175,6 @@ synonym = {
 'CIP2A':'KIAA1524',
 'ATP50':'ATP5O',
 'ZNF9':'CNBP',
-'HERVK17':'RP11-599B13.3',
 'SCL45A3':'SLC45A3',
 'EWS':'EWSR1',
 'CTLC':'CLTCL1',
@@ -411,8 +410,6 @@ synonym = {
 'KIAA1509':'CCDC88C',
 'CEV14':'TRIP11',
 'FGFR1OP1':'FGFR1OP',
-'HERV-K':'ERVK3-1',
-'HERVK':'ERVK3-1',
 'HNRPA2B1':'HNRNPA2B1',
 'RAD51L1':'RAD51B',
 'SIP1':'GEMIN2',
@@ -466,7 +463,7 @@ synonym = {
 'BX248273':'RP11-129M6.1',
 'BC041441':'RP5-952N6.1',
 'BX537644':'RP11-18C24.6',
-'EST14':'RP11-356O9.1',
+'EST14':'AL121790.1',
 'RCC17':'ASPSCR1',
 'BF104016':'CCDC26',
 'HCMOGT1':'SPECC1',
@@ -497,7 +494,10 @@ synonym = {
 'AC090627.1':'THRA1/BTR',
 'STBD1':'FAM47E-STBD1',
 'KIAA0660':'G3BP2',
-'MIR143':'CARMN'
+'MIR143':'CARMN',
+'ERVK3-1':'AC020915.1',
+'HERVK':'AC020915.1',
+'HERVK17':'AC129492.2'
 }
 
 # see here for more: http://www.genenames.org/genefamilies/TR#TRG
@@ -727,6 +727,8 @@ def generate_loci(gene_symbols_filename = 'genes_symbols.txt'):
     loci['HOXB@'] = find_starts(['HOXB'],genes)
     loci['HOXC@'] = find_starts(['HOXC'],genes)
     loci['HOXD@'] = find_starts(['HOXD'],genes)
+    loci['HOX@'] = loci['HOXA@'] + loci['HOXB@'] + loci['HOXC@'] + loci['HOXD@']
+    
     loci['HLA@'] = find_starts(['HLA-'],genes)
 
     loci['IGL@'] = find_starts(['IGLV','IGLJ','IGLC','IGLL','IGL_locus','IGH_locus'],genes)

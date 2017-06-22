@@ -342,15 +342,16 @@ a candidate list of fusion genes (where short reads have been aligned using BLAT
             ):
             data.append(line)
         else:
-            print "--------------------------------------------------------"
-            print "excluded: -->",line
-            print fl0/fl10,otm
-            print il1, om
-            print il17 
-            print il6
-            print il4
-            print tStart,border
-            print border, tEnd
+            pass
+#            print "--------------------------------------------------------"
+#            print "excluded: -->",line
+#            print fl0/fl10,otm
+#            print il1, om
+#            print il17 
+#            print il6
+#            print il4
+#            print tStart,border
+#            print border, tEnd
 
     print >>sys.stderr,"Processing..."
     result = []

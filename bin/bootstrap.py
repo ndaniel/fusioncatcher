@@ -101,6 +101,9 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     global SAMTOOLS_VERSION
     global SETUPTOOLS_PATH
     global SETUPTOOLS_URL
+    global BOWTIE_OLD_PATH
+    global BOWTIE_OLD_URL
+    global BOWTIE_OLD_VERSION
     global BOWTIE_PATH
     global BOWTIE_URL
     global BOWTIE_VERSION
@@ -180,8 +183,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
     
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7b.zip'
-    FUSIONCATCHER_VERSION = "0.99.7b beta"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7c.zip'
+    FUSIONCATCHER_VERSION = "0.99.7c beta"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -193,16 +196,16 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     NUMPY_URL = 'http://pypi.python.org/packages/source/n/numpy/numpy-1.11.0.tar.gz'
     # biopython
     BIOPYTHON_PATH = os.path.join(FUSIONCATCHER_TOOLS,'biopython')
-    BIOPYTHON_URL = 'http://biopython.org/DIST/biopython-1.68.tar.gz'
+    BIOPYTHON_URL = 'http://biopython.org/DIST/biopython-1.69.tar.gz'
     # xlrd python
     XLRD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'xlrd')
-    XLRD_URL = 'http://pypi.python.org/packages/source/x/xlrd/xlrd-0.9.4.tar.gz'
+    XLRD_URL = 'http://pypi.python.org/packages/source/x/xlrd/xlrd-1.0.0.tar.gz'
     # openpyxl python
     OPENPYXL_PATH = os.path.join(FUSIONCATCHER_TOOLS,'openpyxl')
-    OPENPYXL_URL = 'http://pypi.python.org/packages/source/o/openpyxl/openpyxl-2.4.0-a1.tar.gz'
+    OPENPYXL_URL = 'http://pypi.python.org/packages/source/o/openpyxl/openpyxl-2.5.0-a1.tar.gz'
     # setuptools python
     SETUPTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'setuptools')
-    SETUPTOOLS_URL = 'http://pypi.python.org/packages/source/s/setuptools/setuptools-20.9.0.tar.gz'
+    SETUPTOOLS_URL = 'http://pypi.python.org/packages/source/s/setuptools/setuptools-36.0.1.zip'
     # BOWTIE
     BOWTIE_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie')
     BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.0/bowtie-1.2-linux-x86_64.zip'
@@ -217,7 +220,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BOWTIE2_VERSION = ('2.2.9',)
     # BLAT
     BLAT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'blat')
-    BLAT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/blat/blat'
+    BLAT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/blat/blat'
     BLAT_VERSION = ('35x1',)
     # STAR
     STAR_PATH = os.path.join(FUSIONCATCHER_TOOLS,'star')
@@ -229,15 +232,15 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BWA_VERSION = ('0.7.10-r789',)
    # BBMAP
     BBMAP_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bbmap')
-    BBMAP_URL = 'http://sourceforge.net/projects/bbmap/files/BBMap_37.02.tar.gz'
+    BBMAP_URL = 'http://sourceforge.net/projects/bbmap/files/BBMap_37.28.tar.gz'
     BBMAP_VERSION = ('37','37.02')
     # faToTwoBit
     FATOTWOBIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'fatotwobit')
-    FATOTWOBIT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/faToTwoBit'
+    FATOTWOBIT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit'
     # SRATOOLKIT
     SRATOOLKIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'sratoolkit')
-    SRATOOLKIT_URL = 'http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.1-3/sratoolkit.2.8.1-3-centos_linux64.tar.gz'
-    SRATOOLKIT_VERSION = ('2.3.5-2','2.4.2','2.5.1','2.6.2','2.8.0','2.8.1-3')
+    SRATOOLKIT_URL = 'http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.2-1/sratoolkit.2.8.2-1-centos_linux64.tar.gz'
+    SRATOOLKIT_VERSION = ('2.3.5-2','2.4.2','2.5.1','2.6.2','2.8.0','2.8.1-3','2.8.2-1')
     VELVET_PATH = os.path.join(FUSIONCATCHER_TOOLS,'velvet')
     VELVET_URL = 'http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz'
     VELVET_VERSION = ('1.2.09','1.2.10')
@@ -253,8 +256,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     LZOP_VERSION = ('v1.03',)
     # COREUTILS (for SORT parallel)
     COREUTILS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'coreutils')
-    COREUTILS_URL = 'http://ftp.gnu.org/gnu/coreutils/coreutils-8.25.tar.xz'
-    COREUTILS_VERSION = ('v8.25',)
+    COREUTILS_URL = 'http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz'
+    COREUTILS_VERSION = ('v8.27',)
     # PIGZ (GZIP parallel)
     PIGZ_PATH = os.path.join(FUSIONCATCHER_TOOLS,'pigz')
     PIGZ_URL = 'http://http.debian.net/debian/pool/main/p/pigz/pigz_2.3.1.orig.tar.gz' #'http://zlib.net/pigz/pigz-2.3.3.tar.gz'
@@ -265,26 +268,26 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     PXZ_VERSION = ('4.999.9beta',)
     # GNU PARALLEL
     PARALLEL_PATH = os.path.join(FUSIONCATCHER_TOOLS,'parallel')
-    PARALLEL_URL = 'http://ftp.gnu.org/gnu/parallel/parallel-20160422.tar.bz2'
-    PARALLEL_VERSION = ('20160422',)
+    PARALLEL_URL = 'http://ftp.gnu.org/gnu/parallel/parallel-20170522.tar.bz2'
+    PARALLEL_VERSION = ('20170522',)
     # samtools
     SAMTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'samtools')
     SAMTOOLS_URL = 'http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2'
     SAMTOOLS_VERSION = ('0.1.19-44428cd',)
     # SEQTK
     SEQTK_PATH = os.path.join(FUSIONCATCHER_TOOLS,'seqtk')
-    SEQTK_URL = 'http://github.com/ndaniel/seqtk/archive/1.0-r82b.tar.gz'
-    SEQTK_VERSION = ('1.0-r82b-dirty',)
+    SEQTK_URL = 'http://github.com/ndaniel/seqtk/archive/1.2-r101c.tar.gz'
+    SEQTK_VERSION = ('1.2-r101c-dirty',)
     # 'http://github.com/lh3/seqtk/archive/master.zip'
     #SEQTK_URL = 'http://github.com/lh3/seqtk/archive/1.0.tar.gz'
     # PICARD
     PICARD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'picard')
     #PICARD_URL = 'http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip'
-    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/2.9.0/picard.jar'
-    PICARD_VERSION = ('2.9',)
+    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/2.9.2/picard.jar'
+    PICARD_VERSION = ('2.9.2',)
     # LiftOver
     LIFTOVER_PATH = os.path.join(FUSIONCATCHER_TOOLS,'liftover')
-    LIFTOVER_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v287/liftOver'
+    LIFTOVER_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/liftOver'
     LIFTOVER_VERSION = ('move annotations',)
     # JAVA
     JAVA_PATH = "/usr/bin/"
@@ -1084,42 +1087,45 @@ if __name__ == '__main__':
 ################################################################################
 
     hints = """
-On a Ubuntu running these before installing FusionCatcher might make the installation
-go smoother:
+================================================================================
+NOTE: On a Ubuntu running these before installing FusionCatcher might make the installation go smoother:
     
-sudo apt-get -y install \
-build-essential\
-libncurses5-dev \
-gawk \
-gcc \
-g++ \
-bzip2 \
-make \
-cmake \
-automake \
-gzip \
-zip \
-unzip \
-zlib1g-dev \
-zlib1g \
-wget \
-curl \
-pigz \
-tar \
-parallel \
-libtbb-dev \
-libtbb2 \
-python \
-python-dev \
-python-numpy \
-python-biopython \
-python-xlrd \
+sudo apt-get -y install \\
+build-essential\\
+libncurses5-dev \\
+default-jdk \\
+gawk \\
+gcc \\
+g++ \\
+bzip2 \\
+make \\
+cmake \\
+automake \\
+gzip \\
+zip \\
+unzip \\
+zlib1g-dev \\
+zlib1g \\
+wget \\
+curl \\
+pigz \\
+tar \\
+parallel \\
+libtbb-dev \\
+libtbb2 \\
+python \\
+python-dev \\
+python-numpy \\
+python-biopython \\
+python-xlrd \\
 python-openpyxl
+================================================================================
 """
     print hints
+    time.sleep(5) # wait 5 seconds
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "human_v87"
+    v = "human_v89"
     ############################################################################
     # List all dependencies
     ############################################################################
@@ -1140,6 +1146,7 @@ python-openpyxl
         print "STAR [REQUIRED]: ",STAR_URL
         print "BWA [REQUIRED]: ",BWA_URL
         print "SeqTK [REQUIRED]: ",SEQTK_URL
+        print "BBMap [REQUIRED]: ",BBMAP_URL
         print "Velvet (de novo assembler) [OPTIONAL]: ",VELVET_URL
         print "Picard (Java-based SAM tools) [OPTIONAL]: ",PICARD_URL
         print "GNU Parallel (shell tool for executing jobs in parallel) [OPTIONAL]: ",PARALLEL_URL
@@ -1249,6 +1256,7 @@ python-openpyxl
             BOWTIE_URL = os.path.join(ol, os.path.basename(BOWTIE_URL))
             BOWTIE2_URL = os.path.join(ol, os.path.basename(BOWTIE2_URL))
             BLAT_URL = os.path.join(ol, os.path.basename(BLAT_URL))
+            BBMAP_URL = os.path.join(ol, os.path.basename(BBMAP_URL))
             LIFTOVER_URL = os.path.join(ol, os.path.basename(LIFTOVER_URL))
             FATOTWOBIT_URL = os.path.join(ol, os.path.basename(FATOTWOBIT_URL))
             SRATOOLKIT_URL = os.path.join(ol, os.path.basename(SRATOOLKIT_URL))
@@ -1319,6 +1327,7 @@ python-openpyxl
                  path = FUSIONCATCHER_BIN,
                  verbose = True,
                  custom_install = ["#!/usr/bin/env bash",
+                                   "rm ../bin",
 #                                   "rm -rf ../bin",
 #                                   "rm -rf ../etc",
 #                                   "rm -rf ../test",
@@ -1995,40 +2004,40 @@ python-openpyxl
         file(f,'w').writelines([el+'\n' for el in txt])
         os.system('chmod +rx "%s"' % (f,))
         ########################################################################
-        file_download = f
-#        print ""
-#        print "---------------------------------------------------------------------------"
-#        print "*  OPTION 2: Download the data needed by FusionCatcher from MEGA.CO.NZ!"
-#        print "             TRY THIS ONLY IF OPTION 1 DID NOT WORK!"
-#        print "---------------------------------------------------------------------------"
-#        print "In order to download the latest human data files needed by FusionCatcher, please run these (it will take several hours):"
-#        print ""
-        txt = []
-        txt.append("rm  -rf  %s" % (FUSIONCATCHER_CURRENT.replace(" ","\\ "),))
-        txt.append("rm -f %s.tar.gz.*" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
-        txt.append("rm -rf %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
-        txt.append("mkdir  -p  %s" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
-        txt.append("ln  -s  %s  %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),FUSIONCATCHER_CURRENT.replace(" ","\\ ")))
-        txt.append("#  ====>>> 1. Download manually the file '%s.tar.gz.aa' to here '%s' using your favourite Internet browser from here:" % (v,FUSIONCATCHER_DATA))
-        txt.append("#  ====>>>            https://mega.co.nz/#!HYMDGQYK!r7nFk27bu-E-hbfE_eQuz0D0Y8g_MMU2rfLF2-LovtQ")
-        txt.append("#  ====>>> 2. Download manually the file '%s.tar.gz.ab' to here '%s' using your favourite Internet browser from here:" % (v,FUSIONCATCHER_DATA))
-        txt.append("#  ====>>>            https://mega.co.nz/#!2BtgwQJa!Xr7M6hn4WLxomHsvLPyF4nyVk7PeFdZTop6EsB8CYMo")
-        txt.append("#  ====>>> 3. Download manually the file '%s.tar.gz.ac' to here '%s' using your favourite Internet browser from here:" % (v,FUSIONCATCHER_DATA))
-        txt.append("#  ====>>>            https://mega.co.nz/#!Dc1k0IKC!VNBIVe6YuuPRkVfWEMsNZRpYKeVohGl1ws2xAnIUEvY")
-        txt.append("#  ====>>> 4. Download manually the file '%s.tar.gz.ad' to here '%s' using your favourite Internet browser from here:" % (v,FUSIONCATCHER_DATA))
-        txt.append("#  ====>>>            https://mega.co.nz/#!CdlggKqS!c8vkDFS-sNTsWBeqeq8sSWLoupr8-56xiBrNhJYkbeA")
-        txt.append("cat %s.tar.gz.* | tar xz -C %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),FUSIONCATCHER_DATA.replace(" ","\\ ")))
-        txt.append("rm -f %s.tar.gz.*" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
-#        for t in txt:
-#            print t
-        txt.append("exit 0")
-        #txt.insert(0,'#!/usr/bin/env bash')
-        f = os.path.join(FUSIONCATCHER_BIN,"mega.sh")
-#        print ""
-#        print "All these commands are saved in '%s' file! You shall copy/paste all the previous commands (except the URLS which need to be downloaded manually) and run them manually in the terminal!" % (f,)
-#        print ""
-        file(f,'w').writelines([el+'\n' for el in txt])
-        os.system('chmod +rx "%s"' % (f,))
+#        file_download = f
+##        print ""
+##        print "---------------------------------------------------------------------------"
+##        print "*  OPTION 2: Download the data needed by FusionCatcher from MEGA.CO.NZ!"
+##        print "             TRY THIS ONLY IF OPTION 1 DID NOT WORK!"
+##        print "---------------------------------------------------------------------------"
+##        print "In order to download the latest human data files needed by FusionCatcher, please run these (it will take several hours):"
+##        print ""
+#        txt = []
+#        txt.append("rm  -rf  %s" % (FUSIONCATCHER_CURRENT.replace(" ","\\ "),))
+#        txt.append("rm -f %s.tar.gz.*" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
+#        txt.append("rm -rf %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
+#        txt.append("mkdir  -p  %s" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
+#        txt.append("ln  -s  %s  %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),FUSIONCATCHER_CURRENT.replace(" ","\\ ")))
+#        txt.append("#  ====>>> 1. Download manually the file '%s.tar.gz.aa' to here '%s' using your favourite Internet browser from here:" % (v,FUSIONCATCHER_DATA))
+#        txt.append("#  ====>>>            https://mega.co.nz/#!HYMDGQYK!r7nFk27bu-E-hbfE_eQuz0D0Y8g_MMU2rfLF2-LovtQ")
+#        txt.append("#  ====>>> 2. Download manually the file '%s.tar.gz.ab' to here '%s' using your favourite Internet browser from here:" % (v,FUSIONCATCHER_DATA))
+#        txt.append("#  ====>>>            https://mega.co.nz/#!2BtgwQJa!Xr7M6hn4WLxomHsvLPyF4nyVk7PeFdZTop6EsB8CYMo")
+#        txt.append("#  ====>>> 3. Download manually the file '%s.tar.gz.ac' to here '%s' using your favourite Internet browser from here:" % (v,FUSIONCATCHER_DATA))
+#        txt.append("#  ====>>>            https://mega.co.nz/#!Dc1k0IKC!VNBIVe6YuuPRkVfWEMsNZRpYKeVohGl1ws2xAnIUEvY")
+#        txt.append("#  ====>>> 4. Download manually the file '%s.tar.gz.ad' to here '%s' using your favourite Internet browser from here:" % (v,FUSIONCATCHER_DATA))
+#        txt.append("#  ====>>>            https://mega.co.nz/#!CdlggKqS!c8vkDFS-sNTsWBeqeq8sSWLoupr8-56xiBrNhJYkbeA")
+#        txt.append("cat %s.tar.gz.* | tar xz -C %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),FUSIONCATCHER_DATA.replace(" ","\\ ")))
+#        txt.append("rm -f %s.tar.gz.*" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
+##        for t in txt:
+##            print t
+#        txt.append("exit 0")
+#        #txt.insert(0,'#!/usr/bin/env bash')
+#        f = os.path.join(FUSIONCATCHER_BIN,"mega.sh")
+##        print ""
+##        print "All these commands are saved in '%s' file! You shall copy/paste all the previous commands (except the URLS which need to be downloaded manually) and run them manually in the terminal!" % (f,)
+##        print ""
+#        file(f,'w').writelines([el+'\n' for el in txt])
+#        os.system('chmod +rx "%s"' % (f,))
         ########################################################################
         print ""
         print "---------------------------------------------------------------------------"

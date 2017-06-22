@@ -1433,6 +1433,22 @@ if __name__ == '__main__':
                     strand = '-1'
                 )
 
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001264',
+                    gene_symbol = 'MIR100HG', # MIR100HG
+                    gene_id = 'ENSG00000255248',
+                    transcript_id = 'ENST09000001264',
+                    exon_id = 'ENSE09000001264',
+                    exon_number = '1',
+                    start = '121699000', #
+                    end =   '122593000', #
+                    chrom = '11',
+                    strand = '-1'
+                )
+
+
+
+
                 # transcript 2 - exon 1/4-- IGHM
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000001300',

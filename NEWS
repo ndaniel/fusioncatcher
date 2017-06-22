@@ -1,16 +1,21 @@
 Version Release History for FusionCatcher
 =========================================
 
-Version 0.99.7c beta - ....., 2017
+
+Version 0.99.7c beta - June 30, 2017
 ---------------------------------------
- * added support for Ensembl version 87
+ * added support for Ensembl versions 87, 88, and 89
  * added support for optionally forcing the execution of tools/scripts by using the corresponding absolute paths from the configuration file
  * added support for two versions of Bowtie aligner, that are 1.1.2 and 1.2
  * increased sensivity for certain types of IGH fusions and certain sizes of input reads
  * predicted full sequences of fusion transcripts are given for cases when the fusion is in-frame
+ * candidate fusion genes are labelled now with exon-exon when the fusion junction is using known exon borders
  * fixed bug affecting very long reads (e.g. MiSeq reads)
+ * fixed bug affecting single-end reads
+ * fixed bug which affects in rare cases the prediction of fusion junction
  * fixed several minor bugs
  * updated manual
+
 
 Version 0.99.7b beta - February 24, 2017
 ---------------------------------------

@@ -394,10 +394,10 @@ if __name__ == '__main__':
         n = len(b)
         f = [True] * n
         clean_labels = {
-            frozenset(['distance200kbp', 'distance100kbp', 'distance10kbp', 'distance1000bp']): 'gap<1K',
-            frozenset(['distance200kbp', 'distance100kbp', 'distance10kbp']): '1K<gap<10K',
-            frozenset(['distance200kbp', 'distance100kbp']): '10K<gap<100K',
-            frozenset(['distance200kbp']): '100K<gap<200K',
+            frozenset(['dist200kbp', 'dist100kbp', 'dist10kbp', 'dist1000bp']): 'gap<1K',
+            frozenset(['dist200kbp', 'dist100kbp', 'dist10kbp']): '1K<gap<10K',
+            frozenset(['dist200kbp', 'dist100kbp']): '10K<gap<100K',
+            frozenset(['dist200kbp']): '100K<gap<200K',
             }
         for i in xrange(n):
             if f[i]:
@@ -426,9 +426,9 @@ if __name__ == '__main__':
                 # clean the short_distance and distance labels
                 labels = line[2].split(',')
                 labels = [elk for elk in labels if elk != 'short_distance'] # remove short_distance
-                distances = frozenset([elk for elk in labels if elk.startswith('distance')])
+                distances = frozenset([elk for elk in labels if elk.startswith('dist')])
                 if distances:
-                    labels = [elk for elk in labels if not elk.startswith('distance')] # remove the distance labels
+                    labels = [elk for elk in labels if not elk.startswith('dist')] # remove the distance labels
                     labels.append(clean_labels.get(distances,''))
                     line[2] = ','.join(labels)
                 r.append(line)

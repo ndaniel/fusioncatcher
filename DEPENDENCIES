@@ -70,6 +70,8 @@ sudo apt-get install pigz
 sudo apt-get install zip
 sudo apt-get install tar
 sudo apt-get install unzip
+sudo apt-get install libc6-dev
+sudo apt-get install default-jdk
 sudo apt-get install libtbb-dev
 sudo apt-get install libtbb2
 sudo apt-get install parallel
@@ -88,6 +90,7 @@ sudo yum install awk
 sudo yum install gcc
 sudo yum install make
 sudo yum install cmake
+sudo yum install glibc-devel
 sudo yum install zlib-devel
 sudo yum install gzip
 sudo yum install pigz
@@ -99,4 +102,5 @@ sudo yum install python-biopython
 sudo yum install python-numpy
 sudo yum install python-xlrd
 sudo yum install python-openpyxl
+sudo yum install java-1.8.0-openjdk* (or other Java?)
 ```

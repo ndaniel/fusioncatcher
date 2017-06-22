@@ -100,8 +100,6 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
-    file(os.path.join(options.output_directory,'prostates.txt'),'w').write('')
-
     try:
         import openpyxl
         print "The Python Excel parser OPENPYXL was found!"
@@ -126,9 +124,16 @@ if __name__ == '__main__':
     'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
     'Accept-Language' : 'en-gb,en;q=0.5'
     }
-    
+
+    file(os.path.join(options.output_directory,'non-cancer_tissues.txt'),'w').write('')
+
+    # save version of
+    today = datetime.date.today()
+    txt = ['Non-cancer tissues and cells (Babiceanu et al. Nucl. Acids Res. 2016) database version: %s\n' % (today.strftime("%Y-%m-%d"),)]
+    file(os.path.join(options.output_directory,'version.txt'),'a').writelines(txt)
+
+
     if options.organism.lower() == 'homo_sapiens':
-        today = datetime.date.today()
         data = []
         sem = True
         if options.data_filename:
@@ -201,10 +206,6 @@ if __name__ == '__main__':
                             data.add((gg1,gg2))
 
             print " - found",len(data),"fusions"
-
-            # save version of
-            txt = ['Non-cancer tissues and cells (Babiceanu et al. Nucl. Acids Res. 2016) database version: %s\n' % (today.strftime("%Y-%m-%d"),)]
-            file(os.path.join(options.output_directory,'version.txt'),'a').writelines(txt)
 
     #
             # read the gene symbols

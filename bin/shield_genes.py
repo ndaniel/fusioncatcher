@@ -160,97 +160,14 @@ if __name__ == '__main__':
             "ENSG00000154582", # TCEB1
             "ENSG00000029993", # HMGB3
             "ENSG00000115541", # HSPE1
-            "ENSG00000067900" # ROCK1
-            
-#            "ENSG00000187266", # EPOR
-#            "ENSG00000205755", # CRLF2
-#            "ENSG00000066468", # FGFR2
-#            "ENSG00000170421", # KRT8
-#            "ENSG00000164919", # COX6C
-#            "ENSG00000161960", # EIF4A1
-#            "ENSG00000072518", # MARK2
-#            "ENSG00000196712", # NF1
-#            "ENSG00000154997", # SEPT14
-#            "ENSG00000186716", # BCR
-#            "ENSG00000122565", # CBX3
-#            "ENSG00000132361", # CLUH
-#            "ENSG00000068078", # FGFR3
-#            "ENSG00000111057", # KRT18
-#            "ENSG00000176171", # BNIP3
-#            "ENSG00000114374", # USP9Y
-#            "ENSG00000205581", # HMGN1
-#            "ENSG00000167085", # PHB
-#            "ENSG00000181061", # HIGD1A
-#            "ENSG00000263001", # GTF2I
-#            "ENSG00000170144", # HNRNPA3
-#            "ENSG00000166272", # WBP1L
-#            "ENSG00000171791", # BCL2
-#            "ENSG00000104529", # EEF1D
-#            "ENSG00000254772", # EEF1G
-#            "ENSG00000137309", # HMGA1
-#            "ENSG00000099917", # MED15
-#            "ENSG00000160075", # SSU72
-#            "ENSG00000126267", # COX6B1
-#            "ENSG00000108468", # CBX1
-#            "ENSG00000156976", # EIF4A2
-#            "ENSG00000171345", # KRT19
-#            "ENSG00000148572", # NRBF2
-#            "ENSG00000123595", # RAB9A
-#            "ENSG00000100075", # SLC25A1
-#            "ENSG00000196419", # XRCC6
-#            "ENSG00000107890", # ANKRD26
-#            "ENSG00000078403", # MLLT10
-#            "ENSG00000169519", # METTL15
-#            "ENSG00000037897", # METTL1
-#            "ENSG00000121057", # AKAP1
-#            "ENSG00000143799", # PARP1
-#            "ENSG00000074800", # ENO1
-#            "ENSG00000134308", # YWHAQ
-#            "ENSG00000180530", # NRIP1
-#            "ENSG00000102699", # PARP4
-#            "ENSG00000171530", # TBCA
-#            "ENSG00000168038", # ULK4
-#            "ENSG00000119801", # YPEL5
-#            "ENSG00000142192", # APP
-#            "ENSG00000175866", # BAIAP2
-#            "ENSG00000028310", # BRD9
-#            "ENSG00000112576", # CCND3
-#            "ENSG00000112242", # E2F3
-#            "ENSG00000173153", # ESRRA
-#            "ENSG00000078403", # MLLT10
-#            "ENSG00000141380", # SS18
-#            "ENSG00000204531", # POU5F1
-#            "ENSG00000143549", # TPM3
-#            "ENSG00000108953", # YWHAE
-#            "ENSG00000183722", # LHFP
-#            "ENSG00000187735", # TCEA1
-#            "ENSG00000100814", # CCNB1IP1
-#            "ENSG00000178982", # EIF3K
-#            "ENSG00000198765", # SYCP1
-#            "ENSG00000164144", # ARFIP1
-#            "ENSG00000110619", # CARS
-#            "ENSG00000074054", # CLASP1
-#            "ENSG00000104408", # EIF3E
-#            "ENSG00000104413", # ESRP1
-#            "ENSG00000092208", # GEMIN2
-#            "ENSG00000149262", # INTS4
-#            "ENSG00000100811", # YY1
-#            "ENSG00000155189", # AGPAT5
-#            "ENSG00000123268", # ATF1
-#            "ENSG00000183337", # BCOR
-#            "ENSG00000157764", # BRAF
-#            "ENSG00000066455", # GOLGA5
-#            "ENSG00000133703", # KRAS
-#            "ENSG00000163875", # MEAF6
-#            "ENSG00000147140", # NONO
-#            "ENSG00000134250", # NOTCH2
-#            "ENSG00000132155", # RAF1
-#            "ENSG00000153250", # RBMS1
-#            "ENSG00000076067", # RBMS2
-#            "ENSG00000161011", # SQSTM1
-#            "ENSG00000178691", # SUZ12
-#            "ENSG00000147526", # TACC1
-#            "ENSG00000071564" # TCF3
+            "ENSG00000067900", # ROCK1
+            "ENSG00000189403", # HMGB1
+            "ENSG00000198804", # MTCO1
+            "ENSG00000263001", # GTF2I
+            "ENSG00000161960", # EIF4A1
+            "ENSG00000196712", # NF1
+            "ENSG00000186716", # BCR
+
         ]
         shield(options.output_directory, gene_ids, options.read_length, logf=log_file)
 
@@ -261,10 +178,12 @@ if __name__ == '__main__':
     #
     symbol = [line.rstrip('\r\n').split('\t') for line in file(os.path.join(options.output_directory,'genes_symbols.txt'),"r").readlines() if line.rstrip("\r\n")] # ensg gene-id
     ensg = dict()
+    genename = dict()
     for e,s in symbol:
         if s not in ensg:
             ensg[s] = set()
         ensg[s].add(e)
+        genename[e]=s
 
     synonym = [line.rstrip('\r\n').split('\t') for line in file(os.path.join(options.output_directory,'synonyms.txt'),"r").readlines() if line.rstrip("\r\n")] # ensg gene-id
 #    sensg = dict()
@@ -414,8 +333,8 @@ if __name__ == '__main__':
                       "10\t133660000\t133774000\n", # dor DUX4
                       "Y\t11303500\t11335000\n", # for DUX4
                       "18\t95000\t130000\n", # for DUX4 (but it covers gene ROCK1P1 which has some parts similar to DUX4)
-                      "Y\t1187549\t1212750\n", # for CRLF2
-                      "15\t30355260\t30377930\n" # for gene CHRFAM7A (erase the part of CHRFAM7A which is CHRNA7 in order to detect CHRNA7-FAM7A fusion)
+                      "Y\t1187549\t1212750\n" # for CRLF2
+#                      "15\t30355260\t30377930\n" # for gene CHRFAM7A (erase the part of CHRFAM7A which is CHRNA7 in order to detect CHRNA7-FAM7A fusion)
                 ]
             file(os.path.join(options.output_directory,"shield_erase-regions.bed"),"w").writelines(eraser) # D4Z4 repeat region
 
@@ -436,7 +355,7 @@ if __name__ == '__main__':
         if line[4].lower() == 'mt' or line[0] in ribosomal: # skip the MT genes
             continue
         if line[0] in pseudo_all:
-            ux.append(line[0]+"\n")
+            ux.append(line[0]+"\t"+genename.get(line[0],'')+"\n")
             if int(line[2]) < int(line[1]):
                 bed.append("%s\t%d\t%s\n" % (line[4],int(line[2])-1,line[1]))
             else:

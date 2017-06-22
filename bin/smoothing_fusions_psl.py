@@ -65,7 +65,7 @@ def shake(aline,nc1,nc2):
     if r[col_g3s] != nc2:
         w = abs(int(r[col_g3s]) - int(nc2))
         r[col_g3s] = nc2
-        fs2 = fs1[w:]
+        fs2 = fs2[w:]
     r[col_fs] = "%s%s%s" % (fs1,star,fs2)
     # debug
     #r[col_g5] = "->"+r[col_g5]

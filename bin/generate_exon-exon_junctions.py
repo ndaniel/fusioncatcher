@@ -46,6 +46,13 @@ import Bio.SeqIO
 import Bio.SeqRecord
 import Bio.Alphabet
 
+def ispoly(sec):
+    f = False
+    if sec:
+        if sec[0] * len(sec) == sec:
+            f = True
+    return f
+
 def todict(a_list):
     #parsing the transcript info file into a dictionary, e.g. ex=123;ge=34feq;....
     d = dict()
@@ -61,7 +68,7 @@ if __name__ == '__main__':
 
     usage="%prog [options]"
     description="""It generates the exon-exon junctions from transcripts for a list of genes."""
-    version="%prog 0.10 beta"
+    version="%prog 0.11 beta"
 
     parser=optparse.OptionParser(usage=usage,description=description,version=version)
 
@@ -351,6 +358,9 @@ Length_of_the_exon-exon_juntion = 2 * (length_reads - overlap_read). The joint p
                             s2=sb[ebs-1:bb].upper()
                             seq=s1+s2
 
+                            if ispoly(s1) or ispoly(s2):
+                                doit = False
+
                             idx=None # the sequence that are the same have the same index
 
                             doit=True
@@ -389,7 +399,10 @@ Length_of_the_exon-exon_juntion = 2 * (length_reads - overlap_read). The joint p
                             s1=sb[aa:ebe].upper()
                             s2=sa[eas-1:bb].upper()
                             seq=s1+s2
-
+                            
+                            if ispoly(s1) or ispoly(s2):
+                                doit = False
+                                
                             idx=None # the sequence that are the same have the same index
 
                             doit=True

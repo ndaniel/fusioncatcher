@@ -331,6 +331,13 @@ if __name__ == '__main__':
                       dest="filter_filename",
                       help="""Input file which contain a pattern for genes which should be ignored/skipped from the analysis.""")
 
+    parser.add_option("--d0",
+                      action="store_true",
+                      dest="distance_mismatches_0",
+                      default = False,
+                      help="""If it set then only the alignments of a read are taken into consideration which are at maximum zero mismatches away. This expects that the input has 4 columns instead of 3, and the fourth column contains the mismatches from Bowtie.""")
+
+
     parser.add_option("--d1",
                       action="store_true",
                       dest="distance_mismatches_1",

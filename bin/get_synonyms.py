@@ -135,7 +135,7 @@ if __name__ == '__main__':
         print ftp.login()
         ftp.cwd(url)
         key = "%s_core_" % (options.organism.lower(),)
-        organism_dir = [el for el in ftp.nlst() if el.lower().startswith(key) and not el.endswith('.gz')]
+        organism_dir = [el for el in ftp.nlst() if el.lower().startswith(key) and not el.lower().endswith(".gz")]
         if organism_dir and len(organism_dir) == 1:
             organism_dir = organism_dir[0]
             magic = organism_dir.lower().split(key)[1]

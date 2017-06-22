@@ -91,6 +91,11 @@ if __name__ == "__main__":
     if found:
         xno = found[0]
 
+    flag_reverse = False
+    if "--reverse" in set(cmds):
+        cmds = [el for el in cmds if el != '--reverse']
+        flag_reverse = True
+
     newcmds = cmds[:]
     if xin and xou:
         # new command line options
@@ -112,7 +117,7 @@ if __name__ == "__main__":
             newcmds.insert(0,head.replace('fusioncatcher-batch','fusioncatcher.py --keep-preliminary'))
         if xin and os.path.isdir(xin):
             # input is a directory and contains subdirectories, one subdirectory is one sample
-            dirs = sorted([el for el in os.listdir(xin) if os.path.isdir(os.path.join(xin,el)) and not el.startswith('.')])
+            dirs = sorted([el for el in os.listdir(xin) if os.path.isdir(os.path.join(xin,el)) and not el.startswith('.')],reverse=flag_reverse)
             nos = None
             if xno and os.path.isdir(xno):
                 nos =  sorted([el for el in os.listdir(xno) if os.path.isdir(os.path.join(xno,el)) and not el.startswith('.')])

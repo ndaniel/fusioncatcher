@@ -1044,6 +1044,24 @@ if __name__ == '__main__':
     job.add('',outdir('non-cancer_tissues.txt'),kind='output',command_line='no')
     job.run()
 
+    job.add(_FC_+'get_cancer-genes.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('cancer_genes.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add(_FC_+'get_oncogenes.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('oncogenes_more.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add(_FC_+'generate_tumor-genes.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('tumor_genes.txt'),kind='output',command_line='no')
+    job.run()
+
     job.add(_FC_+'generate_exons.py',kind='program')
     job.add('--input_exons',outdir('exons.txt'),kind='input')
     job.add('--input_genome',outdir('genome.fa'),kind='input')
@@ -1145,18 +1163,18 @@ if __name__ == '__main__':
     job.run()
 
     job.add('grep',kind='program')
-    job.add('--ignore-case','HLA-',kind='parameter')
+    job.add('--ignore-case','\tHLA-',kind='parameter')
     job.add('',outdir('genes_symbols.txt'),kind='input')
     job.add('|',kind='parameter')
     job.add('LC_ALL=C',kind='parameter')
     job.add('sort',kind='parameter')
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
-    job.add('>',outdir('hla_1.txt'),kind='output')
+    job.add('>',outdir('hla2.txt'),kind='output')
     job.run()
 
     job.add('grep',kind='program')
-    job.add('--ignore-case','HLA-',kind='parameter')
+    job.add('--ignore-case','\tHLA-',kind='parameter')
     job.add('',outdir('synonyms.txt'),kind='input')
     job.add('|',kind='parameter')
     job.add('LC_ALL=C',kind='parameter')
@@ -1167,7 +1185,7 @@ if __name__ == '__main__':
     job.run()
 
     job.add('cat',kind='program')
-    job.add('',outdir('hla_1.txt'),kind='input',temp_path='yes')
+    job.add('',outdir('hla2.txt'),kind='input')
     job.add('',outdir('hla_2.txt'),kind='input',temp_path='yes')
     job.add('|',kind='parameter')
     job.add('cut',kind='parameter')
@@ -1178,6 +1196,13 @@ if __name__ == '__main__':
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
     job.add('>',outdir('hla.txt'),kind='output')
+    job.run()
+
+    job.add(_FC_+'get_hla2.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--server',options.web_ensembl,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('hla2.fa'),kind='output',command_line='no')
     job.run()
 
     job.add('cut',kind='program')
@@ -1705,6 +1730,16 @@ if __name__ == '__main__':
     job.add('',outdir('trna.fa'),kind='input')
     job.add('',outdir('rrna.fa'),kind='input')
     job.add('',outdir('rrna_unit.fa'),kind='input')
+    job.add('',outdir('mt.fa'),kind='input')
+    job.add('',outdir('mtrna.fa'),kind='input')
+    job.add('',outdir('hla2.fa'),kind='input')
+    job.add('',outdir('rtrna_hla_mt.fa'),kind='output')
+    job.run()
+
+    job.add(_FC_+'concatenate.py',kind='program')
+    job.add('',outdir('trna.fa'),kind='input')
+    job.add('',outdir('rrna.fa'),kind='input')
+    job.add('',outdir('rrna_unit.fa'),kind='input')
     job.add('',outdir('rtrna.fa'),kind='output')
     job.run()
 
@@ -1714,6 +1749,15 @@ if __name__ == '__main__':
     job.run()
 
 
+    job.add(_BE_+'bowtie-build',kind='program')
+    job.add('-f',kind='parameter')
+#    job.add('--ntoa',kind='parameter')
+    job.add('--quiet',kind='parameter')
+    job.add('--offrate','1',kind='parameter')
+    job.add('--ftabchars','7',kind='parameter')
+    job.add('',outdir('rtrna_hla_mt.fa'),kind='input')
+    job.add('',outdir('rtrna_hla_mt_index/'),kind='output')
+    job.run(error_message = bowtie_error)
 
     job.add(_BE_+'bowtie-build',kind='program')
     job.add('-f',kind='parameter')
@@ -1724,6 +1768,8 @@ if __name__ == '__main__':
     job.add('',outdir('rtrna_mt.fa'),kind='input')
     job.add('',outdir('rtrna_mt_index/'),kind='output')
     job.run(error_message = bowtie_error)
+
+
 
     job.add(_BE_+'bowtie-build',kind='program')
     job.add('-f',kind='parameter')

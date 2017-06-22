@@ -100,7 +100,8 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
-    file(os.path.join(options.output_directory,'prostates.txt'),'w').write('')
+
+    file(os.path.join(options.output_directory,'pancreases.txt'),'w').write('')
 
     try:
         import openpyxl
