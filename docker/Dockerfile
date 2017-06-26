@@ -36,6 +36,7 @@ RUN apt-get -y clean \
     zlib1g \
     zlib1g-dev \
     zlibc \
+    default-jdk \
     && apt-get -y clean
 
 WORKDIR /opt
