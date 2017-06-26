@@ -422,12 +422,12 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
   ln -s picard-tools-2.2.2 picard
   ```
   
-  * installing *FusionCatcher* version 0.99.7b (required)
+  * installing *FusionCatcher* version 0.99.7c (required)
   ```
   cd /apps/fusioncatcher
-  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7b.zip
-  unzip fusioncatcher_v0.99.7b.zip
-  cd fusioncatcher_v0.99.7b
+  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7c.zip
+  unzip fusioncatcher_v0.99.7c.zip
+  cd fusioncatcher_v0.99.7c
   
   rm -rf ../bin
   rm -rf ../etc
@@ -476,13 +476,14 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    samtools = /apps/fusioncatcher/tools/samtools/
    picard = /apps/fusioncatcher/tools/picard/
    parallel = /appsfusioncatcher/tools/paralell/src/
+   bbmap = /apps/fusioncatcher/tools/bbmap/
    pxz = /apps/fusioncatcher/tools/pxz/
    java = /usr/bin/
    [parameters]
    threads = 0
    aligners = blat,star
    [versions]
-   fusioncatcher = 0.99.7b beta
+   fusioncatcher = 0.99.7c beta
    ```
    
    * *Choice B*: Add the paths for the needed tools to the `PATH` variable by editing, for example, the `.bashrc` file (type: `nano ~/.bashrc` at command line) and add the following lines at the end:
@@ -502,6 +503,7 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    export PATH=/apps/fusioncatcher/tools/coreutils/src/:$PATH
    export PATH=/apps/fusioncatcher/tools/pigz/:$PATH
    export PATH=/apps/fusioncatcher/tools/samtools/:$PATH
+   export PATH=/apps/fusioncatcher/tools/bbmap/:$PATH
    export PATH=/apps/fusioncatcher/tools/picard/:$PATH
    ```
    
@@ -732,8 +734,8 @@ wget http://sf.net/projects/fusioncatcher/files/bootstrap.py && python bootstrap
 
 In case of a manual installation, first please check that (i) the required dependencies are installed, and (ii) download the source files of *FusionCatcher*, like for example:
 ```
-wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7b.zip 
-unzip fusioncatcher_v0.99.7b.zip
+wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7c.zip 
+unzip fusioncatcher_v0.99.7c.zip
 ```
 
 For an example of:
@@ -748,17 +750,17 @@ First, it is needed to download data or build the necessary files/indexes for ru
 
 ### 5.2.1 - Direct download of human build data
 
-Here, in this example, the necessary data is downloaded and necessary files/indexes for the **human genome** are downloaded in the directory `/some/human/data/ensembl_v86/` which will be used later.
+Here, in this example, the necessary data is downloaded and necessary files/indexes for the **human genome** are downloaded in the directory `/some/human/data/human_v89/` which will be used later.
 
 ```
 mkdir -p /some/human/data/
 cd /some/human/data/
-wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v86.tar.gz.aa
-wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v86.tar.gz.ab
-wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v86.tar.gz.ac
-wget http://sourceforge.net/projects/fusioncatcher/files/data/ensembl_v86.tar.gz.ad
-cat ensembl_v86.tar.gz.* | tar xz
-ln -s ensembl_v86 current
+wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v89.tar.gz.aa
+wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v89.tar.gz.ab
+wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v89.tar.gz.ac
+wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v89.tar.gz.ad
+cat human_v89.tar.gz.* | tar xz
+ln -s human_v89 current
 ```
 
 If this works then it is not necessary to start building yourself the build data as shown below (which is **only** needed in case that the direct download for some reason does not work or one wishes to use the build data of another organism which is not available for download).
