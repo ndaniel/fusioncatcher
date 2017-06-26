@@ -48,7 +48,7 @@ For running *FusionCatcher* it is needed a computer with:
   * **Python** version 2.7.6 (>=2.6.0 and < 3.0 is fine)
   * **BioPython** version 1.66 (>=1.50 is fine)
   * **Bowtie** 64-bit version 1.2.0 http://bowtie-bio.sourceforge.net/index.shtml (will be installed by `boostrap.py`)
-  * **SeqTK** version 1.0-r101c-dirty  http://github.com/ndaniel/seqtk (will be installed by `boostrap.py`)
+  * **SeqTK** version 1.2-r101c-dirty  http://github.com/ndaniel/seqtk (will be installed by `boostrap.py`)
   * organism specific  data from [Ensembl](http://www.ensembl.org) database release 89 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed) (will be installed by `boostrap.py`)
   * **STAR** version 2.5.2b https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases (will be installed by `boostrap.py`)
   * **BOWTIE2** version 2.2.9 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml (will be installed by `boostrap.py`)
