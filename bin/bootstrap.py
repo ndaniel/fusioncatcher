@@ -208,8 +208,10 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     SETUPTOOLS_URL = 'http://pypi.python.org/packages/source/s/setuptools/setuptools-36.0.1.zip'
     # BOWTIE
     BOWTIE_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie')
-    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.0/bowtie-1.2-linux-x86_64.zip'
-    BOWTIE_VERSION = ('1.2',)
+#    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.0/bowtie-1.2-linux-x86_64.zip'
+#    BOWTIE_VERSION = ('1.2',)
+    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-linux-x86_64.zip'
+    BOWTIE_VERSION = ('1.1.2',)
     # BOWTIE
     BOWTIE_OLD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie-old')
     BOWTIE_OLD_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-linux-x86_64.zip'
@@ -233,7 +235,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
    # BBMAP
     BBMAP_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bbmap')
     BBMAP_URL = 'http://sourceforge.net/projects/bbmap/files/BBMap_37.28.tar.gz'
-    BBMAP_VERSION = ('37','37.02')
+    BBMAP_VERSION = ('37','37.02','37.28')
     # faToTwoBit
     FATOTWOBIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'fatotwobit')
     FATOTWOBIT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit'
@@ -283,8 +285,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     # PICARD
     PICARD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'picard')
     #PICARD_URL = 'http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip'
-    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/2.9.2/picard.jar'
-    PICARD_VERSION = ('2.9.2',)
+    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/2.9.4/picard.jar'
+    PICARD_VERSION = ('2.9.4',)
     # LiftOver
     LIFTOVER_PATH = os.path.join(FUSIONCATCHER_TOOLS,'liftover')
     LIFTOVER_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/liftOver'
@@ -2003,6 +2005,7 @@ python-openpyxl
         txt.insert(0,'#!/usr/bin/env bash')
         file(f,'w').writelines([el+'\n' for el in txt])
         os.system('chmod +rx "%s"' % (f,))
+        file_download = f
         ########################################################################
 #        file_download = f
 ##        print ""
@@ -2042,7 +2045,7 @@ python-openpyxl
         print ""
         print "---------------------------------------------------------------------------"
         print "*  OPTION 2: Build yourself the data needed by FusionCatcher!"
-        print "             TRY THIS ONLY IF OPTION 1 and OPTION 2 DID NOT WORK!"
+        print "             TRY THIS ONLY IF OPTION 1!"
         print "---------------------------------------------------------------------------"
         print "In order to build yourself the latest human data files needed by FusionCatcher, please run these (it will take several hours):"
         print ""

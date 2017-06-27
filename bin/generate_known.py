@@ -7030,7 +7030,9 @@ if __name__ == '__main__':
         ['TBC1D2','NTRK2'],
         ['TPR','MET'],
         ['VCAN','NTRK2'],
-        ['ZSCAN23','BRAF']
+        ['ZSCAN23','BRAF'],
+        ['ZNF526','MEGF8'],
+        ['STYK1','YBX3']
 
 
 ]

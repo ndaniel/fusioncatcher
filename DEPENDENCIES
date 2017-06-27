@@ -10,7 +10,8 @@ Required dependencies:
  - Bowtie 64-bit version 1.2.0  http://bowtie-bio.sourceforge.net/index.shtml
  - Bowtie2 64-bit version 2.2.9  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
  - STAR version 2.5.2b <http://github.com/alexdobin/STAR/releases>
- - SEQTK version 1.0-r82b-dirty  <http://github.com/ndaniel/seqtk>
+ - forked SEQTK version 1.2-r101c-dirty  <http://github.com/ndaniel/seqtk>
+ - BBMAP version 37.28 <http://sourceforge.net/projects/bbmap/>
 
 Optional dependencies:
 - strongly recommended (expected by default to be installed but their use can

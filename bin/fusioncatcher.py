@@ -1957,8 +1957,8 @@ if __name__ == "__main__":
             
             timeout = 10
             socket.setdefaulttimeout(timeout)
-            serverversion  = urllib2.urlopen('http://fusioncatcher.hopto.org/fusioncatcher-version.txt').read()
-            #serverversion = None
+            #serverversion  = urllib2.urlopen('http://fusioncatcher.hopto.org/fusioncatcher-version.txt').read()
+            serverversion = None
             if serverversion:
                 serverversion = serverversion.splitlines()
                 serverversion = serverversion[0].strip()
@@ -2171,13 +2171,14 @@ if __name__ == "__main__":
         job.close()
         os.system("which bowtie > '%s'" % (outdir('bowtie_path.txt'),))
         bowtie_path = file(outdir('bowtie_path.txt'),'r').readline().rstrip("\r\n")
-        print >>sys.stderr,("\n\n\nERROR: Wrong version of BOWTIE found ("+bowtie_path+")! It should be '"+correct_version+"'.")
-        print >>sys.stderr,("\n\n\nERROR: One may specify the path to the correct version in 'fusioncatcher/etc/configuration.cfg'.")
-        print >>sys.stderr,("\n\n\nERROR: Also it may be that some of Bowtie's dependencies are missing'.")
-        print >>sys.stderr,("\n\n\nERROR: Therefore also make sure that Bowtie's dependencies are installed, like for example.")
-        print >>sys.stderr,("\n\n\nERROR:    sudo apt-get install libtbb-dev libtbb2 libc6-dev")
-        print >>sys.stderr,("\n\n\nERROR: or")
-        print >>sys.stderr,("\n\n\nERROR:    sudo yum install libtbb-devel libtbb2 libc6-devel")
+        print >>sys.stderr,("\n\n\nERROR: Wrong version of BOWTIE found ("+bowtie_path+")! It should be: "+', '.join(sorted(correct_versions))+".")
+        print >>sys.stderr,("\nERROR: One may specify the path to the correct version in 'fusioncatcher/etc/configuration.cfg',")
+        print >>sys.stderr,("\nERROR: like for example change manually the line fusioncatcher/tools/bowtie to fusioncatcher/tools/bowtie-old")
+        print >>sys.stderr,("\nERROR: Also it may be that some of Bowtie's dependencies are missing.")
+        print >>sys.stderr,("\nERROR: Therefore also make sure that Bowtie's dependencies are installed, like for example:")
+        print >>sys.stderr,("\nERROR:    sudo apt-get install libtbb-dev libtbb2 libc6-dev")
+        print >>sys.stderr,("\nERROR: or")
+        print >>sys.stderr,("\nERROR:    sudo yum install libtbb-devel libtbb2 libc6-devel")
         sys.exit(1)
     os.remove(outdir('bowtie_version.txt'))
 
