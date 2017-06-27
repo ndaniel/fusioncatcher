@@ -141,7 +141,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Sorenson E.C. et al., **Genome and transcriptome profiling of fibrolamellar hepatocellular carcinoma demonstrates p53 and IGF2BP1 dysregulation**, PLOS One, May 2017, https://doi.org/10.1371/journal.pone.0176562
   * Hettmer S. et al., **Epithelioid hemangioendotheliomas of the liver and lung in children and adolescents**, Pediatric Blood & Cancer, June 2017, https://doi.org/10.1002/pbc.26675
   * Pisapia D.J. et al., **Next-Generation Rapid Autopsies Enable Tumor Evolution Tracking and Generation of Preclinical Models**, JCO Precision Oncology, June 2017, https://doi.org/10.1200/PO.16.00038 
-  
+  * Bekers E.M. et al., **Soft tissue angiofibroma – clinicopathologic, immunohistochemical and molecular analysis of 14 cases**, Genes, Chromosomes and Cancers, June 1027, https://doi.org/10.1002/gcc.22478
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
