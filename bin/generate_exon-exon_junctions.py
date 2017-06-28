@@ -399,10 +399,10 @@ Length_of_the_exon-exon_juntion = 2 * (length_reads - overlap_read). The joint p
                             s1=sb[aa:ebe].upper()
                             s2=sa[eas-1:bb].upper()
                             seq=s1+s2
-                            
+
                             if ispoly(s1) or ispoly(s2):
                                 doit = False
-                                
+
                             idx=None # the sequence that are the same have the same index
 
                             doit=True
@@ -453,7 +453,10 @@ Length_of_the_exon-exon_juntion = 2 * (length_reads - overlap_read). The joint p
     if options.output_cut_filename:
         if sequences_cut:
             Bio.SeqIO.write(sequences_cut,handle_cut,"fasta")
+        handle_cut.flush()
         handle_cut.close()
+        if os.path.getsize(options.output_cut_filename) == 0:
+            file(options.output_cut_filename,"w").write(">empty\nACGTACGTACGTACGTA")
 
     if options.output_count_seq_filename:
         file(options.output_count_seq_filename,"w").write("%d" % (count_seq,))
