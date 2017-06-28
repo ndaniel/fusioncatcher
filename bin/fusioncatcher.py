@@ -5846,7 +5846,7 @@ if __name__ == "__main__":
 #        job.clean(outdir('reads_filtered_transcriptome_sorted-read.map'),temp_path=temp_flag)
         job.clean(outdir('original.fq.gz'),temp_path=temp_flag)
         job.clean(outdir('originala.fq.gz'),temp_path=temp_flag if options.skip_spotlight else 'no')
-        job.clean(outdir('candidate_fusion-genes_missing_mates.txt'),temp_path=temp_flag)
+        #job.clean(outdir('candidate_fusion-genes_missing_mates.txt'),temp_path=temp_flag)
         job.clean(outdir('candidate_fusion-genes_supporting_paired-reads.txt'),temp_path=temp_flag if options.skip_spotlight else 'no')
         #job.clean(outdir('candidate_fusion-genes_exon-exon.txt'))
 
