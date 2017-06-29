@@ -10,20 +10,20 @@ Download / Install / Update / Upgrade [FusionCatcher](http://github.com/ndaniel/
 
 Use this one-line command:
 
-```bash
+```
 wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py -t --download
 ```
 
-If one wants to have all the questions asked by boostrap.py answered automatically with yes then add -y to the 
+If one wants to have all the questions asked by boostrap.py answered automatically with yes then add `-y` to the 
 command above. For more installing options, see:
 
-```bash
+```
 bootstrap.py --help
 ```
 
-In Ubuntu running this command before installing FusionCatcher would make the installation smoother:
+On Ubuntu Linux running this command before installing FusionCatcher using `bootstrap.py` would help making the installation process smoother:
 
-```bash
+```
 sudo apt-get install wget gawk gcc g++ make cmake automake curl unzip zip bzip2 tar gzip pigz parallel build-essential libncurses5-dev libc6-dev zlib1g zlib1g-dev libtbb-dev libtbb2 python python-dev python-numpy python-biopython python-xlrd python-openpyxl default-jdk
 ```
 
@@ -71,9 +71,10 @@ Release history
 ---------------
 A complete release history can be found [here](NEWS).
 
+
 Official releases
 -----------------
-Old releases and the latest release of FusionCatcher are on https://sourceforge.net/projects/fusioncatcher/files/
+Old releases and the latest official release of FusionCatcher are on https://sourceforge.net/projects/fusioncatcher/files/
 
 
 Citing

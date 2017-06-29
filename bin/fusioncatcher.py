@@ -1289,9 +1289,9 @@ if __name__ == "__main__":
 #                      help = "A slightly longer report for fusion genes will be generated (i.e. fusions genes will be given per each aligner used). "+
 #                             "Default value is '%default'.")
 
-    parser.add_option("--bbmerge",
+    parser.add_option("--skip-bbmerge",
                       action = "store_true",
-                      dest = "use_bbmerge",
+                      dest = "skip_bbmerge",
                       default = False,
                       help = optparse.SUPPRESS_HELP)
 #                      help = "Use BBMERGE.SH instead of original script for merging the paired-end reads. "+
@@ -3561,7 +3561,16 @@ if __name__ == "__main__":
 #        job.add('--output',outdir('log_overlaps_fragments.txt'),kind='output')
 #        job.run()
 
-        if options.use_bbmerge:
+        if options.skip_bbmerge:
+            job.add(_FC_+'merge-reads.py',kind='program')
+            job.add('-1',outdir('original.fq'),kind='input',temp_path=temp_flag)
+            job.add('-m',outdir('merged.fq'),kind='output')
+            job.add('-f',outdir('or1.fq'),kind='output')
+            job.add('-r',outdir('or2.fq'),kind='output')
+            job.add('--overlap','13',kind='parameter')
+            job.add('-p',options.processes,kind='parameter',checksum='no')
+            job.run()
+        else:
             #bbmerge.sh in=reads.fq out=merged.fq outu=unmerged.fq ihist=ihist.txt
             job.add(_BP_+'bbmerge.sh',kind='program')
             job.add('in=',outdir('original.fq'),kind='input',space='no')
@@ -3579,15 +3588,6 @@ if __name__ == "__main__":
             job.add('-r',outdir('or2.fq'),kind='output')
             job.run()
 
-        else:
-            job.add(_FC_+'merge-reads.py',kind='program')
-            job.add('-1',outdir('original.fq'),kind='input',temp_path=temp_flag)
-            job.add('-m',outdir('merged.fq'),kind='output')
-            job.add('-f',outdir('or1.fq'),kind='output')
-            job.add('-r',outdir('or2.fq'),kind='output')
-            job.add('--overlap','13',kind='parameter')
-            job.add('-p',options.processes,kind='parameter',checksum='no')
-            job.run()
 
         job.add(_FC_+'fragment_fastq.py',kind='program')
         job.add('-1',outdir('or1.fq'),kind='input',temp_path=temp_flag)
@@ -11139,7 +11139,14 @@ if __name__ == "__main__":
                 ## DEBUG
                 #temp_flag = 'no'
 
-                if options.use_bbmerge:
+                if options.skip_bbmerge:
+                    job.add(_FC_+'merge-reads.py',kind='program')
+                    job.add('-1',freads[i]+'.fq',kind='input',temp_path=temp_flag)
+                    job.add('-m',freads[i]+'_m.fq',kind='output')
+                    job.add('--overlap','11',kind='parameter')
+                    job.add('-p',options.processes,kind='parameter',checksum='no')
+                    job.run()
+                else:
                     job.add(_BP_+'bbmerge.sh',kind='program')
                     job.add('in=',freads[i]+'.fq',kind='input',space='no',temp_path=temp_flag)
                     job.add('out=',freads[i]+'_m.fq',kind='output',space='no')
@@ -11148,14 +11155,6 @@ if __name__ == "__main__":
                     job.add('minoverlap=','11',kind='parameter',space='no') 
                     #job.add('-Xmx',"24G",kind='parameter',space='no')
                     job.run()
-                else:
-                    job.add(_FC_+'merge-reads.py',kind='program')
-                    job.add('-1',freads[i]+'.fq',kind='input',temp_path=temp_flag)
-                    job.add('-m',freads[i]+'_m.fq',kind='output')
-                    job.add('--overlap','11',kind='parameter')
-                    job.add('-p',options.processes,kind='parameter',checksum='no')
-                    job.run()
-
 
                 job.add(_SK_+'seqtk',kind='program')
                 job.add('seq',kind='parameter')

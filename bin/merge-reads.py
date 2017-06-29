@@ -49,6 +49,7 @@ import itertools
 import string
 import gzip
 import gc
+import math
 
 ttable = string.maketrans("ACGTYRSWKMBDHV-.","TGCARYSWMKVHDB-.")
 
@@ -214,7 +215,7 @@ class lines_to_file:
 
 
 
-def fast_alignment5(sa, sb, positions):
+def fast_alignment5(sa, sb, positions, mismatch_percent= 0.1):
     lib = -1
     xa = sa # ""
     lsa = len(sa)
@@ -222,6 +223,7 @@ def fast_alignment5(sa, sb, positions):
     mis = -1
     misp = -1
     wiggle = 1
+    com = -1
     for (pa,pb) in positions:
         z = sa[pa:pb]
         nz = len(z)
@@ -238,8 +240,11 @@ def fast_alignment5(sa, sb, positions):
                 xa = sa
                 xb = "%s%s" % (t,sb)
                 lxa = len(xa)
-                mis = len([1 for ix in xrange(pap,lxa) if (xa[ix] != xb[ix] or (xa[ix] == 'N' and xb[ix] == 'N'))])
-                misp = float(mis)/float(lxa-pap)
+                lxb = len(xb)
+                mm = min(lxb,lxa)
+                mis = len([1 for ix in xrange(pap,mm) if (xa[ix] != xb[ix] or (xa[ix] == 'N' and xb[ix] == 'N'))])
+                com = float(mm-pap)
+                misp = float(mis)/com
             else:
                 lib = pa + nb - p
                 ppa = p - pa
@@ -247,8 +252,11 @@ def fast_alignment5(sa, sb, positions):
                 xa = "%s%s" % (t,sa)
                 xb = sb
                 lxb = len(xb)
-                mis = len([1 for ix in xrange(ppa,lxb) if (xa[ix] != xb[ix] or (xa[ix] == 'N' and xb[ix] == 'N'))])
-                misp = float(mis)/float(lxb-ppa)
+                lxa = len(xa)
+                mm = min(lxb,lxa)
+                mis = len([1 for ix in xrange(ppa,mm) if (xa[ix] != xb[ix] or (xa[ix] == 'N' and xb[ix] == 'N'))])
+                com = float(mm-ppa)
+                misp = float(mis)/com
 
             #print xa
             #print xb
@@ -256,7 +264,7 @@ def fast_alignment5(sa, sb, positions):
             #print ""
             break
 
-    if misp != -1 and misp > 0.3:
+    if misp != -1 and ( (misp > mismatch_percent) or (com > 50 and mis - 2 > math.log(com,2))):
         # too many mismatches not good alignment
         lib = -1
         xa = sa # ""
@@ -266,7 +274,7 @@ def fast_alignment5(sa, sb, positions):
     return (lib,xa,xb,mis)
     
 
-def fast_alignment3(sa, sb, positions):
+def fast_alignment3(sa, sb, positions, mismatch_percent= 0.1):
     lib = -1
     xa = sa #""
     lsa = len(sa)
@@ -274,6 +282,7 @@ def fast_alignment3(sa, sb, positions):
     mis = -1
     misp = -1
     wiggle = 1
+    com = -1
     for (pa,pb) in positions:
         z = sb[pa:pb]
         nz = len(z)
@@ -290,8 +299,11 @@ def fast_alignment3(sa, sb, positions):
                 xa = "%s%s" % (t,sa)
                 xb = sb
                 lxb = len(xb)
-                mis = len([1 for ix in xrange(pap,lxb) if (xa[ix] != xb[ix] or (xa[ix] == 'N' and xb[ix] == 'N'))])
-                misp = float(mis)/float(lxb-pap)
+                lxa = len(xa)
+                mm = min(lxb,lxa)
+                mis = len([1 for ix in xrange(pap,mm) if (xa[ix] != xb[ix] or (xa[ix] == 'N' and xb[ix] == 'N'))])
+                com = float(mm-pap)
+                misp = float(mis)/com
             else:
                 lib =  nb - pa + p
                 ppa = p - pa
@@ -299,15 +311,18 @@ def fast_alignment3(sa, sb, positions):
                 xa = sa
                 xb = "%s%s" % (t,sb)
                 lxa = len(xa)
-                mis = len([1 for ix in xrange(ppa,lxa) if (xa[ix] != xb[ix] or (xa[ix] == 'N' and xb[ix] == 'N'))])
-                misp = float(mis)/float(lxa-ppa)
+                lxb = len(xb)
+                mm = min(lxa,lxb)
+                mis = len([1 for ix in xrange(ppa,mm) if (xa[ix] != xb[ix] or (xa[ix] == 'N' and xb[ix] == 'N'))])
+                com = float(mm-ppa)
+                misp = float(mis)/com
 #            print xa
 #            print xb
 #            print lib, len("%s%s" % (t,sb))
 #            print ""
             break
             
-    if misp != -1 and misp > 0.3:
+    if misp != -1 and ( (misp > mismatch_percent) or (com > 50 and mis - 2 > math.log(com,2))):
         # too many mismatches not good alignment
         lib = -1
         xa = sa #""
@@ -429,6 +444,15 @@ def merge_reads(input_1_filename,
     if output_reverse_filename:
         re = lines_to_file(output_reverse_filename)
 
+
+#    for w in map(compute,
+#                                 itertools.izip_longest(
+#                                    reads_from_paired_fastq_file(
+#                                        input_1_filename,
+#                                        input_2_filename),
+#                                    [],
+#                                    fillvalue = o)
+#                                 ):
 
     for w in pool.imap_unordered(compute,
                                  itertools.izip_longest(
