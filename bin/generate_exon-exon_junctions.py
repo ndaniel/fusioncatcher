@@ -399,10 +399,10 @@ Length_of_the_exon-exon_juntion = 2 * (length_reads - overlap_read). The joint p
                             s1=sb[aa:ebe].upper()
                             s2=sa[eas-1:bb].upper()
                             seq=s1+s2
-
+                            
                             if ispoly(s1) or ispoly(s2):
                                 doit = False
-
+                                
                             idx=None # the sequence that are the same have the same index
 
                             doit=True

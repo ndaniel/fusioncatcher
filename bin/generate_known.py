@@ -7032,7 +7032,18 @@ if __name__ == '__main__':
         ['VCAN','NTRK2'],
         ['ZSCAN23','BRAF'],
         ['ZNF526','MEGF8'],
-        ['STYK1','YBX3']
+        ['STYK1','YBX3'],
+        ['GTF2I','NCOA2'],
+        ['GAB1','ABL1'],
+        ['AHRR','NCOA2'],
+        ['NPC1','MELK'],
+        ['FGFR2','GAB2'],
+        ['NPC1','MELK'],
+        ['USP54','CAMK2G'],
+        ['MKL1','FBLN1'],
+        ['CNOT2','C12ORF49'],
+        ['MEGF9','GSN'],
+        ['NPC1','MELK']
 
 
 ]
