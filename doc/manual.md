@@ -878,6 +878,7 @@ It is **highly recommended** that:
   * removing the reads which map on ribosomal RNA,
   * removing the reads which map on genomes of bacteria/phages/viruses (from: [ftp://ftp.ncbi.nlm.nih.gov/genomes/Viruses/](ftp://ftp.ncbi.nlm.nih.gov/genomes/Viruses/) ).
 
+Note: If the reads contains barcode sequences then they should be removed before given as inputs to *FusionCatcher*.
 
 The SRA files are accepted as input as long as the NCBI SRA toolkit (see dependencies section) is installed and available.
 
@@ -975,6 +976,7 @@ For example, this is **NOT** a valid input:
   * In case that a directory is given as input, one shall make sure that the input directory does not contain files which do not contain reads sequences (e.g. readme.txt, info.txt, etc.)!
   * Please, let *FusionCatcher* _do_ the the concatenation of several FASTQ files (i.e. just put all the FASTQ files into one folder and give that folder as input to *FusionCatcher*) and do NOT do concatenate the FASTQ files yourself (e.g. using `cat`). This is because most likely different FASTQ files might have:
    * different adapter sequences (*FusionCatcher* is expecting that there are only one type of adapter, exactly like it comes directly from the Illumina sequencers),
+   * *FusionCatcher* does not support the FASTQ files where the reads' sequences contain barcode sequences (the barcode sequences shoud be removed/trimmed first and only then the trimmed FASTQ file should be given as input to *FusionCatcher*)
    * different fragment sizes, and
    * different read lengths.
   * **DO NOT POOL** samples from different cell lines or from different patients! Run FusionCatcher separately with one sample at the time! It is ok the pool together the samples, which come from the (i) same cell line, or (ii) from the same patient (but still do not concatenate yourself the FASTQ files and let FusionCatcher do it for you)!
