@@ -1963,8 +1963,8 @@ if __name__ == "__main__":
             
             timeout = 10
             socket.setdefaulttimeout(timeout)
-            serverversion  = urllib2.urlopen('http://fusioncatcher.hopto.org/fusioncatcher-version.txt').read()
-            #serverversion = None
+            #serverversion  = urllib2.urlopen('http://fusioncatcher.hopto.org/fusioncatcher-version.txt').read()
+            serverversion = None
             if serverversion:
                 serverversion = serverversion.splitlines()
                 serverversion = serverversion[0].strip()
@@ -5064,6 +5064,15 @@ if __name__ == "__main__":
     else:
         job.link(outdir('reads_filtered_transcriptome_sorted-read.map'), 
                  outdir('reads_filtered_transcriptome_sorted-read_no-offending-reads.map'),temp_path='no')
+
+        job.add('touch',kind='program')
+        job.add('',outdir('candidate_fusion-genes_no-offending-reads.txt'), kind='output')
+        job.run()
+
+        job.add('touch',kind='program')
+        job.add('',outdir('list_candidates_ambiguous_homologous_genes.txt'), kind='output')
+        job.run()
+
 
 
     ##############################################################################
@@ -11779,6 +11788,8 @@ if __name__ == "__main__":
         outdir('reads_filtered_transcriptome_sorted-read_end_important.map'),
         outdir('candidate_fusion-genes_further_eporcrlf2igh.txt'),
         outdir('split_gene-gene_star_unmapped_final.psl'),
+        outdir('list_candidates_ambiguous_homologous_genes.txt'),
+        outdir('candidate_fusion-genes_no-offending-reads.txt'),
         outdir('reads_gene-gene.fq'),
         outdir('exon-exon_junction_cut__seq.txt'),
         outdir('exon-exon_junction_cut__nuc.txt'),
