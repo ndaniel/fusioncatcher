@@ -1963,8 +1963,8 @@ if __name__ == "__main__":
             
             timeout = 10
             socket.setdefaulttimeout(timeout)
-            #serverversion  = urllib2.urlopen('http://fusioncatcher.hopto.org/fusioncatcher-version.txt').read()
-            serverversion = None
+            serverversion  = urllib2.urlopen('http://fusioncatcher.hopto.org/fusioncatcher-version.txt').read()
+            #serverversion = None
             if serverversion:
                 serverversion = serverversion.splitlines()
                 serverversion = serverversion[0].strip()
