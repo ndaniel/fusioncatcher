@@ -142,6 +142,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Hettmer S. et al., **Epithelioid hemangioendotheliomas of the liver and lung in children and adolescents**, Pediatric Blood & Cancer, June 2017, https://doi.org/10.1002/pbc.26675
   * Pisapia D.J. et al., **Next-Generation Rapid Autopsies Enable Tumor Evolution Tracking and Generation of Preclinical Models**, JCO Precision Oncology, June 2017, https://doi.org/10.1200/PO.16.00038 
   * Bekers E.M. et al., **Soft tissue angiofibroma – clinicopathologic, immunohistochemical and molecular analysis of 14 cases**, Genes, Chromosomes and Cancers, June 1027, https://doi.org/10.1002/gcc.22478
+  * Biaconi D. et al., **Biochemical and genetic predictors of overall survival in patients with metastatic pancreatic cancer treated with capecitabine and nab-paclitaxel**, Scientific Reports, Vol. 7, July 2017, https://doi.org/10.1038/s41598-017-04743-0
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
