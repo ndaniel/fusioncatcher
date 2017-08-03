@@ -214,13 +214,24 @@ if __name__ == '__main__':
 
             print >>sys.stderr,'-->JOB:'+str(i+1)+'-----------------------------------------------------------------'
             print >>sys.stderr,' '.join(parameters)
-            p = subprocess.Popen(parameters)
+
+            # original
+            #p = subprocess.Popen(parameters)
+            # fix https://github.com/ndaniel/fusioncatcher/issues/62
+            p = subprocess.Popen(parameters,close_fds=True)
+
             proc.append(p)
             time.sleep(1) # seconds
         print >>sys.stderr,'-------------------------------------------------------------------------'
         print >>sys.stderr,"Waiting for BLAT to finish running..."
-        for p in proc:
-            p.communicate()
+
+        # original
+        #for p in proc:
+        #    p.communicate()
+        # fix https://github.com/ndaniel/fusioncatcher/issues/62
+        while proc:
+            proc.pop().communicate()
+            
         print >>sys.stderr,"BLAT finished running."
         print >>sys.stderr,'-------------------------------------------------------------------------'
         print >>sys.stderr,"Joining BLAT's output files..."
