@@ -145,7 +145,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Mandahl N. et al., **Scattered genomic amplification in dedifferentiated liposarcoma**, Molecular Cytogenetics, Vol. 10, June 2017, https://doi.org/10.1038/10.1186/s13039-017-0325-5
   * Biaconi D. et al., **Biochemical and genetic predictors of overall survival in patients with metastatic pancreatic cancer treated with capecitabine and nab-paclitaxel**, Scientific Reports, Vol. 7, July 2017, https://doi.org/10.1038/s41598-017-04743-0
   * Sahraeian S.M.E. et.al., **Gaining comprehensive biological insight into the transcriptome by performing a broad-spectrum RNA-seq analysis**, Nature Communication, Vol. 8, July 2017, https://doi.org/10.1038/s41467-017-00050-4
-
+  * Micci F. et al., **Fusion of the Genes BRD8 and PHF1 in Endometrial Stromal Sarcoma**, Genes, Chromosomes and Cancers, July 2017,  https://doi.org/10.1002/gcc.22485
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
