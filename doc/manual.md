@@ -147,6 +147,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Sahraeian S.M.E. et.al., **Gaining comprehensive biological insight into the transcriptome by performing a broad-spectrum RNA-seq analysis**, Nature Communication, Vol. 8, July 2017, https://doi.org/10.1038/s41467-017-00050-4
   * Micci F. et al., **Fusion of the Genes BRD8 and PHF1 in Endometrial Stromal Sarcoma**, Genes, Chromosomes and Cancers, July 2017,  https://doi.org/10.1002/gcc.22485
   * Kivioja J.L. et al., **Chimeric NUP98–NSD1 transcripts from the cryptic t(5;11)(q35.2;p15.4) in adult de novo acute myeloid leukemia**, Leukemia and Lymphoma, Aug. 2017, http://dx.doi.org/10.1080/10428194.2017.1357174
+  * Marincevic-Zuniga Y. et al., **Transcriptome sequencing in pediatric acute lymphoblastic leukemia identifies fusion genes associated with distinct DNA methylation profiles**, Journal of Hematology and Oncology, Aug. 2017, http://doi.org/10.1186/s13045-017-0515-y
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
