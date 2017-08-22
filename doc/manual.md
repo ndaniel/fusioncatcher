@@ -1607,7 +1607,7 @@ The main goal of *FusionCatcher* is to find **somatic** (and/or pathogenic) fusi
 
 *FusionCatcher* is doing its own quality filtering/trimming of reads. This is needed because most a very important factor for finding fusion genes in RNA-seq experiment is the length of RNA fragments.  **Ideally** the RNA fragment size for finding fusion genes should be over 300 bp.  Most of the RNA-seq experiments are designed for doing differentially expression analyses and not for finding fusion genes and therefore the RNA fragment size many times is less than 300bp and the trimming and quality filtering should be done in such a way that it does not decrease even more the RNA fragment size.
 
-*FusionCatcher* is able to finding fusion genes even in cases where the fusion junction is within known exon or within known intron (for example in the middle of an intron) due to the use of BLAT aligner. The minimum condition for *FusionCatcher* to find a fusion gene is that both genes involved in the fusion are annotated in Ensembl database (even if their gene structure is "wrong").
+*FusionCatcher* is able to find fusion genes even in cases where the fusion junction is within known exon or within known intron (for example in the middle of an intron). The minimum condition for *FusionCatcher* to find a fusion gene is that both genes involved in the fusion are annotated in Ensembl database (even if their gene structure is not correct).
 
 *FusionCatcher* is spending most of computational analysis on the most promising fusion genes candidate and tries as early as possible to filter out the candidate fusion genes which do not look promising, like for example:
   * candidate fusion gene is composed of a gene and its pseudogene, or
