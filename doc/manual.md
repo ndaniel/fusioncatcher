@@ -149,6 +149,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Kivioja J.L. et al., **Chimeric NUP98–NSD1 transcripts from the cryptic t(5;11)(q35.2;p15.4) in adult de novo acute myeloid leukemia**, Leukemia and Lymphoma, Aug. 2017, http://dx.doi.org/10.1080/10428194.2017.1357174
   * Marincevic-Zuniga Y. et al., **Transcriptome sequencing in pediatric acute lymphoblastic leukemia identifies fusion genes associated with distinct DNA methylation profiles**, Journal of Hematology and Oncology, Aug. 2017, http://doi.org/10.1186/s13045-017-0515-y
   * Kumar A. et al., **The impact of RNA sequence library construction protocols on transcriptomic profiling of leukemia**, BMC Genomics, Aug. 2017, http://doi.org/10.1186/s12864-017-4039-1
+  * Singh R. et al., **Analysis of the whole transcriptome from gingivo-buccal squamous cell carcinoma reveals deregulated immune landscape and suggests targets for immunotherapy**, PLOS One, Sept. 2017, http://doi.org/10.1371/journal.pone.0183606
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
