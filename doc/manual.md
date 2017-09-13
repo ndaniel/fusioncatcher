@@ -150,6 +150,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Marincevic-Zuniga Y. et al., **Transcriptome sequencing in pediatric acute lymphoblastic leukemia identifies fusion genes associated with distinct DNA methylation profiles**, Journal of Hematology and Oncology, Aug. 2017, http://doi.org/10.1186/s13045-017-0515-y
   * Kumar A. et al., **The impact of RNA sequence library construction protocols on transcriptomic profiling of leukemia**, BMC Genomics, Aug. 2017, http://doi.org/10.1186/s12864-017-4039-1
   * Singh R. et al., **Analysis of the whole transcriptome from gingivo-buccal squamous cell carcinoma reveals deregulated immune landscape and suggests targets for immunotherapy**, PLOS One, Sept. 2017, http://doi.org/10.1371/journal.pone.0183606
+  * Arbajian E. et al., **Inflammatory leiomyosarcoma is a distinct tumor characterized by near-haploidization, few somatic mutations, and a primitive myogenic gene expression signature**, Modern Pathology, Sept. 2017,   http://doi.org/10.1038/modpathol.2017.113
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
