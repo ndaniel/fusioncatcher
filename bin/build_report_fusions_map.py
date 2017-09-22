@@ -673,9 +673,9 @@ if __name__ == '__main__':
     # 0  - missing_mate
     # 1  - found_mate
     # 2  - genes_where_the_found_mate_maps
-    missing = [line.rstrip('\r\n').split('\t') for line in file(options.input_candidate_fusions_missing_mates_filename,'r').readlines()]
+    missing = [line.rstrip('\r\n').split('\t') for line in file(options.input_candidate_fusions_missing_mates_filename,'r') if line.find(",")==-1]
     missing.pop(0) # remove the header
-    missing = dict([(el[0],set(el[2].split(','))) for el in missing])
+    missing = dict([(el[0],el[2]) for el in missing])
 
 
     ############################################################################
@@ -759,11 +759,9 @@ if __name__ == '__main__':
 
             # count also their mate read if it maps on the this gene fusion
             res = missing.get(el,None)
-            if res and len(res) == 1:
-                res = res.pop()
-                if res == g1 or res == g2:
-                    # found it => add it
-                    mate = mate + 1
+            if res and ((res == g1) or (res == g2)):
+                # found it => add it
+                mate = mate + 1
 
 
         #
