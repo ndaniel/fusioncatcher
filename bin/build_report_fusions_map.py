@@ -66,6 +66,9 @@ mapping_illumina2sanger = "".join([chr(0) for ascii in range(0, 64)]
 
 empty_zip_data = 'PK\x05\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
 
+def get13(x):
+    return (x[0],x[2])
+
 def solexa2sanger(qual):
     return qual.translate(mapping_solexa2sanger)
 
@@ -624,6 +627,10 @@ if __name__ == '__main__':
     # 6  - 17-66,19-68,27-76 <- positions suporting reads
     # 7  - S000035555693/2,S000049560905/2,S000099140369/2 <- supporting read ids
     fusion_summary_more = [line.rstrip('\r\n').split('\t') for line in file(options.input_fusion_summary_more_filename,'r').readlines()]
+    fusion_summary_more_reads = set()
+    for el in fusion_summary_more:
+        fusion_summary_more_reads.update(el[7].split(','))
+
     fusion_summary_more = dict([( (el[0],el[1],el[2],el[3],el[4],el[5]),
                                    {'loc':el[6].split(','),
                                     'ids':el[7].split(',')
@@ -673,9 +680,9 @@ if __name__ == '__main__':
     # 0  - missing_mate
     # 1  - found_mate
     # 2  - genes_where_the_found_mate_maps
-    missing = [line.rstrip('\r\n').split('\t') for line in file(options.input_candidate_fusions_missing_mates_filename,'r') if line.find(",")==-1]
-    missing.pop(0) # remove the header
-    missing = dict([(el[0],el[2]) for el in missing])
+    missing = (get13(line.rstrip('\r\n').split('\t')) for line in file(options.input_candidate_fusions_missing_mates_filename,'r') if line.partition("\t")[0] in fusion_summary_more_reads and line.find(",") == -1)
+    #missing.pop(0) # remove the header
+    missing = dict(missing)
 
 
     ############################################################################
@@ -759,7 +766,7 @@ if __name__ == '__main__':
 
             # count also their mate read if it maps on the this gene fusion
             res = missing.get(el,None)
-            if res and ((res == g1) or (res == g2)):
+            if res and (res == g1 or res == g2):
                 # found it => add it
                 mate = mate + 1
 
