@@ -152,7 +152,8 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Singh R. et al., **Analysis of the whole transcriptome from gingivo-buccal squamous cell carcinoma reveals deregulated immune landscape and suggests targets for immunotherapy**, PLOS One, Sept. 2017, http://doi.org/10.1371/journal.pone.0183606
   * Arbajian E. et al., **Inflammatory leiomyosarcoma is a distinct tumor characterized by near-haploidization, few somatic mutations, and a primitive myogenic gene expression signature**, Modern Pathology, Sept. 2017,   http://doi.org/10.1038/modpathol.2017.113
   * Varghese, A.M. et al., **Clinical and molecular characterization of patients with cancers of unknown primary in the modern era**, Annals of Oncology, Sep. 2017, http://doi.org/10.1093/annonc/mdx545
-  
+  * Persson H. et al., **Frequent miRNA-convergent fusion gene events in breast cancer**, Nature Communications, Oct. 2017, http://doi.org/doi:10.1038/s41467-017-01176-1
+
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
