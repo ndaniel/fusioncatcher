@@ -242,7 +242,7 @@ description = ("FusionCatcher searches for novel and known somatic gene fusions 
                "Illumina HiSeq 2000, Illumina HiSeq X, Illumina NextSeq 500, \n"+
                "Illumina GAIIx, Illumina GAII, Illumina MiSeq, Illumina MiniSeq). \n")
 
-version = "%prog 0.99.7c beta"
+version = "%prog 0.99.7d beta"
 
 
 if __name__ == "__main__":
@@ -1936,7 +1936,7 @@ if __name__ == "__main__":
         parser.error("ERROR: --anchor-fusion2 (%d) should be larger than anchor-fusion (%s)!" % (options.length_anchor2,options.length_anchor))
         sys.exit(1)
 
-    if spanning_pairs_bowtie != spanning_pairs_minimum or spanning_pairs_bowtie < 2:
+    if spanning_pairs_bowtie != spanning_pairs_minimum or spanning_pairs_bowtie < 1:
         parser.error("ERROR: The minimum value of the SPANNING_PAIRS should have values larger than 2 but the value %s was given!" % (options.spanning_pairs,))
         sys.exit(1)
 
@@ -1963,8 +1963,8 @@ if __name__ == "__main__":
             
             timeout = 10
             socket.setdefaulttimeout(timeout)
-            serverversion  = urllib2.urlopen('http://fusioncatcher.hopto.org/fusioncatcher-version.txt').read()
-            #serverversion = None
+            #serverversion  = urllib2.urlopen('http://fusioncatcher.hopto.org/fusioncatcher-version.txt').read()
+            serverversion = None
             if serverversion:
                 serverversion = serverversion.splitlines()
                 serverversion = serverversion[0].strip()
@@ -5756,7 +5756,8 @@ if __name__ == "__main__":
     job.add('LC_ALL=C',kind='program')
     job.add('grep',kind='parameter')
     job.add('-F',kind='parameter')
-    job.add('-f',datadir('ig_loci.txt'),kind='input')
+    #job.add('-f',datadir('ig_loci.txt'),kind='input')
+    job.add('-f',datadir('gap_fusions.txt'),kind='input')
     job.add('',outdir('candidate_fusion-genes_further.txt'),kind='input')
     job.add('|',kind='parameter')
     job.add('LC_ALL=C',kind='parameter')
@@ -5793,7 +5794,8 @@ if __name__ == "__main__":
         job.add('comm',kind='parameter')
         job.add('-23',kind='parameter')
         job.add('',outdir('eporcrlf2_temp.txt'),kind='input',temp_path='yes')
-        job.add('',datadir('ig_loci.txt'),kind='input')
+        #job.add('',datadir('ig_loci.txt'),kind='input')
+        job.add('',datadir('gap_fusions.txt'),kind='input')
         job.add('>',outdir('eporcrlf2.txt'),kind='output')
         job.run()
         
@@ -6450,16 +6452,24 @@ if __name__ == "__main__":
                 "Please, try to (i) run it on a server/computer with larger amount of memory, or (ii) using command line option '--no-seqtk-subseq' !"))
         job.clean(outdir('originala.fq.gz'),temp_path=temp_flag)
 
-        job.add('LC_ALL=C',kind='program')
-        job.add('join',kind='parameter')
-        job.add('-1','1',kind='parameter')
-        job.add('-2','1',kind='parameter')
-        job.add('-t',"'\t'",kind='parameter')
-        job.add('',outdir('original_important.txt'),kind='input',temp_path=temp_flag)
-        job.add('',outdir('reads_filtered_transcriptome_sorted-read_end.map'),kind='input',temp_path=temp_flag)
-        job.add('>',outdir('reads_filtered_transcriptome_sorted-read_end_important.map'),kind='output')
-        job.run()
 
+        if job.iff(empty(outdir('reads_filtered_transcriptome_sorted-read_end.map')),id="###reads_filtered_transcriptome_sorted-read_end.map###"):
+            job.add('touch',kind='program')
+            job.add('',outdir('reads_filtered_transcriptome_sorted-read_end_important.map'),kind='output')
+            job.run()
+
+            job.clean(outdir('reads_filtered_transcriptome_sorted-read_end.map'),temp_path=temp_flag)
+            
+        else:
+            job.add('LC_ALL=C',kind='program')
+            job.add('join',kind='parameter')
+            job.add('-1','1',kind='parameter')
+            job.add('-2','1',kind='parameter')
+            job.add('-t',"'\t'",kind='parameter')
+            job.add('',outdir('original_important.txt'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('reads_filtered_transcriptome_sorted-read_end.map'),kind='input',temp_path=temp_flag)
+            job.add('>',outdir('reads_filtered_transcriptome_sorted-read_end_important.map'),kind='output')
+            job.run()
 
 
 
@@ -7292,15 +7302,18 @@ if __name__ == "__main__":
         if options.psl_visualization and not empty(datadir('genome.2bit')):
             job.add('--input_genome_2bit',datadir('genome.2bit'),kind='input')
             job.add('--psl_alignment_type','web',kind='parameter')
-            job.add('--blat-dir',_BT_,kind='parameter')
+            if _BT_:
+                job.add('--blat-dir',_BT_,kind='parameter')
         if options.sam_visualization:
             job.add('--input_genome_bowtie2',datadir('genome_index2/index'),kind='input')
             job.add('--sam_alignment','20',kind='parameter')
             job.add('--threads',options.processes,kind='parameter')
-            job.add('--bowtie2-dir',_B2_,kind='parameter')
+            if _B2_:
+                job.add('--bowtie2-dir',_B2_,kind='parameter')
         if options.assembly:
             job.add('--velvet',kind='parameter')
-            job.add('--velvet-dir',_VT_,kind='parameter')
+            if _VT_:
+                job.add('--velvet-dir',_VT_,kind='parameter')
         job.add('--output_super_summary',outdir('candidate_fusion_genes_summary_BOWTIE.txt'),kind='output')
         job.add('--output_zip_fasta',outdir('supporting-reads_gene-fusions_BOWTIE.zip'),kind='output')
         job.run()
@@ -8242,15 +8255,18 @@ if __name__ == "__main__":
                 if options.psl_visualization and not empty(datadir('genome.2bit')):
                     job.add('--input_genome_2bit',datadir('genome.2bit'),kind='input')
                     job.add('--psl_alignment_type','web',kind='parameter')
-                    job.add('--blat-dir',_BT_,kind='parameter')
+                    if _BT_:
+                        job.add('--blat-dir',_BT_,kind='parameter')
                 if options.sam_visualization:
                     job.add('--input_genome_bowtie2',datadir('genome_index2/index'),kind='input')
                     job.add('--sam_alignment','20',kind='parameter')
                     job.add('--threads',options.processes,kind='parameter')
-                    job.add('--bowtie2-dir',_B2_,kind='parameter')
+                    if _B2_:
+                        job.add('--bowtie2-dir',_B2_,kind='parameter')
                 if options.assembly:
                     job.add('--velvet',kind='parameter')
-                    job.add('--velvet-dir',_VT_,kind='parameter')
+                    if _VT_:
+                        job.add('--velvet-dir',_VT_,kind='parameter')
                 job.add('--output_super_summary',outdir('candidate_fusion_genes_summary_BLAT.txt'),kind='output')
                 job.add('--output_zip_fasta',outdir('supporting-reads_gene-fusions_BLAT.zip'),kind='output')
                 job.run()
@@ -8377,6 +8393,7 @@ if __name__ == "__main__":
                         job.add('--limitOutSAMoneReadBytes','100000000',kind='parameter')
                         job.add('--scoreGapNoncan','-4',kind='parameter') # should it be -2?
                         job.add('--scoreGapATAC','-4',kind='parameter')
+                        job.add('--limitSjdbInsertNsj','2000000',kind='parameter')
                         job.add('--readFilesIn',outdir('reads_gene-gene_no-str_fixed.fq'),kind='input')
                         job.add('--outFileNamePrefix',gdr,kind='output')
                         job.add('--outFileNamePrefix',os.path.join(gdr,'Aligned.out.sam'),kind='output',command_line = 'no')
@@ -9167,6 +9184,7 @@ if __name__ == "__main__":
 #                    job.add('--chimScoreSeparation','10',kind='parameter')# default is: 0
 #                    job.add('--chimSegmentMin',outdir('gene-gene_longest.txt'),kind='parameter',from_file = 'yes')
 #                    job.add('--chimJunctionOverhangMin',outdir('gene-gene_longest.txt'),kind='parameter',from_file = 'yes')
+                    job.add('--limitSjdbInsertNsj','2000000',kind='parameter')
                     job.add('--readFilesIn',outdir('reads_gene-gene_no-str_fixed.fq'),kind='input',temp_path=temp_flag)
                     job.add('--outFileNamePrefix',outdir('gene-gene-star-results/'),kind='output')
                     job.run()
@@ -9971,7 +9989,8 @@ if __name__ == "__main__":
                     job.add('LC_ALL=C',kind='program')
                     job.add('grep',kind='parameter')
                     job.add('-F',kind='parameter')
-                    job.add('-f',datadir('ig_loci.txt'),kind='input')
+                    #job.add('-f',datadir('ig_loci.txt'),kind='input')
+                    job.add('-f',datadir('gap_fusions.txt'),kind='input')
                     job.add('',outdir('gene-gene-star_best-unique_.psl'),kind='input',temp_path=temp_flag)
                     job.add('|',kind='parameter')
                     job.add('LC_ALL=C',kind='parameter')
@@ -10051,15 +10070,18 @@ if __name__ == "__main__":
                 if options.psl_visualization and not empty(datadir('genome.2bit')):
                     job.add('--input_genome_2bit',datadir('genome.2bit'),kind='input')
                     job.add('--psl_alignment_type','web',kind='parameter')
-                    job.add('--blat-dir',_BT_,kind='parameter')
+                    if _BT_:
+                        job.add('--blat-dir',_BT_,kind='parameter')
                 if options.sam_visualization:
                     job.add('--input_genome_bowtie2',datadir('genome_index2/index'),kind='input')
                     job.add('--sam_alignment','20',kind='parameter')
                     job.add('--threads',options.processes,kind='parameter')
-                    job.add('--bowtie2-dir',_B2_,kind='parameter')
+                    if _B2_:
+                        job.add('--bowtie2-dir',_B2_,kind='parameter')
                 if options.assembly:
                     job.add('--velvet',kind='parameter')
-                    job.add('--velvet-dir',_VT_,kind='parameter')
+                    if _VT_:
+                        job.add('--velvet-dir',_VT_,kind='parameter')
                 job.add('--output_super_summary',outdir('candidate_fusion_genes_summary_STAR.txt'),kind='output')
                 job.add('--output_zip_fasta',outdir('supporting-reads_gene-fusions_STAR.zip'),kind='output')
                 job.run()
@@ -11075,15 +11097,18 @@ if __name__ == "__main__":
                 if options.psl_visualization and not empty(datadir('genome.2bit')):
                     job.add('--input_genome_2bit',datadir('genome.2bit'),kind='input')
                     job.add('--psl_alignment_type','web',kind='parameter')
-                    job.add('--blat-dir',_BT_,kind='parameter')
+                    if _BT_:
+                        job.add('--blat-dir',_BT_,kind='parameter')
                 if options.sam_visualization:
                     job.add('--input_genome_bowtie2',datadir('genome_index2/index'),kind='input')
                     job.add('--sam_alignment','20',kind='parameter')
                     job.add('--threads',options.processes,kind='parameter')
-                    job.add('--bowtie2-dir',_B2_,kind='parameter')
+                    if _B2_:
+                        job.add('--bowtie2-dir',_B2_,kind='parameter')
                 if options.assembly:
                     job.add('--velvet',kind='parameter')
-                    job.add('--velvet-dir',_VT_,kind='parameter')
+                    if _VT_:
+                        job.add('--velvet-dir',_VT_,kind='parameter')
                 job.add('--output_super_summary',outdir('candidate_fusion_genes_summary_BOWTIE2.txt'),kind='output')
                 job.add('--output_zip_fasta',outdir('supporting-reads_gene-fusions_BOWTIE2.zip'),kind='output')
                 job.run()
@@ -11576,15 +11601,18 @@ if __name__ == "__main__":
             if options.psl_visualization and not empty(datadir('genome.2bit')):
                 job.add('--input_genome_2bit',datadir('genome.2bit'),kind='input')
                 job.add('--psl_alignment_type','web',kind='parameter')
-                job.add('--blat-dir',_BT_,kind='parameter')
+                if _BT_:
+                    job.add('--blat-dir',_BT_,kind='parameter')
             if options.sam_visualization:
                 job.add('--input_genome_bowtie2',datadir('genome_index2/index'),kind='input')
                 job.add('--sam_alignment','20',kind='parameter')
                 job.add('--threads',options.processes,kind='parameter')
-                job.add('--bowtie2-dir',_B2_,kind='parameter')
+                if _B2_:
+                    job.add('--bowtie2-dir',_B2_,kind='parameter')
             if options.assembly:
                 job.add('--velvet',kind='parameter')
-                job.add('--velvet-dir',_VT_,kind='parameter')
+                if _VT_:
+                    job.add('--velvet-dir',_VT_,kind='parameter')
             job.add('--output_super_summary',outdir('candidate_fusion_genes_summary_SPOTLIGHT.txt'),kind='output')
             job.add('--output_zip_fasta',outdir('supporting-reads_gene-fusions_SPOTLIGHT.zip'),kind='output')
             job.run()

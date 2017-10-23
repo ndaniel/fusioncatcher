@@ -528,7 +528,7 @@ if __name__ == '__main__':
                     protein_id = 'ENSP09000000010',
                     gene_symbol = 'IGK_locus_(b)', # stjude
                     gene_id = 'ENSG09000000010',
-                    transcript_id = 'ENSG09000000010',
+                    transcript_id = 'ENST09000000010',
                     exon_id = 'ENSE09000000010',
                     exon_number = '1',
                     start = '89154501', #'1213300'
@@ -581,7 +581,7 @@ if __name__ == '__main__':
                     protein_id = 'ENSP09000001010',
                     gene_symbol = 'IGK_locus_(f)', # stjude
                     gene_id = 'ENSG09000001010',
-                    transcript_id = 'ENSG09000001010',
+                    transcript_id = 'ENST09000001010',
                     exon_id = 'ENSE09000001010',
                     exon_number = '1',
                     start = '89154501', #'1213300'
@@ -1446,7 +1446,87 @@ if __name__ == '__main__':
                     strand = '-1'
                 )
 
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001265',
+                    gene_symbol = 'ZNF384', # ZNF384
+                    gene_id = 'ENSG00000126746',
+                    transcript_id = 'ENST09000001265',
+                    exon_id = 'ENSE09000001265',
+                    exon_number = '1',
+                    start = '6665000', #
+                    end =   '6693000', #
+                    chrom = '12',
+                    strand = '-1'
+                )
 
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001266',
+                    gene_symbol = 'ZNF384', # ZNF384
+                    gene_id = 'ENSG00000126746',
+                    transcript_id = 'ENST09000001266',
+                    exon_id = 'ENSE09000001266',
+                    exon_number = '1',
+                    start = '6665000', #
+                    end =   '6693000', #
+                    chrom = '12',
+                    strand = '-1',
+                    
+                    start_tr = '6679455',
+                    end_tr =   '6690444',
+                    start_ex = '6690380', #
+                    end_ex =   '6690444' #
+                )
+                
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001266',
+                    gene_symbol = 'ZNF384', # ZNF384
+                    gene_id = 'ENSG00000126746',
+                    transcript_id = 'ENST09000001266',
+                    exon_id = 'ENSE09000001267',
+                    exon_number = '2',
+                    start = '6665000', #
+                    end =   '6693000', #
+                    chrom = '12',
+                    strand = '-1',
+                    
+                    start_tr = '6679455',
+                    end_tr =   '6690444',
+                    start_ex = '6688167', #
+                    end_ex =   '6688226' #
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001266',
+                    gene_symbol = 'ZNF384', # ZNF384
+                    gene_id = 'ENSG00000126746',
+                    transcript_id = 'ENST09000001266',
+                    exon_id = 'ENSE09000001268',
+                    exon_number = '3',
+                    start = '6665000', #
+                    end =   '6693000', #
+                    chrom = '12',
+                    strand = '-1',
+                    
+                    start_tr = '6679455',
+                    end_tr =   '6690444',
+                    start_ex = '6679455', #
+                    end_ex =   '6679525' #
+                )
+
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001270',
+                    gene_symbol = 'TCF3', # TCF3
+                    gene_id = 'ENSG00000071564',
+                    transcript_id = 'ENST09000001270',
+                    exon_id = 'ENSE09000001270',
+                    exon_number = '1',
+                    start = '1607700', #
+                    end =   '1702000', #
+                    chrom = '19',
+                    strand = '-1'
+                )
 
 
                 # transcript 2 - exon 1/4-- IGHM

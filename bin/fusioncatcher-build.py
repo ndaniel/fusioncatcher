@@ -136,7 +136,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 0.99.7c beta"
+    version = "%prog 0.99.7d beta"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -821,6 +821,12 @@ if __name__ == '__main__':
         job.add('-n','""',kind='parameter')
         job.add('>',outdir('ig_loci.txt'),kind='output')
         job.run()
+
+    job.add(_FC_+'add_gap_gene.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('gap_fusions.txt'),kind='output',command_line='no')
+    job.run()
 
 #    if options.organism == 'homo_sapiens':
 #        job.add('grep',kind='program')

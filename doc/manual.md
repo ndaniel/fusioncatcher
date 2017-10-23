@@ -142,6 +142,18 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Hettmer S. et al., **Epithelioid hemangioendotheliomas of the liver and lung in children and adolescents**, Pediatric Blood & Cancer, June 2017, https://doi.org/10.1002/pbc.26675
   * Pisapia D.J. et al., **Next-Generation Rapid Autopsies Enable Tumor Evolution Tracking and Generation of Preclinical Models**, JCO Precision Oncology, June 2017, https://doi.org/10.1200/PO.16.00038 
   * Bekers E.M. et al., **Soft tissue angiofibroma – clinicopathologic, immunohistochemical and molecular analysis of 14 cases**, Genes, Chromosomes and Cancers, June 1027, https://doi.org/10.1002/gcc.22478
+  * Mandahl N. et al., **Scattered genomic amplification in dedifferentiated liposarcoma**, Molecular Cytogenetics, Vol. 10, June 2017, https://doi.org/10.1038/10.1186/s13039-017-0325-5
+  * Biaconi D. et al., **Biochemical and genetic predictors of overall survival in patients with metastatic pancreatic cancer treated with capecitabine and nab-paclitaxel**, Scientific Reports, Vol. 7, July 2017, https://doi.org/10.1038/s41598-017-04743-0
+  * Sahraeian S.M.E. et.al., **Gaining comprehensive biological insight into the transcriptome by performing a broad-spectrum RNA-seq analysis**, Nature Communication, Vol. 8, July 2017, https://doi.org/10.1038/s41467-017-00050-4
+  * Micci F. et al., **Fusion of the Genes BRD8 and PHF1 in Endometrial Stromal Sarcoma**, Genes, Chromosomes and Cancers, July 2017,  https://doi.org/10.1002/gcc.22485
+  * Kivioja J.L. et al., **Chimeric NUP98–NSD1 transcripts from the cryptic t(5;11)(q35.2;p15.4) in adult de novo acute myeloid leukemia**, Leukemia and Lymphoma, Aug. 2017, http://dx.doi.org/10.1080/10428194.2017.1357174
+  * Marincevic-Zuniga Y. et al., **Transcriptome sequencing in pediatric acute lymphoblastic leukemia identifies fusion genes associated with distinct DNA methylation profiles**, Journal of Hematology and Oncology, Aug. 2017, http://doi.org/10.1186/s13045-017-0515-y
+  * Kumar A. et al., **The impact of RNA sequence library construction protocols on transcriptomic profiling of leukemia**, BMC Genomics, Aug. 2017, http://doi.org/10.1186/s12864-017-4039-1
+  * Singh R. et al., **Analysis of the whole transcriptome from gingivo-buccal squamous cell carcinoma reveals deregulated immune landscape and suggests targets for immunotherapy**, PLOS One, Sept. 2017, http://doi.org/10.1371/journal.pone.0183606
+  * Arbajian E. et al., **Inflammatory leiomyosarcoma is a distinct tumor characterized by near-haploidization, few somatic mutations, and a primitive myogenic gene expression signature**, Modern Pathology, Sept. 2017,   http://doi.org/10.1038/modpathol.2017.113
+  * Varghese, A.M. et al., **Clinical and molecular characterization of patients with cancers of unknown primary in the modern era**, Annals of Oncology, Sep. 2017, http://doi.org/10.1093/annonc/mdx545
+  * Persson H. et al., **Frequent miRNA-convergent fusion gene events in breast cancer**, Nature Communications, Oct. 2017, http://doi.org/doi:10.1038/s41467-017-01176-1
+
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
@@ -1018,7 +1030,7 @@ Table 1 - Columns description for file `final-list_candidate-fusion-genes.txt`
 | **Exon\_2\_id(3end\_fusion\_partner)** | Ensembl exon id of the 3' end fusion exon-exon junction |
 | **Fusion\_point\_for\_gene\_1(5end\_fusion\_partner)** | Chromosomal position of the 5' end of fusion junction (chromosome:position:strand); 1-based coordinate |
 | **Fusion\_point\_for\_gene\_2(3end\_fusion\_partner)** | Chromosomal position of the 3' end of fusion junction (chromosome:position:strand); 1-based coordinate |
-| **Spanning\_pairs** | Count of pair-end reads supporting the fusion |
+| **Spanning\_pairs** | Count of pairs of reads supporting the fusion (**including** also the multimapping reads) |
 | **Spanning\_unique\_reads** | Count of unique reads (i.e. unique mapping positions) mapping on the fusion junction. Shortly, here are counted all the reads which map on fusion junction minus the PCR duplicated reads. |
 | **Longest\_anchor\_found** | Longest anchor (hangover) found among the unique reads mapping on the fusion junction |
 | **Fusion\_finding\_method** | Aligning method used for mapping the reads and finding the fusion genes. Here are two methods used which are: (i) **BOWTIE** = only Bowtie aligner is used for mapping the reads on the genome and exon-exon fusion junctions, (ii) **BOWTIE+BLAT** = Bowtie aligner is used for mapping reads on the genome and BLAT is used for mapping reads for finding the fusion junction,  (iii) **BOWTIE+STAR** = Bowtie aligner is used for mapping reads on the genome and STAR is used for mapping reads for finding the fusion junction, (iv) **BOWTIE+BOWTIE2** = Bowtie aligner is used for mapping reads on the genome and Bowtie2 is used for mapping reads for finding the fusion junction, and (v) **BOWTIE+BWA** = Bowtie aligner is used for mapping reads on the genome and Bowtie2 is used for mapping reads for finding the fusion junction. |
@@ -1071,6 +1083,7 @@ Table 2 - Labels used to describe the found fusion genes (column *Fusion\_ descr
 | **metazoa**             | one or both genes is a metazoa\_srp gene [Metazia\_srp](http://www.genecards.org/index.php?path=/Search/keyword/metazoa_srp) |
 | **mirna**               | one or both genes is a [miRNA](http://en.wikipedia.org/wiki/MicroRNA) |
 | **mt**                  | one or both genes are situated on [mitochondrion](http://en.wikipedia.org/wiki/Mitochondrion). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
+| **mX** (where X is a number) | count of pairs of reads supporting the fusion (**excluding** the mutimapping reads). |
 | **non\_cancer\_tissues**   | fusion gene which has been previously reported/found in non-cancer tissues and cell lines in [Babiceanu et al, Recurrent chimeric fusion RNAs in non-cancer tissues and cells, Nucl. Acids Res. 2016](http://nar.oxfordjournals.org/content/early/2016/02/01/nar.gkw032.abstract). These are considered as non-somatic mutation and therefore they may be skipped and not reported. |
 | **non\_tumor\_cells**   | fusion gene which has been previously reported/found in non-tumor cell lines, like for example HEK293. These are considered as non-somatic mutation and therefore may be skipped and not reported. |
 | **no\_protein** | one or both genes have no known protein product |
@@ -1161,9 +1174,10 @@ The files with names ending in `_reads.sam` (please note, that they still needed
 
 #### 6.3.3.2 - Manual method
 Here is an rough example of manually aligning the supporting reads (that is named as `supporting_reads.fq` in the below example; the FASTQ files needed here are the files ending in `_reads.fq` from the ZIP archives `supporting-reads_gene-fusions_*.zip` produced by *FusionCatcher*) using different aligners.
-  * [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) aligner (where `your_choice_of_genome_bowtie2_index` may be for human, for example [this](ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19.zip))
-   * alignment done ignoring the paired-end information (i.e. like single reads):
-    ```
+  * [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) aligner (where `your_choice_of_genome_bowtie2_index` may be for human, for example [this](ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19.zip)):  
+```
+# alignment done ignoring the paired-end information (i.e. like single reads):
+
 bowtie2 \
 --local \
 -k 10 \
@@ -1174,9 +1188,9 @@ bowtie2 \
 samtools view -bS fusion_genes.sam | samtools sort - fusion_genes.sorted
 
 samtools index fusion_genes.sorted.bam
-    ```
-   * alignment done taking into account the paired-end information:
-    ```
+
+# alignment done taking into account the paired-end information:
+
 cat supporting_reads.fq | \
 paste - - - - - - - - | \
 awk '{print $1"\n"$2"\n"$3"\n"$4 > "r1.fq"; print $5"\n"$6"\n"$7"\n"$8 > "r2.fq"}'
@@ -1192,10 +1206,11 @@ bowtie2 \
 samtools view -bS fusion_genes.sam | samtools sort - fusion_genes.sorted
 
 samtools index fusion_genes.sorted.bam
-    ```
+```
   * [STAR](http://github.com/alexdobin/STAR) aligner (where `your_choice_of_genome_star_index` should be built according to the [STAR Manual](http://github.com/alexdobin/STAR/tree/master/doc))
-   * alignment done ignoring the paired-end information (i.e. like single reads):
-    ```
+```
+# alignment done ignoring the paired-end information (i.e. like single reads):
+
 STAR \
 --genomeDir your_choice_of_genome_star_index \
 --alignSJoverhangMin 9 \
@@ -1206,9 +1221,9 @@ STAR \
 samtools view -bS fusion_genes.sam | samtools sort - fusion_genes.sorted
 
 samtools index fusion_genes.sorted.bam
-    ```
-   * alignment done taking into account the paired-end information:
-    ```
+
+# alignment done taking into account the paired-end information:
+
 cat supporting_reads.fq | \
 paste - - - - - - - - | \
 awk '{print $1"\n"$2"\n"$3"\n"$4 > "r1.fq"; print $5"\n"$6"\n"$7"\n"$8 > "r2.fq"}'
@@ -1223,10 +1238,9 @@ STAR \
 samtools view -bS Aligned.out.sam | samtools sort - fusion_genes.sorted
 
 samtools index fusion_genes.sorted.bam
-    ```
-
+```
   * [BLAT](http://users.soe.ucsc.edu/~kent/src/) aligner (where `your_choice_of_genome_blat_index` should be built according to the [BLAT's examples](https://genome.ucsc.edu/goldenpath/help/blatSpec.html))
-    ```
+```
 # build the genome index using BLAT where the genome is given FASTA file genome.fa
 faToTwoBit genome.fa genome.2bit -noMask
 
@@ -1239,8 +1253,7 @@ blat -stepSize=5 -repMatch=2253 -minScore=0 -minIdentity=0 genome.2bit supportin
 
 # visualize the PSL file supporting_reads_mapped.pslin IGV or run psl2sam.pl to convert it into SAM format
 psl2sam.pl supporting_reads_mapped.psl > supporting_reads_mapped.sam
-
-    ```
+```
 
 Further, the files `fusion_genes.sorted.bam` and `fusion_genes.sorted.bam.bai` may be used with your favourite NGS visualizer!
 
@@ -1599,7 +1612,7 @@ The main goal of *FusionCatcher* is to find **somatic** (and/or pathogenic) fusi
 
 *FusionCatcher* is doing its own quality filtering/trimming of reads. This is needed because most a very important factor for finding fusion genes in RNA-seq experiment is the length of RNA fragments.  **Ideally** the RNA fragment size for finding fusion genes should be over 300 bp.  Most of the RNA-seq experiments are designed for doing differentially expression analyses and not for finding fusion genes and therefore the RNA fragment size many times is less than 300bp and the trimming and quality filtering should be done in such a way that it does not decrease even more the RNA fragment size.
 
-*FusionCatcher* is able to finding fusion genes even in cases where the fusion junction is within known exon or within known intron (for example in the middle of an intron) due to the use of BLAT aligner. The minimum condition for *FusionCatcher* to find a fusion gene is that both genes involved in the fusion are annotated in Ensembl database (even if their gene structure is "wrong").
+*FusionCatcher* is able to find fusion genes even in cases where the fusion junction is within known exon or within known intron (for example in the middle of an intron). The minimum condition for *FusionCatcher* to find a fusion gene is that both genes involved in the fusion are annotated in Ensembl database (even if their gene structure is not correct).
 
 *FusionCatcher* is spending most of computational analysis on the most promising fusion genes candidate and tries as early as possible to filter out the candidate fusion genes which do not look promising, like for example:
   * candidate fusion gene is composed of a gene and its pseudogene, or
@@ -1672,6 +1685,7 @@ which were generated by *FusionCatcher* during the run.
   * *FusionCatcher* and `fusioncatcher-build` restart automatically from the point where have been interrupted at the previous run.
   * *FusionCatcher* by default is focusing on finding fusion genes specific to diseased/tumor/cancer samples. That means that *FusionCatcher* will skip the fusion genes which are already known to exist in healthy samples. If one wishes to find fusion genes in healthy samples then we suggest other fusion finders to be used.
   * *FusionCatcher* is able to find fusion genes **also** without using BLAT aligner but in this case we recommend to user BOWTIE2 aligner (which is not used by default) also in order to compensate!
+
 
 
 

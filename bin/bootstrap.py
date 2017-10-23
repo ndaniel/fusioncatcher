@@ -193,19 +193,19 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     FUSIONCATCHER_CONFIGURATION = expand(FUSIONCATCHER_BIN,'..','etc','configuration.cfg')
     # numpy
     NUMPY_PATH = os.path.join(FUSIONCATCHER_TOOLS,'numpy')
-    NUMPY_URL = 'http://pypi.python.org/packages/source/n/numpy/numpy-1.11.0.tar.gz'
+    NUMPY_URL = 'http://github.com/numpy/numpy/releases/download/v1.13.1/numpy-1.13.1.tar.gz'
     # biopython
     BIOPYTHON_PATH = os.path.join(FUSIONCATCHER_TOOLS,'biopython')
-    BIOPYTHON_URL = 'http://biopython.org/DIST/biopython-1.69.tar.gz'
+    BIOPYTHON_URL = 'http://pypi.python.org/packages/72/04/73a4bb22fed40eed26c7e1a673ab51778c577afc3d5dd6f1256424a62c35/biopython-1.70.tar.gz'
     # xlrd python
     XLRD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'xlrd')
-    XLRD_URL = 'http://pypi.python.org/packages/source/x/xlrd/xlrd-1.0.0.tar.gz'
+    XLRD_URL = 'http://pypi.python.org/packages/42/85/25caf967c2d496067489e0bb32df069a8361e1fd96a7e9f35408e56b3aab/xlrd-1.0.0.tar.gz'
     # openpyxl python
     OPENPYXL_PATH = os.path.join(FUSIONCATCHER_TOOLS,'openpyxl')
-    OPENPYXL_URL = 'http://pypi.python.org/packages/source/o/openpyxl/openpyxl-2.5.0-a1.tar.gz'
+    OPENPYXL_URL = 'http://pypi.python.org/packages/5a/8b/798a853ef87d505392227b91d598fd0bdfc8552e64020092e262b1ea7d5f/openpyxl-2.5.0a2.tar.gz'
     # setuptools python
     SETUPTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'setuptools')
-    SETUPTOOLS_URL = 'http://pypi.python.org/packages/source/s/setuptools/setuptools-36.0.1.zip'
+    SETUPTOOLS_URL = 'http://pypi.python.org/packages/07/a0/11d3d76df54b9701c0f7bf23ea9b00c61c5e14eb7962bb29aed866a5844e/setuptools-36.2.7.zip'
     # BOWTIE
     BOWTIE_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie')
 #    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.0/bowtie-1.2-linux-x86_64.zip'
