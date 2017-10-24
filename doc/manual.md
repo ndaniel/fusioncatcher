@@ -153,6 +153,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Arbajian E. et al., **Inflammatory leiomyosarcoma is a distinct tumor characterized by near-haploidization, few somatic mutations, and a primitive myogenic gene expression signature**, Modern Pathology, Sept. 2017,   http://doi.org/10.1038/modpathol.2017.113
   * Varghese, A.M. et al., **Clinical and molecular characterization of patients with cancers of unknown primary in the modern era**, Annals of Oncology, Sep. 2017, http://doi.org/10.1093/annonc/mdx545
   * Persson H. et al., **Frequent miRNA-convergent fusion gene events in breast cancer**, Nature Communications, Oct. 2017, http://doi.org/doi:10.1038/s41467-017-01176-1
+  * Gu J. et al., **RNA-seq Based Transcription Characterization of Fusion Breakpoints as a Potential Estimator for Its Oncogenic Potential**, BioMed Research International, Oct. 2017, http://doi.org/10.1155/2017/9829175
 
 ---
 
