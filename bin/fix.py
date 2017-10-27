@@ -47,7 +47,7 @@ def fix(fin,fou,tab=" "*8):
     d = [line.upper().rstrip('\r\n').replace("'","").replace('"','').replace("[","").replace("]","").replace(" ","").partition(",") for line in d if not line.strip().startswith("#")]
     d = [(line[0],line[2].partition(",")[0].strip()) for line in d]
     d = sorted(set([(line[0],line[1]) if line[0]<line[1] else (line[1],line[0]) for line in d]))
-    d = ["%s['%s','%s'],\n" % (tab,line[0],line[1]) for line in d]
+    d = ["%s['%s','%s'],\n" % (tab,line[0],line[1]) for line in d if line[0] != line[1]]
     d[-1] = d[-1][:-2]+'\n'
     d.extend(dhash)
     file(fou,'w').writelines(d)
@@ -80,7 +80,7 @@ Copyright (c) 2009-2017 Daniel Nicorici
 
 
 
-    version = "%prog 0.01 beta"
+    version = "%prog 0.02 beta"
 
     parser = MyOptionParser(usage       = usage,
                             epilog      = epilog,

@@ -183,8 +183,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
     
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7c.zip'
-    FUSIONCATCHER_VERSION = "0.99.7c beta"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7d.zip'
+    FUSIONCATCHER_VERSION = "0.99.7d beta"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -982,7 +982,7 @@ if __name__ == '__main__':
                   "<http://github.com/ndaniel/fusioncatcher>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 0.99.7c beta"
+    version = "%prog 0.99.7d beta"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -1127,7 +1127,7 @@ python-openpyxl
     time.sleep(5) # wait 5 seconds
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "human_v89"
+    v = "human_v90"
     ############################################################################
     # List all dependencies
     ############################################################################
