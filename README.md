@@ -42,6 +42,8 @@ The aims of FusionCatcher are:
    its pseudogene is filtered out),
  * very good RT-PCR validation rate of found candidate somatic fusion
    genes (this is very important for us),
+ * very good detection of challenging fusion genes, like for example 
+   IGH fusions, CIC fusions, DUX4 fusions, TCF3 fusions, etc.
  * very easy to use (i.e. no a priori knowledge of bioinformatic
    databases and bioinformatics is needed in order to run FusionCatcher BUT
    Linux/Unix knowledge is needed; it allows a very high level of control
