@@ -436,12 +436,12 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
   ln -s picard-tools-2.2.2 picard
   ```
   
-  * installing *FusionCatcher* version 0.99.7c (required)
+  * installing *FusionCatcher* version 0.99.7d (required)
   ```
   cd /apps/fusioncatcher
-  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7c.zip
-  unzip fusioncatcher_v0.99.7c.zip
-  cd fusioncatcher_v0.99.7c
+  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7d.zip
+  unzip fusioncatcher_v0.99.7d.zip
+  cd fusioncatcher_v0.99.7d
   
   rm -rf ../bin
   rm -rf ../etc
@@ -497,7 +497,7 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    threads = 0
    aligners = blat,star
    [versions]
-   fusioncatcher = 0.99.7c beta
+   fusioncatcher = 0.99.7d beta
    ```
    
    * *Choice B*: Add the paths for the needed tools to the `PATH` variable by editing, for example, the `.bashrc` file (type: `nano ~/.bashrc` at command line) and add the following lines at the end:
@@ -748,8 +748,8 @@ wget http://sf.net/projects/fusioncatcher/files/bootstrap.py && python bootstrap
 
 In case of a manual installation, first please check that (i) the required dependencies are installed, and (ii) download the source files of *FusionCatcher*, like for example:
 ```
-wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7c.zip 
-unzip fusioncatcher_v0.99.7c.zip
+wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7d.zip 
+unzip fusioncatcher_v0.99.7d.zip
 ```
 
 For an example of:
@@ -818,7 +818,7 @@ For mouse genome, one has
 fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
 ```
 
-**NOTE**: *FusionCatcher* version 0.99.7c needs a newer **build data** than the previous version (that is 0.99.7b) of 'fusioncatcher-build'.
+**NOTE**: *FusionCatcher* version 0.99.7d needs a newer **build data** than the previous version (that is 0.99.7c) of 'fusioncatcher-build'.
 
 ---
 
