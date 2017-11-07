@@ -155,7 +155,8 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Persson H. et al., **Frequent miRNA-convergent fusion gene events in breast cancer**, Nature Communications, Oct. 2017, http://doi.org/doi:10.1038/s41467-017-01176-1
   * Gu J. et al., **RNA-seq Based Transcription Characterization of Fusion Breakpoints as a Potential Estimator for Its Oncogenic Potential**, BioMed Research International, Oct. 2017, http://doi.org/10.1155/2017/9829175
   * Dalin M.G. et al., **Multi-dimensional genomic analysis of myoepithelial carcinoma identifies prevalent oncogenic gene fusions**, Nature Communications, Oct. 2017, http://doi.org/doi:10.1038/s41467-017-01178-z
-
+  * Panagopoulos I. et al., **DEK-NUP214-Fusion Identified by RNA-Sequencing of an Acute Myeloid Leukemia with t(9;12)(q34;q15)**, Cancer Genomics and Proteomics, Nov. 2017, http://cgp.iiarjournals.org/content/14/6/437.abstract 
+  
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
