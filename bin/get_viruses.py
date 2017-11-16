@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     usage = "%prog [options]"
     description = """It downloads the lastest available sequences of the viral genomes."""
-    version = "%prog 0.10 beta"
+    version = "%prog 0.11 beta"
 
     parser = optparse.OptionParser(usage=usage,description=description,version=version)
 
@@ -91,8 +91,12 @@ if __name__ == '__main__':
     timeout = 1800
     socket.setdefaulttimeout(timeout)
 
-    #ftp://ftp.ncbi.nlm.nih.gov/genomes/Viruses/all.fna.tar.gz
 
+    #ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.1.1.genomic.fna.gz
+    #ftp://ftp.ncbi.nlm.nih.gov/refseq/release/viral/viral.2.1.genomic.fna.gz
+
+
+    #ftp://ftp.ncbi.nlm.nih.gov/genomes/Viruses/all.fna.tar.gz
     #
     # FTP => ftp://ftp.ncbi.nih.gov/genomes/
     # web => 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=Genome
@@ -101,13 +105,15 @@ if __name__ == '__main__':
     # web => http://www.ncbi.nlm.nih.gov/LocusLink/refseq.html
 
 
-    url = 'genomes/Viruses/'
+    url = 'refseq/release/viral/'
     version = ""
     #mypath = os.path.join(options.output_directory,'viruses_index')
     mypath = options.output_directory
     if not os.path.isdir(mypath):
         os.makedirs(mypath)
 
+    list_files = []
+    downloaded = []
     print "Downloading the viral genomes from NCBI server!"
     try:
         ftp = ftplib.FTP(options.server)
@@ -116,21 +122,20 @@ if __name__ == '__main__':
 
         list_files = ftp.nlst()
 
-        list_files = [el for el in list_files if el.lower() == 'all.fna.tar.gz']
+        list_files = [el for el in list_files if el.lower().endswith('.genomic.fna.gz')]
 
-        if len(list_files) == 1:
-            new_files = []
+        if list_files:
             for filename in list_files:
                 print "Downloading: %s/%s/%s" % (options.server,url,filename)
                 nf = os.path.join(mypath,filename)
-                new_files.append(nf)
+                downloaded.append(nf)
                 fid = open(nf,'wb')
                 ftp.retrbinary("RETR " + filename, fid.write)
                 modified_time = ftp.sendcmd('MDTM ' + filename)
                 version = datetime.datetime.strptime(modified_time[4:], "%Y%m%d%H%M%S").strftime("%Y-%m-%d")
                 fid.close()
         else:
-            print "ERROR: File not 'all.fna.tar.gz' found!"
+            print >>sys.stderr,"ERROR: File(s) not '.genomic.fna.gz' found!"
             sys.exit(1)
         ftp.close()
     except ftplib.all_errors, e:
@@ -141,74 +146,17 @@ if __name__ == '__main__':
         sys.exit(1)
 
     file_output = os.path.join(mypath,'viruses.fa')
-    fout = file(file_output,'w')
-    for filename in new_files:
-        try:
-            f = tarfile.open(filename, 'r:gz')
-        except:
-            print "ERROR: File '%s' is corrupt!" % (filename,)
+    if downloaded:
+        r = os.system('zcat %s > %s' % (' '.join(downloaded),file_output) )
+        if not r:
+            for e in downloaded:
+                os.remove(e)
+        else:
+            print >>sys.stderr,"ERROR: somewthing wrong with the .genomic.fna.gz files!"
             sys.exit(1)
-
-        try:
-            members = f.getmembers()
-        except:
-            print "ERROR: File '%s' is corrupt!" % (filename,)
-            sys.exit(1)
-
-        for member in members:
-            if member.name.lower().endswith('.fna') or member.name.lower().endswith('.fa'):
-                try:
-                    fin = f.extractfile(member)
-                except:
-                    print "ERROR: File '%s' is corrupt!" % (filename,)
-                    sys.exit(1)
-                while True:
-                    data = fin.read(BLOCK_SIZE)
-                    if not data:
-                        break
-                    fout.write(data)
-                fin.close()
-            elif member.name.lower().endswith('.fna.tgz') or member.name.lower().endswith('.fna.tar.gz') or member.name.lower().endswith('.fa.tgz') or member.name.lower().endswith('.fa.tar.gz'):
-                try:
-                    fin = f.extractfile(member)
-                except:
-                    print "ERROR: File '%s' is corrupt!" % (filename,)
-                    sys.exit(1)
-
-                compressedstream = StringIO.StringIO(fin.read())
-
-                try:
-                    f2 = tarfile.open(fileobj = compressedstream, mode = 'r:gz')
-                except:
-                    print "ERROR: File '%s' is corrupt!" % (filename,)
-                    sys.exit(1)
-
-                try:
-                    members2 = f2.getmembers()
-                except:
-                    print "ERROR: File '%s' is corrupt!" % (filename,)
-                    sys.exit(1)
-                for member2 in members2:
-                    try:
-                        fin2 = f2.extractfile(member2)
-                    except:
-                        print "ERROR: File '%s' is corrupt!" % (filename,)
-                        sys.exit(1)
-                    while True:
-                        data = fin2.read(BLOCK_SIZE)
-                        if not data:
-                            break
-                        fout.write(data)
-                fin2.close()
-                fin.close()
-
-
-        #print "--------------"
-        #print f.getnames()
-        #f.extractall(mypath)
-        f.close()
-        os.remove(filename)
-    fout.close()
+         
+    else:        
+        file(file_output,'w').write('>empty\nAAAAAAAAAAAAAAAAAAAAAAAACCCCCCCCCCCCCCCCCCCCCCCCAAAAAAAAAAAACCCCCCCCCCCGGGGGGGTTTTTTTTTT\n')
 
     txt =["NCBI Viral Genomes version: %s\n" % (version,)]
     file(os.path.join(options.output_directory,'version.txt'),'a').writelines(txt)
