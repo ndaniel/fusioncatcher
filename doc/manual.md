@@ -28,7 +28,7 @@ The aims of *FusionCatcher* are:
 
 *FusionCatcher* supports:
   * as input FASTQ and/or SRA file types (paired-end reads from stranded or strand-specific experiments, single-end reads when they are longer than 130bp),
-  * five different methods (using Bowtie aligner and optionally BLAT, STAR, BOWTIE2, BWA aligners) for finding new fusion genes **BUT** by default only Bowtie, Blat, and STAR aligners will be used,
+  * five different methods (using Bowtie aligner and optionally BLAT, STAR, BOWTIE2 aligners) for finding new fusion genes **BUT** by default only Bowtie, Blat, and STAR aligners will be used,
   * several eukaryotic organisms (which are in [Ensembl database](http://www.ensembl.org/index.html)), like for example, human, rat, mouse, dog, etc.
 
 ---
@@ -72,7 +72,6 @@ Note: If one does not want to install BLAT (whilst installing *FusionCatcher* au
   * **pigz** version 2.3.1 http://zlib.net/pigz/ for using GZIP on several CPUs in parallel (other older versions might support this) (will be installed by `boostrap.py`)
   * **SAMTools** version 1.19 http://www.htslib.org/ (will be installed by `boostrap.py`)
   * **Picard tools** version 2.2.2 http://broadinstitute.github.io/picard/ (will be installed by `boostrap.py`)
-  * **BWA** version 0.7.12 http://sourceforge.net/projects/bio-bwa/ (will be installed by `boostrap.py`)
 
 ## 2.3 - Genomic Databases
 These are used (downloaded and parsed) automatically by `boostrap.py` of *FusionCatcher*:
@@ -476,7 +475,6 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    bowtie = /apps/fusioncatcher/tools/bowtie/
    blat = /apps/fusioncatcher/tools/blat/
    bowtie2 = /apps/fusioncatcher/tools/bowtie2/
-   bwa = /apps/fusioncatcher/tools/bwa/
    star = /apps/fusioncatcher/tools/star/source/
    seqtk = /apps/fusioncatcher/tools/seqtk/
    velvet = /apps/fusioncatcher/tools/velvet/
@@ -508,7 +506,6 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    export PATH=/apps/fusioncatcher/bin:$PATH
    export PATH=/apps/fusioncatcher/tools/bowtie:$PATH
    export PATH=/apps/fusioncatcher/tools/bowtie2:$PATH
-   export PATH=/apps/fusioncatcher/tools/bwa:$PATH
    export PATH=/apps/fusioncatcher/tools/blat:$PATH
    export PATH=/apps/fusioncatcher/tools/star/source/:$PATH
    export PATH=/apps/fusioncatcher/tools/liftover:$PATH
@@ -1010,7 +1007,6 @@ The output files are:
   * `supporting-reads_gene-fusions_BLAT.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and Blat aligners;
   * `supporting-reads_gene-fusions_STAR.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and STAR aligners;
   * `supporting-reads_gene-fusions_BOWTIE2.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and Bowtie2 aligners;
-  * `supporting-reads_gene-fusions_BWA.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and BWA aligners;`
   * `viruses_bacteria_phages.txt` - (non-zero) reads counts for each virus/bacteria/phage from NCBI database  ftp://ftp.ncbi.nlm.nih.gov/genomes/Viruses/ 
   * `info.txt` - information regarding genome version, Ensembl database version, versions of tools used, read counts, etc.;
   * `fusioncatcher.log` -  log of the entire run (e.g. all commands/programs which have been run, command line arguments used, running time for each command, etc.).
@@ -1037,7 +1033,7 @@ Table 1 - Columns description for file `final-list_candidate-fusion-genes.txt`
 | **Spanning\_pairs** | Count of pairs of reads supporting the fusion (**including** also the multimapping reads) |
 | **Spanning\_unique\_reads** | Count of unique reads (i.e. unique mapping positions) mapping on the fusion junction. Shortly, here are counted all the reads which map on fusion junction minus the PCR duplicated reads. |
 | **Longest\_anchor\_found** | Longest anchor (hangover) found among the unique reads mapping on the fusion junction |
-| **Fusion\_finding\_method** | Aligning method used for mapping the reads and finding the fusion genes. Here are two methods used which are: (i) **BOWTIE** = only Bowtie aligner is used for mapping the reads on the genome and exon-exon fusion junctions, (ii) **BOWTIE+BLAT** = Bowtie aligner is used for mapping reads on the genome and BLAT is used for mapping reads for finding the fusion junction,  (iii) **BOWTIE+STAR** = Bowtie aligner is used for mapping reads on the genome and STAR is used for mapping reads for finding the fusion junction, (iv) **BOWTIE+BOWTIE2** = Bowtie aligner is used for mapping reads on the genome and Bowtie2 is used for mapping reads for finding the fusion junction, and (v) **BOWTIE+BWA** = Bowtie aligner is used for mapping reads on the genome and Bowtie2 is used for mapping reads for finding the fusion junction. |
+| **Fusion\_finding\_method** | Aligning method used for mapping the reads and finding the fusion genes. Here are two methods used which are: (i) **BOWTIE** = only Bowtie aligner is used for mapping the reads on the genome and exon-exon fusion junctions, (ii) **BOWTIE+BLAT** = Bowtie aligner is used for mapping reads on the genome and BLAT is used for mapping reads for finding the fusion junction,  (iii) **BOWTIE+STAR** = Bowtie aligner is used for mapping reads on the genome and STAR is used for mapping reads for finding the fusion junction, (iv) **BOWTIE+BOWTIE2** = Bowtie aligner is used for mapping reads on the genome and Bowtie2 is used for mapping reads for finding the fusion junction. |
 | **Fusion\_sequence** | The inferred fusion junction (the asterisk sign marks the junction point) |
 | **Fusion\_description** | Type of the fusion gene (see the Table 2) |
 | **Counts\_of\_common\_mapping\_reads** | Count of reads mapping simultaneously on both genes which form the fusion gene. This is an indication how similar are the DNA/RNA sequences of the genes forming the fusion gene (i.e. what is their homology because highly homologous genes tend to appear show as candidate fusion genes). In case of completely different sequences of the genes involved in forming a fusion gene then here it is expected to have the value zero. |
@@ -1129,8 +1125,7 @@ Table 2 - Labels used to describe the found fusion genes (column *Fusion\_ descr
   * `supporting-reads_gene-fusions_BOWTIE.zip`,
   * `supporting-reads_gene-fusions_BLAT.zip`,
   * `supporting-reads_gene-fusions_STAR.zip`,
-  * `supporting-reads_gene-fusions_BOWTIE2.zip`, and
-  * `supporting-reads_gene-fusions_BWA.zip`.
+  * `supporting-reads_gene-fusions_BOWTIE2.zip`.
 
 The reads which support the:
   * junction of the candidate fusion have their name ending with `_supports_fusion_junction`, and
@@ -1150,8 +1145,7 @@ If one uses the `--visualization-psl` command line option of the *FusionCatcher*
   * `supporting-reads_gene-fusions_BOWTIE.zip`,
   * `supporting-reads_gene-fusions_BLAT.zip`,
   * `supporting-reads_gene-fusions_STAR.zip`, and
-  * `supporting-reads_gene-fusions_BOWTIE2.zip`, and
-  * `supporting-reads_gene-fusions_BWA.zip`.
+  * `supporting-reads_gene-fusions_BOWTIE2.zip`.
 
 The files with names ending in `_reads.psl` may be used further for visualization of the candidate fusion genes using [UCSC Genome Browser](http://genome.ucsc.edu/), [IGV (Integrative Genome Viewer)](http://www.broadinstitute.org/igv/) or any other viewer/browser which supports the [PSL](http://genome.ucsc.edu/FAQ/FAQformat.html#format2) format.
 
@@ -1171,8 +1165,7 @@ If one uses the `--visualization-sam` command line option of the *FusionCatcher*
   * `supporting-reads_gene-fusions_BOWTIE.zip`,
   * `supporting-reads_gene-fusions_BLAT.zip`,
   * `supporting-reads_gene-fusions_STAR.zip`,
-  * `supporting-reads_gene-fusions_BOWTIE2.zip`, and
-  * `supporting-reads_gene-fusions_BWA.zip`.
+  * `supporting-reads_gene-fusions_BOWTIE2.zip`.
 
 The files with names ending in `_reads.sam` (please note, that they still needed to be converted to BAM, coordiante sorted and indexed first) may be used further for visualization of the candidate fusion genes using [UCSC Genome Browser](http://genome.ucsc.edu/), [IGV (Integrative Genome Viewer)](http://www.broadinstitute.org/igv/) or any other viewer/browser which supports the [SAM](http://samtools.github.io/hts-specs/SAMv1.pdf) format.
 
@@ -1306,7 +1299,7 @@ fusioncatcher \
 
 ## 7.1 - Bowtie
 
-By default, *FusionCatcher* its the Bowtie aligner for finding candidate fusion genes. This approach relies heavily on good is the annotation data for the given organism in the Ensembl database. If, for example, a gene is not annotated well and has several exons which are not annotated in the Ensembl database and if one of these exons is the one involved in the fusion point then this fusion gene will not be found by using only the Bowtie aligner. In order to find also the fusion genes where the the junction point is in the middle of exons or introns, `*FusionCatcher*` is using by default the BLAT, and STAR aligners in addition to Bowtie aligner. The command line options '`--skip-blat`','`--skip-star`', '`--skip-bowtie2`', or '`--skip-bwa`' should be used in order to specify what aligners should not be used. The command line option '`--aligners`' specifies which aligners should be used by default. For example, '`--aligners=blat,star,bowtie2,bwa`' forces *FusionCatcher* too use all aligners for finding fusion genes
+By default, *FusionCatcher* its the Bowtie aligner for finding candidate fusion genes. This approach relies heavily on good is the annotation data for the given organism in the Ensembl database. If, for example, a gene is not annotated well and has several exons which are not annotated in the Ensembl database and if one of these exons is the one involved in the fusion point then this fusion gene will not be found by using only the Bowtie aligner. In order to find also the fusion genes where the the junction point is in the middle of exons or introns, `*FusionCatcher*` is using by default the BLAT, and STAR aligners in addition to Bowtie aligner. The command line options '`--skip-blat`','`--skip-star`', or '`--skip-bowtie2`' should be used in order to specify what aligners should not be used. The command line option '`--aligners`' specifies which aligners should be used by default. For example, '`--aligners=blat,star,bowtie2`' forces *FusionCatcher* too use all aligners for finding fusion genes
 
 ## 7.2 - Bowtie and Blat
 
@@ -1362,9 +1355,9 @@ fusioncatcher \
 --aligners blat,star,bowtie2
 ```
 
-## 7.5 - Bowtie and BWA
+## 7.5 - Bowtie2
 
-The use of Bowtie and BWA aligners is **not** the **default** approach of *FusionCatcher* for finding fusion genes.
+The use of Bowtie2 aligner is **not** the **default** approach of *FusionCatcher* for finding fusion genes.
 
 In order not to use this approach the command line option '`--skip-bowtie2`' should be added, as following:
 
@@ -1374,16 +1367,6 @@ fusioncatcher \
 -i /some/input/directory/containing/fastq/files/ \
 -o /some/output/directory/ \
 --skip-bowtie2
-```
-
-In order to use this approach the command line option '`--aligners`' should contain the string '`bwa`', like for example
-
-```
-fusioncatcher \
--d /some/human/data/directory/ \ 
--i /some/input/directory/containing/fastq/files/ \
--o /some/output/directory/ \
---aligners blat,star,bwa
 ```
 
 ---
@@ -1481,10 +1464,10 @@ and the command line options are:
   --aligners=ALIGNERS   The aligners to be used on Bowtie aligner. By default
                         always BOWTIE aligner is used and it cannot be
                         disabled. The choices are:
-                        ['blat','star','bowtie2','bwa']. Any combination of
+                        ['blat','star','bowtie2']. Any combination of
                         these is accepted if the aligners' names are comma
                         separated. For example, if one wants to used all four
-                        aligners then 'blat,star,bowtie2,bwa' should be given.
+                        aligners then 'blat,star,bowtie2' should be given.
                         The command line options '--skip-blat', '--skip-star',
                         and '--skip-bowtie2' have priority over this option.
                         If the first element in the list is the configuration
