@@ -159,7 +159,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Xia Q. Y. et al., **Novel gene fusion of PRCC-MITF defines a new member of MiT family translocation renal cell carcinoma: clinicopathologic analysis and detection of the gene fusion by RNA-sequencing and FISH**, Histopathology, Nov. 2017, http://doi.org/10.1111/his.13439
   * Chang M.T. et al., **Small cell carcinomas of the bladder and lung are characterized by a convergent but
 distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.1158/1078-0432.CCR-17-2655
-  * Arbajian E. at al., **In-depth Genetic Analysis of Sclerosing Epithelioid Fibrosarcoma Reveals Recurrent Genomic Alterations and Potential Treatment Targets**, Clinical Cancer Research, Dec. 2017, http://doi.org/10.1158/1078-0432.CCR-17-1856
+  * Arbajian E. et al., **In-depth Genetic Analysis of Sclerosing Epithelioid Fibrosarcoma Reveals Recurrent Genomic Alterations and Potential Treatment Targets**, Clinical Cancer Research, Dec. 2017, http://doi.org/10.1158/1078-0432.CCR-17-1856
 
 ---
 
