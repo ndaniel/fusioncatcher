@@ -157,6 +157,10 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Panagopoulos I. et al., **DEK-NUP214-Fusion Identified by RNA-Sequencing of an Acute Myeloid Leukemia with t(9;12)(q34;q15)**, Cancer Genomics and Proteomics, Nov. 2017, http://doi.org/10.21873/cgp.20053 
   * Kita K. et al., **In vivo imaging xenograft models for the evaluation of anti-brain tumor efficacy of targeted drugs**, Cancer Medicine, Nov. 2017, http://doi.org/10.1002/cam4.1255
   * Xia Q. Y. et al., **Novel gene fusion of PRCC-MITF defines a new member of MiT family translocation renal cell carcinoma: clinicopathologic analysis and detection of the gene fusion by RNA-sequencing and FISH**, Histopathology, Nov. 2017, http://doi.org/10.1111/his.13439
+  * Chang M.T. et al., **Small cell carcinomas of the bladder and lung are characterized by a convergent but
+distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.1158/1078-0432.CCR-17-2655
+  * Arbajian E. at al., **In-depth Genetic Analysis of Sclerosing Epithelioid Fibrosarcoma Reveals Recurrent Genomic Alterations and Potential Treatment Targets**, Clinical Cancer Research, Dec. 2017, http://doi.org/10.1158/1078-0432.CCR-17-1856
+
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
