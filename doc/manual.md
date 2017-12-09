@@ -160,7 +160,7 @@ These are used (downloaded and parsed) automatically by `boostrap.py` of *Fusion
   * Chang M.T. et al., **Small cell carcinomas of the bladder and lung are characterized by a convergent but
 distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.1158/1078-0432.CCR-17-2655
   * Arbajian E. et al., **In-depth Genetic Analysis of Sclerosing Epithelioid Fibrosarcoma Reveals Recurrent Genomic Alterations and Potential Treatment Targets**, Clinical Cancer Research, Dec. 2017, http://doi.org/10.1158/1078-0432.CCR-17-1856
-
+ * Brunetti M. et al., **RNA-Sequencing identifies novel GREB1-NCOA2 fusion gene in a uterine sarcoma with the chromosomal translocation t(2;8)(p25;q13)**, Genes Chromosomes Cancer, Dec. 2017, http://doi.org/10.1002/gcc.22518
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
