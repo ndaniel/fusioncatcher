@@ -24,6 +24,7 @@ The aims of *FusionCatcher* are:
   * very good detection rate for finding candidate **somatic fusion genes** (see [somatic mutations](http://en.wikipedia.org/wiki/Mutation#Somatic_mutations); using a matched **normal** sample is optional; several databases of known fusion genes found in healthy samples are used as a list of known false positives; biological knowledge is used, like for example gene fusion between a gene and its pseudogene is filtered out),
   * very good RT-PCR validation rate of found candidate somatic fusion genes (this is very important for us),
   * very easy to use (i.e. no _a priori_ knowledge of bioinformatic databases and bioinformatics is needed in order to run *FusionCatcher* BUT Linux/Unix knowledge is needed; it allows a very high level of control for expert users),
+ * very good detection of challenging fusion genes, like for example IGH fusions, CIC fusions, DUX4 fusions, CRLF2 fusions, TCF3 fusions, etc.,
   * to be as automatic as possible (i.e. the *FusionCatcher* will choose automatically the best parameters in order to find candidate somatic fusion genes, e.g. finding automatically the adapters, quality trimming of reads, building the exon-exon junctions automatically based on the length of the reads given as input, etc. while giving also full control to expert users) while providing the best possible detection rate for finding somatic fusion genes (with a very low rate of false positives but a very good sensitivity).
 
 *FusionCatcher* supports:
@@ -442,12 +443,12 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
   ln -s picard-tools-2.2.2 picard
   ```
   
-  * installing *FusionCatcher* version 0.99.7d (required)
+  * installing *FusionCatcher* version 1.00 (required)
   ```
   cd /apps/fusioncatcher
-  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7d.zip
-  unzip fusioncatcher_v0.99.7d.zip
-  cd fusioncatcher_v0.99.7d
+  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.00.zip
+  unzip fusioncatcher_v1.00.zip
+  cd fusioncatcher_v1.00
   
   rm -rf ../bin
   rm -rf ../etc
@@ -502,7 +503,7 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    threads = 0
    aligners = blat,star
    [versions]
-   fusioncatcher = 0.99.7d beta
+   fusioncatcher = 1.00
    ```
    
    * *Choice B*: Add the paths for the needed tools to the `PATH` variable by editing, for example, the `.bashrc` file (type: `nano ~/.bashrc` at command line) and add the following lines at the end:
@@ -752,8 +753,8 @@ wget http://sf.net/projects/fusioncatcher/files/bootstrap.py && python bootstrap
 
 In case of a manual installation, first please check that (i) the required dependencies are installed, and (ii) download the source files of *FusionCatcher*, like for example:
 ```
-wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7d.zip 
-unzip fusioncatcher_v0.99.7d.zip
+wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.00.zip 
+unzip fusioncatcher_v1.00.zip
 ```
 
 For an example of:
@@ -822,7 +823,7 @@ For mouse genome, one has
 fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
 ```
 
-**NOTE**: *FusionCatcher* version 0.99.7d needs a newer **build data** than the previous version (that is 0.99.7c) of 'fusioncatcher-build'.
+**NOTE**: *FusionCatcher* version 1.00 needs a newer **build data** than the previous version (that is 0.99.7d) of 'fusioncatcher-build'.
 
 ---
 
@@ -1004,9 +1005,9 @@ For example, this is **NOT** a valid input:
 
 The output files are:
   * `final-list_candidate_fusion_genes.txt` - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3c the coordinates of fusion genes are given here for human genome using **only** assembly **hg38/GRCh38**; See [Table 1](#output-data) for columns' descriptions;
-  * `final-list_candidate_fusion_genes.GRCh37.txt` - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3d the coordinates of fusion genes are given here for human genome using assembly **hg19/GRCh37**; See [Table 1](#output-data) for columns' descriptions;
+  * `final-list_candidate_fusion_genes.hg19.txt` - final list with the newly found candidates fusion genes (it contains the fusion genes with their junction sequence and points); Starting with version 0.99.3d the coordinates of fusion genes are given here for human genome using assembly **hg19/GRCh37**; See [Table 1](#output-data) for columns' descriptions;
   * `summary_candidate_fusions.txt` - contains an executive summary (meant to be read directly by the medical doctors or biologist) of candidate fusion genes found;
-  * `final-list_candidate_fusion_genes.caption.md.txt` - explains in detail the labels found in column `Fusion_description` of files `final-list_candidate_fusion_genes.txt` and `final-list_candidate_fusion_genes.GRCh37.txt`;
+  * `final-list_candidate_fusion_genes.caption.md.txt` - explains in detail the labels found in column `Fusion_description` of files `final-list_candidate_fusion_genes.txt` and `final-list_candidate_fusion_genes.hg19.txt`;
   * `supporting-reads_gene-fusions_BOWTIE.zip` - sequences of short reads supporting the newly found candidate fusion genes found using only and exclusively the Bowtie aligner;
   * `supporting-reads_gene-fusions_BLAT.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and Blat aligners;
   * `supporting-reads_gene-fusions_STAR.zip` - sequences of short reads supporting the newly found candidate fusion genes found using Bowtie and STAR aligners;
