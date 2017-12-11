@@ -99,7 +99,7 @@ if __name__ == '__main__':
             top_virus = [v[1] for v in viruses if v[1].find('virus') != -1 and v[0] != '1']
             tv = []
             for e in top_virus:
-                ee = e.split("|_")[1]
+                ee = e.split(",_")[0]
                 ee = ee.replace(",_complete_genome","").replace("_complete_genome","").replace("_complete_wild_type_genome","").replace("genome","").replace("complete","").replace("wild","").replace("wild_type","").replace("__","").replace("__","").replace("_"," ")
                 tv.append(ee)
             if tv:

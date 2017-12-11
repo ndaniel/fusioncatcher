@@ -136,7 +136,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 0.99.7d beta"
+    version = "%prog 1.00"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -1106,6 +1106,13 @@ if __name__ == '__main__':
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('tcga.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add(_FC_+'get_tcga.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('tcga-normal.txt'),kind='output',command_line='no')
+    job.add('',outdir('tcga-cancer.txt'),kind='output',command_line='no')
     job.run()
 
     job.add(_FC_+'generate_bodymap2.py',kind='program')

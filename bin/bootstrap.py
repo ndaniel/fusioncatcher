@@ -183,8 +183,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
     
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v0.99.7d.zip'
-    FUSIONCATCHER_VERSION = "0.99.7d beta"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.00.zip'
+    FUSIONCATCHER_VERSION = "1.00"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -196,16 +196,16 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     NUMPY_URL = 'http://github.com/numpy/numpy/releases/download/v1.13.1/numpy-1.13.1.tar.gz'
     # biopython
     BIOPYTHON_PATH = os.path.join(FUSIONCATCHER_TOOLS,'biopython')
-    BIOPYTHON_URL = 'http://pypi.python.org/packages/72/04/73a4bb22fed40eed26c7e1a673ab51778c577afc3d5dd6f1256424a62c35/biopython-1.70.tar.gz'
+    BIOPYTHON_URL = 'https://pypi.python.org/packages/72/04/73a4bb22fed40eed26c7e1a673ab51778c577afc3d5dd6f1256424a62c35/biopython-1.70.tar.gz'
     # xlrd python
     XLRD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'xlrd')
-    XLRD_URL = 'http://pypi.python.org/packages/42/85/25caf967c2d496067489e0bb32df069a8361e1fd96a7e9f35408e56b3aab/xlrd-1.0.0.tar.gz'
+    XLRD_URL = 'https://pypi.python.org/packages/42/85/25caf967c2d496067489e0bb32df069a8361e1fd96a7e9f35408e56b3aab/xlrd-1.0.0.tar.gz'
     # openpyxl python
     OPENPYXL_PATH = os.path.join(FUSIONCATCHER_TOOLS,'openpyxl')
-    OPENPYXL_URL = 'http://pypi.python.org/packages/5a/8b/798a853ef87d505392227b91d598fd0bdfc8552e64020092e262b1ea7d5f/openpyxl-2.5.0a2.tar.gz'
+    OPENPYXL_URL = 'https://pypi.python.org/packages/5a/8b/798a853ef87d505392227b91d598fd0bdfc8552e64020092e262b1ea7d5f/openpyxl-2.5.0a2.tar.gz'
     # setuptools python
     SETUPTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'setuptools')
-    SETUPTOOLS_URL = 'http://pypi.python.org/packages/07/a0/11d3d76df54b9701c0f7bf23ea9b00c61c5e14eb7962bb29aed866a5844e/setuptools-36.2.7.zip'
+    SETUPTOOLS_URL = 'https://pypi.python.org/packages/07/a0/11d3d76df54b9701c0f7bf23ea9b00c61c5e14eb7962bb29aed866a5844e/setuptools-36.2.7.zip'
     # BOWTIE
     BOWTIE_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie')
 #    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.0/bowtie-1.2-linux-x86_64.zip'
@@ -234,8 +234,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BWA_VERSION = ('0.7.10-r789',)
    # BBMAP
     BBMAP_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bbmap')
-    BBMAP_URL = 'http://sourceforge.net/projects/bbmap/files/BBMap_37.28.tar.gz'
-    BBMAP_VERSION = ('37','37.02','37.28')
+    BBMAP_URL = 'https://sourceforge.net/projects/bbmap/files/BBMap_37.73.tar.gz'
+    BBMAP_VERSION = ('37','37.68',)
     # faToTwoBit
     FATOTWOBIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'fatotwobit')
     FATOTWOBIT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit'
@@ -982,7 +982,7 @@ if __name__ == '__main__':
                   "<http://github.com/ndaniel/fusioncatcher>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 0.99.7d beta"
+    version = "%prog 1.00"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,

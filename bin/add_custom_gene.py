@@ -1529,6 +1529,58 @@ if __name__ == '__main__':
                 )
 
 
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001271',
+                    gene_symbol = 'JAK1', # JAK1
+                    gene_id = 'ENSG00000162434',
+                    transcript_id = 'ENST09000001271',
+                    exon_id = 'ENSE09000001271',
+                    exon_number = '1',
+                    start = '64833229', #
+                    end =   '64966504', #
+                    chrom = '1',
+                    strand = '-1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001272',
+                    gene_symbol = 'JAK2', # JAK2
+                    gene_id = 'ENSG00000096968',
+                    transcript_id = 'ENST09000001272',
+                    exon_id = 'ENSE09000001272',
+                    exon_number = '1',
+                    start = '4900000', #
+                    end =   '5130000', #
+                    chrom = '9',
+                    strand = '1'
+                )
+                
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001273',
+                    gene_symbol = 'JAK3', # JAK3
+                    gene_id = 'ENSG00000105639',
+                    transcript_id = 'ENST09000001273',
+                    exon_id = 'ENSE09000001273',
+                    exon_number = '1',
+                    start = '17823000', #
+                    end =   '17855000', #
+                    chrom = '19',
+                    strand = '-1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001274',
+                    gene_symbol = 'BRD4', # BRD4
+                    gene_id = 'ENSG00000141867',
+                    transcript_id = 'ENST09000001274',
+                    exon_id = 'ENSE09000001274',
+                    exon_number = '1',
+                    start = '15234000', #
+                    end =   '15340000', #
+                    chrom = '19',
+                    strand = '-1'
+                )
+
                 # transcript 2 - exon 1/4-- IGHM
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000001300',

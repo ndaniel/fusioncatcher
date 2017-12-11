@@ -242,7 +242,7 @@ description = ("FusionCatcher searches for novel and known somatic gene fusions 
                "Illumina HiSeq 2000, Illumina HiSeq X, Illumina NextSeq 500, \n"+
                "Illumina GAIIx, Illumina GAII, Illumina MiSeq, Illumina MiniSeq). \n")
 
-version = "%prog 0.99.7d beta"
+version = "%prog 1.00"
 
 
 if __name__ == "__main__":
@@ -609,7 +609,10 @@ if __name__ == "__main__":
             'hla',
             'non_tumor_cells',
             'non_cancer_tissues',
-            'removed'])
+            'removed',
+            'tcga',
+            'tcga-normal',
+            'tcga-cancer'])
     parser.add_option("--filter-fusion","-b",
                       action = "store",
                       type = "string",
@@ -1295,6 +1298,14 @@ if __name__ == "__main__":
                       default = False,
                       help = optparse.SUPPRESS_HELP)
 #                      help = "Use BBMERGE.SH instead of original script for merging the paired-end reads. "+
+#                             "Default value is '%default'.")
+
+    parser.add_option("--skip-bbmerge-auto",
+                      action = "store_true",
+                      dest = "skip_bbmerge_auto",
+                      default = False,
+                      help = optparse.SUPPRESS_HELP)
+#                      help = "Use BBMERGE-AUTO.SH instead of BBMERGE.SH for merging the paired-end reads. "+
 #                             "Default value is '%default'.")
 
     parser.add_option("--extract-buffer-size",
@@ -5167,16 +5178,16 @@ if __name__ == "__main__":
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_02.txt'),kind='output')
     job.run()
     # label fusion genes -- no protein product
-    job.add(_FC_+'label_fusion_genes.py',kind='program')
-    job.add('--input',outdir('candidate_fusion-genes_02.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','no_protein',kind='parameter')
-    job.add('--similar_gene_symbols',kind='parameter')
-    job.add('--filter_genes',datadir('genes_with_no_proteins.txt'),kind='input')
-    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_02a.txt'),kind='output')
-    job.run()
+#    job.add(_FC_+'label_fusion_genes.py',kind='program')
+#    job.add('--input',outdir('candidate_fusion-genes_02.txt'),kind='input',temp_path=temp_flag)
+#    job.add('--label','no_protein',kind='parameter')
+#    job.add('--similar_gene_symbols',kind='parameter')
+#    job.add('--filter_genes',datadir('genes_with_no_proteins.txt'),kind='input')
+#    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_02a.txt'),kind='output')
+#    job.run()
     # label fusion genes -- paralogs
     job.add(_FC_+'label_fusion_genes.py',kind='program')
-    job.add('--input',outdir('candidate_fusion-genes_02a.txt'),kind='input',temp_path=temp_flag)
+    job.add('--input',outdir('candidate_fusion-genes_02.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','paralogs',kind='parameter')
     job.add('--filter_gene_pairs',datadir('paralogs.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_02b.txt'),kind='output')
@@ -5678,6 +5689,20 @@ if __name__ == "__main__":
     job.add('--input',outdir('candidate_fusion-genes_72.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','pancreases',kind='parameter')
     job.add('--filter_gene_pairs',datadir('pancreases.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_73.txt'),kind='output')
+    job.run()
+    # label fusion genes -- tcga-cancer
+    job.add(_FC_+'label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_73.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','tcga-cancer',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('tcga-cancer.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_74.txt'),kind='output')
+    job.run()
+    # label fusion genes -- tcga-normal
+    job.add(_FC_+'label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_74.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','tcga-normal',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('tcga-normal.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_1000.txt'),kind='output')
     job.run()
     #
@@ -11180,7 +11205,7 @@ if __name__ == "__main__":
                     job.add('--overlap','11',kind='parameter')
                     job.add('-p',options.processes,kind='parameter',checksum='no')
                     job.run()
-                else:
+                elif options.skip_bbmerge_auto:
                     job.add(_BP_+'bbmerge.sh',kind='program')
                     job.add('in=',freads[i]+'.fq',kind='input',space='no',temp_path=temp_flag)
                     job.add('out=',freads[i]+'_m.fq',kind='output',space='no')
@@ -11189,6 +11214,19 @@ if __name__ == "__main__":
                     job.add('minoverlap=','11',kind='parameter',space='no') 
                     #job.add('-Xmx',"24G",kind='parameter',space='no')
                     job.run()
+                else:
+                    job.add(_BP_+'bbmerge-auto.sh',kind='program')
+                    job.add('in=',freads[i]+'.fq',kind='input',space='no',temp_path=temp_flag)
+                    job.add('out=',freads[i]+'_m.fq',kind='output',space='no')
+                    job.add('threads=',options.processes,kind='parameter',space='no')
+                    job.add('extend2=','20',kind='parameter',space='no')
+                    job.add('iterations=','3',kind='parameter',space='no')
+                    job.add('k=','17',kind='parameter',space='no')
+                    job.add('mindepthseed=','1',kind='parameter',space='no')
+                    job.add('mindepthextend=','1',kind='parameter',space='no')
+                    job.add('minoverlap=','11',kind='parameter',space='no') 
+                    job.run()
+                    
 
                 job.add(_SK_+'seqtk',kind='program')
                 job.add('seq',kind='parameter')

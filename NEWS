@@ -1,6 +1,15 @@
 Version Release History for FusionCatcher
 =========================================
 
+
+Version 1.00 - December 8, 2017
+---------------------------------------
+ * increased sensitivity for IGH fusions
+ * fixed bug regarding viral sequences when building new files for a new organism
+ * fixed several minor bugs
+ * updated manual
+
+
 Version 0.99.7d beta - October 30, 2017
 ---------------------------------------
  * added support for Ensembl version 90

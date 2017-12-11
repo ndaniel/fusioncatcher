@@ -237,13 +237,13 @@ if __name__ == '__main__':
     if options.organism.lower() == 'homo_sapiens':
         remove(options.output_directory,transcript_id="ENST00000467125",log=log_file) # ENST00000467125 is listed as GOPC, but is actually the GOPC-ROS1
         remove(options.output_directory,transcript_id="ENST00000507166",log=log_file) # ENST00000507166 is listed as FIP1L1 but is really the FIP1L1-PDGFRA
-        remove(options.output_directory,transcript_id="ENST00000621209",log=log_file) # ENST00000621209 is listed as CEL but is really the CEL-CELP
+#        remove(options.output_directory,transcript_id="ENST00000621209",log=log_file) # ENST00000621209 is listed as CEL but is really the CEL-CELP
         remove(options.output_directory,transcript_id="ENST00000562663",log=log_file) # ENST00000562663 is listed as RGL3, but most likely is EPOR (it overlaps EPOR)
         remove(options.output_directory,transcript_id="ENST00000563726",log=log_file) # ENST00000563726 is listed as RGL3, but most likely is EPOR (it overlaps EPOR)
         remove(options.output_directory,                                gene_id="ENSG00000129965",log=log_file) # remove gene INS-IGF2
         remove(options.output_directory,transcript_id="ENST00000628281",log=log_file) # ENST00000563726 is listed as PIGU, but most likely is PIGU-NCOA6 (it overlaps NCOA6)
         remove(options.output_directory,transcript_id="ENST00000603067",log=log_file) # ENST00000603067 is listed as TAF15, but it overlaps too many genes
-        remove(options.output_directory,transcript_id="ENST00000356424",log=log_file) # ENST00000356424 is listed as SERPINB3, but it overlaps also SERPINB4
+#        remove(options.output_directory,transcript_id="ENST00000356424",log=log_file) # ENST00000356424 is listed as SERPINB3, but it overlaps also SERPINB4
 
 
         
