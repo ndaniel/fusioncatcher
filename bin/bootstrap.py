@@ -234,7 +234,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BWA_VERSION = ('0.7.10-r789',)
    # BBMAP
     BBMAP_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bbmap')
-    BBMAP_URL = 'https://sourceforge.net/projects/bbmap/files/BBMap_37.73.tar.gz'
+    BBMAP_URL = 'https://sourceforge.net/projects/bbmap/files/BBMap_37.68.tar.gz'
     BBMAP_VERSION = ('37','37.68',)
     # faToTwoBit
     FATOTWOBIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'fatotwobit')
