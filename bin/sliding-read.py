@@ -6,7 +6,7 @@ It does a sliding window for each raed such that several shorter reads are gener
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2017 Daniel Nicorici
+Copyright (c) 2009-2018 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -53,7 +53,7 @@ if __name__=='__main__':
 
     usage = "%prog [options]"
     description = """It does a sliding window for each raed such that several shorter reads are generate from the input read."""
-    version = "%prog 0.10 beta"
+    version = "%prog 0.11 beta"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -120,14 +120,14 @@ if __name__=='__main__':
 
     step = options.step_size
     window = options.window_size
+    bucket = []
+    r = []
     while True:
         gc.disable()
         lines = fi.readlines(size_buffer)
         gc.enable()
         if not lines:
             break
-        bucket = []
-        r = []
         gc.disable()
         for aline in lines:
             bucket.append(aline)
@@ -139,8 +139,12 @@ if __name__=='__main__':
                     r.append("%s%s\n+\n%s\n" % (bucket[0],bucket[1][j:j+window],bucket[3][j:j+window]))
                 bucket = []
         gc.enable()
+        if r:
+            fo.writelines(r)
+            r = []
+            
+    if r:
         fo.writelines(r)
-
 
     
     if options.input_filename != '-':
