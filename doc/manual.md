@@ -163,6 +163,8 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
   * Arbajian E. et al., **In-depth Genetic Analysis of Sclerosing Epithelioid Fibrosarcoma Reveals Recurrent Genomic Alterations and Potential Treatment Targets**, Clinical Cancer Research, Dec. 2017, http://doi.org/10.1158/1078-0432.CCR-17-1856
  * Brunetti M. et al., **RNA-Sequencing identifies novel GREB1-NCOA2 fusion gene in a uterine sarcoma with the chromosomal translocation t(2;8)(p25;q13)**, Genes Chromosomes Cancer, Dec. 2017, http://doi.org/10.1002/gcc.22518
  * Gillard M. et al., **Integrative Genomic Analysis of Coincident Cancer Foci Implicates CTNNB1 and PTEN Alterations in Ductal Prostate Cancer**, European Urology Focus, Dec. 2017, https://doi.org/10.1016/j.euf.2017.12.003
+ * Togashi Y. et al., **MYB and MYBL1 in adenoid cystic carcinoma: diversity in the mode of genomic rearrangement and transcripts**, Modern Pathology, Feb. 2018, https://doi.org/10.1038/s41379-018-0008-8
+ 
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
