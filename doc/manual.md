@@ -165,8 +165,10 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
  * Gillard M. et al., **Integrative Genomic Analysis of Coincident Cancer Foci Implicates CTNNB1 and PTEN Alterations in Ductal Prostate Cancer**, European Urology Focus, Dec. 2017, https://doi.org/10.1016/j.euf.2017.12.003
  * Togashi Y. et al., **MYB and MYBL1 in adenoid cystic carcinoma: diversity in the mode of genomic rearrangement and transcripts**, Modern Pathology, Feb. 2018, https://doi.org/10.1038/s41379-018-0008-8
  * Roussy M. et al., **NUP98-BPTF gene fusion identified in primary refractory acute megakaryoblastic leukemia of infancy**, Genes, Chromosomes and Cancer, Feb. 2018, https://doi.org/10.1002/gcc.22532
+ * Nishiyama A. et al., **Foretinib overcomes entrectinib resistance associated with the NTRK1 G667C mutation in NTRK1 fusion-positive tumor cells in a brain metastasis model**, Clinical Cancer Research, Feb. 2018, https://doi.org/10.1158/1078-0432.CCR-17-1623 
  * Liu H. et al., **Identifying and Targeting Sporadic Oncogenic Genetic Aberrations in Mouse Models of Triple-Negative Breast Cancer**, Cancer Discovery, Mach 2018, https://doi.org/10.1158/2159-8290.CD-17-0679
- 
+
+
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
