@@ -7,7 +7,7 @@ It takes as input a file in SAM format and it converts into a PSL format file.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2017 Daniel Nicorici
+Copyright (c) 2009-2018 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

@@ -6,7 +6,7 @@ It downloads the annotation in GTF foramt for a given organism from Ensembl.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2017 Daniel Nicorici
+Copyright (c) 2009-2018 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

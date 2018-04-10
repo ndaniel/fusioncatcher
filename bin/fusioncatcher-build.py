@@ -9,7 +9,7 @@ FusionCatcher-build downloads and builds the data necessary for FusionCatcher.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2017 Daniel Nicorici
+Copyright (c) 2009-2018 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     epilog = ("\n" +
              "Author: Daniel Nicorici \n" +
              "Email: Daniel.Nicorici@gmail.com \n" +
-             "Copyright (c) 2009-2017 Daniel Nicorici \n " +
+             "Copyright (c) 2009-2018 Daniel Nicorici \n " +
              "\n")
 
     description = ("FusionCatcher-build downloads data from Ensembl database and "+
@@ -136,7 +136,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 1.00"
+    version = "%prog 1.10"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -390,10 +390,12 @@ if __name__ == '__main__':
     _BA_ = confs.get("BWA").rstrip("/")+"/" if options.force_paths else ''
     _BE_ = confs.get("BOWTIE").rstrip("/")+"/" if options.force_paths else ''
     _BT_ = confs.get("BLAT").rstrip("/")+"/" if options.force_paths else ''
+    _BP_ = confs.get("BBMAP").rstrip("/")+"/" if options.force_paths else ''
     _FC_ = confs.get("SCRIPTS").rstrip("/")+"/" if options.force_paths else ''
     _FT_ = confs.get("FATOTWOBIT").rstrip("/")+"/" if options.force_paths else ''
     _JA_ = confs.get("JAVA").rstrip("/")+"/" if options.force_paths else ''
     _LR_ = confs.get("LIFTOVER").rstrip("/")+"/" if options.force_paths else ''
+    _OS_ = confs.get("OASES").rstrip("/")+"/" if options.force_paths else ''
     _PD_ = confs.get("PICARD").rstrip("/")+"/" if options.force_paths else ''
     _PL_ = confs.get("PARALLEL").rstrip("/")+"/" if options.force_paths else ''
     _PZ_ = confs.get("PIGZ").rstrip("/")+"/" if options.force_paths else ''
@@ -419,6 +421,30 @@ if __name__ == '__main__':
     ##############################################################################
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
+
+    os.system(_BE_+"bowtie --version | head -1 > '%s'" % (outdir('bowtie_version.txt'),))
+    last_line = file(outdir('bowtie_version.txt'),'r').readline().lower().rstrip("\r\n")
+    #correct_versions = set(['bowtie-align version 1.2.1','bowtie-align version 1.2.1.1','bowtie-align version 1.2','bowtie version 1.1.2'])
+    correct_versions = set(['version 1.2','version 1.1.2','version 1.2.2'])
+    bowtie121 = False
+    if last_line.find("1.2.") != -1:
+        bowtie121 = True
+    if (last_line not in correct_versions) and not [1 for el in correct_versions if last_line.lower().endswith(el)]:
+        print last_line
+        job.close()
+        os.system("which bowtie > '%s'" % (outdir('bowtie_path.txt'),))
+        bowtie_path = file(outdir('bowtie_path.txt'),'r').readline().rstrip("\r\n")
+        print >>sys.stderr,("\n\n\nERROR: Wrong version of BOWTIE found ("+bowtie_path+")! It should be: "+', '.join(sorted(correct_versions))+".")
+        print >>sys.stderr,("\nERROR: One may specify the path to the correct version in 'fusioncatcher/etc/configuration.cfg',")
+        print >>sys.stderr,("\nERROR: like for example change manually the line fusioncatcher/tools/bowtie to fusioncatcher/tools/bowtie-old")
+        print >>sys.stderr,("\nERROR: Also it may be that some of Bowtie's dependencies are missing.")
+        print >>sys.stderr,("\nERROR: Therefore also make sure that Bowtie's dependencies are installed, like for example:")
+        print >>sys.stderr,("\nERROR:    sudo apt-get install libtbb-dev libtbb2 libc6-dev")
+        print >>sys.stderr,("\nERROR: or")
+        print >>sys.stderr,("\nERROR:    sudo yum install libtbb-devel libtbb2 libc6-devel")
+        sys.exit(1)
+    os.remove(outdir('bowtie_version.txt'))
+
 
     # save version of Python used to analyze this data
     job.add(_FC_+'python_version.py',kind='program')
@@ -1122,6 +1148,13 @@ if __name__ == '__main__':
     job.add('',outdir('bodymap2.txt'),kind='output',command_line='no')
     job.run()
 
+    job.add(_FC_+'generate_cortex.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('--skip-filter-overlap',out_dir,kind='parameter')
+    job.add('',outdir('cortex.txt'),kind='output',command_line='no')
+    job.run()
+
     job.add(_FC_+'generate_hpa.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
@@ -1763,6 +1796,8 @@ if __name__ == '__main__':
 
 
     job.add(_BE_+'bowtie-build',kind='program')
+    if bowtie121:
+        job.add('--threads',options.processes,kind='parameter')    
     job.add('-f',kind='parameter')
 #    job.add('--ntoa',kind='parameter')
     job.add('--quiet',kind='parameter')
@@ -1773,6 +1808,8 @@ if __name__ == '__main__':
     job.run(error_message = bowtie_error)
 
     job.add(_BE_+'bowtie-build',kind='program')
+    if bowtie121:
+        job.add('--threads',options.processes,kind='parameter')
     job.add('-f',kind='parameter')
 #    job.add('--ntoa',kind='parameter')
     job.add('--quiet',kind='parameter')
@@ -1785,6 +1822,8 @@ if __name__ == '__main__':
 
 
     job.add(_BE_+'bowtie-build',kind='program')
+    if bowtie121:
+        job.add('--threads',options.processes,kind='parameter')
     job.add('-f',kind='parameter')
 #    job.add('--ntoa',kind='parameter')
     job.add('--quiet',kind='parameter')
@@ -1818,6 +1857,8 @@ if __name__ == '__main__':
 #    job.run(error_message = bowtie_error)
 
     job.add(_BE_+'bowtie-build',kind='program')
+    if bowtie121:
+        job.add('--threads',options.processes,kind='parameter')
     job.add('-f',kind='parameter')
     job.add('--quiet',kind='parameter')
 #    job.add('--ntoa',kind='parameter')
@@ -1828,6 +1869,8 @@ if __name__ == '__main__':
     job.run(error_message = bowtie_error)
 
     job.add(_BE_+'bowtie-build',kind='program')
+    if bowtie121:
+        job.add('--threads',options.processes,kind='parameter')
     job.add('-f',kind='parameter')
     job.add('--quiet',kind='parameter')
     job.add('--offrate','1',kind='parameter')
@@ -1848,6 +1891,8 @@ if __name__ == '__main__':
 
 
     job.add(_BE_+'bowtie-build',kind='program')
+    if bowtie121:
+        job.add('--threads',options.processes,kind='parameter')
     job.add('-f',kind='parameter')
     job.add('--quiet',kind='parameter')
     job.add('--offrate','1',kind='parameter')

@@ -9,7 +9,7 @@ in here and it is manually curated from Illumina BodyMap2 RNA-seq database of sa
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2017 Daniel Nicorici
+Copyright (c) 2009-2018 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -4061,6 +4061,28 @@ if __name__ == '__main__':
         ['CTSB','HOOK2'],
         ['CTSB','RAP1GAP'],
         ['EEF1A1','EEF1A2'],
+        ['FAM157B','FBXO25'],
+        ['HSP90AB1','SLC29A1'],
+        ['HSPE1','MOB4'],
+        ['MECOM','RPL22'],
+        ['NAIP','OCLN'],
+        ['NPEPPS','TBC1D3'],
+        ['NPIPB5','SMG1'],
+        ['SERF1A','SMN1'],
+        ['SIDT2','TAGLN'],
+        ['AC008083.2','PCED1B'],
+        ['AC017083.3','C1D'],
+        ['AC017083.3','CNRIP1'],
+        ['AC100810.1','AC100810.3'],
+        ['ANAPC1','RMND5A'],
+        ['ARL17A','KANSL1'],
+        ['ARL17B','KANSL1'],
+        ['AZGP1','GJC3'],
+        ['BCAP29','DUS4L'],
+        ['BRS3','HTATSF1'],
+        ['C19MC','RPLP1'],
+        ['CATSPER2','PPIP5K1'],
+        ['COQ8B','NUMBL'],
         ['FAM157B','FBXO25'],
         ['HSP90AB1','SLC29A1'],
         ['HSPE1','MOB4'],

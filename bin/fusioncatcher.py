@@ -11,7 +11,7 @@ Solexa/HiSeq/NextSeq/MiSeq/MiniSeq).
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2017 Daniel Nicorici
+Copyright (c) 2009-2018 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -233,7 +233,7 @@ usage = "%prog [options]"
 epilog = ("\n" +
          "Author: Daniel Nicorici \n" +
          "Email: Daniel.Nicorici@gmail.com \n" +
-         "Copyright (c) 2009-2017, Daniel Nicorici \n " +
+         "Copyright (c) 2009-2018, Daniel Nicorici \n " +
          "\n")
 
 description = ("FusionCatcher searches for novel and known somatic gene fusions in RNA-seq \n"+
@@ -242,7 +242,7 @@ description = ("FusionCatcher searches for novel and known somatic gene fusions 
                "Illumina HiSeq 2000, Illumina HiSeq X, Illumina NextSeq 500, \n"+
                "Illumina GAIIx, Illumina GAII, Illumina MiSeq, Illumina MiniSeq). \n")
 
-version = "%prog 1.00"
+version = "%prog 1.10"
 
 
 if __name__ == "__main__":
@@ -951,6 +951,17 @@ if __name__ == "__main__":
 #                             "Default is '%default'."
                              )
 
+    parser.add_option("--compress-transcripts",
+                      action = "store_true",
+                      dest = "compress_transcripts",
+                      default = False,
+                      help = optparse.SUPPRESS_HELP
+#                      help = "It compresses the fusions transcripts sequences in the final report by "+
+#                             "outputing the transcripts ids instead of the sequences "+
+#                             "of the fusion transcripts "+
+#                             "Default is '%default'."
+                             )
+
     parser.add_option("--skip-automatic-scaling",
                       action = "store_true",
                       dest = "skip_automatic_scaling",
@@ -1450,7 +1461,7 @@ if __name__ == "__main__":
                       action = "store",
                       type = "int",
                       dest = "spanning_pairs_count",
-                      default = 10000,
+                      default = 8000,
                       help = optparse.SUPPRESS_HELP)
 #                      help = "If the '--pairs-fusion' selects more than N preliminary "+
 #                             "candidate fusion genes then only the first N will be "+
@@ -1952,7 +1963,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if options.skip_star_bowtie and (not is_optparse_provided(parser,'limit_star')):
-        options.limit_star = 3 * (2**30)
+        options.limit_star = int(2.7 * (2**30))
 
 
     # test that the version of build data matches
@@ -2180,11 +2191,12 @@ if __name__ == "__main__":
     os.system(_BE_+"bowtie --version | head -1 > '%s'" % (outdir('bowtie_version.txt'),))
     last_line = file(outdir('bowtie_version.txt'),'r').readline().lower().rstrip("\r\n")
     #correct_versions = set(['bowtie-align version 1.2.1','bowtie-align version 1.2.1.1','bowtie-align version 1.2','bowtie version 1.1.2'])
-    correct_versions = set(['bowtie-align version 1.2','bowtie version 1.1.2'])
+    correct_versions = set(['version 1.2','version 1.1.2','version 1.2.2'])
     bowtie121 = False
     if last_line.find("1.2.") != -1:
         bowtie121 = True
-    if last_line not in correct_versions:
+    if (last_line not in correct_versions) and not [1 for el in correct_versions if last_line.lower().endswith(el)]:
+        print last_line
         job.close()
         os.system("which bowtie > '%s'" % (outdir('bowtie_path.txt'),))
         bowtie_path = file(outdir('bowtie_path.txt'),'r').readline().rstrip("\r\n")
@@ -2417,7 +2429,8 @@ if __name__ == "__main__":
 
         os.system("STAR --version > '%s'" % (outdir('star_version.txt'),))
         last_line = file(outdir('star_version.txt'),'r').readline().lower().rstrip("\r\n")
-        correct_version = 'star_2.5.2b'
+        correct_version = 'star_2.5.4b'
+        #correct_version = 'star_2.5.2b'
         #correct_version = 'star_2.5.2a'
         #correct_version = 'star_2.5.1b'
         #correct_version = 'star_2.4.2a'
@@ -3993,7 +4006,7 @@ if __name__ == "__main__":
 #            options.skip_bwa = True
             options.skip_star_bowtie = True
             if not is_optparse_provided(parser,'limit_star'):
-                options.limit_star = 3 * (2**30)
+                options.limit_star = int(2.7 * (2**30))
             job.add('printf',kind='program')
             job.add(('"\nInput reads are too short (maxim found length is %d) and therefore BOWTIE2 method is disabled automatically!\n"') % (max_len_reads,),kind='parameter')
             job.add('>>',info_file,kind='output')
@@ -5703,6 +5716,13 @@ if __name__ == "__main__":
     job.add('--input',outdir('candidate_fusion-genes_74.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','tcga-normal',kind='parameter')
     job.add('--filter_gene_pairs',datadir('tcga-normal.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_75.txt'),kind='output')
+    job.run()
+    # label fusion genes -- prefrontal cortex
+    job.add(_FC_+'label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_75.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','cortex',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('cortex.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_1000.txt'),kind='output')
     job.run()
     #
@@ -6768,8 +6788,8 @@ if __name__ == "__main__":
                 # map the reads which do not align anywhere on the exon-exon junctions from fusion-genes
                 # build index
                 job.add(_BE_+'bowtie-build',kind='program')
-                if bowtie121:
-                    job.add('--threads',options.processes,kind='parameter')
+#                if bowtie121:
+#                    job.add('--threads',options.processes,kind='parameter')
                 job.add('-f',kind='parameter')
                 job.add('--quiet',kind='parameter')
                 if bowtie121:
@@ -6849,8 +6869,8 @@ if __name__ == "__main__":
             # map the reads which do not align anywhere on the exon-exon junctions from fusion-genes
             # build index
             job.add(_BE_+'bowtie-build',kind='program')
-            if bowtie121:
-                job.add('--threads',options.processes,kind='parameter')
+#            if bowtie121:
+#                job.add('--threads',options.processes,kind='parameter')
             job.add('-f',kind='parameter')
             job.add('--quiet',kind='parameter')
             if bowtie121:
@@ -7370,12 +7390,25 @@ if __name__ == "__main__":
 
         nucleotides_ggu = int(file(outdir('gene-gene_unique__nuc.txt'),'r').readline().strip())
 
-        job.add('du',kind='program')
-        job.add('-b',outdir('gene-gene.fa'),kind='input')
+#        job.add('du',kind='program')
+#        job.add('-b',outdir('gene-gene.fa'),kind='input')
+#        job.add('|',kind='parameter')
+#        job.add('LC_ALL=C',kind='parameter')
+#        job.add('cut',kind='parameter')
+#        job.add('-f','1',kind='parameter')
+#        job.add('>',outdir('gene-gene__nuc.txt'),kind='output')
+#        job.run()
+
+        # get the length of the FASTA file
+        job.add('LC_ALL=C',kind='program')
+        job.add('grep',kind='parameter')
+        job.add('-v','"^>"',kind='parameter')
+        job.add('',outdir('gene-gene.fa'),kind='input')
         job.add('|',kind='parameter')
-        job.add('LC_ALL=C',kind='parameter')
-        job.add('cut',kind='parameter')
-        job.add('-f','1',kind='parameter')
+        job.add('wc',kind='parameter')
+        job.add('|',kind='parameter')
+        job.add('awk',kind='parameter')
+        job.add("'{print $3-$1}'",kind='parameter')
         job.add('>',outdir('gene-gene__nuc.txt'),kind='output')
         job.run()
 
@@ -8311,7 +8344,7 @@ if __name__ == "__main__":
                 job.run()
 
 
-                if job.run():
+                if os.path.exists(outdir('log_lengths_reads_gene-gene_no-str.txt')):
                     sdjboverhang = int(file(outdir('log_lengths_reads_gene-gene_no-str.txt'),'r').readline().strip()) - 1
                     file(outdir('star_sdjboverhang.txt'),'w').write("%d" % (sdjboverhang,))
                 genomesaindexnbases = int(min(14, math.log(nucleotides_gg,2)/(float(2) - 1)))
@@ -8343,22 +8376,34 @@ if __name__ == "__main__":
                     for i,part in enumerate(parts):
 
                         # get the length of the FASTA file
-                        job.add('du',kind='program')
-                        job.add('-b',part,kind='input')
+#                        job.add('du',kind='program')
+#                        job.add('-b',part,kind='input')
+#                        job.add('|',kind='parameter')
+#                        job.add('LC_ALL=C',kind='parameter')
+#                        job.add('cut',kind='parameter')
+#                        job.add('-f','1',kind='parameter')
+#                        job.add('>',part+'.len',kind='output')
+#                        job.run()
+
+                        # get the length of the FASTA file
+                        job.add('LC_ALL=C',kind='program')
+                        job.add('grep',kind='parameter')
+                        job.add('-v','"^>"',kind='parameter')
+                        job.add('',part,kind='input')
                         job.add('|',kind='parameter')
-                        job.add('LC_ALL=C',kind='parameter')
-                        job.add('cut',kind='parameter')
-                        job.add('-f','1',kind='parameter')
+                        job.add('wc',kind='parameter')
+                        job.add('|',kind='parameter')
+                        job.add('awk',kind='parameter')
+                        job.add("'{print $3-$1}'",kind='parameter')
                         job.add('>',part+'.len',kind='output')
                         job.run()
 
+                        #grep -v ">" file.fasta | wc | awk '{print $3-$1}'
 
-                        t = "[from file: '%s']" % (maxlens[i],)
-                        if job.run():
-                            t = file(maxlens[i],'r').readline().strip()
+
                             
                         genomesaindexnbases = int(min(14, math.log(100,2)/(float(2) - 1)))
-                        if job.run():
+                        if os.path.exists(part+'.len'):
                             ti = file(part+'.len','r').readline().strip()
                             lenparts = len(parts)
                             genomesaindexnbases = int(min(14, math.log(float(ti),2)/(float(2) - 1)))
@@ -8367,6 +8412,7 @@ if __name__ == "__main__":
 
 
 
+                            
                         # build the STAR index
                         gd = "%s_star/" % (part,)
                         gdr = "%s_star-results/" % (part,)
@@ -8381,6 +8427,11 @@ if __name__ == "__main__":
                         job.add('--genomeFastaFiles',part,kind='input')
                         job.add('--outFileNamePrefix',gd,kind='output')
                         job.run()
+
+#                        t = "[from file: '%s']" % (maxlens[i],)
+#                        #if job.run():
+#                        if os.path.exists(maxlens[i]):
+#                            t = file(maxlens[i],'r').readline().strip()
 
                         # align the unmapped reads using STAR on candidate fusion gene-gene
                         job.add(_SR_+'STAR',kind='program')
@@ -8414,7 +8465,10 @@ if __name__ == "__main__":
                         job.add('--outSJfilterCountUniqueMin','1 1 1 1',kind='parameter')# default is: 3 1 1 1
                         job.add('--outSJfilterCountTotalMin','1 1 1 1',kind='parameter')# default is: 3 1 1 1
                         job.add('--outSJfilterDistToOtherSJmin','0 0 0 0',kind='parameter')# default is: 10 0 5 10
-                        job.add('--outSJfilterIntronMaxVsReadN','%s %s %s' % (t,t,t),kind='parameter')# default is: 50000 100000 200000
+                        job.add('--outSJfilterIntronMaxVsReadN',maxlens[i],kind='parameter',from_file='yes')# default is: 50000 100000 200000
+                        job.add('',maxlens[i],kind='parameter',from_file='yes')# default is: 50000 100000 200000
+                        job.add('',maxlens[i],kind='parameter',from_file='yes')# default is: 50000 100000 200000
+                        #job.add('--outSJfilterIntronMaxVsReadN','%s %s %s' % (t,t,t),kind='parameter')# default is: 50000 100000 200000
                         job.add('--limitOutSAMoneReadBytes','100000000',kind='parameter')
                         job.add('--scoreGapNoncan','-4',kind='parameter') # should it be -2?
                         job.add('--scoreGapATAC','-4',kind='parameter')
@@ -8996,12 +9050,25 @@ if __name__ == "__main__":
                                     else:
                                         job.clean(gdb,temp_path=temp_flag)
                                         
-                                        job.add('du',kind='program')
-                                        job.add('-b',gda,kind='input')
+#                                        job.add('du',kind='program')
+#                                        job.add('-b',gda,kind='input')
+#                                        job.add('|',kind='parameter')
+#                                        job.add('LC_ALL=C',kind='parameter')
+#                                        job.add('cut',kind='parameter')
+#                                        job.add('-f','1',kind='parameter')
+#                                        job.add('>',outdir('gene-gene2__nuc.txt.')+str(i),kind='output',dest_list='gg2nuc')
+#                                        job.run()
+
+                                        # get the length of the FASTA file
+                                        job.add('LC_ALL=C',kind='program')
+                                        job.add('grep',kind='parameter')
+                                        job.add('-v','"^>"',kind='parameter')
+                                        job.add('',gda,kind='input')
                                         job.add('|',kind='parameter')
-                                        job.add('LC_ALL=C',kind='parameter')
-                                        job.add('cut',kind='parameter')
-                                        job.add('-f','1',kind='parameter')
+                                        job.add('wc',kind='parameter')
+                                        job.add('|',kind='parameter')
+                                        job.add('awk',kind='parameter')
+                                        job.add("'{print $3-$1}'",kind='parameter')
                                         job.add('>',outdir('gene-gene2__nuc.txt.')+str(i),kind='output',dest_list='gg2nuc')
                                         job.run()
 
@@ -9164,9 +9231,10 @@ if __name__ == "__main__":
                     job.run()
 
                     # align the unmapped reads using STAR on candidate fusion gene-gene
-                    t = "[from file: '%s']" % (outdir('gene-gene_longest.txt'),)
-                    if job.run():
-                        t = file(outdir('gene-gene_longest.txt'),'r').readline().strip()
+#                    t = "[from file: '%s']" % (outdir('gene-gene_longest.txt'),)
+#                    #if job.run():
+#                    if os.path.exists(outdir('gene-gene_longest.txt')):
+#                        t = file(outdir('gene-gene_longest.txt'),'r').readline().strip()
                     job.add(_SR_+'STAR',kind='program')
                     #job.add('--twopass1readsN',outdir('log_counts_reads_gene-gene_no-str.txt'),kind='parameter',from_file='yes')
                     job.add('--twopass1readsN','-1',kind='parameter')
@@ -9197,7 +9265,10 @@ if __name__ == "__main__":
                     job.add('--outSJfilterCountUniqueMin','1 1 1 1',kind='parameter')# default is: 3 1 1 1
                     job.add('--outSJfilterCountTotalMin','1 1 1 1',kind='parameter')# default is: 3 1 1 1
                     job.add('--outSJfilterDistToOtherSJmin','0 0 0 0',kind='parameter')# default is: 10 0 5 10
-                    job.add('--outSJfilterIntronMaxVsReadN','%s %s %s' % (t,t,t),kind='parameter')# default is: 50000 100000 200000
+                    #job.add('--outSJfilterIntronMaxVsReadN','%s %s %s' % (t,t,t),kind='parameter')# default is: 50000 100000 200000
+                    job.add('--outSJfilterIntronMaxVsReadN',outdir('gene-gene_longest.txt'),kind='parameter',from_file='yes')# default is: 50000 100000 200000
+                    job.add('',outdir('gene-gene_longest.txt'),kind='parameter',from_file='yes')# default is: 50000 100000 200000
+                    job.add('',outdir('gene-gene_longest.txt'),kind='parameter',from_file='yes')# default is: 50000 100000 200000
                     job.add('--limitOutSAMoneReadBytes','100000000',kind='parameter')
                     job.add('--scoreGapNoncan','-4',kind='parameter')
                     job.add('--scoreGapATAC','-4',kind='parameter')
@@ -9818,12 +9889,24 @@ if __name__ == "__main__":
                                     
                                     job.clean(outdir('gene-gene-bowtie_star/'),temp_path=temp_flag)
                                     
-                                    job.add('du',kind='program')
-                                    job.add('-b',outdir('gene-gene-bowtie_star.fa'),kind='input')
+#                                    job.add('du',kind='program')
+#                                    job.add('-b',outdir('gene-gene-bowtie_star.fa'),kind='input')
+#                                    job.add('|',kind='parameter')
+#                                    job.add('LC_ALL=C',kind='parameter')
+#                                    job.add('cut',kind='parameter')
+#                                    job.add('-f','1',kind='parameter')
+#                                    job.add('>',outdir('gene-gene2__nuc.txt'),kind='output')
+#                                    job.run()
+
+                                    job.add('LC_ALL=C',kind='program')
+                                    job.add('grep',kind='parameter')
+                                    job.add('-v','"^>"',kind='parameter')
+                                    job.add('',outdir('gene-gene-bowtie_star.fa'),kind='input')
                                     job.add('|',kind='parameter')
-                                    job.add('LC_ALL=C',kind='parameter')
-                                    job.add('cut',kind='parameter')
-                                    job.add('-f','1',kind='parameter')
+                                    job.add('wc',kind='parameter')
+                                    job.add('|',kind='parameter')
+                                    job.add('awk',kind='parameter')
+                                    job.add("'{print $3-$1}'",kind='parameter')
                                     job.add('>',outdir('gene-gene2__nuc.txt'),kind='output')
                                     job.run()
 
@@ -11436,18 +11519,31 @@ if __name__ == "__main__":
                         job.run()
                         
                         # get the length of the FASTA file
-                        job.add('du',kind='program')
-                        job.add('-b',outdir('genegene.fa.'+str(i)),kind='input')
+#                        job.add('du',kind='program')
+#                        job.add('-b',outdir('genegene.fa.'+str(i)),kind='input')
+#                        job.add('|',kind='parameter')
+#                        job.add('LC_ALL=C',kind='parameter')
+#                        job.add('cut',kind='parameter')
+#                        job.add('-f','1',kind='parameter')
+#                        job.add('>',outdir('genegene.fa.len.'+str(i)),kind='output')
+#                        job.run()
+
+                        job.add('LC_ALL=C',kind='program')
+                        job.add('grep',kind='parameter')
+                        job.add('-v','"^>"',kind='parameter')
+                        job.add('',outdir('genegene.fa.'+str(i)),kind='input')
                         job.add('|',kind='parameter')
-                        job.add('LC_ALL=C',kind='parameter')
-                        job.add('cut',kind='parameter')
-                        job.add('-f','1',kind='parameter')
+                        job.add('wc',kind='parameter')
+                        job.add('|',kind='parameter')
+                        job.add('awk',kind='parameter')
+                        job.add("'{print $3-$1}'",kind='parameter')
                         job.add('>',outdir('genegene.fa.len.'+str(i)),kind='output')
                         job.run()
 
+
                         f_sequences_gg = 2
                         f_nucleotides_gg = 100
-                        if job.run():
+                        if os.path.exists(outdir('genegene.fa.len.'+str(i))):
                             f_nucleotides_gg = int(file(outdir('genegene.fa.len.'+str(i)),'r').readline().strip())
 
                         f_genomesaindexnbases = int(min(14, math.log(f_nucleotides_gg,2)/(float(2) - 1)))
@@ -11457,10 +11553,7 @@ if __name__ == "__main__":
 
 
 
-                        z = outdir('genegene_longest.txt.'+str(i))
-                        t = "[from file: '%s']" % (z,)
-                        if job.run():
-                            t = file(z,'r').readline().strip()
+
 
                         perct = 0.60 # 0.49
 
@@ -11477,6 +11570,12 @@ if __name__ == "__main__":
                         job.add('--genomeFastaFiles',outdir('genegene.fa.'+str(i)),kind='input',temp_path=temp_flag)
                         job.add('--outFileNamePrefix',bd,kind='output')
                         job.run()
+
+                        z = outdir('genegene_longest.txt.'+str(i))
+#                        t = "[from file: '%s']" % (z,)
+#                        #if job.run():
+#                        if os.path.exists(z):
+#                            t = file(z,'r').readline().strip()
 
                         # align the unmapped reads using STAR on candidate fusion gene-gene
                         job.add(_SR_+'STAR',kind='program')
@@ -11499,7 +11598,10 @@ if __name__ == "__main__":
                         job.add('--outSJfilterCountUniqueMin','1 1 1 1',kind='parameter')# default is: 3 1 1 1
                         job.add('--outSJfilterCountTotalMin','1 1 1 1',kind='parameter')# default is: 3 1 1 1
                         job.add('--outSJfilterDistToOtherSJmin','0 0 0 0',kind='parameter')# default is: 10 0 5 10
-                        job.add('--outSJfilterIntronMaxVsReadN','%s %s %s' % (t,t,t),kind='parameter')# default is: 50000 100000 200000
+                        job.add('--outSJfilterIntronMaxVsReadN',z,kind='parameter',from_file='yes')# default is: 50000 100000 200000
+                        job.add('',z,kind='parameter',from_file='yes')# default is: 50000 100000 200000
+                        job.add('',z,kind='parameter',from_file='yes')# default is: 50000 100000 200000
+                        #job.add('--outSJfilterIntronMaxVsReadN','%s %s %s' % (t,t,t),kind='parameter')# default is: 50000 100000 200000
                         job.add('--limitOutSAMoneReadBytes','100000000',kind='parameter')
                         job.add('--outSAMmultNmax','1',kind='parameter') # only one alignment per read
                         job.add('--scoreGapNoncan','-4',kind='parameter') # should it be -2?
@@ -11713,7 +11815,8 @@ if __name__ == "__main__":
     job.add('--input',outdir('final-list_candidate-fusion-genes-t3.txt'),kind='input',temp_path=temp_flag)
     job.add('--output',outdir('final-list_candidate-fusion-genes_sequences.txt'),kind='output')
     #fusion_transcripts_sequences:
-    #job.add('--compress-transcripts',kind='parameter')
+    if options.compress_transcripts:
+        job.add('--compress-transcripts',kind='parameter')
     job.run()
 
 

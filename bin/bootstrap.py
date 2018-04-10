@@ -10,7 +10,7 @@ It only needs to have pre-installed:
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2017 Daniel Nicorici
+Copyright (c) 2009-2018 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -210,8 +210,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BOWTIE_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie')
 #    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.0/bowtie-1.2-linux-x86_64.zip'
 #    BOWTIE_VERSION = ('1.2',)
-    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-linux-x86_64.zip'
-    BOWTIE_VERSION = ('1.1.2',)
+    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-linux-x86_64.zip'
+    BOWTIE_VERSION = ('1.2.2',)
     # BOWTIE
     BOWTIE_OLD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie-old')
     BOWTIE_OLD_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-linux-x86_64.zip'
@@ -982,7 +982,7 @@ if __name__ == '__main__':
                   "<http://github.com/ndaniel/fusioncatcher>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 1.00"
+    version = "%prog 1.10"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -1127,7 +1127,7 @@ python-openpyxl
     time.sleep(5) # wait 5 seconds
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "human_v90"
+    v = "human_v91"
     ############################################################################
     # List all dependencies
     ############################################################################
@@ -1329,7 +1329,7 @@ python-openpyxl
                  path = FUSIONCATCHER_BIN,
                  verbose = True,
                  custom_install = ["#!/usr/bin/env bash",
-                                   "rm ../bin",
+                                   "rm -rf ../bin",
 #                                   "rm -rf ../bin",
 #                                   "rm -rf ../etc",
 #                                   "rm -rf ../test",
@@ -1363,9 +1363,11 @@ python-openpyxl
                                    "chmod +x ../bin/FC",
                                    "chmod +x ../test/*.sh",
                                    "chmod -R +r ../test/*",
-                                   "deleteme=$(pwd)",
-                                   "cd ..",
-                                   'rm -rf "$deleteme"'
+                                   "rm -rf $(pwd)",
+                                   "cd .."
+#                                   "deleteme=$(pwd)",
+#                                   "cd ..",
+#                                   'rm -rf "$deleteme"'
                                    ]
                 )
 

@@ -1,6 +1,12 @@
 Version Release History for FusionCatcher
 =========================================
 
+Version 1.10 -- ..., 2018
+--------------------------------------
+ * added support for Ensembl version 91
+ * fixed several minor bugs
+ * updated manual
+
 
 Version 1.00 - December 8, 2017
 ---------------------------------------
