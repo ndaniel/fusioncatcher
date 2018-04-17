@@ -169,6 +169,7 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
  * Liu H. et al., **Identifying and Targeting Sporadic Oncogenic Genetic Aberrations in Mouse Models of Triple-Negative Breast Cancer**, Cancer Discovery, Mach 2018, https://doi.org/10.1158/2159-8290.CD-17-0679
  * Panagopoulos I. et al., **PAN3–PSMA2 fusion resulting from a novel t(7;13)(p14;q12) chromosome translocation in a myelodysplastic syndrome that evolved into acute myeloid leukemia**, Experimental Hematology and Oncology, March 2018, https://doi.org/10.1186/s40164-018-0099-4
  * Agostini A. et al., **Identification of novel cyclin gene fusion transcripts in endometrioid ovarian carcinomas**, Internation Journal of Cancer, April 2018,  https://doi.org/10.1002/ijc.31418
+ * Brunetti M. et al., **Identification of an EPC2-PHF1 fusion transcript in low-grade endometrial stromal sarcoma**, Oncotarget, April 2018, https://doi.org/10.18632/oncotarget.24969
 
 ---
 
