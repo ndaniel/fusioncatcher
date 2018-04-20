@@ -172,7 +172,7 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
  * Brunetti M. et al., **Identification of an EPC2-PHF1 fusion transcript in low-grade endometrial stromal sarcoma**, Oncotarget, April 2018, https://doi.org/10.18632/oncotarget.24969
  * Panagopoulos I. et al., **RUNX1-PDCD6 fusion resulting from a novel t(5;21)(p15;q22) chromosome translocation in myelodysplastic syndrome secondary to chronic lymphocytic leukemia**, PLOS One, April 2018, https://doi.org/10.1371/journal.pone.0196181
  * Bie D.J. et al., **Single-cell sequencing reveals the origin and the order of mutation acquisition in T-cell acute lymphoblastic leukemia**, Leukemia, April 2018, https://doi.org/10.1038/s41375-018-0127-8
- 
+ * Churchman M.L. et al., **Germline Genetic IKZF1 Variation and Predisposition to Childhood Acute Lymphoblastic Leukemia**, Cancer Cell, May 2018, https://doi.org/10.1016/j.ccell.2018.03.021
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
