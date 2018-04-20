@@ -170,7 +170,8 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
  * Panagopoulos I. et al., **PAN3–PSMA2 fusion resulting from a novel t(7;13)(p14;q12) chromosome translocation in a myelodysplastic syndrome that evolved into acute myeloid leukemia**, Experimental Hematology and Oncology, March 2018, https://doi.org/10.1186/s40164-018-0099-4
  * Agostini A. et al., **Identification of novel cyclin gene fusion transcripts in endometrioid ovarian carcinomas**, Internation Journal of Cancer, April 2018,  https://doi.org/10.1002/ijc.31418
  * Brunetti M. et al., **Identification of an EPC2-PHF1 fusion transcript in low-grade endometrial stromal sarcoma**, Oncotarget, April 2018, https://doi.org/10.18632/oncotarget.24969
-
+ * Panagopoulos I. et al., **RUNX1-PDCD6 fusion resulting from a novel t(5;21)(p15;q22) chromosome translocation in myelodysplastic syndrome secondary to chronic lymphocytic leukemia**, PLOS One, April 2018, https://doi.org/10.1371/journal.pone.0196181
+ 
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
