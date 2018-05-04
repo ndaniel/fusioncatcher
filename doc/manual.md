@@ -173,6 +173,7 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
  * Panagopoulos I. et al., **RUNX1-PDCD6 fusion resulting from a novel t(5;21)(p15;q22) chromosome translocation in myelodysplastic syndrome secondary to chronic lymphocytic leukemia**, PLOS One, April 2018, https://doi.org/10.1371/journal.pone.0196181
  * Bie D.J. et al., **Single-cell sequencing reveals the origin and the order of mutation acquisition in T-cell acute lymphoblastic leukemia**, Leukemia, April 2018, https://doi.org/10.1038/s41375-018-0127-8
  * Chiaretti S. et al., **Rapid identification of BCR/ABL1‐like acute lymphoblastic leukaemia patients using a predictive statistical model based on quantitative real time‐polymerase chain reaction: clinical, prognostic and therapeutic implications**, British Journal of Haematology, April 2018, https://doi.org/10.1111/bjh.15251
+* Wang X.T. et al., **RNA sequencing of Xp11 translocation-associated cancers reveals novel gene fusions and distinctive clinicopathologic correlations**, Modern Pathology, April 2018, https://doi.org/10.1038/s41379-018-0051-5
 * Churchman M.L. et al., **Germline Genetic IKZF1 Variation and Predisposition to Childhood Acute Lymphoblastic Leukemia**, Cancer Cell, May 2018, https://doi.org/10.1016/j.ccell.2018.03.021
 
  
