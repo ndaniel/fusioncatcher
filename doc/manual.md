@@ -1278,9 +1278,20 @@ Further, the files `fusion_genes.sorted.bam` and `fusion_genes.sorted.bam.bai` m
 ### 6.3.4 - Chimera `R/BioConductor` package
 For visualization of fusion genes found by *FusionCatcher* one may use also the `R/BioConductor` package [Chimera](http://www.bioconductor.org/packages/release/bioc/html/chimera.html), which supports *FusionCatcher*.
 
-## 6.4 - Examples
+## 6.4 - Docker
 
-### 6.4.1 - Example 1
+Run *FusionCatcher* using Docker image, use the command::
+```
+docker run --rm fusioncatcher/docker fusioncatcher
+```
+In order to share a directory (for example: /data), use::
+```
+docker run --rm -v /data:/data fusioncatcher/docker fusioncatcher
+```
+
+## 6.5 - Examples
+
+### 6.5.1 - Example 1
 
 Here, is an example of how *FusionCatcher* can be used to search for fusion genes in human RNA-seq sample where:
   1. any distance at chromosomal level between the candidate fusion genes is acceptable, **and**
@@ -1294,7 +1305,7 @@ fusioncatcher \
 -o /some/output/directory/
 ```
 
-### 6.4.2 - Example 2
+### 6.5.2 - Example 2
 
 Here, is an example of how *FusionCatcher* can be used to search for fusion genes in human RNA-seq sample where:
   1. any distance at chromosomal level between the candidate fusion genes is acceptable, **and**
