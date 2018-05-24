@@ -175,7 +175,8 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
  * Chiaretti S. et al., **Rapid identification of BCR/ABL1‐like acute lymphoblastic leukaemia patients using a predictive statistical model based on quantitative real time‐polymerase chain reaction: clinical, prognostic and therapeutic implications**, British Journal of Haematology, April 2018, https://doi.org/10.1111/bjh.15251
 * Wang X.T. et al., **RNA sequencing of Xp11 translocation-associated cancers reveals novel gene fusions and distinctive clinicopathologic correlations**, Modern Pathology, April 2018, https://doi.org/10.1038/s41379-018-0051-5
 * Churchman M.L. et al., **Germline Genetic IKZF1 Variation and Predisposition to Childhood Acute Lymphoblastic Leukemia**, Cancer Cell, May 2018, https://doi.org/10.1016/j.ccell.2018.03.021
-
+* Knuuttila M. et al., **Intratumoral androgen levels are linked to TMPRSS2-ERG fusion in prostate cancer**, Endocrinology-related-Related Cancer, May 2018, doi: https://doi.org/10.1530/ERC-18-0148
+* He H., et al., **Identification of a Recurrent LMO7–BRAF Fusion in Papillary Thyroid Carcinoma**, Thyroid, May 2018, https://doi.org/10.1089/thy.2017.0258
  
 ---
 
