@@ -1,0 +1,39 @@
+#!/bin/bash
+if  [ $1 ]
+ then
+        echo "Manuall Database Install-Script for fusionCatcher"
+        echo "Starting"
+        if [ ! -d "$1" ]; then
+                echo "Destination directory does not exists"
+		exit
+        fi
+ else
+        echo "Manuall Database Install-Script for fusionCatcher"
+        echo "Parameter missing"
+        echo "Usage: [/path/to/DestinationFolder]"
+        echo "Exit script"
+        exit
+fi
+
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/human_v90.tar.gz.aa -O $1/human_v90.tar.gz.aa
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/human_v90.tar.gz.ab -O $1/human_v90.tar.gz.ab
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/human_v90.tar.gz.ac -O $1/human_v90.tar.gz.ac
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/human_v90.tar.gz.ad -O $1/human_v90.tar.gz.ad
+wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/checksums.md5 -O $1/checksums.md5
+cd $1
+md5sum -c $1/checksums.md5
+if [ "$?" -ne "0" ]; then
+  echo -e "\n\n\n\033[33;7m   ERROR: The downloaded files from above have errors! MD5 checksums do not match! Please, download them again or re-run this script again!   \033[0m\n"
+  exit 1
+fi
+cat $1/human_v90.tar.gz.* > $1/human_v90.tar.gz
+rm -f $1/human_v90.tar.gz.*
+if ! tar -xzf $1/human_v90.tar.gz -C $1; then
+    echo -e "\n\n\n\033[33;7m   ERROR: The downloaded files are corrupted!   \033[0m\n"
+    exit 1
+fi
+rm -f $1/human_v90.tar.gz
+rm -f $1/checksums.md5
+
+echo "Database-files installation finished, pls run fusionCatcher docker image with docker run -v $1:/opt/fusioncatcher/v1.00/data/ <IMAGE-NAME>"
+
