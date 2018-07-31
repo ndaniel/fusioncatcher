@@ -84,7 +84,7 @@ if __name__ == '__main__':
                       action="store",
                       type="string",
                       dest="server",
-                      default = "ftp.sanger.ac.uk",
+                      default = "ftp.ebi.ac.uk",
                       help="""The Gencode server from where the gene annotations are downloaded. Default is '%default'.""")
 
     (options,args) = parser.parse_args()
@@ -114,7 +114,7 @@ if __name__ == '__main__':
 
     if org:
 
-        url = 'pub/gencode/%s/' % (org,)
+        url = 'pub/databases/gencode/%s/' % (org,)
         print "Downloading the GTF file of organism '%s' from Gencode!" % (options.organism.lower(),)
         version = ''
         nf = None
@@ -137,7 +137,7 @@ if __name__ == '__main__':
             url = "%s%s" % (url,last)
             ftp.cwd(last)
             print "cd ",last
-            print "Downloading: %s%s/%s" % (options.server,url,filename)
+            print "Downloading: %s/%s/%s" % (options.server,url,filename)
             nf = os.path.join(options.output_directory,filename)
             fid = open(nf,'wb')
             ftp.retrbinary("RETR " + filename, fid.write)
