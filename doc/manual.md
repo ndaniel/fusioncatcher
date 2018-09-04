@@ -180,6 +180,7 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * He H., et al., **Identification of a Recurrent LMO7–BRAF Fusion in Papillary Thyroid Carcinoma**, Thyroid, May 2018, https://doi.org/10.1089/thy.2017.0258
 * Wang C. et al., **Whole-genome sequencing reveals genomic signatures associated with the inflammatory microenvironments in Chinese NSCLC patients**, Nature Communications, May 2018, https://doi.org/10.1038/s41467-018-04492-2 
 * Gioiosa S. et al., **Massive NGS Data Analysis Reveals Hundreds Of Potential Novel Gene Fusions in Human Cell Lines**, GigaScience, June 2018, https://doi.org/10.1093/gigascience/giy062
+* Ganly I. et al., **Integrated Genomic Analysis of Hürthle Cell Cancer Reveals Oncogenic Drivers, Recurrent Mitochondrial Mutations, and Unique Chromosomal Landscapes**, Cancer Cell, August 2018, https://doi.org/10.1016/j.ccell.2018.07.002
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
