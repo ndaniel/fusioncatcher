@@ -181,7 +181,10 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * He H., et al., **Identification of a Recurrent LMO7–BRAF Fusion in Papillary Thyroid Carcinoma**, Thyroid, May 2018, https://doi.org/10.1089/thy.2017.0258
 * Wang C. et al., **Whole-genome sequencing reveals genomic signatures associated with the inflammatory microenvironments in Chinese NSCLC patients**, Nature Communications, May 2018, https://doi.org/10.1038/s41467-018-04492-2 
 * Gioiosa S. et al., **Massive NGS Data Analysis Reveals Hundreds Of Potential Novel Gene Fusions in Human Cell Lines**, GigaScience, June 2018, https://doi.org/10.1093/gigascience/giy062
+* Roberts, K.G. et al., **Genomic and outcome analyses of Ph-like ALL in NCI standard-risk patients: a report from the Children’s Oncology Group**, Blood, June 2018, https://doi.org/10.1182/blood-2018-04-841676
+* Rosenberg S. et al., **A recurrent point mutation in PRKCA is a hallmark of chordoid gliomas**, Nature Communications, June 2018, https://doi.org/10.1038/s41467-018-04622-w
 * Ganly I. et al., **Integrated Genomic Analysis of Hürthle Cell Cancer Reveals Oncogenic Drivers, Recurrent Mitochondrial Mutations, and Unique Chromosomal Landscapes**, Cancer Cell, August 2018, https://doi.org/10.1016/j.ccell.2018.07.002
+* Wrzeszczynski K.O. et al., **Analytical Validation of Clinical Whole-Genome and Transcriptome Sequencing of Patient Derived Tumors Clinical Application of Whole-Genome Sequencing for Reporting Targetable Variants in Cancer**, The Journal of Molecular Diagnostics, Aug. 2018,  https://doi.org/10.1016/j.jmoldx.2018.06.007
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
