@@ -180,6 +180,7 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * Knuuttila M. et al., **Intratumoral androgen levels are linked to TMPRSS2-ERG fusion in prostate cancer**, Endocrinology-related-Related Cancer, May 2018, doi: https://doi.org/10.1530/ERC-18-0148
 * He H., et al., **Identification of a Recurrent LMO7–BRAF Fusion in Papillary Thyroid Carcinoma**, Thyroid, May 2018, https://doi.org/10.1089/thy.2017.0258
 * Wang C. et al., **Whole-genome sequencing reveals genomic signatures associated with the inflammatory microenvironments in Chinese NSCLC patients**, Nature Communications, May 2018, https://doi.org/10.1038/s41467-018-04492-2 
+* Parris T.Z. et al., **Genome-wide multi-omics profiling of the 8p11-p12 amplicon in breast carcinoma**, Oncotarget, May 2018, https://dx.doi.org/10.18632%2Foncotarget.25329
 * Gioiosa S. et al., **Massive NGS Data Analysis Reveals Hundreds Of Potential Novel Gene Fusions in Human Cell Lines**, GigaScience, June 2018, https://doi.org/10.1093/gigascience/giy062
 * Roberts, K.G. et al., **Genomic and outcome analyses of Ph-like ALL in NCI standard-risk patients: a report from the Children’s Oncology Group**, Blood, June 2018, https://doi.org/10.1182/blood-2018-04-841676
 * Rosenberg S. et al., **A recurrent point mutation in PRKCA is a hallmark of chordoid gliomas**, Nature Communications, June 2018, https://doi.org/10.1038/s41467-018-04622-w
