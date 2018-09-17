@@ -189,7 +189,7 @@ if __name__ == '__main__':
                       action = "store",
                       type = "string",
                       dest = "web_ensembl",
-                      default = 'www.ensembl.org',
+                      default = 'useast.ensembl.org',
                       help = "Ensembl database web site from where the data is downloaded. "+
                              " e.g. 'www.ensembl.org', 'uswest.ensembl.org', "+
                              "'useast.ensembl.org', 'asia.ensembl.org', etc. "+

@@ -76,7 +76,7 @@ if __name__ == '__main__':
                       action="store",
                       type="string",
                       dest="server",
-                      default = "www.ensembl.org", # feb2014.archive.ensembl.org => Ensembl release 75
+                      default = "useast.ensembl.org", # feb2014.archive.ensembl.org => Ensembl release 75
                       help="""The Ensembl server from where the genes biotypes are downloaded, e.g. 'www.ensembl.org', 'uswest.ensembl.org', 'useast.ensembl.org', 'asia.ensembl.org', etc. Default is '%default'.""")
 
     parser.add_option("--server-path",

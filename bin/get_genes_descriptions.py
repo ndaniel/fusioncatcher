@@ -79,7 +79,7 @@ if __name__ == '__main__':
                       action="store",
                       type="string",
                       dest="server",
-                      default = "www.ensembl.org",
+                      default = "useast.ensembl.org",
                       help="""The Ensembl server from where the genes positions are downloaded, e.g. 'www.ensembl.org', 'uswest.ensembl.org', 'useast.ensembl.org', 'asia.ensembl.org', etc. Default is '%default'.""")
 
     (options,args) = parser.parse_args()
