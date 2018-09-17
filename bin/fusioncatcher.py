@@ -58,6 +58,8 @@ import configuration
 # for sort in linux
 locale.setlocale(locale.LC_ALL, 'C')
 
+DEV_MODE = os.getenv('FUSIONCATCHER_DEV_MODE') is not None
+
 def expand(*p):
     return os.path.abspath(os.path.expanduser(os.path.join(*p)))
 
@@ -613,6 +615,13 @@ if __name__ == "__main__":
             'tcga',
             'tcga-normal',
             'tcga-cancer'])
+
+    parser.add_option("--min-memory",
+                      action="store",
+                      type="int",
+                      default=23000,
+                      help="minimum allowed memory for fusioncatcher to proceed. Default is 23000 MB")
+
     parser.add_option("--filter-fusion","-b",
                       action = "store",
                       type = "string",
@@ -1581,8 +1590,8 @@ if __name__ == "__main__":
     except:
         pass
     if total_memory != 0:
-        if total_memory < 23000:
-            print >>sys.stderr, "  * ERROR: %d MB of RAM memory found (minimum of 24 GB of RAM memory is needed)!" % (total_memory,)
+        if total_memory < options.min_memory:
+            print >>sys.stderr, "  * ERROR: %d MB of RAM memory found (minimum of %d MB of RAM memory is needed)!" % (total_memory, options.min_memory)
             sys.exit(1)
         else:
             print "  * %d MB of RAM memory found!" % (total_memory,)
@@ -2429,8 +2438,8 @@ if __name__ == "__main__":
 
         os.system("STAR --version > '%s'" % (outdir('star_version.txt'),))
         last_line = file(outdir('star_version.txt'),'r').readline().lower().rstrip("\r\n")
-        correct_version = 'star_2.5.4b'
-        #correct_version = 'star_2.5.2b'
+        # correct_version = 'star_2.5.4b'
+        correct_version = 'star_2.5.2b'
         #correct_version = 'star_2.5.2a'
         #correct_version = 'star_2.5.1b'
         #correct_version = 'star_2.4.2a'
@@ -2571,7 +2580,7 @@ if __name__ == "__main__":
         job.run()
 
 
-    if job.run():
+    if job.run() and not DEV_MODE:
         # test that the version of build data matches
         build_version = file(datadir('version.txt'),'r').readline().strip()
         build_version = build_version.lower().split('.py')
@@ -2587,7 +2596,10 @@ if __name__ == "__main__":
             print >>sys.stderr,"ERROR: The version of the data build does not match the version of this pipeline!"
             print >>sys.stderr,"Please, run again the 'fusioncatcher-build.py' in order to fix this!"
             print >>sys.stderr,"...................."
-            sys.exit(1)
+            if DEV_MODE:
+                print "\033[33;7m ** Dev mode: not crashing for version mismatch\033[0m"
+            else:
+                sys.exit(1)
 
 
     # find available memory

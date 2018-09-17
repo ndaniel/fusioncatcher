@@ -63,6 +63,8 @@ BOLD = "\033[1m"
 UNDERLINE = '\033[4m'
 HIGHLIGHT = '\033[33;7m'
 
+DEV_MODE = os.getenv('FUSIONCATCHER_DEV_MODE') is not None
+
 
 ################################################################################
 ################################################################################
@@ -181,10 +183,17 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PREFIX = expand(os.path.dirname(installdir.rstrip(os.sep)))
     else:
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
-    
+
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
+    # current official release version
     FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.00.zip'
     FUSIONCATCHER_VERSION = "1.00"
+    if DEV_MODE:
+        # ignore official release version, use the version of fusioncatcher in
+        # this copy of FusionCatcher, (must match `fusioncatcher.version`)
+        FUSIONCATCHER_VERSION = "1.10"
+        print "\033[33;7m ** Dev mode: using version from local copy of FusionCatcher: %s\033[0m" % FUSIONCATCHER_VERSION
+
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -1293,6 +1302,18 @@ python-openpyxl
     ############################################################################
     # Installation path of FusionCatcher
     ############################################################################
+    # in dev mode override the installation-directory option to the parent of
+    # parent of this file (such that this file is in bin/bootstrap.py wrt to
+    # FUSIONCATCHER_PATH).
+    if DEV_MODE:
+        FUSIONCATCHER_PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+        # warn the user if a .git folder is not found in FUSIONCATCHER_PATH
+        if not os.path.exists(os.path.join(FUSIONCATCHER_PATH, '.git')):
+            print >>sys.stderr, ".git folder does not exist in %s, it might not be the correct FusionCatcher repo!" % FUSIONCATCHER_PATH
+            if not accept(question = " Proceed anyway?"):
+                sys.exit(1)
+        options.installation_directory = FUSIONCATCHER_PATH
+
     print "Path for installation of FusionCatcher: '%s'" % (expand(options.installation_directory),)
     r = accept(question = "  Do you accept this path (WARNING: some files/directories within this path may be deleted/replaced/updated without warning)?",
                yes = True,
@@ -1324,52 +1345,55 @@ python-openpyxl
     ############################################################################
     # FusionCatcher
     ############################################################################
-    install_tool(name = 'FusionCatcher (fusion genes finder in RNA-seq data)',
-                 url = FUSIONCATCHER_URL,
-                 path = FUSIONCATCHER_BIN,
-                 verbose = True,
-                 custom_install = ["#!/usr/bin/env bash",
-                                   "rm -rf ../bin",
-#                                   "rm -rf ../bin",
-#                                   "rm -rf ../etc",
-#                                   "rm -rf ../test",
-#                                   "rm -rf ../doc",
-#                                   "rm -rf ../tools",
-#                                   "rm -rf ../data",
-#                                   "rm -rf ../docker",
-#                                   "rm -rf ../VERSION",
-#                                   "rm -rf ../README",
-#                                   "rm -rf ../README.md",
-#                                   "rm -rf ../NEWS",
-#                                   "rm -rf ../LICENSE",
-#                                   "rm -rf ../DEPENDENCIES",
-#                                   "mkdir -p ../bin",
-#                                   "mkdir -p ../etc",
-#                                   "mkdir -p ../test",
-#                                   "mkdir -p ../doc",
-#                                   "mkdir -p ../tools",
-#                                   "mkdir -p ../data",
-#                                   "mkdir -p ../docker",
-#                                   "cp -f $(pwd)/etc/* ../etc/",
-#                                   "cp -f $(pwd)/bin/* ../bin/",
-#                                   "cp -f $(pwd)/test/* ../test/",
-#                                   "cp -f $(pwd)/doc/* ../doc/",
-#                                   "cp -f $(pwd)/docker/* ../docker/",
-                                   "cp -R -f $(pwd)/* ../",
-                                   "chmod +x ../bin/*.py",
-                                   "chmod +x ../bin/*.sh",
-                                   "chmod +r ../etc/configuration.cfg",
-                                   "chmod +x ../bin/fusioncatcher*",
-                                   "chmod +x ../bin/FC",
-                                   "chmod +x ../test/*.sh",
-                                   "chmod -R +r ../test/*",
-                                   "rm -rf $(pwd)",
-                                   "cd .."
+    if DEV_MODE:
+        print "\033[33;7m ** Dev mode: using local copy of FusionCatcher repo at %s\033[0m" % FUSIONCATCHER_PATH
+    else:
+        install_tool(name = 'FusionCatcher (fusion genes finder in RNA-seq data)',
+                     url = FUSIONCATCHER_URL,
+                     path = FUSIONCATCHER_BIN,
+                     verbose = True,
+                     custom_install = ["#!/usr/bin/env bash",
+                                       "rm -rf ../bin",
+#                                      "rm -rf ../bin",
+#                                      "rm -rf ../etc",
+#                                      "rm -rf ../test",
+#                                      "rm -rf ../doc",
+#                                      "rm -rf ../tools",
+#                                      "rm -rf ../data",
+#                                      "rm -rf ../docker",
+#                                      "rm -rf ../VERSION",
+#                                      "rm -rf ../README",
+#                                      "rm -rf ../README.md",
+#                                      "rm -rf ../NEWS",
+#                                      "rm -rf ../LICENSE",
+#                                      "rm -rf ../DEPENDENCIES",
+#                                      "mkdir -p ../bin",
+#                                      "mkdir -p ../etc",
+#                                      "mkdir -p ../test",
+#                                      "mkdir -p ../doc",
+#                                      "mkdir -p ../tools",
+#                                      "mkdir -p ../data",
+#                                      "mkdir -p ../docker",
+#                                      "cp -f $(pwd)/etc/* ../etc/",
+#                                      "cp -f $(pwd)/bin/* ../bin/",
+#                                      "cp -f $(pwd)/test/* ../test/",
+#                                      "cp -f $(pwd)/doc/* ../doc/",
+#                                      "cp -f $(pwd)/docker/* ../docker/",
+                                       "cp -R -f $(pwd)/* ../",
+                                       "chmod +x ../bin/*.py",
+                                       "chmod +x ../bin/*.sh",
+                                       "chmod +r ../etc/configuration.cfg",
+                                       "chmod +x ../bin/fusioncatcher*",
+                                       "chmod +x ../bin/FC",
+                                       "chmod +x ../test/*.sh",
+                                       "chmod -R +r ../test/*",
+                                       "rm -rf $(pwd)",
+                                       "cd .."
 #                                   "deleteme=$(pwd)",
 #                                   "cd ..",
 #                                   'rm -rf "$deleteme"'
-                                   ]
-                )
+                                       ]
+                    )
 
 
     if os.getuid() == 0: # root
@@ -1811,33 +1835,30 @@ python-openpyxl
     ############################################################################
     # PYTHON SHEBANG
     ############################################################################
-    print "Checking the shebang of FusionCatcher Python scripts..."
-#    if which('python') != PYTHON_EXE or os.getuid() == 0: # root
-    r = accept(question = "  Shall the shebang of all Python scripts, belonging to FusionCatcher, be set/hardcoded to use this '%s'?" % (PYTHON_EXE,),
-               yes = True,
-               no = False,
-               exit = False,
-               force = options.force_yes)
-    if not r:
-        print "  * The shebang of all Python scripts, belonging to FusionCatcher, is '#!/usr/bin/env python'!"
+    if DEV_MODE:
+        print "\033[33;7m ** Dev mode: not touching shebang of FusionCatcher Python scripts\033[0m"
     else:
-        print "  * Updating the SHEBANG of Python scripts with '%s'" % (PYTHON_EXE,)
-        pies = [os.path.join(FUSIONCATCHER_BIN,f) for f in os.listdir(FUSIONCATCHER_BIN) if f.endswith('.py') and os.path.isfile(os.path.join(FUSIONCATCHER_BIN,f)) and not f.startswith('.')]
-        for f in pies:
-            d = file(f,'r').readlines()
-            if d:
-                d[0] = "#!%s\n" % (PYTHON_EXE,)
-            file(f,'w').writelines(d)
-        print "  * Done!"
-    #    else:
-    #        print "  * Ok!"
+        print "Checking the shebang of FusionCatcher Python scripts..."
+#       if which('python') != PYTHON_EXE or os.getuid() == 0: # root
+        r = accept(question = "  Shall the shebang of all Python scripts, belonging to FusionCatcher, be set/hardcoded to use this '%s'?" % (PYTHON_EXE,),
+                   yes = True,
+                   no = False,
+                   exit = False,
+                   force = options.force_yes)
+        if not r:
+            print "  * The shebang of all Python scripts, belonging to FusionCatcher, is '#!/usr/bin/env python'!"
+        else:
+            print "  * Updating the SHEBANG of Python scripts with '%s'" % (PYTHON_EXE,)
+            pies = [os.path.join(FUSIONCATCHER_BIN,f) for f in os.listdir(FUSIONCATCHER_BIN) if f.endswith('.py') and os.path.isfile(os.path.join(FUSIONCATCHER_BIN,f)) and not f.startswith('.')]
+            for f in pies:
+                d = file(f,'r').readlines()
+                if d:
+                    d[0] = "#!%s\n" % (PYTHON_EXE,)
+                file(f,'w').writelines(d)
+            print "  * Done!"
+        #    else:
+        #        print "  * Ok!"
 
-    ############################################################################
-    # FUSIONCATCHER CONFIGURATION
-    ############################################################################
-    print "Updating the configuration file of FusionCatcher..."
-    print "  * configuration file '%s'" % (FUSIONCATCHER_CONFIGURATION,)
-    
     def update_path(SOME_PATH,executable,subdir='src'):
         # update the SOME_PATH with subdir
         some_var = os.path.join(SOME_PATH,subdir)
@@ -1889,6 +1910,12 @@ python-openpyxl
 #        os.path.isfile(os.path.join(PARALLEL_PATH,'parallel'))
 #       ):
 #        parallel2 = PARALLEL_PATH
+
+    ############################################################################
+    # FUSIONCATCHER CONFIGURATION
+    ############################################################################
+    print "Updating the configuration file of FusionCatcher..."
+    print "  * configuration file '%s'" % (FUSIONCATCHER_CONFIGURATION,)
 
     config_file = FUSIONCATCHER_CONFIGURATION
     data = []
