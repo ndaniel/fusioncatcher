@@ -1971,6 +1971,7 @@ python-openpyxl
         print "In order to download the latest human data files needed by FusionCatcher, please run these (it will take several hours):"
         print ""
         txt = []
+        txt.append("set -e")
         txt.append("rm -rf %s" % (FUSIONCATCHER_CURRENT.replace(" ","\\ "),))
         txt.append("rm -f %s.tar.gz.*" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
         txt.append("rm -rf %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
