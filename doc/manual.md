@@ -187,6 +187,7 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * Ganly I. et al., **Integrated Genomic Analysis of Hürthle Cell Cancer Reveals Oncogenic Drivers, Recurrent Mitochondrial Mutations, and Unique Chromosomal Landscapes**, Cancer Cell, August 2018, https://doi.org/10.1016/j.ccell.2018.07.002
 * Wrzeszczynski K.O. et al., **Analytical Validation of Clinical Whole-Genome and Transcriptome Sequencing of Patient Derived Tumors Clinical Application of Whole-Genome Sequencing for Reporting Targetable Variants in Cancer**, The Journal of Molecular Diagnostics, Aug. 2018,  https://doi.org/10.1016/j.jmoldx.2018.06.007
 * Hultsch S. et  al., **Association of tamoxifen resistance and lipid reprogramming in breast cancer**, BMC Cancer, Aug. 2018, https://doi.org/10.1186/s12885-018-4757-z
+* Alexander T.B. et al., **The genetic basis and cell of origin of mixed phenotype acute leukaemia**, Nature, Sept. 2018, https://doi.org/10.1038/s41586-018-0436-0
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
