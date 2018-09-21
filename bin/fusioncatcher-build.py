@@ -1141,6 +1141,12 @@ if __name__ == '__main__':
     job.add('',outdir('tcga-cancer.txt'),kind='output',command_line='no')
     job.run()
 
+    job.add(_FC_+'get_tcga2.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('tcga2.txt'),kind='output',command_line='no')
+    job.run()
+
     job.add(_FC_+'generate_bodymap2.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')

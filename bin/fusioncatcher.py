@@ -611,6 +611,7 @@ if __name__ == "__main__":
             'non_cancer_tissues',
             'removed',
             'tcga',
+            'tcga2',
             'tcga-normal',
             'tcga-cancer'])
     parser.add_option("--filter-fusion","-b",
@@ -5718,9 +5719,16 @@ if __name__ == "__main__":
     job.add('--filter_gene_pairs',datadir('tcga-normal.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_75.txt'),kind='output')
     job.run()
-    # label fusion genes -- prefrontal cortex
+    # label fusion genes -- TCGA2
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_75.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','tcga2',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('tcga2.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_76.txt'),kind='output')
+    job.run()
+    # label fusion genes -- prefrontal cortex
+    job.add(_FC_+'label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_76.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','cortex',kind='parameter')
     job.add('--filter_gene_pairs',datadir('cortex.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_1000.txt'),kind='output')

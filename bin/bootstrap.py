@@ -42,10 +42,14 @@ candidate fusion genes!
 This file is running/executing/using BLAT.
 """
 
-
-
-import os
 import sys
+if ( sys.version_info>(3,0)):
+    print "ERROR: Python 3 or newer detected! Python 2.X is needed! FIX: run '/some/python/2.7/python bootstrap.py"
+#if ( sys.version_info>(3,0)):
+#    sys.stderr.write("ERROR: Python 3 or newer detected! bootstrap.py needs Python 2.6 or Python 2.7!\n")
+#    sys.stderr.write("  FIX: run '/some/python/2.7/python bootstrap.py'!\n")
+#    sys.exit(1)
+import os
 import optparse
 import shutil
 import subprocess
@@ -183,8 +187,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
     
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.00.zip'
-    FUSIONCATCHER_VERSION = "1.00"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.10.zip'
+    FUSIONCATCHER_VERSION = "1.10"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'

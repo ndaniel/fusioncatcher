@@ -100,7 +100,7 @@ if __name__ == '__main__':
     timeout = 1800
     socket.setdefaulttimeout(timeout)
 
-    #ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_22/gencode.v22.annotation.gtf.gz
+    #ftp://ftp.sanger.ac.uk/pub/databases/gencode/Gencode_human/release_22/gencode.v22.annotation.gtf.gz
 
 
 
