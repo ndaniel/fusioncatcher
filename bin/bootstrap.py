@@ -1048,11 +1048,11 @@ if __name__ == '__main__':
                       dest = "list_dependencies",
                       help = """It lists all the needed dependencies. No installation is done!""")
 
-    parser.add_option("-b","--build",
-                      action = "store_true",
-                      default = False,
-                      dest = "build",
-                      help = """It builds (and also some download is required) the build files for human organism, which are needed to run FusionCatcher. Default value is '%default'.""")
+#    parser.add_option("-b","--build",
+#                      action = "store_true",
+#                      default = False,
+#                      dest = "build",
+#                      help = """It builds (and also some download is required) the build files for human organism, which are needed to run FusionCatcher. Default value is '%default'.""")
 
     parser.add_option("-d","--download",
                       action = "store_true",
@@ -1947,7 +1947,7 @@ python-openpyxl
     print ""
     print HIGHLIGHT+"=== Installed successfully! ==="+ENDC
     print ""
-    if options.build:
+    if 0: #options.build:
         time.sleep(5)
         cmd([
              [["rm","-rf",os.path.join(FUSIONCATCHER_CURRENT)],False],
@@ -2088,7 +2088,7 @@ python-openpyxl
                 sys.exit(1)
             print "--> DONE!"
             forget = True
-        elif options.build:
+        elif 0: #options.build:
             print "---------------------------------------------------------------------------"
             print "Building, downloading, and installing the databases required by FusionCatcher"
             print "---------------------------------------------------------------------------"
