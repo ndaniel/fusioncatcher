@@ -188,6 +188,8 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * Wrzeszczynski K.O. et al., **Analytical Validation of Clinical Whole-Genome and Transcriptome Sequencing of Patient Derived Tumors Clinical Application of Whole-Genome Sequencing for Reporting Targetable Variants in Cancer**, The Journal of Molecular Diagnostics, Aug. 2018,  https://doi.org/10.1016/j.jmoldx.2018.06.007
 * Hultsch S. et  al., **Association of tamoxifen resistance and lipid reprogramming in breast cancer**, BMC Cancer, Aug. 2018, https://doi.org/10.1186/s12885-018-4757-z
 * Alexander T.B. et al., **The genetic basis and cell of origin of mixed phenotype acute leukaemia**, Nature, Sept. 2018, https://doi.org/10.1038/s41586-018-0436-0
+* Al-Ibraheemi A. et al., **Aberrant receptor tyrosine kinase signaling in lipofibromatosis: a clinicopathological and molecular genetic study of 20 cases**, Modern Pathology, Oct. 2018, https://doi.org/10.1038/s41379-018-0150-3
+
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
