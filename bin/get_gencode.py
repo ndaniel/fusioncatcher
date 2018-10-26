@@ -129,13 +129,19 @@ if __name__ == '__main__':
             list_files = [el.replace("release_M","").replace("release_","") for el in list_files if el.lower().startswith('release_')]
             if options.organism.lower() == 'homo_sapiens':
                 list_files = sorted([int(el) for el in list_files if el.isdigit() ]) # and el != '24' new "and el!='24'" because is something wrong with release_24
-            elif: options.organism.lower() == 'mus_musculus':
+                version = str(list_files[-1])
+                last = "release_"+version
+                filename = "gencode.v%s.annotation.gtf.gz" % (version,)
+            elif options.organism.lower() == 'mus_musculus':
                 list_files = sorted([int(el) for el in list_files if el.isdigit() ]) 
+                version = str(list_files[-1])
+                last = "release_M"+version
+                filename = "gencode.vM%s.annotation.gtf.gz" % (version,)
             else:
                 list_files = sorted(list_files)
-            version = str(list_files[-1])
-            last = "release_"+version
-            filename = "gencode.v%s.annotation.gtf.gz" % (version,)
+                version = str(list_files[-1])
+                last = "release_"+version
+                filename = "gencode.v%s.annotation.gtf.gz" % (version,)
             url = "%s%s" % (url,last)
             ftp.cwd(last)
             print "cd ",last
