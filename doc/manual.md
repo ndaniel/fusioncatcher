@@ -194,7 +194,9 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * Sekimizu M. et al., **Frequent mutations of genes encoding vacuolar H+‐ATPase components in granular cell tumors**, Genes Chromosomes & Cancer, Dec. 2018, https://doi.org/10.1002/gcc.22727
 * Troll C.J. et al., **Structural Variation Detection by Proximity Ligation from Formalin-Fixed, Paraffin-Embedded Tumor Tissue**, The journal of molecular diagnostic, Dec. 2018, https://doi.org/10.1016/j.jmoldx.2018.11.003
 * Xiao W. et al., **PHF6 and DNMT3A mutations are enriched in distinct subgroups of mixed phenotype acute leukemia with T-lineage differentiation**, Blood Advances, Dec. 2018, https://doi.org/10.1182/bloodadvances.2018023531
+* Diolaiti D. et al., **A recurrent novel MGA–NUTM1 fusion identifies a new subtype of high-grade spindle cell sarcoma**, Cold Spring Harbor Molecular Case Studies, Dec. 2018, https://doi.org/10.1101/mcs.a003194
 * Dupain C. et al., **Discovery of New Fusion Transcripts in a Cohort of Pediatric Solid Cancers at Relapse and Relevance for Personalized Medicine**, Molecular Therapy, Jan. 2019, https://doi.org/10.1016/j.ymthe.2018.10.022
+
 
 ---
 
