@@ -190,6 +190,11 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * Alexander T.B. et al., **The genetic basis and cell of origin of mixed phenotype acute leukaemia**, Nature, Sept. 2018, https://doi.org/10.1038/s41586-018-0436-0
 * Al-Ibraheemi A. et al., **Aberrant receptor tyrosine kinase signaling in lipofibromatosis: a clinicopathological and molecular genetic study of 20 cases**, Modern Pathology, Oct. 2018, https://doi.org/10.1038/s41379-018-0150-3
 * Engqvist H. et al., **Transcriptomic and genomic profiling of early-stage ovarian carcinomas associated with histotype and overall survival**, Oncotarget, Oct. 2018, https://doi.org/10.18632/oncotarget.26225
+* Haider Z. et al., **An integrated transcriptome analysis in T‐cell acute lymphoblastic leukemia links DNA methylation subgroups to dysregulated TAL1 and ANTP homeobox gene expression**, Cancer Medicine, Dec. 2018, https://doi.org/10.1002/cam4.1917
+* Sekimizu M. et al., **Frequent mutations of genes encoding vacuolar H+‐ATPase components in granular cell tumors**, Genes Chromosomes & Cancer, Dec. 2018, https://doi.org/10.1002/gcc.22727
+* Troll C.J. et al., **Structural Variation Detection by Proximity Ligation from Formalin-Fixed, Paraffin-Embedded Tumor Tissue**, The journal of molecular diagnostic, Dec. 2018, https://doi.org/10.1016/j.jmoldx.2018.11.003
+* Xiao W. et al., **PHF6 and DNMT3A mutations are enriched in distinct subgroups of mixed phenotype acute leukemia with T-lineage differentiation**, Blood Advances, Dec. 2018, https://doi.org/10.1182/bloodadvances.2018023531
+* Dupain C. et al., **Discovery of New Fusion Transcripts in a Cohort of Pediatric Solid Cancers at Relapse and Relevance for Personalized Medicine**, Molecular Therapy, Jan. 2019, https://doi.org/10.1016/j.ymthe.2018.10.022
 
 ---
 
