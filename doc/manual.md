@@ -199,6 +199,7 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * Gu Z. et al., **PAX5-driven subtypes of B-progenitor acute lymphoblastic leukemia**, Nature Genetics, Jan. 2019, https://dx.doi.org/10.1038/s41588-018-0315-5
 * Loarer F.L. et al., **Clinicopathologic Features of CIC-NUTM1 Sarcomas, a New Molecular Variant of the Family of CIC-Fused Sarcomas**, The American Journal of Surgical Pathology, Feb. 2019, https://dx.doi.org/10.1097/PAS.0000000000001187
 * Piarulli  G. et al., **Gene fusion involving the insulin‐like growth factor 1 receptor in an ALK‐negative inflammatory myofibroblastic tumour**, Histopathology, Feb. 2019, https://doi.org/10.1111/his.13839
+* Chen S. et al., **Widespread and Functional RNA Circularization in Localized Prostate Cancer**, Cell, Feb. 2019, https://doi.org/10.1016/j.cell.2019.01.025
 
 ---
 
