@@ -26,6 +26,15 @@ On Ubuntu Linux running this command before installing FusionCatcher using `boot
 ```
 sudo apt-get install wget gawk gcc g++ make cmake automake curl unzip zip bzip2 tar gzip pigz parallel build-essential libncurses5-dev libc6-dev zlib1g zlib1g-dev libtbb-dev libtbb2 python python-dev python-numpy python-biopython python-xlrd python-openpyxl default-jdk
 ```
+FusionCatcher can be installed also using `conda`, as follows:
+```
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda create -n fusioncatcher fusioncatcher
+source activate fusioncatcher
+download-human-db.sh
+```
 
 Description
 -----------
