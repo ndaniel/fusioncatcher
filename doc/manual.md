@@ -200,7 +200,8 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * Loarer F.L. et al., **Clinicopathologic Features of CIC-NUTM1 Sarcomas, a New Molecular Variant of the Family of CIC-Fused Sarcomas**, The American Journal of Surgical Pathology, Feb. 2019, https://dx.doi.org/10.1097/PAS.0000000000001187
 * Piarulli  G. et al., **Gene fusion involving the insulin‐like growth factor 1 receptor in an ALK‐negative inflammatory myofibroblastic tumour**, Histopathology, Feb. 2019, https://doi.org/10.1111/his.13839
 * Chen S. et al., **Widespread and Functional RNA Circularization in Localized Prostate Cancer**, Cell, Feb. 2019, https://doi.org/10.1016/j.cell.2019.01.025
-
+* McNeer N.A. et al., **Genetic mechanisms of primary chemotherapy resistance in pediatric acute myeloid leukemia**, Leukemia, Feb. 2019, https://doi.org/10.1038/s41375-019-0402-3
+* Fouchardiere A. et al., **B-Catenin nuclear expression discriminates deep penetrating nevi from other cutaneous melanocytic tumors**, Virchows Archiv, Feb. 2019, https://doi.org/10.1007/s00428-019-02533-9
 ---
 
 # 4 - INSTALLATION AND USAGE EXAMPLES
