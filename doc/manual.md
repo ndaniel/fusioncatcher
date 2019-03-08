@@ -1150,6 +1150,7 @@ Table 2 - Labels used to describe the found fusion genes (column *Fusion\_ descr
 | **mirna**               | one or both genes is a [miRNA](http://en.wikipedia.org/wiki/MicroRNA) |
 | **mt**                  | one or both genes are situated on [mitochondrion](http://en.wikipedia.org/wiki/Mitochondrion). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
 | **mX** (where X is a number) | count of pairs of reads supporting the fusion (**excluding** the mutimapping reads). |
+| **m0** | There are no pairs of non-multi-mapping reads supporting the fusion. Basically, there are supporting pairs of reads but all of them map also in some other places on genome (that is their mappings on genome are not unique). |
 | **non\_cancer\_tissues**   | fusion gene which has been previously reported/found in non-cancer tissues and cell lines in [Babiceanu et al, Recurrent chimeric fusion RNAs in non-cancer tissues and cells, Nucl. Acids Res. 2016](http://nar.oxfordjournals.org/content/early/2016/02/01/nar.gkw032.abstract). These are considered as non-somatic mutation and therefore they may be skipped and not reported. |
 | **non\_tumor\_cells**   | fusion gene which has been previously reported/found in non-tumor cell lines, like for example HEK293. These are considered as non-somatic mutation and therefore may be skipped and not reported. |
 | **no\_protein** | one or both genes have no known protein product |
