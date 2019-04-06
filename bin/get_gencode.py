@@ -200,3 +200,4 @@ if __name__ == '__main__':
         txt = "%s\n%s\n%s\n%s\n%s\n" % ('gene_symbol','end','start','strand','chromosome')
         file(os.path.join(options.output_directory,'gencode_genes_header.txt'),'w').write(txt)
     #
+

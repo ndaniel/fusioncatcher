@@ -561,12 +561,15 @@ if __name__ == "__main__":
             'chimerdb3pub',
             'chimerdb3seq',
             'cacg',
+            'cgp',
             'duplicates',
             'bodymap2',
             'hpa',
             "1000genomes",
             'gtex',
             'metazoa',
+            'known_rt_circ_rna',
+            'rt_circ_rna',
             'similar_reads',
             'similar_symbols',
             'short_distance',
@@ -577,6 +580,7 @@ if __name__ == "__main__":
             'mt',
             'lincrna',
             'mirna',
+            'mitelman',
             'pseudogene',
             'snorna',
             'snrna',
@@ -692,7 +696,7 @@ if __name__ == "__main__":
                       action = "store",
                       type = "float",
                       dest = "filter_str",
-                      default = 2.1,
+                      default = 0, #1.4, # 2.1
                       help = optparse.SUPPRESS_HELP)
 #                      help = "If specified to 0 then it skips filtering out the reads "+
 #                             "which contain STR (short tandem repeats). "+
@@ -1200,6 +1204,16 @@ if __name__ == "__main__":
 #                      help = "Some very small wiggle room is allowed in case of rescuing the reads alignments. "+
 #                             "Default is '%default'.")
 
+
+
+    parser.add_option("--limitSjdbInsertNsj",
+                      action = "store",
+                      type = "int",
+                      dest = "limitSjdbInsertNsj",
+                      default = 2000000, 
+                      help = "This option is passed diretly to STAR aligner "+
+                             "For more info see STAR aligner regarding this option. "
+                             "Default is '%default'.")
 
 
     parser.add_option("--ig-gap-size",
@@ -2236,6 +2250,19 @@ if __name__ == "__main__":
         "<https://sourceforge.net/projects/bbmap>) is installed and it "+
         "is in the corresponding PATH!"))
 
+    # check version
+    os.system(_BP_+"bbmap.sh --version 2>&1 |head -2 |tail -1 > '%s'" % (outdir('bbmap_version.txt'),))
+    last_line = file(outdir('bbmap_version.txt'),'r').readline().lower().rstrip("\r\n")
+    correct_version = ('bbmap version 38.44',)
+    if last_line not in correct_version:
+        job.close()
+        os.system("which bbmap.sh > '%s'" % (outdir('bbmap_path.txt'),))
+        bbmap_path = file(outdir('bbmap_path.txt'),'r').readline().rstrip("\r\n")
+        print >>sys.stderr,"\n\n\nERROR: Wrong version of BBMAP found ("+bbmap_path+")! Found '"+last_line+"'. It should be '"+', or'.join(correct_version)+"'. One may specify the path to the correct version in 'fusioncatcher/etc/configuration.cfg'.\n"
+        sys.exit(1)
+    os.remove(outdir('bbmap_version.txt'))
+
+
     job.add('printf',kind='program')
     job.add('"\nPIGZ:\n------\n"',kind='parameter')
     job.add('>>',info_file,kind='output')
@@ -2428,9 +2455,10 @@ if __name__ == "__main__":
             "set up correctly)!\n If there is no wish to use STAR aligner then please "+
             "(re)run FusionCatcher using command line option '--skip-star'."))
 
-        os.system("STAR --version > '%s'" % (outdir('star_version.txt'),))
+        os.system(_SR_+"STAR --version > '%s'" % (outdir('star_version.txt'),))
         last_line = file(outdir('star_version.txt'),'r').readline().lower().rstrip("\r\n")
-        correct_version = 'star_2.5.4b'
+        correct_version = '2.7.0f'
+        #correct_version = 'star_2.5.4b'
         #correct_version = 'star_2.5.2b'
         #correct_version = 'star_2.5.2a'
         #correct_version = 'star_2.5.1b'
@@ -3407,6 +3435,7 @@ if __name__ == "__main__":
         if use_seed:
             # map reads on transcriptome for fast filtering
             job.add(_BE_+'bowtie',kind='program')
+            job.add('--seed','123456',kind='parameter')
             job.add('-t',kind='parameter')
             job.add('--seedmms','1',kind='parameter') # options.mismatches
             job.add('--seedlen',options.trim_3end_keep,kind='parameter')
@@ -3434,6 +3463,7 @@ if __name__ == "__main__":
             # this was the original one
             # map reads on transcriptome for fast filtering
             job.add(_BE_+'bowtie',kind='program')
+            job.add('--seed','123456',kind='parameter')
             job.add('-t',kind='parameter')
             job.add('-v','1',kind='parameter') # options.mismatches
     #        job.add('-X','800',kind='parameter')
@@ -4115,6 +4145,7 @@ if __name__ == "__main__":
 
     # map using the filter index (not aligned, unique alignment, multiple alignments)
     job.add(_BE_+'bowtie',kind='program')
+    job.add('--seed','123456',kind='parameter')
     job.add('-t',kind='parameter')
     #job.add('-q',kind='parameter')
     #job.add('-a',kind='parameter')
@@ -4337,6 +4368,7 @@ if __name__ == "__main__":
         ##############################################################################
         # map using the genome index (not aligned, unique alignment, multiple alignments); results in MAP BOWTIE format
         job.add(_BE_+'bowtie',kind='program')
+        job.add('--seed','123456',kind='parameter')
         job.add('-t',kind='parameter')
         #job.add('-q',kind='parameter')
         #job.add('-a',kind='parameter')
@@ -4482,6 +4514,7 @@ if __name__ == "__main__":
         else:
             # map using the transcript index (not mapped, unique alignment, multiple alignments)
             job.add(_BE_+'bowtie',kind='program')
+            job.add('--seed','123456',kind='parameter')
             job.add('-t',kind='parameter')
             #job.add('-q',kind='parameter')
             #job.add('-a',kind='parameter')
@@ -4602,6 +4635,7 @@ if __name__ == "__main__":
 
     # map using the transcript index (not mapped, unique alignment, multiple alignments)
     job.add(_BE_+'bowtie',kind='program')
+    job.add('--seed','123456',kind='parameter')
     job.add('-t',kind='parameter')
     #job.add('-q',kind='parameter')
     #job.add('-a',kind='parameter')
@@ -4790,6 +4824,7 @@ if __name__ == "__main__":
         # map using the transcript index (not mapped, unique alignment, multiple alignments)
         classic_1 = True
         job.add(_BE_+'bowtie',kind='program')
+        job.add('--seed','123456',kind='parameter')
         job.add('-t',kind='parameter')
         #job.add('-q',kind='parameter')
         #job.add('-a',kind='parameter')
@@ -4936,6 +4971,7 @@ if __name__ == "__main__":
         if job.iff(not empty(outdir('reads-filtered_multiple-mappings-genome.fq')),id="#reads-filtered_multiple-mappings-genome.fq#"):
             classic_2 = True
             job.add(_BE_+'bowtie',kind='program')
+            job.add('--seed','123456',kind='parameter')
             job.add('-p',options.processes,kind='parameter',checksum='no')
             job.add('-t',kind='parameter')
             #job.add('-q',kind='parameter')
@@ -5731,6 +5767,20 @@ if __name__ == "__main__":
     job.add('--input',outdir('candidate_fusion-genes_76.txt'),kind='input',temp_path=temp_flag)
     job.add('--label','cortex',kind='parameter')
     job.add('--filter_gene_pairs',datadir('cortex.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_77.txt'),kind='output')
+    job.run()
+    # label rt-circ RNAs
+    job.add(_FC_+'label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_77.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','known_rt_circ_rna',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('rtcircrnas.txt'),kind='input')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_78.txt'),kind='output')
+    job.run()
+    # label Mitelman
+    job.add(_FC_+'label_fusion_genes.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_78.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','mitelman',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('mitelman.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_1000.txt'),kind='output')
     job.run()
     #
@@ -5933,6 +5983,7 @@ if __name__ == "__main__":
 
             # map on transcriptome again
             job.add(_BE_+'bowtie',kind='program')
+            job.add('--seed','123456',kind='parameter')
             job.add('-t',kind='parameter')
             #job.add('-q',kind='parameter')
             #job.add('-a',kind='parameter')
@@ -6008,6 +6059,7 @@ if __name__ == "__main__":
 
                 # map on genome again
                 job.add(_BE_+'bowtie',kind='program')
+                job.add('--seed','123456',kind='parameter')
                 job.add('-t',kind='parameter')
                 #job.add('-q',kind='parameter')
                 #job.add('-a',kind='parameter')
@@ -6083,7 +6135,7 @@ if __name__ == "__main__":
         job.add('>',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end-f3.fq'),kind='output')
         job.run()
 
-        if not options.filter_str:
+        if options.filter_str:
             # remove STR reads
             job.add(_FC_+'remove_str.py',kind='program')
             job.add('--processes',options.processes,kind='parameter',checksum='no')
@@ -6122,6 +6174,7 @@ if __name__ == "__main__":
                 job.run()
 
                 job.add(_BE_+'bowtie',kind='program')
+                job.add('--seed','123456',kind='parameter')
                 if bowtie121:
                     job.add('--no-unal',kind='parameter')
                 job.add('-t',kind='parameter')
@@ -6182,6 +6235,7 @@ if __name__ == "__main__":
             job.run()
 
             job.add(_BE_+'bowtie',kind='program')
+            job.add('--seed','123456',kind='parameter')
             job.add('-t',kind='parameter')
             #job.add('-q',kind='parameter')
             #job.add('-a',kind='parameter')
@@ -6288,6 +6342,7 @@ if __name__ == "__main__":
 
         # filter -- map on genome again the trimmed reads with 11 bp from 3' end
         job.add(_BE_+'bowtie',kind='program')
+        job.add('--seed','123456',kind='parameter')
         job.add('-t',kind='parameter')
         #job.add('-q',kind='parameter')
 #        job.add('-a',kind='parameter')
@@ -6810,6 +6865,7 @@ if __name__ == "__main__":
                 job.run()
                 # map using the exon-exon fusion genes index (all possible mappings)
                 job.add(_BE_+'bowtie',kind='program')
+                job.add('--seed','123456',kind='parameter')
                 job.add('-t',kind='parameter')
                 #job.add('-q',kind='parameter')
                 #job.add('-a',kind='parameter')
@@ -6891,6 +6947,7 @@ if __name__ == "__main__":
             job.run()
             # map using the exon-exon fusion genes index (all possible mappings)
             job.add(_BE_+'bowtie',kind='program')
+            job.add('--seed','123456',kind='parameter')
             job.add('-t',kind='parameter')
             #job.add('-q',kind='parameter')
             #job.add('-a',kind='parameter')
@@ -7118,6 +7175,7 @@ if __name__ == "__main__":
                     job.run()
 
                 job.add(_BE_+'bowtie',kind='program')
+                job.add('--seed','123456',kind='parameter')
                 job.add('-t',kind='parameter')
                 job.add('-k','1000',kind='parameter')
                 job.add('-v',options.mismatches,kind='parameter')
@@ -7184,6 +7242,7 @@ if __name__ == "__main__":
                 job.run()
 
             job.add(_BE_+'bowtie',kind='program')
+            job.add('--seed','123456',kind='parameter')
             job.add('-t',kind='parameter')
             job.add('-k','1000',kind='parameter')
             job.add('-v',options.mismatches,kind='parameter')
@@ -7906,6 +7965,7 @@ if __name__ == "__main__":
                         job.run()
 
                         job.add(_BE_+'bowtie',kind='program')
+                        job.add('--seed','123456',kind='parameter')
                         job.add('-t',kind='parameter')
                         #job.add('-q',kind='parameter')
                         job.add('-v',options.mismatches,kind='parameter') #options.mismatches
@@ -7973,6 +8033,7 @@ if __name__ == "__main__":
                     job.run()
 
                     job.add(_BE_+'bowtie',kind='program')
+                    job.add('--seed','123456',kind='parameter')
                     job.add('-t',kind='parameter')
                     #job.add('-q',kind='parameter')
                     job.add('-v',options.mismatches,kind='parameter') #options.mismatches
@@ -8073,7 +8134,7 @@ if __name__ == "__main__":
                          outdir('reads_gene-gene.fq'),
                          temp_path = temp_flag)
 
-            if not options.filter_str:
+            if options.filter_str:
                 # remove STR reads
                 job.add(_FC_+'remove_str.py',kind='program')
                 job.add('--processes',options.processes,kind='parameter',checksum='no')
@@ -8443,6 +8504,7 @@ if __name__ == "__main__":
 
                         # align the unmapped reads using STAR on candidate fusion gene-gene
                         job.add(_SR_+'STAR',kind='program')
+                        job.add('--runRNGseed','54321',kind='parameter')
                         #job.add('--twopass1readsN',outdir('log_counts_reads_gene-gene_no-str.txt'),kind='parameter',from_file='yes')
                         job.add('--twopass1readsN','-1',kind='parameter')
                         job.add('--twopassMode','Basic',kind='parameter')
@@ -8480,7 +8542,7 @@ if __name__ == "__main__":
                         job.add('--limitOutSAMoneReadBytes','100000000',kind='parameter')
                         job.add('--scoreGapNoncan','-4',kind='parameter') # should it be -2?
                         job.add('--scoreGapATAC','-4',kind='parameter')
-                        job.add('--limitSjdbInsertNsj','2000000',kind='parameter')
+                        job.add('--limitSjdbInsertNsj',options.limitSjdbInsertNsj,kind='parameter')
                         job.add('--readFilesIn',outdir('reads_gene-gene_no-str_fixed.fq'),kind='input')
                         job.add('--outFileNamePrefix',gdr,kind='output')
                         job.add('--outFileNamePrefix',os.path.join(gdr,'Aligned.out.sam'),kind='output',command_line = 'no')
@@ -8689,6 +8751,7 @@ if __name__ == "__main__":
                                 job.add('-o','-',kind='parameter')
                                 job.add('|',kind='parameter')
                                 job.add(_BE_+'bowtie',kind='parameter')
+                                job.add('--seed','123456',kind='parameter')
                                 job.add('-t',kind='parameter')
                                 job.add('-k','1',kind='parameter')
                                 job.add('-v',ms,kind='parameter')
@@ -8787,6 +8850,7 @@ if __name__ == "__main__":
                                 # map using bowtie
                                 ms = min(options.mismatches,2)
                                 job.add(_BE_+'bowtie',kind='program')
+                                job.add('--seed','123456',kind='parameter')
                                 job.add('-t',kind='parameter')
                                 job.add('-k','1',kind='parameter')
                                 job.add('-v',ms,kind='parameter')
@@ -8862,6 +8926,7 @@ if __name__ == "__main__":
 
                                 # map using bowtie
                                 job.add(_BE_+'bowtie',kind='program')
+                                job.add('--seed','123456',kind='parameter')
                                 job.add('-t',kind='parameter')
                                 #job.add('-q',kind='parameter')
                                 #job.add('-a',kind='parameter')
@@ -9023,6 +9088,7 @@ if __name__ == "__main__":
 
                                         # map using bowtie
                                         job.add(_BE_+'bowtie',kind='program')
+                                        job.add('--seed','123456',kind='parameter')
                                         if bowtie121:
                                             job.add('--no-unal',kind='parameter')
                                         job.add('-t',kind='parameter')
@@ -9111,6 +9177,7 @@ if __name__ == "__main__":
                                     
                                         # align the unmapped reads using STAR on candidate fusion gene-gene
                                         job.add(_SR_+'STAR',kind='program')
+                                        job.add('--runRNGseed','54321',kind='parameter')
                                         #job.add('--twopass1readsN','-1',kind='parameter')
                                         #job.add('--twopassMode','Basic',kind='parameter')
                                         job.add('--genomeSAindexNbases',genomesaindexnbases2,kind='parameter')
@@ -9244,6 +9311,7 @@ if __name__ == "__main__":
 #                    if os.path.exists(outdir('gene-gene_longest.txt')):
 #                        t = file(outdir('gene-gene_longest.txt'),'r').readline().strip()
                     job.add(_SR_+'STAR',kind='program')
+                    job.add('--runRNGseed','54321',kind='parameter')
                     #job.add('--twopass1readsN',outdir('log_counts_reads_gene-gene_no-str.txt'),kind='parameter',from_file='yes')
                     job.add('--twopass1readsN','-1',kind='parameter')
                     job.add('--twopassMode','Basic',kind='parameter')
@@ -9288,7 +9356,7 @@ if __name__ == "__main__":
 #                    job.add('--chimScoreSeparation','10',kind='parameter')# default is: 0
 #                    job.add('--chimSegmentMin',outdir('gene-gene_longest.txt'),kind='parameter',from_file = 'yes')
 #                    job.add('--chimJunctionOverhangMin',outdir('gene-gene_longest.txt'),kind='parameter',from_file = 'yes')
-                    job.add('--limitSjdbInsertNsj','2000000',kind='parameter')
+                    job.add('--limitSjdbInsertNsj',options.limitSjdbInsertNsj,kind='parameter')
                     job.add('--readFilesIn',outdir('reads_gene-gene_no-str_fixed.fq'),kind='input',temp_path=temp_flag)
                     job.add('--outFileNamePrefix',outdir('gene-gene-star-results/'),kind='output')
                     job.run()
@@ -9531,6 +9599,7 @@ if __name__ == "__main__":
                             job.add('-o','-',kind='parameter')
                             job.add('|',kind='parameter')
                             job.add(_BE_+'bowtie',kind='parameter')
+                            job.add('--seed','123456',kind='parameter')
                             job.add('-t',kind='parameter')
                             job.add('-k','1',kind='parameter')
 #                            job.add('--trim5','10',kind='parameter')
@@ -9628,6 +9697,7 @@ if __name__ == "__main__":
                             # map using bowtie
                             ms = min(options.mismatches,2)
                             job.add(_BE_+'bowtie',kind='program')
+                            job.add('--seed','123456',kind='parameter')
                             job.add('-t',kind='parameter')
                             job.add('-k','1',kind='parameter')
                             job.add('-v',ms,kind='parameter')
@@ -9701,6 +9771,7 @@ if __name__ == "__main__":
 
                             # map using bowtie
                             job.add(_BE_+'bowtie',kind='program')
+                            job.add('--seed','123456',kind='parameter')
                             if bowtie121:
                                 job.add('--no-unal',kind='parameter')
                             job.add('-t',kind='parameter')
@@ -9862,6 +9933,7 @@ if __name__ == "__main__":
                                     
                                     # map using bowtie
                                     job.add(_BE_+'bowtie',kind='program')
+                                    job.add('--seed','123456',kind='parameter')
                                     if bowtie121:
                                         job.add('--no-unal',kind='parameter')
                                     job.add('-t',kind='parameter')
@@ -9951,6 +10023,7 @@ if __name__ == "__main__":
                                     # idea: --alignEndsType Extend5pOfRead1 --outFilterMismatchNmax 0 --seedSearchStartLmax 999
                                     mirna = False
                                     job.add(_SR_+'STAR',kind='program')
+                                    job.add('--runRNGseed','54321',kind='parameter')
                                     #job.add('--twopass1readsN','-1',kind='parameter')
                                     #job.add('--twopassMode','Basic',kind='parameter')
                                     job.add('--genomeSAindexNbases',genomesaindexnbases2,kind='parameter')
@@ -10458,6 +10531,7 @@ if __name__ == "__main__":
                             job.add('-o','-',kind='parameter')
                             job.add('|',kind='parameter')
                             job.add(_BE_+'bowtie',kind='parameter')
+                            job.add('--seed','123456',kind='parameter')
                             job.add('-t',kind='parameter')
                             job.add('-k','1',kind='parameter')
                             job.add('-v',ms,kind='parameter')
@@ -10537,6 +10611,7 @@ if __name__ == "__main__":
                             # map using bowtie
                             ms = min(options.mismatches,2)
                             job.add(_BE_+'bowtie',kind='program')
+                            job.add('--seed','123456',kind='parameter')
                             job.add('-t',kind='parameter')
                             job.add('-k','1',kind='parameter')
                             job.add('-v',ms,kind='parameter')
@@ -10614,6 +10689,7 @@ if __name__ == "__main__":
 
                             # map using bowtie
                             job.add(_BE_+'bowtie',kind='program')
+                            job.add('--seed','123456',kind='parameter')
                             if bowtie121:
                                 job.add('--no-unal',kind='parameter')
                             job.add('-t',kind='parameter')
@@ -10926,6 +11002,7 @@ if __name__ == "__main__":
                         job.add('-o','-',kind='parameter')
                         job.add('|',kind='parameter')
                         job.add(_BE_+'bowtie',kind='parameter')
+                        job.add('--seed','123456',kind='parameter')
                         job.add('-t',kind='parameter')
                         job.add('-k','1',kind='parameter')
                         job.add('-v',ms,kind='parameter')
@@ -11005,6 +11082,7 @@ if __name__ == "__main__":
                         # map using bowtie
                         ms = min(options.mismatches,2)
                         job.add(_BE_+'bowtie',kind='program')
+                        job.add('--seed','123456',kind='parameter')
                         job.add('-t',kind='parameter')
                         job.add('-k','1',kind='parameter')
                         job.add('-v',ms,kind='parameter')
@@ -11077,6 +11155,7 @@ if __name__ == "__main__":
 
                         # map using bowtie
                         job.add(_BE_+'bowtie',kind='program')
+                        job.add('--seed','123456',kind='parameter')
                         if bowtie121:
                             job.add('--no-unal',kind='parameter')
                         job.add('-t',kind='parameter')
@@ -11587,6 +11666,7 @@ if __name__ == "__main__":
 
                         # align the unmapped reads using STAR on candidate fusion gene-gene
                         job.add(_SR_+'STAR',kind='program')
+                        job.add('--runRNGseed','54321',kind='parameter')
                         job.add('--twopass1readsN','-1',kind='parameter')
                         job.add('--twopassMode','Basic',kind='parameter')
                         job.add('--genomeSAindexNbases',f_genomesaindexnbases,kind='parameter')
@@ -11815,12 +11895,26 @@ if __name__ == "__main__":
     job.add('--input',outdir('final-list_candidate-fusion-genes-t2.txt'),kind='input',temp_path=temp_flag)
     job.add('--output',outdir('final-list_candidate-fusion-genes-t3.txt'),kind='output')
     job.run()
+    
+    # label exon-exon borders
+    job.add(_FC_+'label_rtcircrna.py',kind='program')
+    job.add('--input',outdir('final-list_candidate-fusion-genes-t3.txt'),kind='input',temp_path=temp_flag)
+    job.add('--output',outdir('final-list_candidate-fusion-genes-t4.txt'),kind='output')
+    job.run()
+
+    # inspect fusion sequences
+    job.add(_FC_+'inspect_fusion_sequences.py',kind='program')
+    job.add('--input',outdir('final-list_candidate-fusion-genes-t4.txt'),kind='input',temp_path=temp_flag)
+    job.add('--output',outdir('final-list_candidate-fusion-genes-t5.txt'),kind='output')
+    job.add('--threshold','2.0',kind='parameter')
+    job.add('--threshold2','1.5',kind='parameter')
+    job.run()
 
     # predict effect of fusion
     job.add(_FC_+'predict_frame.py',kind='program')
     job.add('--gtf',datadir('organism.gtf'),kind='input')
     job.add('--transcripts',datadir('transcripts.fa'),kind='input')
-    job.add('--input',outdir('final-list_candidate-fusion-genes-t3.txt'),kind='input',temp_path=temp_flag)
+    job.add('--input',outdir('final-list_candidate-fusion-genes-t5.txt'),kind='input',temp_path=temp_flag)
     job.add('--output',outdir('final-list_candidate-fusion-genes_sequences.txt'),kind='output')
     #fusion_transcripts_sequences:
     if options.compress_transcripts:
@@ -11907,6 +12001,7 @@ if __name__ == "__main__":
     #
     if hasattr(job,'gg2seq'):
         job.clean(job.gg2seq,temp_path=temp_flag)
+    if hasattr(job,'gg2nuc'):
         job.clean(job.gg2nuc,temp_path=temp_flag)
     
     to_delete_list_files = [

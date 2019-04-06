@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-It takes as input a list of chromosomal coordinates of fusion genes and it labels them if they use exon-exon borders for the fusion junction.
+It labels the fusions with label such as reciprocal for reciprocal fusion genes and rt_circ_rna for the reciprocal fusion genes which are also a readthrough.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
@@ -45,29 +45,11 @@ import gzip
 
 
 
-#
-#
-#
-def add_line(aline,adict):
-    chrom = aline[0]
-    pstart = int(aline[3])
-    pend = int(aline[4])
-    strand = aline[6]
-    if pstart > pend:
-        (pstart,pend) = (pend,pstart)
-    ids = [l.replace('"','').replace("'","").strip().split(' ') for l in aline[8].split(";") if l]
-    ids = dict([l for l in ids if len(l) == 2])
-    g_id = ids["gene_id"]
-    if g_id not in adict:
-        adict[g_id] = set()
-    adict[g_id].add((chrom,strand,pstart,pend))
-
 
 #
 #
 #
-def exonexon(gtf_file,
-             input_file,
+def rtcircrna(input_file,
              output_file,
              verbose = True):
 
@@ -77,82 +59,24 @@ def exonexon(gtf_file,
     # read the list of fusion genes and their chromosomal positions
     data = [line.rstrip('\r\n').split('\t') for line in file(input_file,'r').readlines() if line.rstrip('')]
     header = data.pop(0)
-    fusion1 = [tuple([line[10]] + line[8].split(':')) for line in data]
-    fusion2 = [tuple([line[11]] + line[9].split(':')) for line in data]
-    myg = set([line[10] for line in data]+[line[11] for line in data])
-
-    if myg:
-
-        # read and pre-process the GTF file
-        if verbose:
-            print >>sys.stderr,"Parsing the GTF file..."
-        g = []
-        if gtf_file == '-':
-            g = [line.rstrip('\r\n').split("\t") for line in file(sys.stdin,"r").readlines() if (not line.startswith("#")) and line.rstrip()]
-        elif gtf_file.endswith('.gz'):
-            z = gzip.open(gtf_file,"r")
-            g = [line.rstrip('\r\n').split("\t") for line in z.readlines() if (not line.startswith("#")) and line.rstrip()]
-            z.close()
-        else:
-            g = [line.rstrip('\r\n').split("\t") for line in file(gtf_file,"r").readlines() if (not line.startswith("#")) and line.rstrip()]
-
-
-
-        # get all exons per gene as a dictionary
-        if verbose:
-            print >>sys.stderr,"Building the database of exons..."
-        exon = dict()
-        q = 0
-        for line in g:
-            if line[2] == 'gene':
-                q = q + 1
-            flag = False
-            x = line[8].partition(";")
-            if x[0] and x[0].startswith("gene_id "):
-                x = x[0][9:-1]
-            if x not in myg:
-                continue
-            if line[2] == 'exon':
-                add_line(line,exon)
-
+    if data:
+        g = [(line[0],line[1],True if line[2].find("readthrough")!=-1 else False) for line in data]
+        r = set([(e[0],e[1]) for e in g])
+        reciprocal = set([e for e in r if (e[1],e[0]) in r])
+        rtcircrna = [(e[0],e[1]) for e in g if ((e[0],e[1]) in reciprocal) and e[2]]
+        rtcircrna = set(rtcircrna+[(e[1],e[0]) for e in rtcircrna])
         
-        if verbose:
-            print >>sys.stderr,"Checking exon borders..."
-        for i in xrange(len(fusion1)):
-            f1 = fusion1[i]
-            f2 = fusion2[i]
-            
-            g1 = f1[0]
-            c1 = f1[1]
-            p1 = int(f1[2])
-            s1 = f1[3]
-            
-            g2 = f2[0]
-            c2 = f2[1]
-            p2 = int(f2[2])
-            s2 = f2[3]
-            
-            # check 5 prime partner
-            e = exon.get(g1,None)
-            ok5 = False
-            if e:
-                x = [1 for v in e if v[0] == c1 and v[1] == s1 and ((s1 == "+" and v[3] == p1) or (s1 == "-" and v[2] == p1))]
-                if x:
-                    ok5 = True
-            # check 3 prime partner
-            e = exon.get(g2,None)
-            ok3 = False
-            if e:
-                x = [1 for v in e if v[0] == c2 and v[1] == s2 and ((s2 == "+" and v[2] == p2) or (s2 == "-" and v[3] == p2))]
-                if x:
-                    ok3 = True
-
-            if ok5 and ok3:
-                comma = ',' if data[i][2] else ''
-                data[i][2] = data[i][2] + comma + 'exon-exon'
-        
-        data.insert(0,header)
-        file(output_file,'w').writelines(['\t'.join(line)+'\n' for line in data])
+        r = [header]
+        for e in data:
+            t = e
+            if (e[0],e[1]) in reciprocal:
+                x = ',reciprocal' if e[2] else 'reciprocal'
+                e[2] = e[2] + x
+            if (e[0],e[1]) in rtcircrna:
+                x = ',rt_circ_rna' if e[2] else 'rt_circ_rna'
+                e[2] = e[2] + x
+            r.append(t)
+        file(output_file,'w').writelines(['\t'.join(line)+'\n' for line in r])
     else:
         file(output_file,'w').write('\t'.join(header)+'\n')
 
@@ -173,7 +97,7 @@ def main():
     #command line parsing
     usage = "%prog [options]"
 
-    description = """It takes as input a list of chromosomal coordinates of fusion genes and it labels them if they use exon-exon borders for the fusion junction."""
+    description = """It labels the fusions with label such as reciprocal for reciprocal fusion genes and rt_circ_rna for the reciprocal fusion genes which are also a readthrough."""
 
     epilog = """
 
@@ -195,11 +119,6 @@ Copyright (c) 2009-2018 Daniel Nicorici
 
 
 
-    parser.add_option("-g","--gtf",
-                      action = "store",
-                      type = "string",
-                      dest = "gtf_filename",
-                      help = """The input GTF file containing the genome annotation.""")
 
     parser.add_option("-i","--input",
                       action = "store",
@@ -231,7 +150,7 @@ Copyright (c) 2009-2018 Daniel Nicorici
     ( options , args ) = parser.parse_args()
 
     # validate options
-    if not (options.gtf_filename and
+    if not (
             options.input_filename and
             options.output_filename
             ):
@@ -240,7 +159,7 @@ Copyright (c) 2009-2018 Daniel Nicorici
 
 
     #
-    exonexon(options.gtf_filename,
+    rtcircrna(
              options.input_filename,
              options.output_filename,
              options.verbose)

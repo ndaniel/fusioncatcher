@@ -26,6 +26,7 @@ On Ubuntu Linux running this command before installing FusionCatcher using `boot
 ```
 sudo apt-get install wget gawk gcc g++ make cmake automake curl unzip zip bzip2 tar gzip pigz parallel build-essential libncurses5-dev libc6-dev zlib1g zlib1g-dev libtbb-dev libtbb2 python python-dev python-numpy python-biopython python-xlrd python-openpyxl default-jdk
 ```
+
 FusionCatcher can be installed also using `conda`, as follows:
 ```
 conda config --add channels defaults
@@ -94,4 +95,5 @@ D. Nicorici, M. Satalan, H. Edgren, S. Kangaspeska, A. Murumagi, O. Kallioniemi,
 S. Virtanen, O. Kilkku, FusionCatcher – a tool for finding somatic fusion genes
 in paired-end RNA-sequencing data, bioRxiv, Nov. 2014, 
 [DOI:10.1101/011650](http://dx.doi.org/10.1101/011650)
+
 

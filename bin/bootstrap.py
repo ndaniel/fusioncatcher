@@ -135,9 +135,9 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     global LZOP_PATH
     global LZOP_URL
     global LZOP_VERSION
-    global COREUTILS_PATH
-    global COREUTILS_URL
-    global COREUTILS_VERSION
+#    global COREUTILS_PATH
+#    global COREUTILS_URL
+#    global COREUTILS_VERSION
     global PIGZ_PATH
     global PIGZ_URL
     global PIGZ_VERSION
@@ -197,19 +197,19 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     FUSIONCATCHER_CONFIGURATION = expand(FUSIONCATCHER_BIN,'..','etc','configuration.cfg')
     # numpy
     NUMPY_PATH = os.path.join(FUSIONCATCHER_TOOLS,'numpy')
-    NUMPY_URL = 'http://github.com/numpy/numpy/releases/download/v1.13.1/numpy-1.13.1.tar.gz'
+    NUMPY_URL = 'https://github.com/numpy/numpy/releases/download/v1.16.2/numpy-1.16.2.tar.gz'
     # biopython
     BIOPYTHON_PATH = os.path.join(FUSIONCATCHER_TOOLS,'biopython')
-    BIOPYTHON_URL = 'https://pypi.python.org/packages/72/04/73a4bb22fed40eed26c7e1a673ab51778c577afc3d5dd6f1256424a62c35/biopython-1.70.tar.gz'
+    BIOPYTHON_URL = 'http://biopython.org/DIST/biopython-1.73.tar.gz'
     # xlrd python
     XLRD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'xlrd')
-    XLRD_URL = 'https://pypi.python.org/packages/42/85/25caf967c2d496067489e0bb32df069a8361e1fd96a7e9f35408e56b3aab/xlrd-1.0.0.tar.gz'
+    XLRD_URL = 'https://files.pythonhosted.org/packages/aa/05/ec9d4fcbbb74bbf4da9f622b3b61aec541e4eccf31d3c60c5422ec027ce2/xlrd-1.2.0.tar.gz'
     # openpyxl python
     OPENPYXL_PATH = os.path.join(FUSIONCATCHER_TOOLS,'openpyxl')
-    OPENPYXL_URL = 'https://pypi.python.org/packages/5a/8b/798a853ef87d505392227b91d598fd0bdfc8552e64020092e262b1ea7d5f/openpyxl-2.5.0a2.tar.gz'
+    OPENPYXL_URL = 'https://files.pythonhosted.org/packages/5f/f8/a5d3a4ab669f99154f87ab531192dd84ac79aae62efab662bd2d82a72194/openpyxl-2.6.1.tar.gz'
     # setuptools python
     SETUPTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'setuptools')
-    SETUPTOOLS_URL = 'https://pypi.python.org/packages/07/a0/11d3d76df54b9701c0f7bf23ea9b00c61c5e14eb7962bb29aed866a5844e/setuptools-36.2.7.zip'
+    SETUPTOOLS_URL = 'https://files.pythonhosted.org/packages/c2/f7/c7b501b783e5a74cf1768bc174ee4fb0a8a6ee5af6afa92274ff964703e0/setuptools-40.8.0.zip'
     # BOWTIE
     BOWTIE_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie')
 #    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.0/bowtie-1.2-linux-x86_64.zip'
@@ -230,23 +230,23 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BLAT_VERSION = ('35x1',)
     # STAR
     STAR_PATH = os.path.join(FUSIONCATCHER_TOOLS,'star')
-    STAR_URL = 'http://github.com/alexdobin/STAR/archive/2.5.2b.tar.gz'
-    STAR_VERSION = ('STAR_2.5.2b',)
+    STAR_URL = 'https://github.com/alexdobin/STAR/archive/2.7.0f.tar.gz'
+    STAR_VERSION = ('2.7.0f',)
    # BWA
     BWA_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bwa')
     BWA_URL = 'http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2'
     BWA_VERSION = ('0.7.10-r789',)
    # BBMAP
     BBMAP_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bbmap')
-    BBMAP_URL = 'https://sourceforge.net/projects/bbmap/files/BBMap_37.68.tar.gz'
-    BBMAP_VERSION = ('37','37.68')
+    BBMAP_URL = 'https://sourceforge.net/projects/bbmap/files/BBMap_38.44.tar.gz'
+    BBMAP_VERSION = ('38.44',)
     # faToTwoBit
     FATOTWOBIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'fatotwobit')
     FATOTWOBIT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit'
     # SRATOOLKIT
     SRATOOLKIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'sratoolkit')
-    SRATOOLKIT_URL = 'http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.8.2-1/sratoolkit.2.8.2-1-centos_linux64.tar.gz'
-    SRATOOLKIT_VERSION = ('2.3.5-2','2.4.2','2.5.1','2.6.2','2.8.0','2.8.1-3','2.8.2-1')
+    SRATOOLKIT_URL = 'https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.6/sratoolkit.2.9.6-centos_linux64.tar.gz'
+    SRATOOLKIT_VERSION = ('2.3.5-2','2.4.2','2.5.1','2.6.2','2.8.0','2.8.1-3','2.8.2-1','2.9.6')
     VELVET_PATH = os.path.join(FUSIONCATCHER_TOOLS,'velvet')
     VELVET_URL = 'http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz'
     VELVET_VERSION = ('1.2.09','1.2.10')
@@ -261,9 +261,9 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     LZOP_URL = 'http://www.lzop.org/download/lzop-1.03.tar.gz'
     LZOP_VERSION = ('v1.03',)
     # COREUTILS (for SORT parallel)
-    COREUTILS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'coreutils')
-    COREUTILS_URL = 'http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz'
-    COREUTILS_VERSION = ('v8.27',)
+#    COREUTILS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'coreutils')
+#    COREUTILS_URL = 'http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz'
+#    COREUTILS_VERSION = ('v8.27',)
     # PIGZ (GZIP parallel)
     PIGZ_PATH = os.path.join(FUSIONCATCHER_TOOLS,'pigz')
     PIGZ_URL = 'http://http.debian.net/debian/pool/main/p/pigz/pigz_2.3.1.orig.tar.gz' #'http://zlib.net/pigz/pigz-2.3.3.tar.gz'
@@ -289,16 +289,14 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     # PICARD
     PICARD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'picard')
     #PICARD_URL = 'http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip'
-    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/2.9.4/picard.jar'
-    PICARD_VERSION = ('2.9.4',)
+    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/2.19.0/picard.jar'
+    PICARD_VERSION = ('2.9.4','2.19.0')
     # LiftOver
     LIFTOVER_PATH = os.path.join(FUSIONCATCHER_TOOLS,'liftover')
     LIFTOVER_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/liftOver'
     LIFTOVER_VERSION = ('move annotations',)
     # JAVA
     JAVA_PATH = "/usr/bin/"
-
-
 
 ################################################################################
 ################################################################################
@@ -1048,11 +1046,11 @@ if __name__ == '__main__':
                       dest = "list_dependencies",
                       help = """It lists all the needed dependencies. No installation is done!""")
 
-#    parser.add_option("-b","--build",
-#                      action = "store_true",
-#                      default = False,
-#                      dest = "build",
-#                      help = """It builds (and also some download is required) the build files for human organism, which are needed to run FusionCatcher. Default value is '%default'.""")
+    parser.add_option("-b","--build",
+                      action = "store_true",
+                      default = False,
+                      dest = "build",
+                      help = """It builds (and also some download is required) the build files for human organism, which are needed to run FusionCatcher. Default value is '%default'.""")
 
     parser.add_option("-d","--download",
                       action = "store_true",
@@ -1131,7 +1129,7 @@ python-openpyxl
     time.sleep(5) # wait 5 seconds
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "human_v91"
+    v = "human_v95"
     ############################################################################
     # List all dependencies
     ############################################################################
@@ -1751,20 +1749,20 @@ python-openpyxl
             if r:
                 LZOP_PATH = r
 
-            # COREUTILS (for new SORT)
-            r = tool(name = "COREUTILS (for latest SORT)",
-                     exe = "sort",
-                     param = "--version",
-                     web = "<http://ftp.gnu.org/gnu/coreutils>",
-                     versions = COREUTILS_VERSION,
-                     version_word = 'coreutils',
-                     force = options.force_yes,
-                     url = COREUTILS_URL,
-                     path = COREUTILS_PATH,
-                     install = options.install_all or options.install_all_tools,
-                     skip = True)
-            if r:
-                COREUTILS_PATH = r
+#            # COREUTILS (for new SORT)
+#            r = tool(name = "COREUTILS (for latest SORT)",
+#                     exe = "sort",
+#                     param = "--version",
+#                     web = "<http://ftp.gnu.org/gnu/coreutils>",
+#                     versions = COREUTILS_VERSION,
+#                     version_word = 'coreutils',
+#                     force = options.force_yes,
+#                     url = COREUTILS_URL,
+#                     path = COREUTILS_PATH,
+#                     install = options.install_all or options.install_all_tools,
+#                     skip = True)
+#            if r:
+#                COREUTILS_PATH = r
 
             # PIGZ (GZIP parallel)
             r = tool(name = "PIGZ (GZIP parallel)",
@@ -1853,7 +1851,7 @@ python-openpyxl
         return some_var
 
     sra = update_path(SRATOOLKIT_PATH, 'fastq-dump','bin')
-    coreutils = update_path(COREUTILS_PATH, 'sort','src')
+#    coreutils = update_path(COREUTILS_PATH, 'sort','src')
     lzop = update_path(LZOP_PATH,'lzop','src')
     star = update_path(STAR_PATH,'star','source')
     parallel2 = update_path(PARALLEL_PATH,'parallel','src')
@@ -1917,7 +1915,7 @@ python-openpyxl
     data.append("openpyxl = %s\n"%(OPENPYXL_PATH,))
     data.append("lzo = %s\n"%(LZO_PATH,))
     data.append("lzop = %s\n"%(lzop,))
-    data.append("coreutils = %s\n"%(coreutils,))
+#    data.append("coreutils = %s\n"%(coreutils,))
     data.append("pigz = %s\n"%(PIGZ_PATH,))
     data.append("pxz = %s\n"%(PXZ_PATH,))
     data.append("picard = %s\n"%(PICARD_PATH,))
@@ -1947,7 +1945,7 @@ python-openpyxl
     print ""
     print HIGHLIGHT+"=== Installed successfully! ==="+ENDC
     print ""
-    if 0: #options.build:
+    if options.build:
         time.sleep(5)
         cmd([
              [["rm","-rf",os.path.join(FUSIONCATCHER_CURRENT)],False],
@@ -1979,16 +1977,17 @@ python-openpyxl
         txt.append("rm -rf %s" % (FUSIONCATCHER_CURRENT.replace(" ","\\ "),))
         txt.append("rm -f %s.tar.gz.*" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
         txt.append("rm -rf %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
-        txt.append("rm -f %s/checksums.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
+        txt.append("rm -f %s/%s.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),v))
         txt.append("mkdir -p %s" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
         txt.append("ln -s %s %s" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),FUSIONCATCHER_CURRENT.replace(" ","\\ ")))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.aa -O %s.tar.gz.aa" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ab -O %s.tar.gz.ab" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ac -O %s.tar.gz.ac" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ad -O %s.tar.gz.ad" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
-        txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/checksums.md5 -O %s/checksums.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
+        txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ae -O %s.tar.gz.ae" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
+        txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.md5 -O %s/%s.md5" % (v,FUSIONCATCHER_DATA.replace(" ","\\ "),v))
         txt.append("cd %s" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
-        txt.append("md5sum -c %s/checksums.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
+        txt.append("md5sum -c %s/%s.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),v))
         txt.append('if [ "$?" -ne "0" ]; then')
         txt.append('  echo -e "\\n\\n\\n\\033[33;7m   ERROR: The downloaded files from above have errors! MD5 checksums do not match! Please, download them again or re-run this script again!   \\033[0m\\n"')
         txt.append('  exit 1')
@@ -2001,11 +2000,11 @@ python-openpyxl
         txt.append("    exit 1")
         txt.append("fi")
         txt.append("rm -f %s.tar.gz" % (os.path.join(FUSIONCATCHER_DATA,v).replace(" ","\\ "),))
-        txt.append("rm -f %s/checksums.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
+        txt.append("rm -f %s/%s.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),v))
         for t in txt:
             print t
         print ""
-        f = os.path.join(FUSIONCATCHER_BIN,"download.sh")
+        f = os.path.join(FUSIONCATCHER_BIN,"download-"+v+".sh")
         print "All these commands are saved in '%s' file! You may execute '%s' shell script or copy/paste all the previous commands and run them manually in the terminal!" % (f,f)
         print ""
         txt.append("exit 0")
@@ -2088,7 +2087,7 @@ python-openpyxl
                 sys.exit(1)
             print "--> DONE!"
             forget = True
-        elif 0: #options.build:
+        elif options.build:
             print "---------------------------------------------------------------------------"
             print "Building, downloading, and installing the databases required by FusionCatcher"
             print "---------------------------------------------------------------------------"

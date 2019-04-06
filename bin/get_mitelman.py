@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-It downloads the lastest known fusion genes from ChimerDB 3.0 database
-<http://ercsb.ewha.ac.kr/fusiongene/>.
+It downloads the lastest known fusion genes from the Mitelman Database of Chromosome Aberrations and Gene Fusions in Cancer
+<https://cgap.nci.nih.gov/Chromosomes/Mitelman>.
+
 
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
@@ -48,39 +49,51 @@ import optparse
 import shutil
 import urllib2
 import symbols
+import datetime
+import tarfile
 
+def mx(e):
+    r = e
+    if e[0] > e[1]:
+        r = (e[1],e[0])
+    return r
+    
+def mysplit(x):
+# parses a line from a TSV where the comma is separator
+# skip the commas which are between ""
+    t = x.rstrip("\r\n")
+    t = t.split('"')
+    for i in xrange(len(t)):
+        if i % 2 == 1:
+            t[i] = t[i].replace(',','\t')
+    t = ''.join(t)
+    t = [e.replace('\t',',') for e in t.split(',')]
+    return t
 
 if __name__ == '__main__':
 
     #command line parsing
 
     usage = "%prog [options]"
-    description = """It downloads the lastest known fusion genes from the literature (which have the
-PubMed as source) from ChimerDB 3.0 database."""
-    version = "%prog 0.10 beta"
+    description = """It downloads the lastest known fusion genes from the Mitelman Database of Chromosome Aberrations and Gene Fusions in Cancer."""
+    version = "%prog 0.15 beta"
 
     parser = optparse.OptionParser(usage=usage,description=description,version=version)
 
-    parser.add_option("--organism",
+    parser.add_option("--organism","-g",
                       action = "store",
                       type = "string",
                       dest = "organism",
                       default = "homo_sapiens",
                       help="""The name of the organism for which the known fusion genes are downloaded, e.g. homo_sapiens, mus_musculus, etc. Default is '%default'.""")
 
-    parser.add_option("--output",
+    parser.add_option("--output","-o",
                       action="store",
                       type="string",
                       dest="output_directory",
                       default = '.',
                       help="""The output directory where the known fusion genes are stored. Default is '%default'.""")
 
-    parser.add_option("--server",
-                      action="store",
-                      type="string",
-                      dest="server",
-                      default = "http://203.255.191.229:8080",
-                      help="""The ChimerDB 3.0 server from where the known fusion genes are downloaded. Default is '%default'.""")
 
     (options,args) = parser.parse_args()
 
@@ -90,76 +103,59 @@ PubMed as source) from ChimerDB 3.0 database."""
         parser.print_help()
         sys.exit(1)
 
-    try:
-        import xlrd
-        print "The Python Excel XLRD parser was found!"
-    except:
-        print >> sys.stderr,"WARNING: Python XLRD library not found!"
-        print >> sys.stderr,"Please, install XLRD python library in order to be able to parse the ChimerDB 3.0 database!"
-        file(os.path.join(options.output_directory,'chimerdb3kb.txt'),'w').write('')
-        file(os.path.join(options.output_directory,'chimerdb3pub.txt'),'w').write('')
-        file(os.path.join(options.output_directory,'chimerdb3seq.txt'),'w').write('')
-        sys.exit(0)
-
 
     # timeout in seconds
     timeout = 1800
     socket.setdefaulttimeout(timeout)
-
-
-    #http://ercsb.ewha.ac.kr/FusionGene/document/PO_down.xls
-    urls = [('/chimerdbv31/resources/data/dump/ChimerDB3.0_ChimerKB.xlsx', 'chimerdb3kb.txt'),
-           ('/chimerdbv31/resources/data/dump/ChimerDB3.0_ChimerPub.xlsx', 'chimerdb3pub.txt'),
-           ('/chimerdbv31/resources/data/dump/ChimerDB3.0_ChimerSeq.xlsx','chimerdb3seq.txt')]
+    tmp_file = 'temp_mitelman.tar.gz'
+    tmp2_file = 'temp_mitelman.dat'
 
     headers = { 'User-Agent' : 'Mozilla/5.0' }
 
+    url = "ftp://ftp1.nci.nih.gov/pub/CGAP/mitelman.tar.gz"
+
+
     if options.organism.lower() == 'homo_sapiens':
+        today = datetime.date.today()
+        file(os.path.join(options.output_directory,'version.txt'),'a').writelines(['Mitelman database version: %s\n' % (today.strftime("%Y-%m-%d"),)])
 
-        file(os.path.join(options.output_directory,'version.txt'),'a').writelines(['ChimerDB database version: 3.0\n'])
+        sem = True
+        print "Downloading the known fusion genes from the Mitelman database!"
+        try:
+            req = urllib2.Request(url, headers=headers)
+            da1 = urllib2.urlopen(req)
+            file(tmp_file,'w').write(da1.read())
+        except:
+            print >>sys.stderr, "Warning: Cannot access '%s%s'! The output file will be empty!" % (options.server,url)
+            sem = False
 
-        print "Downloading the known fusion genes from ChimerDB 3.0 database!"
 
-        for url in urls:
 
-            tmp_file = 'temp_'+url[1].replace(".txt","")+'.xls'
-            sem = True
-            try:
-                req = urllib2.Request('%s%s' % (options.server,url[0]), headers=headers)
-                d = urllib2.urlopen(req)
-                file(tmp_file,'w').write(d.read())
-            except:
-                sem = False
-                print >>sys.stderr, "Warning: Cannot access '%s%s'! The output file will be empty!" % (options.server,url[0])
 
-            if sem:
-                print "Parsing..."
-                # parse the ChimerDB file with the known fusion genes
-                wb = xlrd.open_workbook(tmp_file)
+        if sem:
+
+            print "Parsing file..."
+
+            tar = tarfile.open(mode="r:gz", fileobj = open(tmp_file))
+            d = tar.extractfile('molbiolclinassoc.dat').read().decode('ascii').splitlines()
+
+            if d:
+
+
+                h = d.pop(0) # remove header
                 fusions = set()
-
-                # parse the PubMed sheet
-                sheet = wb.sheet_by_index(0) # u'PubMed'
-                h1 = 0
-                h2 = 0
-                for row in xrange(sheet.nrows):
-                    line = sheet.row_values(row)
-                    if row == 0: # skip first line
-                        for q,u in enumerate(line):
-                            w = u.upper().encode('ascii','ignore')
-                            if w == 'H_GENE':
-                                h1 = q
-                            elif w == "T_GENE":
-                                h2 = q
-                        continue
-
-                    g1 = line[h1].upper().encode('ascii','ignore')
-                    g2 = line[h2].upper().encode('ascii','ignore')
-                    (g1,g2) = (g2,g1) if g2 < g1 else (g1,g2)
-                    fusions.add((g1,g2))
-
-                fusions = list(fusions)
-                print "%d known gene fusions found!" % (len(fusions),)
+                f = [e.split("\t")[7] for e in d if e.rstrip("\r\n")]
+                for e in f:
+                    x = e.split(",")
+                    for z in x:
+                        if z and z.find("/") != -1:
+                            uf = tuple(z.upper().replace("+","").split("/"))
+                            if uf and len(uf) == 2:
+                                fusions.add(uf)
+                            elif len(uf) == 3:
+                                fusions.add((uf[0],uf[1]))
+                                fusions.add((uf[1],uf[2]))
+                                fusions.add((uf[0],uf[2]))
 
                 # read the gene symbols
                 file_symbols = os.path.join(options.output_directory,'synonyms.txt')
@@ -187,6 +183,10 @@ PubMed as source) from ChimerDB 3.0 database."""
 
                 d = []
                 for (g1,g2) in fusions:
+                    if g1 in ("IGH","IGL","IGK","IG","TRA","TRB","TRD","TRG"):
+                        g1 = g1 + "@"
+                    if g2 in ("IGH","IGL","IGK","IG","TRA","TRB","TRD","TRG"):
+                        g2 = g2 + "@"
                     if ( g1.upper() == g2.upper() or ((g1.endswith('@') and g2.endswith('@')) and g1.upper()[:2] == g2.upper()[:2])):
                         print "%s-%s skipped!" % (g1,g2)
                         continue
@@ -197,22 +197,22 @@ PubMed as source) from ChimerDB 3.0 database."""
                         for e1 in ens1:
                             for e2 in ens2:
                                 if e1 != e2 and ((e1,e2) not in banned) and ((e2,e1) not in banned):
-                                    d.append([e1,e2])
-
+                                    if e1 > e2:
+                                        d.append([e2,e1])
+                                    else:
+                                        d.append([e1,e2])
 
                 data = ['\t'.join(sorted(line)) + '\n' for line in d]
                 data = sorted(set(data))
 
                 print "%d known fusion genes converted succesfully to Ensembl Gene ids!" % (len(data),)
-            else:
-                data = []
-            file(os.path.join(options.output_directory,url[1]),'w').writelines(data)
-            if os.path.isfile(tmp_file):
-                os.remove(tmp_file)
+        else:
+            data = []
+        file(os.path.join(options.output_directory,'mitelman.txt'),'w').writelines(data)
+        file(os.path.join(options.output_directory,'mitelman_genes.txt'),'w').writelines(sorted(set(["--".join(mx(e))+"\n" for e in fusions])))
+        if os.path.isfile(tmp_file):
+            os.remove(tmp_file)
     else:
         # write an empty file for other organisms than human
-        file(os.path.join(options.output_directory,'chimerdb3kb.txt'),'w').write('')
-        file(os.path.join(options.output_directory,'chimerdb3pub.txt'),'w').write('')
-        file(os.path.join(options.output_directory,'chimerdb3seq.txt'),'w').write('')
-
+        file(os.path.join(options.output_directory,'mitelman.txt'),'w').write('')
 #

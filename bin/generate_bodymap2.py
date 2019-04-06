@@ -4091,7 +4091,43 @@ if __name__ == '__main__':
         ['NPEPPS','TBC1D3'],
         ['NPIPB5','SMG1'],
         ['SERF1A','SMN1'],
-        ['SIDT2','TAGLN']
+        ['SIDT2','TAGLN'],
+        ['AC005332.4','AMZ2'],
+        ['AC006001.3','AC027644.4'],
+        ['AC006453.2','AC245595.1'],
+        ['AC068831.7','B2M'],
+        ['AC091057.3','GOLGA8N'],
+        ['AC093484.3','UBC'],
+        ['AC104453.1','CD93'],
+        ['AL354740.1','METTL7A'],
+        ['ARL17A','KANSL1'],
+        ['ARL17B','KANSL1'],
+        ['AZGP1','GJC3'],
+        ['BCAP29','DUS4L'],
+        ['BRS3','HTATSF1'],
+        ['C19MC','RPLP1'],
+        ['CATSPER2','PPIP5K1'],
+        ['CD59','MYH11'],
+        ['COQ8B','NUMBL'],
+        ['DNAJC1','MIGA1'],
+        ['ELOVL1','MED8'],
+        ['FAM157B','FBXO25'],
+        ['FTH1','FTL'],
+        ['GKAP1','KIF27'],
+        ['HSP90AB1','SLC29A1'],
+        ['HSPE1','MOB4'],
+        ['MECOM','RPL22'],
+        ['MUC20-OT1','SDHA'],
+        ['NAIP','OCLN'],
+        ['NPEPPS','TBC1D3'],
+        ['NPIPB5','SMG1'],
+        ['SERF1A','SMN1'],
+        ['SIDT2','TAGLN'],
+        ['ZNF718','ZNF876P']
+        
+        
+        
+        
 ]
 
 

@@ -123,7 +123,7 @@ class lines_to_file:
     def __del__(self):
         self.close()
 
-def trim_poly_5_end(r, q, nucleotide, no_repeats = 9):
+def trim_poly_5_end(r, q, nucleotide, no_repeats = 9,empty=False):
     n = len(r)
     start = -1
     f = False
@@ -139,9 +139,13 @@ def trim_poly_5_end(r, q, nucleotide, no_repeats = 9):
             r = r[start+1:]
             q = q[start+1:]
             f = True # trimmed
+            if (not empty) and (not r):
+                # do not give reads of length zero!
+                r = "A"
+                q = "I"
     return (r,q,f)
 
-def trim_poly_3_end(r, q, nucleotide, no_repeats = 9):
+def trim_poly_3_end(r, q, nucleotide, no_repeats = 9,empty=False):
     n = len(r)
     f = False
     if n > 1 and r[-1] == nucleotide and r[-2] == nucleotide:
@@ -156,6 +160,10 @@ def trim_poly_3_end(r, q, nucleotide, no_repeats = 9):
             r = r[:end]
             q = q[:end]
             f = True # trimmed
+            if (not empty) and (not r):
+                # do not give reads of length zero!
+                r = "A"
+                q = "I"
     return (r,q,f)
 
 

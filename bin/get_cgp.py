@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-It downloads the lastest known fusion genes the Cancer Genome Project
+It downloads the lastest known fusion genes from the Cancer Genome Project
 <http://www.sanger.ac.uk/genetics/CGP/Census/>.
 
 

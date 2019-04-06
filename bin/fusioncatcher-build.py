@@ -1113,6 +1113,7 @@ if __name__ == '__main__':
     job.add('--input_genes',outdir('genes.txt'),kind='input')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('adjacent_genes.txt'),kind='output',command_line='no')
+    job.add('',outdir('readthroughs.txt'),kind='output',command_line='no')
     job.run()
 
     job.add(_FC_+'generate_pairs_pseudogenes.py',kind='program')
@@ -1763,10 +1764,22 @@ if __name__ == '__main__':
     job.add('',outdir('dgd.txt'),kind='output',command_line='no')
     job.run()
 
+    job.add(_FC_+'get_mitelman.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('mitelman.txt'),kind='output',command_line='no')
+    job.run()
+
     job.add(_FC_+'get_gtex.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('gtex.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add(_FC_+'get_rtcircrna.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('rtcircrnas.txt'),kind='output',command_line='no')
     job.run()
 
     job.add(_FC_+'concatenate.py',kind='program')

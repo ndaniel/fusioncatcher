@@ -1,9 +1,12 @@
 Version Release History for FusionCatcher
 =========================================
 
-Version 1.10 -- ..., 2018
+Version 1.10 -- April 10, 2019
 --------------------------------------
- * added support for Ensembl version 91
+ * added support for Ensembl version 91, 92, 93, 94, and 95
+ * fixed bug regarding randomness of mapping for Bowtie and STAR aligners
+ * fixed bug regarding low complexity of fusion junction sequences
+ * label for rt-circRNAs
  * fixed several minor bugs
  * updated manual
 

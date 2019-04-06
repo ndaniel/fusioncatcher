@@ -190,27 +190,39 @@ def bits(d):
     return v
 
 
-def code(s,w=24,o=12,nuc=2):
+def codelength(s,w=24,o=12,kmer=2):
+    # w = window length
+    # o = window overlap
+    # n = nucleotides in kmer
+#    print "--------------------",s,w,o,kmer
     x = s.upper()
     if x.find('N') !=-1:
         x = x.replace('N','A')
     step = w-o
     c1 = {}
-    c2 = counter(x[:o+1],nuc)
+#    print "c1 empty"
+    c2 = counter(x[0:o],kmer)
+#    print "0->",x[0:o],len(x[0:o]),"c2"
     len_s = len(s) - w
-    m = len_s*100000
+    m = len(s)*100000
     #print "===>",s
-    r = range(0,len_s,step)
+    r = [0]
+    if len_s != 0:
+        r = range(0,len_s,step)
     if r and r[-1] != len_s:
         r.append(len_s)
     for i in r:
-        c3 = counter(x[i+w-step:i+w+1],nuc)
+#        print "1->",x[i+w-step-kmer+1:i+w],len(x[i+w-step-kmer+1:i+w]),i,'---',i+w-step-kmer+1,i+w,"c3"
+        c3 = counter(x[i+w-step-kmer+1:i+w],kmer)
         #c2 = plus(minus(c2,c1),c3)
+#        print "c2 before:",c2,"c1",c1
         c2 = plusminus(c2,c3,c1)
+#        print "c2: no of kmers",sum(c2.values()),c2
         b = bits(c2)
         if b < m:
             m = b
-        c1 = counter(x[i:i+step+1],nuc)
+        c1 = counter(x[i:i+step+kmer-1],kmer)
+#        print "2->",x[i:i+step+kmer-1],len(x[i:i+step+kmer-1]),i,'---',i,i+step,"c1"
         #print "       ",b,sorted(c2.items()),'[',i,'-',i+w,']',s[i:i+w+1]
         #print "       ",b,sorted(counter(x[i:i+w+1]).items()),"(validate)"
     #x = (stuff[0][0],stuff[0][1],stuff[0][2],m)
@@ -222,7 +234,7 @@ def code(s,w=24,o=12,nuc=2):
 #
 #
 #
-def codelength(stuff):
+def wrap_codelength(stuff):
 #def codelength(s,w=24,o=12):
     x = None
     if stuff and type(stuff[0]).__name__ != 'instance':
@@ -231,7 +243,7 @@ def codelength(stuff):
         o = stuff[1].window_overlap
         nuc = stuff[1].nucleotide
         #
-        m = code(s,w,o,nuc)
+        m = codelength(s,w,o,nuc)
         x = (stuff[0][0],stuff[0][1],stuff[0][2],m)
     return x
 
@@ -255,7 +267,7 @@ def str_filter(
                window_length = 24,
                window_overlap = 12,
                kmer = 2,
-               threshold = 2.2,
+               threshold = 1.4,
                cpus = 0,
                verbose = True):
     """
@@ -281,7 +293,7 @@ def str_filter(
     para.window_length = window_length
     para.window_overlap = window_overlap
     para.nucleotide = kmer
-    for w in pool.imap_unordered(codelength,
+    for w in pool.imap_unordered(wrap_codelength,
                        itertools.izip_longest(readfq(fastq(file_input)),
                                               [],
                                               fillvalue = para),
@@ -348,7 +360,7 @@ Email: Daniel.Nicorici@gmail.com
 
 """
 
-    version = "%prog 0.11 beta"
+    version = "%prog 0.12 beta"
 
     parser = MyOptionParser(usage       = usage,
                             epilog      = epilog,
@@ -407,7 +419,7 @@ Email: Daniel.Nicorici@gmail.com
                       action = "store",
                       type = "float",
                       dest = "codelength_threshold",
-                      default = 2.2, # original was 2.2
+                      default = 1.4, # original was 2.2
                       help = """Any window which compresses less this threshold is considered to contain a short tandem repeat and the read will be filtered out. Default is %default.""")
 
     parser.add_option("-a","--author",

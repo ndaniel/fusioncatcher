@@ -153,7 +153,7 @@ if __name__ == '__main__':
         for r in data:
             f1 = "%s--%s" % (r[1],r[0])
             f2 = "%s--%s" % (r[0],r[1])
-            if r[2].lower().find('healthy') != -1 or r[2].lower().find('conjoing') != -1 or r[2].lower().find('hpa') != -1 or r[2].lower().find('banned') != -1 or r[2].lower().find('paralogs') != -1 or r[2].lower().find('1000genomes') != -1 or r[2].lower().find('cortex') != -1:
+            if r[2].lower().find('healthy') != -1 or r[2].lower().find('conjoing') != -1 or r[2].lower().find('hpa') != -1 or r[2].lower().find('banned') != -1 or r[2].lower().find('paralogs') != -1 or r[2].lower().find('1000genomes') != -1 or r[2].lower().find('cortex') != -1 or r[2].lower().find('repeats') != -1  or r[2].lower().find('known_rt_circ_rna') != -1:
                 questionable.add(f1)
                 questionable.add(f2)
 
@@ -166,6 +166,17 @@ if __name__ == '__main__':
                 readthrough.add(f1)
                 readthrough.add(f2)
 
+        # rt-circ-rna
+        rtcircrna = set()
+        for r in data:
+            f1 = "%s--%s" % (r[1],r[0])
+            f2 = "%s--%s" % (r[0],r[1])
+            if r[2].lower().find('known_rt_circ_rna') != -1:
+                rtcircrna.add(f1)
+                rtcircrna.add(f2)
+            if r[2].lower().find('rt_circ_rna') != -1:
+                rtcircrna.add(f1)
+                rtcircrna.add(f2)
 
         found = []
         bag = set()
@@ -196,6 +207,8 @@ if __name__ == '__main__':
                 label.append('probably false positive')
             if line in readthrough:
                 label.append('readthrough')
+            if line in rtcircrna:
+                label.append('rt-circRNA')
             if label:
                 label = "  ("+'; '.join(label)+")"
             else:
