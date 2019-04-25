@@ -47,7 +47,7 @@ For running *FusionCatcher* it is needed a computer with:
 ## 2.1 - Required dependencies
   * **Linux/Unix** 64-bit (e.g. Ubuntu version 12.04/14.04/16.04 or newer)
   * **Python** version 2.7.6 (>=2.6.0 and < 3.0 is fine)
-  * **BioPython** version 1.66 (>=1.50 is fine)
+  * **BioPython** version 1.73 (>=1.50 is fine)
   * **Bowtie** 64-bit version 1.2.2 http://bowtie-bio.sourceforge.net/index.shtml (will be installed by `boostrap.py`)
   * forked **SeqTK** version 1.2-r101c-dirty  http://github.com/ndaniel/seqtk (will be installed by `boostrap.py`)
   * organism specific  data from [Ensembl](http://www.ensembl.org) database release 95 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed) (will be installed by `boostrap.py`)
@@ -64,9 +64,9 @@ These are expected by default to be installed but their use can be disabled by u
 
 Note: If one does not want to install BLAT (whilst installing *FusionCatcher* automatically thru `bootstrap.py`) and also not to use BLAT with *FusionCatcher* then using command line `-k` option of `bootstrap.py` will do that.
 
-### 2.2.2 - Nice to have
+### 2.2.2 - Nice to have (but optional)
   * **Velvet** (de novo assembler) version 1.2.10 http://www.ebi.ac.uk/~zerbino/velvet/ . This is needed if one plans to do _de novo_ assembly of the reads which support the candidate fusion genes. (required by option `--assembly` of *FusionCatcher*) (will be installed by `boostrap.py`)
-  * **fastq-dump** version 2.6.2 from NCBI SRA Toolkit http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software . This is needed by *FusionCatcher* if one plans to use as input SRA files (will be installed by `boostrap.py`)
+  * **fastq-dump** version 2.9.6 from NCBI SRA Toolkit http://www.ncbi.nlm.nih.gov/Traces/sra/?view=software . This is needed by *FusionCatcher* if one plans to use as input SRA files (will be installed by `boostrap.py`)
   * Python library **openpyxl** version 1.5.6 http://pypi.python.org/pypi/openpyxl (other versions might work but have not been tested). It is needed by `fusioncatcher-build` for parsing the [ConjoinG](http://metasystems.riken.jp/conjoing/) database.
   * Python library **xlrd** version 0.6.1 http://pypi.python.org/pypi/xlrd (other versions might work but have not been tested). It is needed by `fusioncatcher-build` for parsing the [ChimerDB](http://ercsb.ewha.ac.kr/FusionGene/) database.
   * **pigz** version 2.3.1 http://zlib.net/pigz/ for using GZIP on several CPUs in parallel (other older versions might support this) (will be installed by `boostrap.py`)
