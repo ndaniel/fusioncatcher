@@ -204,7 +204,7 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * Huang D.W. et al., **RNA Sequencing in B-Cell Lymphomas**, Lymphoma, Feb. 2019, https://doi.org/10.1007/978-1-4939-9151-8_13
 * Heyer E.E. et al., **Diagnosis of fusion genes using targeted RNA sequencing**, Nature Communications, March 2019, https://doi.org/10.1038/s41467-019-09374-9
 * Ravi N. et al., **Identification of Targetable Lesions in Anaplastic Thyroid Cancer by Genome Profiling**, March 2019, https://doi.org/10.3390/cancers11030402
-* Zhu C. et al., **The fusion landscape of hepatocellular carcinoma**, Molecular Oncology, April 2019, doi:10.1002/1878-0261.12479
+* Zhu C. et al., **The fusion landscape of hepatocellular carcinoma**, Molecular Oncology, April 2019, https://doi.org/10.1002/1878-0261.12479
 * Schroeder M.P. et al., **Integrated analysis of relapsed B-cell precursor Acute Lymphoblastic Leukemia identifies subtype-specific cytokine and metabolic signatures**, Scientific Reports, March 2019, https://doi.org/10.1038/s41598-019-40786-1
 * Bastian L. et al., **PAX5 biallelic genomic alterations define a novel subgroup of B-cell precursor acute lymphoblastic leukemia**, Leukemia, March 2019, https://doi.org/10.1038/s41375-019-0430-z
 * Korshunov A. et al., **Desmoplastic/nodular medulloblastomas (DNMB) and medulloblastomas with extensive nodularity (MBEN) disclose similar epigenetic signatures but different transcriptional profiles**, Acta Neuropathologica, March 2019, https://doi.org/10.1007/s00401-019-01981-6
