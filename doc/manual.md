@@ -212,6 +212,7 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * Zhang X.C. et al., **Comprehensive genomic and immunological characterization of Chinese non-small cell lung cancer patients**, Nature Communications, April 2019, http://dx.doi.org/10.1038/s41467-019-09762-1
 * Yang W. et al., **Immunogenic neoantigens derived from gene fusions stimulate T cell responses**, Nature Medicine, Vol. 25, April 201, https://doi.org/10.1038/s41591-019-0434-2
 * Frank M.O. et al., **Sequencing and curation strategies for identifying candidate glioblastoma treatments**, BMC Medical Genomics, April 2019, https://doi.org/10.1186/s12920-019-0500-0
+* Yamazaki F. et al., **Novel NTRK3 Fusions in Fibrosarcomas of Adults**, The American Journal of Surgical Pathology, April 2019, https://doi.org/10.1097/PAS.0000000000001194
 * Zhu D. et al., **The landscape of chimeric RNAs in bladder urothelial carcinoma**, The International Journal of Biochemistry and Cell Biology, May 2019, https://doi.org/10.1016/j.biocel.2019.02.007
 * Troll C.J. et al., **Structural Variation Detection by Proximity Ligation from Formalin-Fixed, Paraffin-Embedded Tumor Tissue**, The Journal of Molecular Diagnostics, May 2019, https://doi.org/10.1016/j.jmoldx.2018.11.003
 
