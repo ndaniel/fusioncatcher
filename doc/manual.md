@@ -215,7 +215,7 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * Yamazaki F. et al., **Novel NTRK3 Fusions in Fibrosarcomas of Adults**, The American Journal of Surgical Pathology, April 2019, https://doi.org/10.1097/PAS.0000000000001194
 * Zhu D. et al., **The landscape of chimeric RNAs in bladder urothelial carcinoma**, The International Journal of Biochemistry and Cell Biology, May 2019, https://doi.org/10.1016/j.biocel.2019.02.007
 * Troll C.J. et al., **Structural Variation Detection by Proximity Ligation from Formalin-Fixed, Paraffin-Embedded Tumor Tissue**, The Journal of Molecular Diagnostics, May 2019, https://doi.org/10.1016/j.jmoldx.2018.11.003
-
+* Saba K.H. et al., **Genetic profiling of a chondroblastoma‐like osteosarcoma/malignant phosphaturic mesenchymal tumor of bone reveals a homozygous deletion of CDKN2A, intragenic deletion of DMD and a targetable FN1‐FGFR1 gene fusion**, Genes Chromosomes and Cancer, May 2019,  https://doi.org/10.1002/gcc.22764
 
 
 ---
