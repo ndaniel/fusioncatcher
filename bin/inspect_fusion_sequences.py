@@ -176,13 +176,13 @@ def evaluate_fusion_sequence(
             if l1 < threshold:
                 label = label + "," if label else label
                 label = label + 'short_repeats'
-                print "l1",s,l1
+                #print "l1",s,l1
             if len(s) > 50:
                 l2 = codelength(s,w=50,o=40,kmer=9)
                 if l2 < threshold2:
                     label = label + "," if label else label
                     label = label + 'long_repeats'
-                print "l2",s,l2
+                #print "l2",s,l2
             res.append(line[0:2]+[label]+line[3:])
 
         if verbose:

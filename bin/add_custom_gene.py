@@ -198,7 +198,7 @@ def add(outdir,
                 file(os.path.join(outdir,'exons.txt'),'w').writelines(['\t'.join(line)+'\n' for line in e])
                 file(os.path.join(outdir,'custom_genes.bed'),'a').write('chr%s\t%s\t%s\t%s\t%s\t%s\n' %(chrom,start,end,'%s-%s-%s-%s' % (gene_symbol,gene_id,transcript_id,exon_id),'0','+' if strand == '1' else '-'))
                 file(os.path.join(outdir,'custom_genes.bed'),'a').write('chr%s\t%s\t%s\t%s\t%s\t%s\n' %(chrom,start_ex,end_ex,'%s-%s-%s-%s-%s' % (gene_symbol,gene_id,transcript_id,exon_id,exon_number),'0','+' if strand == '1' else '-'))
-            else:
+            elif end == gid[1] and start == gid[2] and strand == gid[3] and chrom == gid[4]:
                 print "  * Gene %s (%s) does NOT require changes in the entire database! New transcript %s and new exon %s added for this gene!" % (gene_id,gene_symbol,transcript_id,exon_id)
                 file(os.path.join(outdir,'exons.txt'),'a').write(
                     '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' % (
@@ -216,6 +216,24 @@ def add(outdir,
                         strand,
                         chrom))
                 file(os.path.join(outdir,'custom_genes.bed'),'a').write('chr%s\t%s\t%s\t%s\t%s\t%s\n' %(chrom,start_ex,end_ex,'%s-%s-%s-%s-%s' % (gene_symbol,gene_id,transcript_id,exon_id,exon_number),'0','+' if strand == '1' else '-'))
+            else:
+                print "  * Gene %s (%s) does NOT require changes in the entire database! New transcript %s and new exon %s added for this gene!" % (gene_id,gene_symbol,transcript_id,exon_id)
+                file(os.path.join(outdir,'exons.txt'),'a').write(
+                    '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' % (
+                        protein_id,
+                        gene_id,
+                        transcript_id,
+                        exon_id,
+                        start_ex,
+                        end_ex,
+                        exon_number,
+                        gid[2],
+                        gid[1],
+                        start_tr,
+                        end_tr,
+                        strand,
+                        chrom))
+
     print ""
     list_genes.append(gene_id)
 
@@ -1537,7 +1555,7 @@ if __name__ == '__main__':
                     exon_id = 'ENSE09000001271',
                     exon_number = '1',
                     start = '64833229', #
-                    end =   '64966504', #
+                    end =   '64966549', #
                     chrom = '1',
                     strand = '-1'
                 )
