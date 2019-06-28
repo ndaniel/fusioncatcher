@@ -217,7 +217,12 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 * Troll C.J. et al., **Structural Variation Detection by Proximity Ligation from Formalin-Fixed, Paraffin-Embedded Tumor Tissue**, The Journal of Molecular Diagnostics, May 2019, https://doi.org/10.1016/j.jmoldx.2018.11.003
 * Saba K.H. et al., **Genetic profiling of a chondroblastoma‐like osteosarcoma/malignant phosphaturic mesenchymal tumor of bone reveals a homozygous deletion of CDKN2A, intragenic deletion of DMD and a targetable FN1‐FGFR1 gene fusion**, Genes Chromosomes and Cancer, May 2019,  https://doi.org/10.1002/gcc.22764
 * Panagopoulos I. et al., **Novel GTF2I–PDGFRB and IKZF1–TYW1 fusions in pediatric leukemia with normal karyotype**, Experimental Hematology & Oncology, May 2019, https://doi.org/10.1186/s40164-019-0136-y
+* Trahair T. et al., **Crizotinib and Surgery for Long-Term Disease Control in Children and Adolescents With ALK-Positive Inflammatory Myofibroblastic Tumors**, JCO Precision Oncology, May 2019, https://doi.org/10.1200/PO.18.00297
+* Blackburn J. et al., **TMPRSS2‐ERG fusions linked to prostate cancer racial health disparities: A focus on Africa**, Prostate, May 2019, https://doi.org/10.1002/pros.23823
 * Yang B. et al., **Xp11 translocation renal cell carcinoma and clear cell renal cell carcinoma with TFE3 strong positive immunostaining: morphology, immunohistochemistry, and FISH analysis**, Modern Pathology, June 2019, https://doi.org/10.1038/s41379-019-0283-z
+* Hynst J. et al., **Bioinformatic pipelines for whole transcriptome sequencing data exploitation in leukemia patients with complex structural variants**, PeerJ 7:e7071, June 2019, https://doi.org/10.7717/peerj.7071
+* Makise N. et al., **Low-grade endometrial stromal sarcoma with a novel MEAF6-SUZ12 fusion**, Virchows Arch., June 2019, https://doi.org/10.1007/s00428-019-02588-8
+
 
 ---
 
