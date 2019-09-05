@@ -242,7 +242,7 @@ description = ("FusionCatcher searches for novel and known somatic gene fusions 
                "Illumina HiSeq 2000, Illumina HiSeq X, Illumina NextSeq 500, \n"+
                "Illumina GAIIx, Illumina GAII, Illumina MiSeq, Illumina MiniSeq). \n")
 
-version = "%prog 1.10"
+version = "%prog 1.20"
 
 
 if __name__ == "__main__":
@@ -578,7 +578,7 @@ if __name__ == "__main__":
             'rrna',
             'trna',
             'mt',
-            'lincrna',
+            'lncrna',
             'mirna',
             'mitelman',
             'pseudogene',
@@ -1211,6 +1211,15 @@ if __name__ == "__main__":
                       type = "int",
                       dest = "limitSjdbInsertNsj",
                       default = 2000000, 
+                      help = "This option is passed diretly to STAR aligner "+
+                             "For more info see STAR aligner regarding this option. "
+                             "Default is '%default'.")
+
+    parser.add_option("--limitOutSJcollapsed",
+                      action = "store",
+                      type = "int",
+                      dest = "limitOutSJcollapsed",
+                      default = 1000000, 
                       help = "This option is passed diretly to STAR aligner "+
                              "For more info see STAR aligner regarding this option. "
                              "Default is '%default'.")
@@ -2206,10 +2215,13 @@ if __name__ == "__main__":
     os.system(_BE_+"bowtie --version | head -1 > '%s'" % (outdir('bowtie_version.txt'),))
     last_line = file(outdir('bowtie_version.txt'),'r').readline().lower().rstrip("\r\n")
     #correct_versions = set(['bowtie-align version 1.2.1','bowtie-align version 1.2.1.1','bowtie-align version 1.2','bowtie version 1.1.2'])
-    correct_versions = set(['version 1.2','version 1.1.2','version 1.2.2'])
+    correct_versions = set(['version 1.2','version 1.1.2','version 1.2.2','version 1.2.3'])
     bowtie121 = False
     if last_line.find("1.2.") != -1:
         bowtie121 = True
+    bowtie123 = False
+    if (last_line.find("1.2.3") != -1) or (last_line.find("1.2.") != -1 and last_line.find("1.2.1") == -1 and last_line.find("1.2.2") == -1): # add here other newer versions of Bowtie
+        bowtie123 = True # this version of Bowtie suports indexes from Bowtie2
     if (last_line not in correct_versions) and not [1 for el in correct_versions if last_line.lower().endswith(el)]:
         print last_line
         job.close()
@@ -2457,7 +2469,8 @@ if __name__ == "__main__":
 
         os.system(_SR_+"STAR --version > '%s'" % (outdir('star_version.txt'),))
         last_line = file(outdir('star_version.txt'),'r').readline().lower().rstrip("\r\n")
-        correct_version = '2.7.0f'
+        correct_version = '2.7.2b'
+        #correct_version = '2.7.0f'
         #correct_version = 'star_2.5.4b'
         #correct_version = 'star_2.5.2b'
         #correct_version = 'star_2.5.2a'
@@ -4389,9 +4402,12 @@ if __name__ == "__main__":
         job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
         job.add('--un',outdir('reads_filtered_not-mapped-genome.fq'),kind='output')
         job.add('--max',outdir('reads-filtered_multiple-mappings-genome.fq'),kind='output') # if this is missing then these reads are going to '--un'
-        if os.path.isfile(datadir('genome_index','.1.ebwtl')):
-            job.add('--large-index',kind='parameter')
-        job.add('',datadir('genome_index/'),kind='input')
+        if bowtie123:
+            job.add('',datadir('genome_index2/index'),kind='input')
+        else:
+            if os.path.isfile(datadir('genome_index','.1.ebwtl')):
+                job.add('--large-index',kind='parameter')
+            job.add('',datadir('genome_index/'),kind='input')
         job.add('',outdir('reads-filtered.fq'),kind='input')
         job.add('',outdir('reads_filtered_genome.map'),kind='output') # <== best mappings on genome #######
         job.add('2>',outdir('log_bowtie_reads_mapped-genome.stdout.txt'),kind='parameter',checksum='no')
@@ -5337,11 +5353,11 @@ if __name__ == "__main__":
     job.add('--filter_genes',datadir('mirnas.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_15.txt'),kind='output')
     job.run()
-    # label fusion genes -- lincRNA
+    # label fusion genes -- lncRNA
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_15.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','lincrna',kind='parameter')
-    job.add('--filter_genes',datadir('lincrnas.txt'),kind='input')
+    job.add('--label','lncrna',kind='parameter')
+    job.add('--filter_genes',datadir('lncrnas.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_16.txt'),kind='output')
     job.run()
     # label fusion genes -- MT
@@ -6074,9 +6090,12 @@ if __name__ == "__main__":
     #            job.add('--suppress','1,2,3,4,5,6,7,8',kind='parameter')
                 job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end.fq'),kind='output') # here is the result
                 job.add('--max',outdir('reads_filtered_not-mapped_multiple_end.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
-                if os.path.isfile(datadir('genome_index','.1.ebwtl')):
-                    job.add('--large-index',kind='parameter')
-                job.add('',datadir('genome_index/'),kind='input')
+                if bowtie123:
+                    job.add('',datadir('genome_index2/index'),kind='input')
+                else:
+                    if os.path.isfile(datadir('genome_index','.1.ebwtl')):
+                        job.add('--large-index',kind='parameter')
+                    job.add('',datadir('genome_index/'),kind='input')
                 job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_more.fq'),kind='input',temp_path=temp_flag)
                 job.add('',outdir('reads-unmapped-filtered-geno.map'),kind='output',temp_path=temp_flag)
     #            job.add('','/dev/null',kind='parameter')
@@ -6361,9 +6380,12 @@ if __name__ == "__main__":
 #        job.add('--suppress','1,2,3,4,5,6,7,8',kind='parameter')
         job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.fq'),kind='output') # here is the result
         job.add('--max',outdir('reads_filtered_not-mapped_multiple_end2.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
-        if os.path.isfile(datadir('genome_index','.1.ebwtl')):
-            job.add('--large-index',kind='parameter')
-        job.add('',datadir('genome_index/'),kind='input')
+        if bowtie123:
+            job.add('',datadir('genome_index2/index'),kind='input')
+        else:
+            if os.path.isfile(datadir('genome_index','.1.ebwtl')):
+                job.add('--large-index',kind='parameter')
+            job.add('',datadir('genome_index/'),kind='input')
         job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end-f5.fq'),kind='input',temp_path=temp_flag)
         job.add('',outdir('reads-unmapped-filtered-geno_last.map'),kind='output',temp_path=temp_flag)
 #        job.add('','/dev/null',kind='parameter')
@@ -8416,7 +8438,7 @@ if __name__ == "__main__":
                 if os.path.exists(outdir('log_lengths_reads_gene-gene_no-str.txt')):
                     sdjboverhang = int(file(outdir('log_lengths_reads_gene-gene_no-str.txt'),'r').readline().strip()) - 1
                     file(outdir('star_sdjboverhang.txt'),'w').write("%d" % (sdjboverhang,))
-                genomesaindexnbases = int(min(14, math.log(nucleotides_gg,2)/(float(2) - 1)))
+                genomesaindexnbases = int(min(14, math.log(nucleotides_gg,2)/(float(2)) - 1))
                 genomechrbinnbits = int(min(18, math.log(float(nucleotides_gg)/float(sequences_gg),2)))
 
                 # find available memory
@@ -8471,11 +8493,11 @@ if __name__ == "__main__":
 
 
                             
-                        genomesaindexnbases = int(min(14, math.log(100,2)/(float(2) - 1)))
+                        genomesaindexnbases = int(min(14, math.log(100,2)/(float(2)) - 1))
                         if os.path.exists(part+'.len'):
                             ti = file(part+'.len','r').readline().strip()
                             lenparts = len(parts)
-                            genomesaindexnbases = int(min(14, math.log(float(ti),2)/(float(2) - 1)))
+                            genomesaindexnbases = int(min(14, math.log(float(ti),2)/(float(2)) - 1))
                             #genomechrbinnbits = int(min(18, math.log(float(t)/(math.ceil(float(sequences_gg)/float(lenparts)))+2,2)))
                         job.clean(part+'.len',temp_path=temp_flag)
 
@@ -8542,7 +8564,10 @@ if __name__ == "__main__":
                         job.add('--limitOutSAMoneReadBytes','100000000',kind='parameter')
                         job.add('--scoreGapNoncan','-4',kind='parameter') # should it be -2?
                         job.add('--scoreGapATAC','-4',kind='parameter')
-                        job.add('--limitSjdbInsertNsj',options.limitSjdbInsertNsj,kind='parameter')
+                        if is_optparse_provided(parser,'limitSjdbInsertNsj'):
+                            job.add('--limitSjdbInsertNsj',options.limitSjdbInsertNsj,kind='parameter')
+                        if is_optparse_provided(parser,'limitOutSJcollapsed'):
+                            job.add('--limitOutSJcollapsed',options.limitOutSJcollapsed,kind='parameter')
                         job.add('--readFilesIn',outdir('reads_gene-gene_no-str_fixed.fq'),kind='input')
                         job.add('--outFileNamePrefix',gdr,kind='output')
                         job.add('--outFileNamePrefix',os.path.join(gdr,'Aligned.out.sam'),kind='output',command_line = 'no')
@@ -9158,7 +9183,7 @@ if __name__ == "__main__":
                                         sequences2_gg = int(file(outdir('gene-gene2__seq.txt.')+str(i),'r').readline().strip())
 
 
-                                        genomesaindexnbases2 = int(min(14, math.log(nucleotides2_gg,2)/(float(2) - 1)))
+                                        genomesaindexnbases2 = int(min(14, math.log(nucleotides2_gg,2)/(float(2)) - 1))
                                         genomechrbinnbits2 = int(min(18, math.log(float(nucleotides2_gg)/float(sequences2_gg),2)))
 
                                         # build the STAR index
@@ -9356,7 +9381,10 @@ if __name__ == "__main__":
 #                    job.add('--chimScoreSeparation','10',kind='parameter')# default is: 0
 #                    job.add('--chimSegmentMin',outdir('gene-gene_longest.txt'),kind='parameter',from_file = 'yes')
 #                    job.add('--chimJunctionOverhangMin',outdir('gene-gene_longest.txt'),kind='parameter',from_file = 'yes')
-                    job.add('--limitSjdbInsertNsj',options.limitSjdbInsertNsj,kind='parameter')
+                    if is_optparse_provided(parser,'limitSjdbInsertNsj'):
+                        job.add('--limitSjdbInsertNsj',options.limitSjdbInsertNsj,kind='parameter')
+                    if is_optparse_provided(parser,'limitOutSJcollapsed'):
+                        job.add('--limitOutSJcollapsed',options.limitOutSJcollapsed,kind='parameter')
                     job.add('--readFilesIn',outdir('reads_gene-gene_no-str_fixed.fq'),kind='input',temp_path=temp_flag)
                     job.add('--outFileNamePrefix',outdir('gene-gene-star-results/'),kind='output')
                     job.run()
@@ -10002,7 +10030,7 @@ if __name__ == "__main__":
                                     sequences2_gg = int(file(outdir('gene-gene2__seq.txt'),'r').readline().strip())
 
 
-                                    genomesaindexnbases2 = int(min(14, math.log(nucleotides2_gg,2)/(float(2) - 1)))
+                                    genomesaindexnbases2 = int(min(14, math.log(nucleotides2_gg,2)/(float(2)) - 1))
                                     genomechrbinnbits2 = int(min(18, math.log(float(nucleotides2_gg)/float(sequences2_gg),2)))
 
                                     # build the STAR index
@@ -10310,6 +10338,7 @@ if __name__ == "__main__":
                         # build the BOWTIE2 index
                         job.add(_B2_+'bowtie2-build',kind='program')
                         job.add('-f',kind='parameter')
+                        job.add('--threads',options.processes,kind='parameter')
                         job.add('--quiet',kind='parameter')
                         job.add('--offrate','1',kind='parameter')
                         job.add('--ftabchars','7',kind='parameter')
@@ -10789,6 +10818,7 @@ if __name__ == "__main__":
                     # build the BOWTIE2 index
                     job.add(_B2_+'bowtie2-build',kind='program')
                     job.add('-f',kind='parameter')
+                    job.add('--threads',options.processes,kind='parameter')
                     job.add('--quiet',kind='parameter')
                     job.add('--offrate','1',kind='parameter')
                     job.add('--ftabchars','7',kind='parameter')
@@ -11633,7 +11663,7 @@ if __name__ == "__main__":
                         if os.path.exists(outdir('genegene.fa.len.'+str(i))):
                             f_nucleotides_gg = int(file(outdir('genegene.fa.len.'+str(i)),'r').readline().strip())
 
-                        f_genomesaindexnbases = int(min(14, math.log(f_nucleotides_gg,2)/(float(2) - 1)))
+                        f_genomesaindexnbases = int(min(14, math.log(f_nucleotides_gg,2)/(float(2)) - 1))
                         f_genomechrbinnbits = int(min(18, math.log(float(f_nucleotides_gg)/float(f_sequences_gg),2)))
                         
                         job.clean(outdir('genegene.fa.len.'+str(i)),temp_path=temp_flag)
@@ -11724,6 +11754,7 @@ if __name__ == "__main__":
                         # build the BOWTIE2 index
                         job.add(_B2_+'bowtie2-build',kind='program')
                         job.add('-f',kind='parameter')
+                        job.add('--threads',options.processes,kind='parameter')
                         job.add('--quiet',kind='parameter')
                         job.add('--offrate','1',kind='parameter')
                         job.add('--ftabchars','7',kind='parameter')

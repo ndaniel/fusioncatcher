@@ -611,7 +611,7 @@ if __name__ == '__main__':
                     if not kk:
                         kk = strmycols(li)
             summary.append("%s\t%d\t%d\t%s\n"%(kk,v,anchor_max,fs))
-            print k
+            #print k
             r = set(r)
             rr = set(el[:-1] + '1' if el.endswith('/2') else el[:-1]+'2' for el in r)
             summary_reads.append(list(r)+list(rr))

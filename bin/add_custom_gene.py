@@ -1599,6 +1599,34 @@ if __name__ == '__main__':
                     strand = '-1'
                 )
 
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001275',
+                    gene_symbol = 'PLAT', # PLAT
+                    gene_id = 'ENSG00000104368',
+                    transcript_id = 'ENST09000001275',
+                    exon_id = 'ENSE09000001275',
+                    exon_number = '1',
+                    start = '42173000', #
+                    end =   '42215000', #
+                    chrom = '8',
+                    strand = '-1'
+                )
+
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001276',
+                    gene_symbol = 'KAT6A', # KAT6A
+                    gene_id = 'ENSG00000083168',
+                    transcript_id = 'ENST09000001276',
+                    exon_id = 'ENSE09000001276',
+                    exon_number = '1',
+                    start = '41915000', #
+                    end =   '42105000', #
+                    chrom = '8',
+                    strand = '-1'
+                )
+
+
                 # transcript 2 - exon 1/4-- IGHM
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000001300',

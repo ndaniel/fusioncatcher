@@ -136,7 +136,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 1.10"
+    version = "%prog 1.20"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -425,7 +425,7 @@ if __name__ == '__main__':
     os.system(_BE_+"bowtie --version | head -1 > '%s'" % (outdir('bowtie_version.txt'),))
     last_line = file(outdir('bowtie_version.txt'),'r').readline().lower().rstrip("\r\n")
     #correct_versions = set(['bowtie-align version 1.2.1','bowtie-align version 1.2.1.1','bowtie-align version 1.2','bowtie version 1.1.2'])
-    correct_versions = set(['version 1.2','version 1.1.2','version 1.2.2'])
+    correct_versions = set(['version 1.2','version 1.1.2','version 1.2.2','version 1.2.3'])
     bowtie121 = False
     if last_line.find("1.2.") != -1:
         bowtie121 = True
@@ -1335,7 +1335,7 @@ if __name__ == '__main__':
     job.add('|',kind='parameter')
     job.add('grep',kind='parameter')
     job.add('--ignore-case',kind='parameter')
-    job.add('','lincRNA',kind='parameter')
+    job.add('','lncRNA',kind='parameter')
     job.add('|',kind='parameter')
     job.add('cut',kind='parameter')
     job.add('-f1',kind='parameter')
@@ -1344,7 +1344,7 @@ if __name__ == '__main__':
     job.add('sort',kind='parameter')
     job.add('|',kind='parameter')
     job.add('uniq',kind='parameter')
-    job.add('>',outdir('lincrnas.txt'),kind='output')
+    job.add('>',outdir('lncrnas.txt'),kind='output')
     job.run()
 
 
@@ -1887,22 +1887,23 @@ if __name__ == '__main__':
     job.add('',outdir('transcripts_index/'),kind='output')
     job.run(error_message = bowtie_error)
 
-    job.add(_BE_+'bowtie-build',kind='program')
-    if bowtie121:
-        job.add('--threads',options.processes,kind='parameter')
-    job.add('-f',kind='parameter')
-    job.add('--quiet',kind='parameter')
-    job.add('--offrate','1',kind='parameter')
-    job.add('--ftabchars','7',kind='parameter')
-    job.add('',outdir('genome.fa'),kind='input')
-    job.add('',outdir('genome_index/'),kind='output')
-    job.run(error_message = bowtie_error)
+#    job.add(_BE_+'bowtie-build',kind='program')
+#    if bowtie121:
+#        job.add('--threads',options.processes,kind='parameter')
+#    job.add('-f',kind='parameter')
+#    job.add('--quiet',kind='parameter')
+#    job.add('--offrate','1',kind='parameter')
+#    job.add('--ftabchars','7',kind='parameter')
+#    job.add('',outdir('genome.fa'),kind='input')
+#    job.add('',outdir('genome_index/'),kind='output')
+#    job.run(error_message = bowtie_error)
 
     job.add(_B2_+'bowtie2-build',kind='program')
     job.add('-f',kind='parameter')
+    job.add('--threads',options.processes,kind='parameter')
     job.add('--quiet',kind='parameter')
-#    job.add('--offrate','1',kind='parameter')
-#    job.add('--ftabchars','7',kind='parameter')
+    job.add('--offrate','1',kind='parameter')
+    job.add('--ftabchars','7',kind='parameter')
     job.add('',outdir('genome.fa'),kind='input')
     job.add('',outdir('genome_index2/index'),kind='output',command_line='no')
     job.add('',outdir('genome_index2/index'),kind='output',checksum='no')

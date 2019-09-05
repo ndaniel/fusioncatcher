@@ -169,6 +169,8 @@ if __name__ == '__main__':
 
         if not sem:
             # write an empty file for other organisms than human
+            if os.path.exists(url_file):
+                os.remove(url_file)
             file(os.path.join(options.output_directory,'tcga-cancer.txt'),'w').write('')
             file(os.path.join(options.output_directory,'tcga-normal.txt'),'w').write('')
             txt = ['TumorFusions (Hu et al. Nucleic Acids Research) database version: Nov. 2017\n']
@@ -197,6 +199,8 @@ if __name__ == '__main__':
                 try:
                     wb = openpyxl.reader.excel.load_workbook(filename=tmp_file)
                 except:
+                    if os.path.exists(url_file):
+                        os.remove(url_file)
                     print "WARNING: Not able to use the python openpyxl library!"
                     if not options.data_filename:
                         os.remove(tmp_file)
@@ -349,7 +353,10 @@ if __name__ == '__main__':
         # write an empty file for other organisms than human
         file(os.path.join(options.output_directory,'tcga-cancer.txt'),'w').write('')
         file(os.path.join(options.output_directory,'tcga-normal.txt'),'w').write('')
-        
+
+    if os.path.exists(url_file):
+        os.remove(url_file)
+
     txt = ['TumorFusions (Hu et al. Nucleic Acids Research) database version: Nov. 2017\n']
     file(os.path.join(options.output_directory,'version.txt'),'a').writelines(txt)
 #

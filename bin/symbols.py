@@ -510,7 +510,17 @@ synonym = {
 'MIR3687':'MIR3687-1',
 'MIR3687-1':'FP671120.1',
 'MRC2':'AC080038.1',
-'EML5':'AL121768.1'
+'EML5':'AL121768.1',
+'SS18':'AC091021.1',
+'GAS7':'AC005747.1',
+'CNOT2':'AC092881.1',
+'HMHA1':'AC004151.1',
+'RPL6':'AC004086.1',
+'RAB5B':'AC034102.1',
+'SIRT6':'AC016586.1',
+'RNF126':'AC004156.1',
+'TINF2':'AL096870.1'
+
 }
 
 # see here for more: http://www.genenames.org/genefamilies/TR#TRG

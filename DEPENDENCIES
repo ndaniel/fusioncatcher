@@ -7,9 +7,9 @@ Required dependencies:
  - Linux 64-bit (e.g. Ubuntu 12.04/14.04/16.04/18.04 or newer) with a minimum of 24 GB RAM
  - Python version 2.7.x (>=2.6.0 and < 3.0 is fine)
  - BioPython version 1.73 (>=1.50 is fine)
- - Bowtie 64-bit version 1.2.2  http://bowtie-bio.sourceforge.net/index.shtml
- - Bowtie2 64-bit version 2.2.9  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
- - STAR version 2.7.0f <http://github.com/alexdobin/STAR/releases>
+ - Bowtie 64-bit version 1.2.3  <http://bowtie-bio.sourceforge.net/index.shtml>
+ - Bowtie2 64-bit version 2.3.5.1  <http://bowtie-bio.sourceforge.net/bowtie2/index.shtml>
+ - STAR version 2.7.2b <http://github.com/alexdobin/STAR/releases>
  - forked SEQTK version 1.2-r101c-dirty  <http://github.com/ndaniel/seqtk>
  - BBMAP version 38.44 <http://sourceforge.net/projects/bbmap/>
 

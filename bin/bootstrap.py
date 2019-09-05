@@ -187,8 +187,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
     
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.10.zip'
-    FUSIONCATCHER_VERSION = "1.10"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.20.zip'
+    FUSIONCATCHER_VERSION = "1.20"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -197,10 +197,10 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     FUSIONCATCHER_CONFIGURATION = expand(FUSIONCATCHER_BIN,'..','etc','configuration.cfg')
     # numpy
     NUMPY_PATH = os.path.join(FUSIONCATCHER_TOOLS,'numpy')
-    NUMPY_URL = 'https://github.com/numpy/numpy/releases/download/v1.16.2/numpy-1.16.2.tar.gz'
+    NUMPY_URL = 'https://github.com/numpy/numpy/releases/download/v1.16.5/numpy-1.16.5.tar.gz'
     # biopython
     BIOPYTHON_PATH = os.path.join(FUSIONCATCHER_TOOLS,'biopython')
-    BIOPYTHON_URL = 'http://biopython.org/DIST/biopython-1.73.tar.gz'
+    BIOPYTHON_URL = 'http://biopython.org/DIST/biopython-1.74.tar.gz'
     # xlrd python
     XLRD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'xlrd')
     XLRD_URL = 'https://files.pythonhosted.org/packages/aa/05/ec9d4fcbbb74bbf4da9f622b3b61aec541e4eccf31d3c60c5422ec027ce2/xlrd-1.2.0.tar.gz'
@@ -214,24 +214,24 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BOWTIE_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie')
 #    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.0/bowtie-1.2-linux-x86_64.zip'
 #    BOWTIE_VERSION = ('1.2',)
-    BOWTIE_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.2/bowtie-1.2.2-linux-x86_64.zip'
-    BOWTIE_VERSION = ('1.2.2',)
+    BOWTIE_URL = 'https://github.com/BenLangmead/bowtie/releases/download/v1.2.3/bowtie-1.2.3-linux-x86_64.zip'
+    BOWTIE_VERSION = ('1.2.3',)
     # BOWTIE
     BOWTIE_OLD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie-old')
     BOWTIE_OLD_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.1.2/bowtie-1.1.2-linux-x86_64.zip'
     BOWTIE_OLD_VERSION = ('1.1.2',)
     # BOWTIE2
     BOWTIE2_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bowtie2')
-    BOWTIE2_URL = 'http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.9/bowtie2-2.2.9-linux-x86_64.zip'
-    BOWTIE2_VERSION = ('2.2.9',)
+    BOWTIE2_URL = 'https://github.com/BenLangmead/bowtie2/releases/download/v2.3.5.1/bowtie2-2.3.5.1-linux-x86_64.zip'
+    BOWTIE2_VERSION = ('2.3.5.1',)
     # BLAT
     BLAT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'blat')
     BLAT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/blat/blat'
     BLAT_VERSION = ('35x1',)
     # STAR
     STAR_PATH = os.path.join(FUSIONCATCHER_TOOLS,'star')
-    STAR_URL = 'https://github.com/alexdobin/STAR/archive/2.7.0f.tar.gz'
-    STAR_VERSION = ('2.7.0f',)
+    STAR_URL = 'https://github.com/alexdobin/STAR/archive/2.7.2b.tar.gz'
+    STAR_VERSION = ('2.7.2b',)
    # BWA
     BWA_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bwa')
     BWA_URL = 'http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2'
@@ -984,7 +984,7 @@ if __name__ == '__main__':
                   "<http://github.com/ndaniel/fusioncatcher>. It only needs\n"+
                   "to have pre-installed: (i) Python version >=2.6.0 and < 3.0,\n"+
                   "and (ii) NumPy <http://pypi.python.org/pypi/numpy>.")
-    version = "%prog 1.10"
+    version = "%prog 1.20"
 
     parser = optparse.OptionParser(usage = usage,
                                    description = description,
@@ -1129,7 +1129,7 @@ python-openpyxl
     time.sleep(5) # wait 5 seconds
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "human_v95"
+    v = "human_v97"
     ############################################################################
     # List all dependencies
     ############################################################################
