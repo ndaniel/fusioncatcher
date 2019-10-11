@@ -1203,10 +1203,10 @@ if __name__ == '__main__':
     job.add('',outdir('celllines.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add(_FC_+'get_prostates.py',kind='program')
+    job.add(_FC_+'get_prostate_cancer.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
-    job.add('',outdir('prostates.txt'),kind='output',command_line='no')
+    job.add('',outdir('prostate_cancer.txt'),kind='output',command_line='no')
     job.run()
 
     job.add(_FC_+'get_pancreases.py',kind='program')
@@ -1774,6 +1774,12 @@ if __name__ == '__main__':
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('gtex.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add(_FC_+'get_oncokb.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('oncokb.txt'),kind='output',command_line='no')
     job.run()
 
     job.add(_FC_+'get_rtcircrna.py',kind='program')

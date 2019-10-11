@@ -50,7 +50,7 @@ import shutil
 import urllib2
 import symbols
 import datetime
-import tarfile
+import zipfile
 
 def mx(e):
     r = e
@@ -87,6 +87,13 @@ if __name__ == '__main__':
                       default = "homo_sapiens",
                       help="""The name of the organism for which the known fusion genes are downloaded, e.g. homo_sapiens, mus_musculus, etc. Default is '%default'.""")
 
+    parser.add_option("--url","-u",
+                      action="store",
+                      type="string",
+                      dest="url",
+                      default = 'https://storage.cloud.google.com/mitelman-data-files/mitelman_db.zip',
+                      help="""The URL for Mitelman database dump file. Default is '%default'.""")
+
     parser.add_option("--output","-o",
                       action="store",
                       type="string",
@@ -107,27 +114,34 @@ if __name__ == '__main__':
     # timeout in seconds
     timeout = 1800
     socket.setdefaulttimeout(timeout)
-    tmp_file = 'temp_mitelman.tar.gz'
+    tmp_file = 'temp_mitelman_db.zip'
     tmp2_file = 'temp_mitelman.dat'
 
     headers = { 'User-Agent' : 'Mozilla/5.0' }
 
-    url = "ftp://ftp1.nci.nih.gov/pub/CGAP/mitelman.tar.gz"
-
+    url = options.url
+    #url = "https://storage.cloud.google.com/mitelman-data-files/mitelman_db.zip"
+    # https://storage.cloud.google.com/mitelman-data-files/mitelman_db.zip
+    data = []
+    fusions = []
+    file(os.path.join(options.output_directory,'mitelman.txt'),'w').write('')
 
     if options.organism.lower() == 'homo_sapiens':
         today = datetime.date.today()
         file(os.path.join(options.output_directory,'version.txt'),'a').writelines(['Mitelman database version: %s\n' % (today.strftime("%Y-%m-%d"),)])
 
         sem = True
-        print "Downloading the known fusion genes from the Mitelman database!"
-        try:
-            req = urllib2.Request(url, headers=headers)
-            da1 = urllib2.urlopen(req)
-            file(tmp_file,'w').write(da1.read())
-        except:
-            print >>sys.stderr, "Warning: Cannot access '%s%s'! The output file will be empty!" % (options.server,url)
-            sem = False
+        if url.startswith("ftp") or url.startswith("http"):
+            print "Downloading the known fusion genes from the Mitelman database!"
+            try:
+                req = urllib2.Request(url, headers=headers)
+                da1 = urllib2.urlopen(req)
+                file(tmp_file,'w').write(da1.read())
+            except:
+                print >>sys.stderr, "Warning: Cannot access '%s'! The output file will be empty!" % (url,)
+                sem = False
+        else:
+            shutil.copyfile(url,tmp_file)
 
 
 
@@ -136,83 +150,94 @@ if __name__ == '__main__':
 
             print "Parsing file..."
 
-            tar = tarfile.open(mode="r:gz", fileobj = open(tmp_file))
-            d = tar.extractfile('molbiolclinassoc.dat').read().decode('ascii').splitlines()
+            ret = None
+            try:
+                zf = zipfile.ZipFile(tmp_file,'r')
+                ret = zf.testzip()
+            except:
+                print >>sys.stderr, "Warning: File '%s' is a bad ZIP file! The output file will be empty!" % (url,)
+                ret = 1
 
-            if d:
+            if ret:
+                print >>sys.stderr, "Warning: File '%s' is not a valid ZIP file! The output file will be empty!" % (url,)
+            else:
+            
+                d = zf.read('../data/processed/MBCA.TXT').decode('ascii').splitlines()
+
+                if d:
+                    #h = d.pop(0) # remove header
+                    fusions = set()
+
+                    f = [e.rstrip("\r\n").split("\t")[7] for e in d if e.rstrip("\r\n") and len(e.split("\t"))>7]
+                    for e in f:
+                        x = e.split(",")
+                        for z in x:
+                            if z and z.find("/") != -1:
+                                uf = tuple(z.upper().replace("+","").split("/"))
+                                if uf and len(uf) == 2:
+                                    fusions.add(uf)
+                                elif len(uf) == 3:
+                                    fusions.add((uf[0],uf[1]))
+                                    fusions.add((uf[1],uf[2]))
+                                    fusions.add((uf[0],uf[2]))
+
+                    # read the gene symbols
+                    file_symbols = os.path.join(options.output_directory,'synonyms.txt')
+                    genes = symbols.read_genes_symbols(file_symbols)
+
+                    banned = set()
+                    loci = symbols.generate_loci(file_symbols)
+                    #for v in symbols.locus.values():
+                    for v in loci.values():
+                        if v:
+                            n = len(v)
+                            if n > 1:
+                                for i in xrange(n-1):
+                                    for j in xrange(i+1,n):
+                                        if v[i].upper() != v[j].upper():
+                                            ens1 = symbols.ensembl(v[i].upper(),genes,loci)
+                                            ens2 = symbols.ensembl(v[j].upper(),genes,loci)
+                                            if ens1 and ens2:
+                                                for e1 in ens1:
+                                                    for e2 in ens2:
+                                                        if e1 != e2:
+                                                            (e1,e2) = (e2,e1) if e2 < e1 else (e1,e2)
+                                                            banned.add((e1,e2))
 
 
-                h = d.pop(0) # remove header
-                fusions = set()
-                f = [e.split("\t")[7] for e in d if e.rstrip("\r\n")]
-                for e in f:
-                    x = e.split(",")
-                    for z in x:
-                        if z and z.find("/") != -1:
-                            uf = tuple(z.upper().replace("+","").split("/"))
-                            if uf and len(uf) == 2:
-                                fusions.add(uf)
-                            elif len(uf) == 3:
-                                fusions.add((uf[0],uf[1]))
-                                fusions.add((uf[1],uf[2]))
-                                fusions.add((uf[0],uf[2]))
+                    d = []
+                    for (g1,g2) in fusions:
+                        if g1 in ("IGH","IGL","IGK","IG","TRA","TRB","TRD","TRG"):
+                            g1 = g1 + "@"
+                        if g2 in ("IGH","IGL","IGK","IG","TRA","TRB","TRD","TRG"):
+                            g2 = g2 + "@"
+                        if ( g1.upper() == g2.upper() or ((g1.endswith('@') and g2.endswith('@')) and g1.upper()[:2] == g2.upper()[:2])):
+                            print "%s-%s skipped!" % (g1,g2)
+                            continue
+                        ens1 = symbols.ensembl(g1,genes,loci)
+                        ens2 = symbols.ensembl(g2,genes,loci)
 
-                # read the gene symbols
-                file_symbols = os.path.join(options.output_directory,'synonyms.txt')
-                genes = symbols.read_genes_symbols(file_symbols)
+                        if ens1 and ens2:
+                            for e1 in ens1:
+                                for e2 in ens2:
+                                    if e1 != e2 and ((e1,e2) not in banned) and ((e2,e1) not in banned):
+                                        if e1 > e2:
+                                            d.append([e2,e1])
+                                        else:
+                                            d.append([e1,e2])
 
-                banned = set()
-                loci = symbols.generate_loci(file_symbols)
-                #for v in symbols.locus.values():
-                for v in loci.values():
-                    if v:
-                        n = len(v)
-                        if n > 1:
-                            for i in xrange(n-1):
-                                for j in xrange(i+1,n):
-                                    if v[i].upper() != v[j].upper():
-                                        ens1 = symbols.ensembl(v[i].upper(),genes,loci)
-                                        ens2 = symbols.ensembl(v[j].upper(),genes,loci)
-                                        if ens1 and ens2:
-                                            for e1 in ens1:
-                                                for e2 in ens2:
-                                                    if e1 != e2:
-                                                        (e1,e2) = (e2,e1) if e2 < e1 else (e1,e2)
-                                                        banned.add((e1,e2))
+                    data = ['\t'.join(sorted(line)) + '\n' for line in d]
+                    data = sorted(set(data))
 
-
-                d = []
-                for (g1,g2) in fusions:
-                    if g1 in ("IGH","IGL","IGK","IG","TRA","TRB","TRD","TRG"):
-                        g1 = g1 + "@"
-                    if g2 in ("IGH","IGL","IGK","IG","TRA","TRB","TRD","TRG"):
-                        g2 = g2 + "@"
-                    if ( g1.upper() == g2.upper() or ((g1.endswith('@') and g2.endswith('@')) and g1.upper()[:2] == g2.upper()[:2])):
-                        print "%s-%s skipped!" % (g1,g2)
-                        continue
-                    ens1 = symbols.ensembl(g1,genes,loci)
-                    ens2 = symbols.ensembl(g2,genes,loci)
-
-                    if ens1 and ens2:
-                        for e1 in ens1:
-                            for e2 in ens2:
-                                if e1 != e2 and ((e1,e2) not in banned) and ((e2,e1) not in banned):
-                                    if e1 > e2:
-                                        d.append([e2,e1])
-                                    else:
-                                        d.append([e1,e2])
-
-                data = ['\t'.join(sorted(line)) + '\n' for line in d]
-                data = sorted(set(data))
-
-                print "%d known fusion genes converted succesfully to Ensembl Gene ids!" % (len(data),)
+                    print "%d known fusion genes converted succesfully to Ensembl Gene ids!" % (len(data),)
         else:
             data = []
         file(os.path.join(options.output_directory,'mitelman.txt'),'w').writelines(data)
         file(os.path.join(options.output_directory,'mitelman_genes.txt'),'w').writelines(sorted(set(["--".join(mx(e))+"\n" for e in fusions])))
-        if os.path.isfile(tmp_file):
-            os.remove(tmp_file)
+
     else:
         # write an empty file for other organisms than human
         file(os.path.join(options.output_directory,'mitelman.txt'),'w').write('')
+    if os.path.isfile(tmp_file):
+        os.remove(tmp_file)
 #

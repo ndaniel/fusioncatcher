@@ -162,7 +162,6 @@ if __name__ == '__main__':
         'TNFSF13',
         'WWOX',
         'ZFP36L1',
-#        'NPM1', # already enlarged
         'CIC',
         'DUX4'
 

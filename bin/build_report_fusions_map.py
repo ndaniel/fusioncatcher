@@ -344,6 +344,13 @@ if __name__ == '__main__':
                       dest = "input_candidate_fusion_genes_reads_filename",
                       help = """The input list of candidate fusion genes and ids of the supporting reads, for example 'candidate_fusion-genes_not-filtered_supporting_paired-reads.txt'. This is processed even further.""")
 
+    parser.add_option("--input_unmapped_reads",
+                      action = "store",
+                      type = "string",
+                      dest = "input_unmapped_reads_filename",
+                      help = """The input list of ids of reads that are unmapped (that are mapping over the fusion junction).""")
+
+
     parser.add_option("--input_candidate_fusions_missing_mates",
                       action = "store",
                       type = "string",
@@ -650,6 +657,10 @@ if __name__ == '__main__':
     candidate_fusions.pop(0) # remove the header
     candidate_fusions = dict([( tuple(myorder(line[0], line[1])), line[2]) for line in candidate_fusions if line[6].lower() == 'further_analysis'])
 
+    unmapped_reads = set()
+    if options.input_unmapped_reads_filename:
+        print "Reading...",options.input_unmapped_reads_filename
+        unmapped_reads = set([line.rstrip('\r\n') for line in file(options.input_unmapped_reads_filename,'r').readlines()])
 
     print "Reading...",options.input_candidate_fusion_genes_reads_filename
     # 0  - Fusion_gene_symbol_1
@@ -736,9 +747,9 @@ if __name__ == '__main__':
         if not pairs:
             pairs = candidate_fusions_reads.get((g2,g1),None)
             if not pairs:
-                print g1
-                print g2
-                print pairs
+                print >>sys.stderr,g1
+                print >>sys.stderr,g2
+                print >>sys.stderr,pairs
                 print "Error: something wrong!"
                 sys.exit(1)
         pairs = set(pairs)
@@ -882,7 +893,10 @@ if __name__ == '__main__':
         vvv = sorted(vv)
         for v in vvv:
             if v in support_pair:
-                da.append(">%s_supports_fusion_pair\n"%(v,))
+                if v[:-2] in unmapped_reads:
+                    da.append(">%s_supports_fusion_pair_and_junction\n"%(v,))
+                else:
+                    da.append(">%s_supports_fusion_pair\n"%(v,))
             else:
                 da.append(">%s_supports_fusion_junction\n"%(v,))
             da.append("%s\n"%(fasta[v],))
@@ -909,7 +923,10 @@ if __name__ == '__main__':
         vvv = sorted(vv)
         for v in vvv:
             if v in support_pair:
-                da.append("@%s_supports_fusion_pair%s\n"%(v[:-2],v[-2:]))
+                if v[:-2] in unmapped_reads:
+                    da.append("@%s_supports_fusion_pair_and_junction%s\n"%(v[:-2],v[-2:]))
+                else:
+                    da.append("@%s_supports_fusion_pair%s\n"%(v[:-2],v[-2:]))
             else:
                 da.append("@%s_supports_fusion_junction%s\n"%(v[:-2],v[-2:]))
             sq = fastq[v]

@@ -1129,7 +1129,7 @@ python-openpyxl
     time.sleep(5) # wait 5 seconds
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "human_v97"
+    v = "human_v98"
     ############################################################################
     # List all dependencies
     ############################################################################

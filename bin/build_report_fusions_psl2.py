@@ -378,6 +378,14 @@ if __name__ == '__main__':
                       dest = "input_candidate_fusion_genes_reads_filename",
                       help = """The input list of candidate fusion genes and ids of the supporting reads, for example 'candidate_fusion-genes_not-filtered_supporting_paired-reads.txt'. This is processed even further.""")
 
+
+    parser.add_option("--input_unmapped_reads",
+                      action = "store",
+                      type = "string",
+                      dest = "input_unmapped_reads_filename",
+                      help = """The input list of ids of reads that are unmapped (that are mapping over the fusion junction).""")
+
+
     parser.add_option("--output_super_summary",
                       action = "store",
                       type = "string",
@@ -540,6 +548,13 @@ if __name__ == '__main__':
     #          'anchor_length',                                       # 19
     #          'fusion_sequence'                                      # 20
     #          ]
+
+
+    unmapped_reads = set()
+    if options.input_unmapped_reads_filename:
+        print "Reading...",options.input_unmapped_reads_filename
+        unmapped_reads = set([line.rstrip('\r\n') for line in file(options.input_unmapped_reads_filename,'r').readlines()])
+
 
     print "Reading...",options.input_fusion_psl_filename
     data = [line.rstrip('\r\n').split('\t') for line in file(options.input_fusion_psl_filename,'r') if line.rstrip('\r\n')]
