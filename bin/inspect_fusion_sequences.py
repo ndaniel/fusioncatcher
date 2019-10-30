@@ -5,7 +5,7 @@ It takes as input a list of chromosomal coordinates of fusion genes and it label
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2018 Daniel Nicorici
+Copyright (c) 2009-2019 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -44,7 +44,13 @@ import gzip
 import math
 
 
-
+#
+#
+#
+polyA = "A"
+polyC = "C"
+polyG = "G"
+polyT = "T"
 
 #
 #
@@ -157,8 +163,13 @@ def evaluate_fusion_sequence(
              kmer = 2,
              threshold = 2.0,
              threshold2 = 2.0,
+             poly = 15,
              verbose = True):
 
+    polyA = poly * "A"
+    polyC = poly * "C"
+    polyG = poly * "G"
+    polyT = poly * "T"
 
     if verbose:
         print >>sys.stderr,"Reading the list of fusion genes..."
@@ -175,14 +186,26 @@ def evaluate_fusion_sequence(
             l1 = codelength(s,window_length,window_overlap,kmer)
             if l1 < threshold:
                 label = label + "," if label else label
-                label = label + 'short_repeats'
+                label = label + 'short_repeats,sr%.2f' % (l1,)
                 #print "l1",s,l1
             if len(s) > 50:
                 l2 = codelength(s,w=50,o=40,kmer=9)
                 if l2 < threshold2:
                     label = label + "," if label else label
-                    label = label + 'long_repeats'
+                    label = label + 'long_repeats,lr%.2f' % (l2,)
                 #print "l2",s,l2
+            if s.find(polyA) != -1:
+                label = label + "," if label else label
+                label = label + 'polyA'
+            if s.find(polyC) != -1:
+                label = label + "," if label else label
+                label = label + 'polyC'
+            if s.find(polyG) != -1:
+                label = label + "," if label else label
+                label = label + 'polyG'
+            if s.find(polyT) != -1:
+                label = label + "," if label else label
+                label = label + 'polyT'
             res.append(line[0:2]+[label]+line[3:])
 
         if verbose:
@@ -216,7 +239,7 @@ def main():
 
 Author: Daniel Nicorici
 Email: Daniel.Nicorici@gmail.com
-Copyright (c) 2009-2018 Daniel Nicorici
+Copyright (c) 2009-2019 Daniel Nicorici
 
 """
 
@@ -267,6 +290,14 @@ Copyright (c) 2009-2018 Daniel Nicorici
                       default = 2,
                       help = """The length of the kmer used in computing the codelength. Default is %default.""")
 
+    parser.add_option("-p","--poly",
+                      action = "store",
+                      type = "int",
+                      dest = "poly",
+                      default = 15,
+                      help = """The minimum length of the polyN. Default is %default.""")
+
+
     parser.add_option("-t","--threshold",
                       action = "store",
                       type = "float",
@@ -315,6 +346,7 @@ Copyright (c) 2009-2018 Daniel Nicorici
                     options.kmer,
                     options.codelength_threshold,
                     options.codelength_threshold2,
+                    options.poly,
                     options.verbose)
 
 

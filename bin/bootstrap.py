@@ -10,7 +10,7 @@ It only needs to have pre-installed:
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2018 Daniel Nicorici
+Copyright (c) 2009-2019 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -187,7 +187,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
     
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.20.zip'
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.10.zip'
     FUSIONCATCHER_VERSION = "1.20"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
@@ -254,28 +254,28 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     ENSEMBL_VERSION = ensembl_version(internet = internet)
     # LZO
     LZO_PATH = os.path.join(FUSIONCATCHER_TOOLS,'lzo')
-    LZO_URL = 'http://www.oberhumer.com/opensource/lzo/download/lzo-2.08.tar.gz'
-    LZO_VERSION = ('v2.08',)
+    LZO_URL = 'http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz'
+    LZO_VERSION = ('v2.10',)
     # LZOP
     LZOP_PATH = os.path.join(FUSIONCATCHER_TOOLS,'lzop')
-    LZOP_URL = 'http://www.lzop.org/download/lzop-1.03.tar.gz'
-    LZOP_VERSION = ('v1.03',)
+    LZOP_URL = 'http://www.lzop.org/download/lzop-1.04.tar.gz'
+    LZOP_VERSION = ('v1.04',)
     # COREUTILS (for SORT parallel)
 #    COREUTILS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'coreutils')
 #    COREUTILS_URL = 'http://ftp.gnu.org/gnu/coreutils/coreutils-8.27.tar.xz'
 #    COREUTILS_VERSION = ('v8.27',)
     # PIGZ (GZIP parallel)
     PIGZ_PATH = os.path.join(FUSIONCATCHER_TOOLS,'pigz')
-    PIGZ_URL = 'http://http.debian.net/debian/pool/main/p/pigz/pigz_2.3.1.orig.tar.gz' #'http://zlib.net/pigz/pigz-2.3.3.tar.gz'
-    PIGZ_VERSION = ('2.3','2.3.1','2.3.3')
+    PIGZ_URL = 'https://zlib.net/pigz/pigz-2.4.tar.gz' #'http://zlib.net/pigz/pigz-2.3.3.tar.gz'
+    PIGZ_VERSION = ('2.3','2.3.1','2.3.3','2.4')
     # PXZ (XZ parallel)
     PXZ_PATH = os.path.join(FUSIONCATCHER_TOOLS,'pxz')
     PXZ_URL = 'http://jnovy.fedorapeople.org/pxz/pxz-4.999.9beta.20091201git.tar.xz'
     PXZ_VERSION = ('4.999.9beta',)
     # GNU PARALLEL
     PARALLEL_PATH = os.path.join(FUSIONCATCHER_TOOLS,'parallel')
-    PARALLEL_URL = 'http://ftp.gnu.org/gnu/parallel/parallel-20170522.tar.bz2'
-    PARALLEL_VERSION = ('20170522',)
+    PARALLEL_URL = 'http://ftp.gnu.org/gnu/parallel/parallel-20191022.tar.bz2'
+    PARALLEL_VERSION = ('20191022',)
     # samtools
     SAMTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'samtools')
     SAMTOOLS_URL = 'http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2'
@@ -289,8 +289,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     # PICARD
     PICARD_PATH = os.path.join(FUSIONCATCHER_TOOLS,'picard')
     #PICARD_URL = 'http://sourceforge.net/projects/picard/files/picard-tools/1.119/picard-tools-1.119.zip'
-    PICARD_URL = 'http://github.com/broadinstitute/picard/releases/download/2.19.0/picard.jar'
-    PICARD_VERSION = ('2.9.4','2.19.0')
+    PICARD_URL = 'https://github.com/broadinstitute/picard/releases/download/2.21.2/picard.jar'
+    PICARD_VERSION = ('2.9.4','2.19.0','2.21.2')
     # LiftOver
     LIFTOVER_PATH = os.path.join(FUSIONCATCHER_TOOLS,'liftover')
     LIFTOVER_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/liftOver'
@@ -469,7 +469,7 @@ def test_tool(name = "",
         if verbose:
             print "  * Found at '%s'!" % (p,)
             print "  * Test running:  '%s %s'" % (p,param)
-        flag,r = cmd([[[p,param],False]], exit = False, verbose = False)
+        (flag,r) = cmd([[[p,param],False]], exit = False, verbose = False)
         r = [line for line in r if line.lower().find(version_word.lower()) != -1]
         f = False
         v = None
@@ -527,8 +527,9 @@ def which(program, cwd = True):
 # execute command line commands
 ##############################################
 def cmd(cmds = [],
-        exit=True,
-        verbose = True):
+        exit = True,
+        verbose = True,
+        log = ''):
     """
     stderr = os.devnull
     stderr = subprocess.STDOUT
@@ -536,11 +537,23 @@ def cmd(cmds = [],
     f = True
     r = []
     rr = []
+    if log:
+        file(log,"a").write("\n")
     for c in cmds:
         if not c:
             continue
         c0 = [el for el in c[0] if el and el.strip()]
         c1 = c[1]
+        if log:
+            commandline = ' '.join(c0)
+            if commandline == "chmod +x custom_install.sh":
+                pass
+            elif commandline == "./custom_install.sh":
+                custom = [e.rstrip("\r\n")+"\n" for e in file("custom_install.sh","r") if e.rstrip("\r\n") and (not e.startswith("#")) and (not e.startswith("exit")) ]
+                file(log,"a").writelines(custom)
+            else:
+                file(log,"a").write(commandline+"\n")
+                
         if verbose:
             print "    # " + ' '.join(c0)
 
@@ -585,7 +598,7 @@ def cmd(cmds = [],
 #############################################
 # install a Python modules from source
 #############################################
-def install_module(package, url, path, exe = '', pythonpath = '', root_aptget_install = False, verbose = True, exit = True):
+def install_module(package, url, path, exe = '', pythonpath = '', root_aptget_install = False, verbose = True, exit = True, log = ''):
     """
     module = module's name
     url =
@@ -609,11 +622,11 @@ def install_module(package, url, path, exe = '', pythonpath = '', root_aptget_in
     if os.getuid() == 0 and root_aptget_install:
         if verbose:
             print "Installing Python package '%s' as root..." % (package,)
-        f,r = cmd([(['apt-get','--help'],False)], verbose = False, exit = False)
+        f,r = cmd([(['apt-get','--help'],False)], verbose = False, exit = False, log = log)
         if f:
             cmds = cmds + [(['apt-get','--yes','install',package],False)]
         else:
-            f,r = cmd([(['yum','--help'],False)], verbose = False, exit = False)
+            f,r = cmd([(['yum','--help'],False)], verbose = False, exit = False, log = log)
             if f:
                 cmds = cmds +[(['yum','-y','install',package],False)]
             else:
@@ -648,7 +661,8 @@ def install_module(package, url, path, exe = '', pythonpath = '', root_aptget_in
              ]
     cmd(cmds,
         verbose = verbose,
-        exit = exit
+        exit = exit,
+        log = log
         )
     if verbose:
         print "  * Done!"
@@ -656,7 +670,7 @@ def install_module(package, url, path, exe = '', pythonpath = '', root_aptget_in
 #############################################
 # install a tool (containing executables)
 #############################################
-def install_tool(name, url, path, verbose = True, exit = True, env_configure = [], custom_install = []):
+def install_tool(name, url, path, verbose = True, exit = True, env_configure = [], custom_install = [], log = ''):
     """
     url =
     path = where to be installed
@@ -705,7 +719,8 @@ def install_tool(name, url, path, verbose = True, exit = True, env_configure = [
                       ]
         cmd(cmds,
             verbose = verbose,
-            exit = exit
+            exit = exit,
+            log = log
             )
 
         listdir = set([os.path.join(short_path,el) for el in os.listdir(short_path) if (not el.startswith('.')) and os.path.isdir(os.path.join(short_path,el))])
@@ -713,7 +728,8 @@ def install_tool(name, url, path, verbose = True, exit = True, env_configure = [
         cmds = decompress
         cmd(cmds,
             verbose = verbose,
-            exit = exit
+            exit = exit,
+            log = log
             )
         newdir = [os.path.join(short_path,el) for el in os.listdir(short_path) if ( (not el.startswith('.')) and
                                                                                     os.path.isdir(os.path.join(short_path,el)) and
@@ -738,7 +754,8 @@ def install_tool(name, url, path, verbose = True, exit = True, env_configure = [
 
         cmd(cmds,
             verbose = verbose,
-            exit = exit
+            exit = exit,
+            log = log
             )
         cmds = []
 
@@ -758,7 +775,8 @@ def install_tool(name, url, path, verbose = True, exit = True, env_configure = [
 
             cmd(cmds,
                 verbose = verbose,
-                exit = exit
+                exit = exit,
+                log = log
                 )
             cmds = []
         else:
@@ -776,7 +794,8 @@ def install_tool(name, url, path, verbose = True, exit = True, env_configure = [
 
             cmd(cmds,
                 verbose = verbose,
-                exit = exit
+                exit = exit,
+                log = log
                 )
             cmds = []
 
@@ -786,7 +805,8 @@ def install_tool(name, url, path, verbose = True, exit = True, env_configure = [
 
             cmd(cmds,
                 verbose = verbose,
-                exit = exit
+                exit = exit,
+                log = log
                 )
     else:
         # it is just an executable
@@ -800,7 +820,8 @@ def install_tool(name, url, path, verbose = True, exit = True, env_configure = [
                 ]
         cmd(cmds,
             verbose = verbose,
-            exit = exit
+            exit = exit, 
+            log = log
             )
     if verbose:
         print "  * Done!"
@@ -861,7 +882,8 @@ def module(module,
            path,
            install = False, # forced install
            pythonpath = '',
-           root_aptget_install = False):
+           root_aptget_install = False,
+           log = ''):
     r = False
     thepath = None
     if not install:
@@ -889,7 +911,8 @@ def module(module,
                        path = path,
                        exe = PYTHON_EXE,
                        pythonpath = pythonpath,
-                       root_aptget_install = root_aptget_install
+                       root_aptget_install = root_aptget_install,
+                       log = log
                       )
     return thepath
 
@@ -908,7 +931,8 @@ def tool(name,
          version_word = None,
          env_configure = [],
          custom_install = [],
-         skip = False):
+         skip = False,
+         log = ''):
 
     r = False
     thepath = None
@@ -960,7 +984,8 @@ def tool(name,
                          path = expand(path),
                          verbose = True,
                          env_configure = env_configure,
-                         custom_install = custom_install
+                         custom_install = custom_install,
+                         log = log
                         )
     return thepath
 
@@ -1083,6 +1108,12 @@ if __name__ == '__main__':
                       dest = "local_fusioncatcher",
                       help = """By default scripts belonging to FusionCatcher are downloaded using internet. In case that one wishes to proceed with the installation by using ONLY the FusionCatcher ZIP archive this option should be used. It specifies the local path where FusionCatcher archive is available and no internet connection will be used.""")
 
+    parser.add_option("--log",
+                      action = "store",
+                      type = "string",
+                      dest = "log",
+                      help = """The log file where the commands executed by this script are written.""")
+
     (options, args) = parser.parse_args()
 
 
@@ -1128,6 +1159,12 @@ python-openpyxl
     print hints
     time.sleep(5) # wait 5 seconds
 
+    #
+    log = ''
+    if options.log:
+        log = expand(options.log)
+        file(log,"w").write("")
+
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
     v = "human_v98"
     ############################################################################
@@ -1145,7 +1182,7 @@ python-openpyxl
         print "Blat [REQUIRED]: ",BLAT_URL
         print "LiftOver [REQUIRED]: ",LIFTOVER_URL
         print "FaToTwoBit (from Blat toolbox) [REQUIRED]: ",FATOTWOBIT_URL
-        print "SAMTools [REQUIRED]: ",SAMTOOLS_URL
+#        print "SAMTools [REQUIRED]: ",SAMTOOLS_URL
         print "SRAToolKit (from NCBI) [REQUIRED]: ",SRATOOLKIT_URL
         print "STAR [REQUIRED]: ",STAR_URL
         print "BWA [REQUIRED]: ",BWA_URL
@@ -1370,7 +1407,8 @@ python-openpyxl
 #                                   "deleteme=$(pwd)",
 #                                   "cd ..",
 #                                   'rm -rf "$deleteme"'
-                                   ]
+                                   ],
+                log = log
                 )
 
 
@@ -1381,8 +1419,9 @@ python-openpyxl
              [["rm","-f","/usr/bin/fusioncatcher-build"],False],
              [["ln","-s",os.path.join(FUSIONCATCHER_BIN,'fusioncatcher-build'),"/usr/bin/fusioncatcher-build"],False]
             ],
-            exit=True,
-            verbose = True)
+            exit = True,
+            verbose = True,
+            log = log)
 
     if not options.skip_install_all:
         ############################################################################
@@ -1408,7 +1447,8 @@ python-openpyxl
                    url = BIOPYTHON_URL,
                    path = BIOPYTHON_PATH,
                    install = options.install_all or options.install_all_py,
-                   root_aptget_install = options.root_aptget_install
+                   root_aptget_install = options.root_aptget_install,
+                   log = log
                    )
         if r:
             BIOPYTHON_PATH = r
@@ -1424,7 +1464,8 @@ python-openpyxl
                    url = XLRD_URL,
                    path = XLRD_PATH,
                    install = options.install_all or options.install_all_py,
-                   root_aptget_install = options.root_aptget_install
+                   root_aptget_install = options.root_aptget_install,
+                   log = log
                    )
         if r:
             XLRD_PATH = r
@@ -1451,7 +1492,8 @@ python-openpyxl
                        url = SETUPTOOLS_URL,
                        path = SETUPTOOLS_PATH,
                        install = options.install_all or options.install_all_py,
-                       root_aptget_install = options.root_aptget_install
+                       root_aptget_install = options.root_aptget_install,
+                       log = log
                       )
             if r:
                 SETUPTOOLS_PATH = r
@@ -1465,7 +1507,9 @@ python-openpyxl
                        path = OPENPYXL_PATH,
                        install = options.install_all or options.install_all_py,
                        pythonpath = SETUPTOOLS_PATH,
-                       root_aptget_install = options.root_aptget_install)
+                       root_aptget_install = options.root_aptget_install,
+                       log = log
+                       )
             if r:
                 OPENPYXL_PATH = r
 
@@ -1481,24 +1525,28 @@ python-openpyxl
                  force = options.force_yes,
                  url = BOWTIE_URL,
                  path = BOWTIE_PATH,
-                 install = options.install_all or options.install_all_tools)
+                 install = options.install_all or options.install_all_tools,
+                 log = log
+                 )
         if r:
             BOWTIE_PATH = r
 
-        ############################################################################
-        # BOWTIE (old version)
-        ############################################################################
-        r = tool(name = "BOWTIE (short read aligner) -- older version",
-                 exe = "bowtie",
-                 param = "--version",
-                 web = "<http://bowtie-bio.sourceforge.net/index.shtml>",
-                 versions = BOWTIE_OLD_VERSION,
-                 force = options.force_yes,
-                 url = BOWTIE_OLD_URL,
-                 path = BOWTIE_OLD_PATH,
-                 install = options.install_all or options.install_all_tools)
-        if r:
-            BOWTIE_OLD_PATH = r
+#        ############################################################################
+#        # BOWTIE (old version)
+#        ############################################################################
+#        r = tool(name = "BOWTIE (short read aligner) -- older version",
+#                 exe = "bowtie",
+#                 param = "--version",
+#                 web = "<http://bowtie-bio.sourceforge.net/index.shtml>",
+#                 versions = BOWTIE_OLD_VERSION,
+#                 force = options.force_yes,
+#                 url = BOWTIE_OLD_URL,
+#                 path = BOWTIE_OLD_PATH,
+#                 install = options.install_all or options.install_all_tools,
+#                 log = log
+#                   )
+#        if r:
+#            BOWTIE_OLD_PATH = r
 
         ############################################################################
         # BOWTIE2
@@ -1511,7 +1559,9 @@ python-openpyxl
                  force = options.force_yes,
                  url = BOWTIE2_URL,
                  path = BOWTIE2_PATH,
-                 install = options.install_all or options.install_all_tools)
+                 install = options.install_all or options.install_all_tools,
+                 log = log
+                 )
         if r:
             BOWTIE2_PATH = r
 
@@ -1528,7 +1578,9 @@ python-openpyxl
                  force = options.force_yes,
                  url = SRATOOLKIT_URL,
                  path = SRATOOLKIT_PATH,
-                 install = options.install_all or options.install_all_tools)
+                 install = options.install_all or options.install_all_tools,
+                 log = log
+                 )
         if r:
             SRATOOLKIT_PATH = r
 
@@ -1544,7 +1596,9 @@ python-openpyxl
                  force = options.force_yes,
                  url = LIFTOVER_URL,
                  path = LIFTOVER_PATH,
-                 install = options.install_all or options.install_all_tools)
+                 install = options.install_all or options.install_all_tools,
+                 log = log
+                 )
         if r:
             LIFTOVER_PATH = r
 
@@ -1577,7 +1631,9 @@ python-openpyxl
                      force = options.force_yes,
                      url = BLAT_URL,
                      path = BLAT_PATH,
-                     install = options.install_all or options.install_all_tools)
+                     install = options.install_all or options.install_all_tools,
+                     log = log
+                     )
             if r:
                 BLAT_PATH = r
 
@@ -1590,7 +1646,9 @@ python-openpyxl
                      force = options.force_yes,
                      url = FATOTWOBIT_URL,
                      path = FATOTWOBIT_PATH,
-                     install = options.install_all or options.install_all_tools or blat)
+                     install = options.install_all or options.install_all_tools or blat,
+                     log = log
+                     )
             if r:
                 FATOTWOBIT_PATH = r
 
@@ -1606,7 +1664,9 @@ python-openpyxl
                  force = options.force_yes,
                  url = SEQTK_URL,
                  path = SEQTK_PATH,
-                 install = options.install_all or options.install_all_tools)
+                 install = options.install_all or options.install_all_tools,
+                 log = log
+                 )
         if r:
             SEQTK_PATH = r
 
@@ -1632,7 +1692,8 @@ python-openpyxl
 #                                   "    rm -f STAR",
 #                                   "    cp ../bin/Linux_x86_64_static/STAR .",
 #                                   "fi",
-                                   "exit 0"])
+                                   "exit 0"],
+                 log = log)
         if r:
             STAR_PATH = r
 
@@ -1646,7 +1707,9 @@ python-openpyxl
                  url = BBMAP_URL,
                  path = BBMAP_PATH,
                  install = options.install_all or options.install_all_tools,
-                 skip = True)
+                 skip = True,
+                 log = log
+                 )
         if r:
             BBMAP_PATH = r
 
@@ -1660,7 +1723,9 @@ python-openpyxl
                  url = PICARD_URL,
                  path = PICARD_PATH,
                  install = options.install_all or options.install_all_tools,
-                 skip = True)
+                 skip = True,
+                 log = log
+                 )
         if r:
             PICARD_PATH = r
 
@@ -1670,38 +1735,40 @@ python-openpyxl
         if options.extra:
 
 
-            ############################################################################
-            # BWA
-            ############################################################################
-            r = tool(name = "BWA (alignment tool)",
-                     exe = "bwa",
-                     param = "",
-                     web = "<http://bio-bwa.sourceforge.net/>",
-                     versions = BWA_VERSION,
-                     version_word = 'Version',
-                     force = options.force_yes,
-                     url = BWA_URL,
-                     path = BWA_PATH,
-                     install = options.install_all or options.install_all_tools)
-            if r:
-                BWA_PATH = r
+#            ############################################################################
+#            # BWA
+#            ############################################################################
+#            r = tool(name = "BWA (alignment tool)",
+#                     exe = "bwa",
+#                     param = "",
+#                     web = "<http://bio-bwa.sourceforge.net/>",
+#                     versions = BWA_VERSION,
+#                     version_word = 'Version',
+#                     force = options.force_yes,
+#                     url = BWA_URL,
+#                     path = BWA_PATH,
+#                     install = options.install_all or options.install_all_tools,
+#                     log = log
+#                     )
+#            if r:
+#                BWA_PATH = r
 
 
             ############################################################################
             # SAMTOOLS
             ############################################################################
-            r = tool(name = "SAMTOOLS (tools for manipulating alignments in the SAM format)",
-                     exe = "samtools",
-                     param = "",
-                     web = "<http://samtools.sourceforge.net/>",
-                     versions = SAMTOOLS_VERSION,
-                     version_word = 'Version:',
-                     force = options.force_yes,
-                     url = SAMTOOLS_URL,
-                     path = SAMTOOLS_PATH,
-                     install = options.install_all or options.install_all_tools)
-            if r:
-                SAMTOOLS_PATH = r
+#            r = tool(name = "SAMTOOLS (tools for manipulating alignments in the SAM format)",
+#                     exe = "samtools",
+#                     param = "",
+#                     web = "<http://samtools.sourceforge.net/>",
+#                     versions = SAMTOOLS_VERSION,
+#                     version_word = 'Version:',
+#                     force = options.force_yes,
+#                     url = SAMTOOLS_URL,
+#                     path = SAMTOOLS_PATH,
+#                     install = options.install_all or options.install_all_tools)
+#            if r:
+#                SAMTOOLS_PATH = r
 
             # Velvet
             r = tool(name = "VELVET (sequence assembler for short reads)",
@@ -1713,7 +1780,9 @@ python-openpyxl
                      url = VELVET_URL,
                      path = VELVET_PATH,
                      install = options.install_all or options.install_all_tools,
-                     skip = True)
+                     skip = True,
+                     log = log
+                     )
             if r:
                 VELVET_PATH = r
 
@@ -1728,7 +1797,9 @@ python-openpyxl
                      url = LZO_URL,
                      path = LZO_PATH,
                      install = options.install_all or options.install_all_tools,
-                     skip = True)
+                     skip = True,
+                     log = log
+                     )
             if r:
                 LZO_PATH = r
 
@@ -1745,7 +1816,9 @@ python-openpyxl
                      install = options.install_all or options.install_all_tools,
                      env_configure = ['CPPFLAGS="-I%s"' % (expand(LZO_PATH,'include','lzo'),),
                                       'LDFLAGS="-L%s"' % (expand(LZO_PATH,'src','.libs'),)],
-                     skip = True)
+                     skip = True,
+                     log = log
+                     )
             if r:
                 LZOP_PATH = r
 
@@ -1775,7 +1848,9 @@ python-openpyxl
                      url = PIGZ_URL,
                      path = PIGZ_PATH,
                      install = options.install_all or options.install_all_tools,
-                     skip = True)
+                     skip = True,
+                     log = log
+                   )
             if r:
                 PIGZ_PATH = r
 
@@ -1805,7 +1880,9 @@ python-openpyxl
                      url = PARALLEL_URL,
                      path = PARALLEL_PATH,
                      install = options.install_all or options.install_all_tools,
-                     skip = True)
+                     skip = True,
+                     log = log
+                     )
             if r:
                 PARALLEL_PATH = r
 
@@ -1952,8 +2029,9 @@ python-openpyxl
              [["rm","-rf",os.path.join(FUSIONCATCHER_DATA,ENSEMBL_VERSION)],False],
              [["ln","-s",os.path.join(FUSIONCATCHER_DATA,ENSEMBL_VERSION),os.path.join(FUSIONCATCHER_CURRENT)],False]
             ],
-            exit=True,
-            verbose = True)
+            exit = True,
+            verbose = True,
+            log = log)
         c = [os.path.join(FUSIONCATCHER_BIN,'fusioncatcher-build'),"-g",FUSIONCATCHER_ORGANISM,"-o",os.path.join(FUSIONCATCHER_DATA,ENSEMBL_VERSION)]
         print "  # %s" % (' '.join([el.replace(' ','\\ ') for el in c]))
         time.sleep(5)

@@ -8,7 +8,7 @@ an input FASTQ file and split each read into two (paired) reads in two separate 
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2018 Daniel Nicorici
+Copyright (c) 2009-2019 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

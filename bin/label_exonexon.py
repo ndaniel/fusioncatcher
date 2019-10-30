@@ -5,7 +5,7 @@ It takes as input a list of chromosomal coordinates of fusion genes and it label
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2018 Daniel Nicorici
+Copyright (c) 2009-2019 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -179,7 +179,7 @@ def main():
 
 Author: Daniel Nicorici
 Email: Daniel.Nicorici@gmail.com
-Copyright (c) 2009-2018 Daniel Nicorici
+Copyright (c) 2009-2019 Daniel Nicorici
 
 """
 

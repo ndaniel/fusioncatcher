@@ -1,0 +1,46 @@
+Three different ways to install FusionCatcher are presented below.
+
+
+1. Installation using FusionCatcher's own installation script (RECOMMENDED)
+===========================================================================
+
+```
+wget http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py && python bootstrap.py -y -t --download
+```
+
+NOTE: In case that the above command gives and erro it might be that some 
+dependencies are missing and in this case the missin dependencies could be 
+installed on Ubuntu Linux by running this:
+```
+sudo apt-get install wget gawk gcc g++ make cmake automake curl unzip zip bzip2 tar gzip pigz parallel build-essential libncurses5-dev libc6-dev zlib1g zlib1g-dev libtbb-dev libtbb2 python python-dev python-numpy python-biopython python-xlrd python-openpyxl default-jdk
+```
+
+
+2. Installation using CONDA
+===========================
+
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda create -n fusioncatcher fusioncatcher
+source activate fusioncatcher
+download-human-db.sh
+
+
+
+3. Installation from GITHUB
+===========================
+
+git clone https://github.com/ndaniel/fusioncatcher
+cd fusioncatcher/tools/
+./install_tools.sh
+cd ../data
+./download-human-db.sh
+
+NOTE: Here it is assumed that Python 2.7.x and BioPython are already installed.
+
+
+
+
+
+

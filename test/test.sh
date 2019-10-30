@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 fbin=""
-fc=$(readlink $0)
+fc=$(readlink "$0")
 if [[ -z $fc ]]; then
- fbin=$(dirname $0)
+ fbin=$(dirname "$0")
 else
- fbin=$(dirname $fc)
+ fbin=$(dirname "$fc")
 fi
 
 rm -rf "test_fusioncatcher"

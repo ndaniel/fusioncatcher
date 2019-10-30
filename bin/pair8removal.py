@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-It removes the pairs of reads where one or both of the reads are shorted than a 
+It removes the pairs of reads where one or both of the reads are shorter than a 
 given threshold.
 
 
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2018 Daniel Nicorici
+Copyright (c) 2009-2019 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -66,13 +66,13 @@ if __name__ == '__main__':
     #command line parsing
     usage = "%prog [options] --input <tab separated file>  --output <tab separated file>"
 
-    description = """It removes the pairs of reads where one or both of the reads are shorted than a given threshold."""
+    description = """It removes the pairs of reads where one or both of the reads are shorter than a given threshold."""
 
     epilog = """
 
 Author: Daniel Nicorici
 Email: Daniel.Nicorici@gmail.com
-Copyright (c) 2009-2018 Daniel Nicorici
+Copyright (c) 2009-2019 Daniel Nicorici
 
 """
 

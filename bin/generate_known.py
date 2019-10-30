@@ -8,7 +8,7 @@ inhere and it is manually curated from publications.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2018 Daniel Nicorici
+Copyright (c) 2009-2019 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -4870,7 +4870,6 @@ if __name__ == '__main__':
         ['GATAD2B','NUP210L'],
         ['GATAD2B','SLC19A2'],
         ['GATAD2B','TNFSF18'],
-        ['GATSL2','GTF2I'],
         ['GBAS','PCLO'],
         ['GBAS','UBXN2A'],
         ['GC','TTR'],
@@ -8435,9 +8434,78 @@ if __name__ == '__main__':
         ['NTRK3','SCAPER'],
         ['FUS','POU5F1'],
         ['MN1','KMT2A'],
-        ['FAM174A','WWC1']
+        ['FAM174A','WWC1'],
+        ['SS18','NEDD4'],
+        ['NUP98','KMT2A'],
+        ['EEF1G','ALK'],
+        ['HMGA2','YAP1'],
+        ['ADCK4','NUMBL'],
+        ['KMT2A','BCOR'],
+        ['SEPT6','CDCA5'],
+        ['MLL','SEPT6'],
+        ['SEPT6','CDCA5'],
+        ['USP34','ASAP3'],
+        ['LMO3','BORCS5'],
+        ['CNTRL','FGFR1'],
+        ['VGLL2','NCOA2'],
+        ['TG','FGFR1'],
+        ['TRIM33','NTRK1'],
+        ['PRR15L','RSPO2'],
+        ['VTI1A','CFAP46'],
+        ['FAM174A','WWC1'],
+        ['STARD9','BRAF'],
+        ['CUX1','BRAF'],
+        ['ATRX','ZNF304'],
+        ['BCAN','NTRK1'],
+        ['ATRX','BCL2'],
+        ['OAZ1','CSNK1G2'],
+        ['RFC4','LPP'],
+        ['IRAK3','PPM1H'],
+        ['GIGYF2','GFRA3'],
+        ['PHF20','FAM217B'],
+        ['EEF2','SLC25A42'],
+        ['CSE1L','AL035685.1'],
+        ['EEF2','SLC25A10'],
+        ['KIAA1549','BRAF'],
+        ['SKAP2','BRAF'],
+        ['AGK','BRAF'],
+        ['CUL1','BRAF'],
+        ['TARDBP','BRAF'],
+        ['ZKSCAN5','BRAF'],
+        ['NUDCD3','BRAF'],
+        ['LMO3','BORCS5'],
+        ['NUP98','HOXA10'],
+        ['SS18','NEDD4'],
+        ['KIF5B','ALK'],
+        ['ERBB2','GRB7'],
+        ['ARMC10','BRAF'],
+        ['DYRK1A','RUNX1'],
+        ['ADCK4','NUMBL'],
+        ['HTN3','MSANTD3'],
+        ['PTPRZ1','ETV1'],
+        ['MN1','KMT2A'],
+        ['VGLL2','NCOA2'],
+        ['OAZ1','CSNK1G2'],
+        ['RFC4','LPP'],
+        ['IRAK3','PPM1H'],
+        ['GIGYF2','GFRA3'],
+        ['PHF20','FAM217B'],
+        ['ETV6','PDGFRB'],
+        ['STIL','TAL1'],
+        ['ETV6','PDGFRB'],
+        ['KMT2A','AFDN'],
+        ['FUS','ERG'],
+        ['RUNX1','MECOM'],
+        ['SET','NUP214'],
+        ['KMT2A','MLLT3'],
+        ['DEK','NUP214'],
+        ['SET','NUP214'],
+        ['FUS','ERG'],
+        ['STIL','TAL1'],
+        ['NUP98','HOXD13']
 
 
+        
 
 ]
 

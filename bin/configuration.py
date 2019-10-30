@@ -7,7 +7,7 @@ It Reading the configuration file: "configuration.cfg".
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2018 Daniel Nicorici
+Copyright (c) 2009-2019 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -101,6 +101,7 @@ def _path(p,c,k,v):
     if r:
         p[v.upper()] = _expand(r)
 
+    
 #############################################
 def test_python_module(module):
     """ Test is a given module is installed
@@ -114,6 +115,8 @@ def test_python_module(module):
         flag = False
     return flag
         
+        
+        
 
 def manage(configuration_filename, skip_python = []):
     #
@@ -124,6 +127,9 @@ def manage(configuration_filename, skip_python = []):
 
         config = ConfigParser.ConfigParser()
         config.read(configuration_filename)
+
+        current_directory = os.getcwd()
+        os.chdir(os.path.dirname(configuration_filename))
 
         if "openpyxl" not in skip_python:
             if not test_python_module("openpyxl"):
@@ -169,6 +175,8 @@ def manage(configuration_filename, skip_python = []):
 
         _parameters(CONF,config,"parameters","threads")
         _parameters(CONF,config,"parameters","aligners")
+
+        os.chdir(current_directory)
 
     return CONF
 #
