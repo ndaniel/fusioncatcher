@@ -575,7 +575,7 @@ if __name__ == '__main__':
     homolog = [k+'\t'+str(v)+'\n' for (k,v) in homolog.items() if v >= options.reads]
     file(options.output_filename,'w').writelines(homolog)
 
-    print >> sys.stderr, "Read '%s' found mapping on %d genes!" % (max_genes_per_read_id,max_genes_per_read)
+    #print >> sys.stderr, "Read '%s' found mapping on %d genes!" % (max_genes_per_read_id,max_genes_per_read)
 
     #if options.output_offending_reads_filename:
         #print "Writing...",options.output_offending_reads_filename

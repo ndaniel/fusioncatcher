@@ -658,7 +658,7 @@ if __name__ == '__main__':
     candidate_fusions = dict([( tuple(myorder(line[0], line[1])), line[2]) for line in candidate_fusions if line[6].lower() == 'further_analysis'])
 
     unmapped_reads = set()
-    if options.input_unmapped_reads_filename:
+    if options.input_unmapped_reads_filename and os.path.isfile(options.input_unmapped_reads_filename):
         print "Reading...",options.input_unmapped_reads_filename
         unmapped_reads = set([line.rstrip('\r\n') for line in file(options.input_unmapped_reads_filename,'r').readlines()])
 

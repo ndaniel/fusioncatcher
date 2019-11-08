@@ -8502,7 +8502,25 @@ if __name__ == '__main__':
         ['SET','NUP214'],
         ['FUS','ERG'],
         ['STIL','TAL1'],
-        ['NUP98','HOXD13']
+        ['NUP98','HOXD13'],
+        ['NUP98','KDM5A'],
+        ['COMMD3','BMI1'],
+        ['EGFR','HDAC9'],
+        ['NUP98','KDM5A'],
+        ['COMMD3','BMI1'],
+        ['BTBD1','NTRK3'],
+        ['VCL','NTRK2'],
+        ['NTRK2','BEND5'],
+        ['ETV6','NTRK3'],
+        ['TPM3','NTRK1'],
+        ['SSBP1','MGAM'],
+        ['NEDD1','CFAP54'],
+        ['ERC1','FAM222B'],
+        ['LDLRAD3','NCAM1'],
+        ['TNRC6B','CELF2'],
+        ['NMU','PDGFRA'],
+        ['NEDD1','CFAP54'],
+        ['XCL1','GPC3']
 
 
         

@@ -527,6 +527,25 @@ if __name__ == "__main__":
 #                             "here for quality trimming is 0.05 (which is the default value of 'seqtk trimfq') or 0.10."
                     )
 
+    parser.add_option("--skip-trim-multiple-5",
+                      action = "store_true",
+                      dest = "skip_trim_multiple_5",
+                      default = False,
+                      help = optparse.SUPPRESS_HELP
+#                             "It trims the 3' ends of the reads to multiple of 5, "+
+#                             "for example 51bp to 50bp. It looks like for Illumina "+
+#                             "reads the last 51 or 76 or 101 or 151 is really bad quality."
+                    )
+
+    parser.add_option("--skip-filter-low-entropy",
+                      action = "store_true",
+                      dest = "skip_filter_low_entropy",
+                      default = False,
+                      help = optparse.SUPPRESS_HELP
+#                             "It masks with Ns the low entropy regions in reads."+
+                    )
+
+
 
     mydefault = sorted([
             "paralogs",
@@ -3407,7 +3426,7 @@ if __name__ == "__main__":
     job.add('>>',info_file,kind='output')
     job.run()
 
-    output_file = outdir('orig.fq')
+    output_file = outdir('orig__.fq')
     # concatenate reads before trimming
     if len(list_input_files) > 1:
         #job.add('concatenate.py',kind='program')
@@ -3423,6 +3442,29 @@ if __name__ == "__main__":
         job.run()
     else:
         job.link(new_list_input_files[0], output_file, temp_path=temp_flag)
+
+    if not options.skip_trim_multiple_5:
+        #bbduk.sh in=reads.fq out=clean.fq ftm=5
+        job.add(_BP_+'bbduk.sh',kind='program')
+        job.add('forcetrimmod=','5',kind='parameter',space='no')
+        job.add('in=',outdir('orig__.fq'),kind='input',space='no', temp_path=temp_flag)
+        job.add('out=',outdir('orig__x.fq'),kind='output',space='no')
+        job.run()
+    else:
+        job.link(outdir('orig__.fq'), outdir('orig__x.fq'), temp_path=temp_flag)
+
+    if not options.skip_filter_low_entropy:
+        #bbduk.sh in=r.fq out=o.fq entropy=0.1 entropymask=t entropyk=2 entropywindow=40
+        job.add(_BP_+'bbduk.sh',kind='program')
+        job.add('entropy=','0.1',kind='parameter',space='no')
+        job.add('entropymask=','t',kind='parameter',space='no')
+        job.add('entropyk=','2',kind='parameter',space='no')
+        job.add('entropywindow=','40',kind='parameter',space='no')
+        job.add('in=',outdir('orig__x.fq'),kind='input',space='no', temp_path=temp_flag)
+        job.add('out=',outdir('orig.fq'),kind='output',space='no')
+        job.run()
+    else:
+        job.link(outdir('orig__x.fq'), outdir('orig.fq'), temp_path=temp_flag)
 
     if not options.skip_deduplication:
         job.add('LC_ALL=C',kind='program')

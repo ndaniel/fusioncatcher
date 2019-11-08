@@ -187,7 +187,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
     
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.10.zip'
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.20.zip'
     FUSIONCATCHER_VERSION = "1.20"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
@@ -2062,7 +2062,6 @@ python-openpyxl
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ab -O %s.tar.gz.ab" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ac -O %s.tar.gz.ac" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ad -O %s.tar.gz.ad" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
-        txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.tar.gz.ae -O %s.tar.gz.ae" % (v,os.path.join(FUSIONCATCHER_DATA.replace(" ","\\ "),v)))
         txt.append("wget --no-check-certificate http://sourceforge.net/projects/fusioncatcher/files/data/%s.md5 -O %s/%s.md5" % (v,FUSIONCATCHER_DATA.replace(" ","\\ "),v))
         txt.append("cd %s" % (FUSIONCATCHER_DATA.replace(" ","\\ "),))
         txt.append("md5sum -c %s/%s.md5" % (FUSIONCATCHER_DATA.replace(" ","\\ "),v))

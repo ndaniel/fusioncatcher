@@ -1,12 +1,13 @@
 Version Release History for FusionCatcher
 =========================================
 
-Version 1.20 -- November 15, 2019
+Version 1.20 -- November 8, 2019
 --------------------------------
  * added support for Ensembl version 96, 97, and 98
  * increased sensitivity by adding an extra anchor
  * added --limitOutSJcollapsed for better control of STAR aligner
  * fixed memory bug leading to seg-fault in STAR aligner
+ * improved handling of low entropy reads
  * size of built files for different organisms has been reduced
  * fixed several minor bugs
  * updated manual
