@@ -46,13 +46,13 @@ For running *FusionCatcher* it is needed a computer with:
 
 ## 2.1 - Required dependencies
   * **Linux/Unix** 64-bit (e.g. Ubuntu version 12.04/14.04/16.04 or newer)
-  * **Python** version 2.7.6 (>=2.6.0 and < 3.0 is fine)
+  * **Python** version 2.7.x (>=2.6.0 and < 3.0 is fine)
   * **BioPython** version 1.73 (>=1.50 is fine)
-  * **Bowtie** 64-bit version 1.2.2 http://bowtie-bio.sourceforge.net/index.shtml (will be installed by `boostrap.py`)
+  * **Bowtie** 64-bit version 1.2.3 http://bowtie-bio.sourceforge.net/index.shtml (will be installed by `boostrap.py`)
   * forked **SeqTK** version 1.2-r101c-dirty  http://github.com/ndaniel/seqtk (will be installed by `boostrap.py`)
   * organism specific  data from [Ensembl](http://www.ensembl.org) database release 95 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed) (will be installed by `boostrap.py`)
-  * **STAR** version 2.7.0f https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases (will be installed by `boostrap.py`)
-  * **BOWTIE2** version 2.2.9 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml (will be installed by `boostrap.py`)
+  * **STAR** version 2.7.2b https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases (will be installed by `boostrap.py`)
+  * **BOWTIE2** version 2.3.5.1 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml (will be installed by `boostrap.py`)
   * **BBMAP** version 38.44 https://sourceforge.net/projects/bbmap/ (will be installed by `boostrap.py`)
 
 ## 2.2 - Optional dependencies
@@ -70,8 +70,7 @@ Note: If one does not want to install BLAT (whilst installing *FusionCatcher* au
   * Python library **openpyxl** version 1.5.6 http://pypi.python.org/pypi/openpyxl (other versions might work but have not been tested). It is needed by `fusioncatcher-build` for parsing the [ConjoinG](http://metasystems.riken.jp/conjoing/) database.
   * Python library **xlrd** version 0.6.1 http://pypi.python.org/pypi/xlrd (other versions might work but have not been tested). It is needed by `fusioncatcher-build` for parsing the [ChimerDB](http://ercsb.ewha.ac.kr/FusionGene/) database.
   * **pigz** version 2.3.1 http://zlib.net/pigz/ for using GZIP on several CPUs in parallel (other older versions might support this) (will be installed by `boostrap.py`)
-  * **SAMTools** version 1.19 http://www.htslib.org/ (will be installed by `boostrap.py`)
-  * **Picard tools** version 2.19.0 http://broadinstitute.github.io/picard/ (will be installed by `boostrap.py`)
+  * **Picard tools** version 2.21.2 http://github.com/broadinstitute/picard (will be installed by `boostrap.py`)
 
 ## 2.3 - Genomic Databases
 These are used (downloaded and parsed) automatically by `boostrap.py` of *FusionCatcher*:
@@ -399,17 +398,17 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
   * installing **Bowtie** 64-bit version 1.2.0 (required)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://sourceforge.net/projects/bowtie-bio/files/bowtie/1.2.0/bowtie-1.2-linux-x86_64.zip
-  unzip bowtie-1.2-linux-x86_64.zip
-  ln -s bowtie-1.2 bowtie
+  wget https://github.com/BenLangmead/bowtie/releases/download/v1.2.3/bowtie-1.2.3-linux-x86_64.zip
+  unzip bowtie-1.2.3-linux-x86_64.zip
+  ln -s bowtie-1.2.3-linux-x86_64 bowtie
   ```
   
-  * installing **Bowtie2** 64-bit version 2.2.9 (required)
+  * installing **Bowtie2** 64-bit version 2.3.5.1 (required)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.2.9/bowtie2-2.2.9-linux-x86_64.zip
-  unzip bowtie2-2.2.9-linux-x86_64.zip
-  ln -s bowtie2-2.2.9-linux-x86_64 bowtie2
+  wget https://github.com/BenLangmead/bowtie2/releases/download/v2.3.5.1/bowtie2-2.3.5.1-linux-x86_64.zip
+  unzip bowtie2-2.3.5.1-linux-x86_64.zip
+  ln -s bowtie2-2.3.5.1-linux-x86_64 bowtie2
   ```
   
   * installing **BLAT** version 0.35 (optional; if **BLAT** is not installed please use option '--skip-blat' or remove the `blat` string from the `aligners =...` line of file `fusioncatcher/etc/configuration.cfg` in order to let know *FusionCatcher* that it should not use it)
@@ -430,9 +429,9 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
   * installing **fastq-dump** version 2.6.2 from **NCBI SRA Toolkit** version 2.6.2 (optional but it is required in case that one wants to test the installation using the example given below)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://ftp-private.ncbi.nlm.nih.gov/sra/sdk/2.6.2/sratoolkit.2.6.2-centos_linux64.tar.gz
-  tar zxvf sratoolkit.2.6.2-centos_linux64.tar.gz
-  ln -s sratoolkit.2.6.2-centos_linux64 sratoolkit
+  wget http://ftp-private.ncbi.nlm.nih.gov/sra/sdk/2.9.6/sratoolkit.2.9.6-centos_linux64.tar.gz
+  tar zxvf sratoolkit.2.9.6-centos_linux64.tar.gz
+  ln -s sratoolkit.2.9.6-centos_linux64 sratoolkit
   ```
   
   * installing **SeqTK** version 1.0-r82b (please note that this is a different development branch than the official development) (required)
@@ -446,12 +445,12 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
   ln -s seqtk-1.0-r82b seqtk
   ```
   
-  * installing **STAR** version 2.7.0f (required)
+  * installing **STAR** version 2.7.2b (required)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://github.com/alexdobin/STAR/archive/2.7.0f.tar.gz -O 2.7.0f.tar.gz
-  tar zxvf 2.7.0f.tar.gz
-  cd 2.7.0f
+  wget http://github.com/alexdobin/STAR/archive/2.7.2b.tar.gz -O 2.7.2b.tar.gz
+  tar zxvf 2.7.2b.tar.gz
+  cd 2.7.2b
   cd source
   rm -f STAR
   cp ../bin/Linux_x86_64_static/STAR .
@@ -465,7 +464,7 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
   and continue with
   ```
   cd ..
-  ln -s 2.7.0f star
+  ln -s 2.7.2b star
   ```
   
   * installing **Velvet** version 1.2.10 (optional)
@@ -495,42 +494,33 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
   ln -s coreutils-8.25 coreutils
   ```
   
-  * installing **pigz** version 1.2.10 (optional)
+  * installing **pigz** version 2.4 (optional)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://zlib.net/pigz/pigz-2.3.1.tar.gz
+  wget http://zlib.net/pigz/pigz-2.4.tar.gz
   tar zxvf pigz-2.3.1.tar.gz
-  cd pigz-2.3.1
+  cd pigz-2.4
   make
   cd ..
-  ln -s pigz-2.3.1 pigz
+  ln -s pigz-2.4 pigz
   ```
   
-  * installing **SAMTools** version 1.19 (optional)
-  ```
-  cd /apps/fusioncatcher/tools
-  wget http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2
-  tar jxvf samtools-0.1.19.tar.bz2
-  cd samtools-0.1.19
-  make
-  cd ..
-  ln -s samtools-0.1.19 samtools
-  ```
-  
+ 
   * installing **Picard tools** version 2.2.2 (optional)
   ```
   cd /apps/fusioncatcher/tools
-  wget http://github.com/broadinstitute/picard/releases/download/2.2.2/picard-tools-2.2.2.zip
-  unzip picard-tools-2.2.2.zip
-  ln -s picard-tools-2.2.2 picard
+  mkdir picard
+  cd picard
+  wget http://github.com/broadinstitute/picard/releases/download/2.21.2/picard.jar
+  cd ..
   ```
   
-  * installing *FusionCatcher* version 1.10 (required)
+  * installing *FusionCatcher* version 1.20 (required)
   ```
   cd /apps/fusioncatcher
-  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.10.zip
-  unzip fusioncatcher_v1.10.zip
-  cd fusioncatcher_v1.10
+  wget http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.20.zip
+  unzip fusioncatcher_v1.20.zip
+  cd fusioncatcher_v1.20
   
   rm -rf ../bin
   rm -rf ../etc
@@ -625,22 +615,21 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    ```
    mkdir -p /apps/fusioncatcher/data
    cd /apps/fusioncatcher/data
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.aa
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.ab
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.ac
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.ad
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.ae
-   cat human_v95.tar.gz.* | tar xz
-   ln -s human_v95 current
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.aa
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ab
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ac
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ad
+   cat human_v98.tar.gz.* | tar xz
+   ln -s human_v98 current
    ```
    
    * Using `fusioncatcher-build` -- It will takes several hours (e.g. 5-10 hours) and it depends highly on the bandwidth of your internet connection. One may find out what Ensembl database version is available at [www.ensembl.org] and what version has been downloaded by looking to the last three lines printed on the screen by `fusioncatcher-build`.
    ```
-   mkdir -p /apps/fusioncatcher/data/human_v95
-   cd /apps/fusioncatcher/data/human_v95
+   mkdir -p /apps/fusioncatcher/data/human_v98
+   cd /apps/fusioncatcher/data/human_v98
    /apps/fusioncatcher/bin/fusioncatcher-build -g homo_sapiens -o .
    cd ..
-   ln -s human_v95 current
+   ln -s human_v98 current
    ```
 
 
@@ -852,18 +841,17 @@ First, it is needed to download data or build the necessary files/indexes for ru
 
 ### 5.2.1 - Direct download of human build data
 
-Here, in this example, the necessary data is downloaded and necessary files/indexes for the **human genome** are downloaded in the directory `/some/human/data/human_v95/` which will be used later.
+Here, in this example, the necessary data is downloaded and necessary files/indexes for the **human genome** are downloaded in the directory `/some/human/data/human_v98/` which will be used later.
 
 ```
 mkdir -p /some/human/data/
 cd /some/human/data/
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.aa
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.ab
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.ac
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.ad
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v95.tar.gz.ae
-cat human_v95.tar.gz.* | tar xz
-ln -s human_v95 current
+wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.aa
+wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ab
+wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ac
+wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ad
+cat human_v98.tar.gz.* | tar xz
+ln -s human_v98 current
 ```
 
 If this works then it is not necessary to start building yourself the build data as shown below (which is **only** needed in case that the direct download for some reason does not work or one wishes to use the build data of another organism which is not available for download).
