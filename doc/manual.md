@@ -229,7 +229,7 @@ distinct pathogenesis**, Clinical Cancer Research, Nov. 2017, http://doi.org/10.
 
 ## 4.1 - Automatic installation {#automatic-installation}
 
-### 4.1.1 - Installation using boostrap.sh
+### 4.1.1 - Installation using boostrap.py
 
 This is an example of automatic installation of *FusionCatcher* (and it is installed here "~/fusioncatcher" if these are run in your home directory) and the required databases and indexes (which are downloaded instead of being built locally):
 ```
@@ -302,6 +302,17 @@ download-human-db.sh
 and `conda` config will permanently add the three channels in the user `conda` config file.
 Additionally, creating new and clean environment with `conda create` is recommended over using `conda install`.
 
+
+### 4.1.3 - Installation from GitHub
+
+```
+git clone https://github.com/ndaniel/fusioncatcher
+cd fusioncatcher/tools/
+./install_tools.sh
+cd ../data
+./download-human-db.sh
+```
+**NOTE**: Here it is assumed that Python 2.7.x and BioPython are already installed.
 
 
 ## 4.2 - Manual installation {#manual-installation}
