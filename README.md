@@ -37,6 +37,15 @@ source activate fusioncatcher
 download-human-db.sh
 ```
 
+FusionCatcher can be installed also GitHub, as follows:
+```
+git clone https://github.com/ndaniel/fusioncatcher
+cd fusioncatcher/tools/
+./install_tools.sh
+cd ../data
+./download-human-db.sh
+```
+
 Description
 -----------
 FusionCatcher searches for novel/known somatic fusion genes, translocations, and
