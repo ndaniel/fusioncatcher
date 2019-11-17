@@ -32,3 +32,4 @@ RUN yum install -y epel-release \
     && python bootstrap.py -t -y -i /opt/fusioncatcher/v1.20/
 
 WORKDIR /opt
+
