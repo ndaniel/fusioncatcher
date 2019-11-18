@@ -25,7 +25,7 @@ RUN yum install -y epel-release \
     tbb-devel \
     glibc-devel \
     python-devel \
-    python-numpy \
+    numpy \
     python-biopython \
     && wget --no-check-certificate http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py \
     && python bootstrap.py --help \
