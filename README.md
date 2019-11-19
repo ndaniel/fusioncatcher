@@ -37,7 +37,7 @@ source activate fusioncatcher
 download-human-db.sh
 ```
 
-FusionCatcher can be installed also GitHub, as follows:
+FusionCatcher can be installed also from GitHub, as follows:
 ```
 git clone https://github.com/ndaniel/fusioncatcher
 cd fusioncatcher/tools/
