@@ -40,7 +40,12 @@ candidate fusion genes!
 
 This file is executing by default the BLAT aligner.
 """
+
 import sys
+import sys
+if ( sys.version_info>(3,0)):
+    print "ERROR: Python 3 or newer detected! Python 2.X is needed! FIX: run '/some/python/2.7/python bootstrap.py"
+    sys.exit(1)
 import os
 import optparse
 import multiprocessing
@@ -254,7 +259,7 @@ if __name__ == '__main__':
                       help = "Number or processes/threads to be used. "+
                              "Default is '%default'.")
 
-    choices = ('cosmic','conjoing','chimerdb2','chimerdb3','ticdb','cgp','cacg')
+    choices = ('cosmic','conjoing','chimerdb2','chimerdb4','ticdb','cgp','cacg')
     parser.add_option("--skip-database",
                       action = "store",
                       type = "string",
@@ -1679,20 +1684,20 @@ if __name__ == '__main__':
     elif job.run():
         file(outdir('chimerdb2.txt'),'w').write('')
 
-    if 'chimerdb3' not in skip_database:
-        job.add(_FC_+'get_chimerdb3.py',kind='program')
+    if 'chimerdb4' not in skip_database:
+        job.add(_FC_+'get_chimerdb4.py',kind='program')
         job.add('--organism',options.organism,kind='parameter')
         job.add('--output',out_dir,kind='output',checksum='no')
-        job.add('',outdir('chimerdb3kb.txt'),kind='output',command_line='no')
-        job.add('',outdir('chimerdb3pub.txt'),kind='output',command_line='no')
-        job.add('',outdir('chimerdb3seq.txt'),kind='output',command_line='no')
+        job.add('',outdir('chimerdb4kb.txt'),kind='output',command_line='no')
+        job.add('',outdir('chimerdb4pub.txt'),kind='output',command_line='no')
+        job.add('',outdir('chimerdb4seq.txt'),kind='output',command_line='no')
         job.run(error_message = ("If this steps fails to run for whatever reason "+
                 "then it can be skipped by re-running fusioncatcher-build with "+
                 "command line option '--skip-database chimerdb3'! This database is optional."))
     elif job.run():
-        file(outdir('chimerdb3kb.txt'),'w').write('')
-        file(outdir('chimerdb3pub.txt'),'w').write('')
-        file(outdir('chimerdb3seq.txt'),'w').write('')
+        file(outdir('chimerdb4kb.txt'),'w').write('')
+        file(outdir('chimerdb4pub.txt'),'w').write('')
+        file(outdir('chimerdb4seq.txt'),'w').write('')
 
 
     if 'ticdb' not in skip_database:

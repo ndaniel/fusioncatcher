@@ -42,6 +42,10 @@ candidate fusion genes!
 """
 
 import sys
+if ( sys.version_info>(3,0)):
+    print "ERROR: Python 3 or newer detected! Python 2.X is needed! FIX: run '/some/python/2.7/python bootstrap.py"
+    sys.exit(1)
+
 import os
 import struct
 import optparse
@@ -347,7 +351,7 @@ if __name__ == "__main__":
                              "If it is 0 (as it is by default) then the number of processes/threads will be "+
                              "read first from 'fusioncatcher/etc/configuration.cfg' file. If even there it is still set to 0 then "+
                              "'min(number-of-CPUs-found,16)' processes will be used. Setting number of threads in 'fusioncatcher/etc/configuration.cfg' "+
-                             "might be usefull in situations where one server is shared between several users and in order to limit FusionCatcher using all the CPUs/resources."+
+                             "might be usefull in situations where one server is shared between several users and in order to limit FusionCatcher using all the CPUs/resources. "+
                              "Default is '%default'. ")
 
     parser.add_option("--config",
@@ -591,10 +595,10 @@ if __name__ == "__main__":
             'adjacent',
             'ambiguous',
             'dist1000bp',
-            'chimerdb2',
-            'chimerdb3kb',
-            'chimerdb3pub',
-            'chimerdb3seq',
+            'chimer2',
+            'chimer4kb',
+            'chimer4pub',
+            'chimer4seq',
             'cacg',
             'cgp',
             'duplicates',
@@ -2396,6 +2400,19 @@ if __name__ == "__main__":
         job.add('tail','-1',kind='parameter')
         job.add('>>',info_file,kind='output')
         job.run()
+
+    job.add('printf',kind='program')
+    job.add('"\nJava:\n---------\n"',kind='parameter')
+    job.add('>>',info_file,kind='output')
+    job.run()
+    if not os.system("which java 2>&1 >/dev/null"):
+        job.add('java',kind='program')
+        job.add('--version',kind='parameter')
+        job.add('2>&1',kind='parameter')
+        job.add('|',kind='parameter')
+        job.add('>>',info_file,kind='output')
+        job.run()
+
 
     job.add('printf',kind='program')
     job.add('"\nliftOver:\n---------\n"',kind='parameter')
@@ -6053,7 +6070,7 @@ if __name__ == "__main__":
     # label fusion genes -- ChimerDB 2.0
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_27.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','chimerdb2',kind='parameter')
+    job.add('--label','chimer2',kind='parameter')
     job.add('--filter_gene_pairs',datadir('chimerdb2.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_28.txt'),kind='output')
     job.run()
@@ -6334,20 +6351,20 @@ if __name__ == "__main__":
     # label fusion genes -- ChimerDB 3
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_66.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','chimerdb3kb',kind='parameter')
-    job.add('--filter_gene_pairs',datadir('chimerdb3kb.txt'),kind='input')
+    job.add('--label','chimer4kb',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('chimerdb4kb.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_67.txt'),kind='output')
     job.run()
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_67.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','chimerdb3pub',kind='parameter')
-    job.add('--filter_gene_pairs',datadir('chimerdb3pub.txt'),kind='input')
+    job.add('--label','chimer4pub',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('chimerdb4pub.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_68.txt'),kind='output')
     job.run()
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_68.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','chimerdb3seq',kind='parameter')
-    job.add('--filter_gene_pairs',datadir('chimerdb3seq.txt'),kind='input')
+    job.add('--label','chimer4seq',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('chimerdb4seq.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_69.txt'),kind='output')
     job.run()
     job.add(_FC_+'label_fusion_genes.py',kind='program')
@@ -12691,6 +12708,12 @@ if __name__ == "__main__":
     job.add(_FC_+'filter-wiggle.py',kind='program')
     job.add('-i',outdir('final-list_candidate-fusion-genes_.txt'),kind='input',temp_path=temp_flag)
     job.add('-o',outdir('final-list_candidate-fusion-genes.txt'),kind='output')
+    job.run()
+
+    job.add(_FC_+'fc2vcf.py',kind='program')
+    job.add('-i',outdir('final-list_candidate-fusion-genes.txt'),kind='input')
+    job.add('-n',outdir('info.txt'),kind='input')
+    job.add('-o',outdir('final-list_candidate-fusion-genes.vcf'),kind='output')
     job.run()
 
     if not options.skip_conversion_grch37:

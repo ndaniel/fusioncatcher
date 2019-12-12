@@ -45,6 +45,10 @@ cd fusioncatcher/tools/
 cd ../data
 ./download-human-db.sh
 ```
+NOTE: Here it is assumed that Python 2.7.x, BioPython (>v1.5), and Java Runtime 
+Environment 1.8 are already installed.
+
+
 
 Description
 -----------

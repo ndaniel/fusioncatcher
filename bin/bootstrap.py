@@ -45,6 +45,7 @@ This file is running/executing/using BLAT.
 import sys
 if ( sys.version_info>(3,0)):
     print "ERROR: Python 3 or newer detected! Python 2.X is needed! FIX: run '/some/python/2.7/python bootstrap.py"
+    sys.exit(1)
 #if ( sys.version_info>(3,0)):
 #    sys.stderr.write("ERROR: Python 3 or newer detected! bootstrap.py needs Python 2.6 or Python 2.7!\n")
 #    sys.stderr.write("  FIX: run '/some/python/2.7/python bootstrap.py'!\n")
