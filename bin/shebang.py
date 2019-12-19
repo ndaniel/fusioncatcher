@@ -124,7 +124,7 @@ Copyright (c) 2009-2019 Daniel Nicorici
     for p in os.listdir(options.path):
         f = os.path.join(options.path,p)
         if p.endswith('.py') and os.path.isfile(f):
-            d = file(f,"r").readllines()
+            d = file(f,"r").readlines()
             if d:
                 d[0] = options.shebang.strip()+'\n'
                 file(f,"w").writelines(d)
