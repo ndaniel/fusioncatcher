@@ -7051,47 +7051,51 @@ if __name__ == "__main__":
                      temp_path=temp_flag)
 
 
-        # filter -- map on genome again the trimmed reads with 11 bp from 3' end
-        job.add(_BE_+'bowtie',kind='program')
-        job.add('--seed',bowtie_seed,kind='parameter')
-        job.add('-t',kind='parameter')
-        #job.add('-q',kind='parameter')
-#        job.add('-a',kind='parameter')
-        job.add('-v','0',kind='parameter') #options.mismatches
-        job.add('-p',options.processes,kind='parameter',checksum='no')
-#        job.add('-m','1',kind='parameter')
-        job.add('-k','10',kind='parameter')
-        job.add('--tryhard',kind='parameter')
-        job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
-#        job.add('--best',kind='parameter')
-#        job.add('--strata',kind='parameter')
-        if len_reads > 40:
-            job.add('--trim5', length_anchor_minimum - 7, kind='parameter') # trim 11 bp on the fly
+        if job.iff(empty(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end-f5.fq')),
+                   id="#no-candidate-fusion-genes-found-t5#"):
+            pass
         else:
-            job.add('--trim5', length_anchor_minimum - 9, kind='parameter') # trim 11 bp on the fly
-#        job.add('--suppress','1,2,3,4,5,6,7,8',kind='parameter')
-        job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.fq'),kind='output') # here is the result
-        job.add('--max',outdir('reads_filtered_not-mapped_multiple_end2.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
-        if bowtie123:
-            job.add('',datadir('genome_index2/index'),kind='input')
-        else:
-            if os.path.isfile(datadir('genome_index','.1.ebwtl')):
-                job.add('--large-index',kind='parameter')
-            job.add('',datadir('genome_index/'),kind='input')
-        job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end-f5.fq'),kind='input',temp_path=temp_flag)
-        job.add('',outdir('reads-unmapped-filtered-geno_last.map'),kind='output',temp_path=temp_flag)
-#        job.add('','/dev/null',kind='parameter')
-        job.add('2>',outdir('log_bowtie_reads-unmapped-filtered-out-genome_last.stdout.txt'),kind='output',checksum='no')
-        #job.add('2>&1',kind='parameter',checksum='no')
-        job.run()
+            # filter -- map on genome again the trimmed reads with 11 bp from 3' end
+            job.add(_BE_+'bowtie',kind='program')
+            job.add('--seed',bowtie_seed,kind='parameter')
+            job.add('-t',kind='parameter')
+            #job.add('-q',kind='parameter')
+    #        job.add('-a',kind='parameter')
+            job.add('-v','0',kind='parameter') #options.mismatches
+            job.add('-p',options.processes,kind='parameter',checksum='no')
+    #        job.add('-m','1',kind='parameter')
+            job.add('-k','10',kind='parameter')
+            job.add('--tryhard',kind='parameter')
+            job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+    #        job.add('--best',kind='parameter')
+    #        job.add('--strata',kind='parameter')
+            if len_reads > 40:
+                job.add('--trim5', length_anchor_minimum - 7, kind='parameter') # trim 11 bp on the fly
+            else:
+                job.add('--trim5', length_anchor_minimum - 9, kind='parameter') # trim 11 bp on the fly
+    #        job.add('--suppress','1,2,3,4,5,6,7,8',kind='parameter')
+            job.add('--un',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_final.fq'),kind='output') # here is the result
+            job.add('--max',outdir('reads_filtered_not-mapped_multiple_end2.fq'),kind='output',temp_path=temp_flag) # if this is missing then these reads are going to '--un'
+            if bowtie123:
+                job.add('',datadir('genome_index2/index'),kind='input')
+            else:
+                if os.path.isfile(datadir('genome_index','.1.ebwtl')):
+                    job.add('--large-index',kind='parameter')
+                job.add('',datadir('genome_index/'),kind='input')
+            job.add('',outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end-f5.fq'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('reads-unmapped-filtered-geno_last.map'),kind='output',temp_path=temp_flag)
+    #        job.add('','/dev/null',kind='parameter')
+            job.add('2>',outdir('log_bowtie_reads-unmapped-filtered-out-genome_last.stdout.txt'),kind='output',checksum='no')
+            #job.add('2>&1',kind='parameter',checksum='no')
+            job.run()
 
-        info(job,
-            fromfile = outdir('log_bowtie_reads-unmapped-filtered-out-genome_last.stdout.txt'),
-            tofile = info_file,
-            top = ["Mapping all trimmed unmapped reads again on genome for filtering purposes:",
-                   "-------------------------------------------------------------------------"],
-            bottom = "\n\n\n",
-            temp_path = temp_flag)
+            info(job,
+                fromfile = outdir('log_bowtie_reads-unmapped-filtered-out-genome_last.stdout.txt'),
+                tofile = info_file,
+                top = ["Mapping all trimmed unmapped reads again on genome for filtering purposes:",
+                       "-------------------------------------------------------------------------"],
+                bottom = "\n\n\n",
+                temp_path = temp_flag)
 
 
 #        job.link(outdir('reads_filtered_not-mapped-genome_not-mapped-transcriptome_end2.fq'),

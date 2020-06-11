@@ -121,7 +121,7 @@ if __name__=='__main__':
     #"Exon_1_id(5end_fusion_partner)"
     #"Exon_2_id(3end_fusion_partner)"
     h_seq = header["Fusion_sequence"]
-    h_eff = header["Predicted_effect"]
+    h_eff = header.get("Predicted_effect",-1)
 
     #
     #
@@ -245,7 +245,9 @@ if __name__=='__main__':
         ge2 = e[h_ge2]
         sp = e[h_pairs]
         sr = e[h_reads]
-        eff= e[h_eff]
+        eff = ""
+        if h_eff != -1:
+            eff= e[h_eff]
         desc = e[h_desc]
         igh = True if e[h_seq].find("*NNNNNN") != -1 else False
 
