@@ -2326,9 +2326,9 @@ if __name__ == "__main__":
         "is in the corresponding PATH!"))
 
     # check version
-    os.system(_BP_+"bbmap.sh --version 2>&1 |head -2 |tail -1 > '%s'" % (outdir('bbmap_version.txt'),))
+    os.system(_BP_+"bbversion.sh > '%s'" % (outdir('bbmap_version.txt'),))
     last_line = file(outdir('bbmap_version.txt'),'r').readline().lower().rstrip("\r\n")
-    correct_version = ('bbmap version 38.44',)
+    correct_version = ('38.44',)
     if last_line not in correct_version:
         job.close()
         os.system("which bbmap.sh > '%s'" % (outdir('bbmap_path.txt'),))
