@@ -6,7 +6,7 @@ if their transcripts are in frame or not.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -386,7 +386,7 @@ if their transcripts are in frame or not."""
 
 Author: Daniel Nicorici
 Email: Daniel.Nicorici@gmail.com
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 """
 

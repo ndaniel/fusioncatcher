@@ -7,7 +7,7 @@ Add the custom human genes which are missing from the Ensembl database.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -794,26 +794,26 @@ if __name__ == '__main__':
 
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000000020',
-                    gene_symbol = 'CRHR1-IT1_', # stjude # overlaps CRHR1-IT1 on opposite strand
+                    gene_symbol = 'LINC02210_', # stjude # overlaps CRHR1-IT1 on opposite strand
                     gene_id = 'ENSG09000000020',
                     transcript_id = 'ENST09000000020',
                     exon_id = 'ENSE09000000020',
                     exon_number = '1',
                     start = '45614000', #
-                    end =   '45651000', #
+                    end =   '45656000', #
                     chrom = '17',
                     strand = '-1'
                 )
 
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000000021',
-                    gene_symbol = 'CRHR1-IT1', # stjude # overlaps CRHR1-IT1 on forward strand
+                    gene_symbol = 'LINC02210', # stjude # overlaps CRHR1-IT1 on forward strand
                     gene_id = 'ENSG00000204650',
                     transcript_id = 'ENST09000000021',
                     exon_id = 'ENSE09000000021',
                     exon_number = '1',
                     start = '45614000', #
-                    end =   '45651000', #
+                    end =   '45656000', #
                     chrom = '17',
                     strand = '1'
                 )
@@ -821,7 +821,7 @@ if __name__ == '__main__':
 
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000000030',
-                    gene_symbol = 'WHSC1', #
+                    gene_symbol = 'NSD2', #WHSC1
                     gene_id = 'ENSG00000109685',
                     transcript_id = 'ENST09000000030',
                     exon_id = 'ENSE09000000030',
@@ -960,7 +960,7 @@ if __name__ == '__main__':
                 # transcript 1 - exon 1/1 -- RP11-167H9.4
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000000050',
-                    gene_symbol = 'RP11-167H9.4', # 
+                    gene_symbol = 'AC117386.2', # 
                     gene_id = 'ENSG00000243944',
                     transcript_id = 'ENST09000000050',
                     exon_id = 'ENSE09000000050',
@@ -1471,8 +1471,8 @@ if __name__ == '__main__':
                     transcript_id = 'ENST09000001265',
                     exon_id = 'ENSE09000001265',
                     exon_number = '1',
-                    start = '6665000', #
-                    end =   '6693000', #
+                    start = '6663500', #
+                    end =   '6693500', #
                     chrom = '12',
                     strand = '-1'
                 )
@@ -1485,8 +1485,8 @@ if __name__ == '__main__':
                     transcript_id = 'ENST09000001266',
                     exon_id = 'ENSE09000001266',
                     exon_number = '1',
-                    start = '6665000', #
-                    end =   '6693000', #
+                    start = '6663500', #
+                    end =   '6693500', #
                     chrom = '12',
                     strand = '-1',
                     
@@ -1503,8 +1503,8 @@ if __name__ == '__main__':
                     transcript_id = 'ENST09000001266',
                     exon_id = 'ENSE09000001267',
                     exon_number = '2',
-                    start = '6665000', #
-                    end =   '6693000', #
+                    start = '6663500', #
+                    end =   '6693500', #
                     chrom = '12',
                     strand = '-1',
                     
@@ -1521,8 +1521,8 @@ if __name__ == '__main__':
                     transcript_id = 'ENST09000001266',
                     exon_id = 'ENSE09000001268',
                     exon_number = '3',
-                    start = '6665000', #
-                    end =   '6693000', #
+                    start = '6663500', #
+                    end =   '6693500', #
                     chrom = '12',
                     strand = '-1',
                     
@@ -1623,6 +1623,45 @@ if __name__ == '__main__':
                     start = '41915000', #
                     end =   '42105000', #
                     chrom = '8',
+                    strand = '-1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001277',
+                    gene_symbol = 'TLX3', # TLX3
+                    gene_id = 'ENSG00000164438',
+                    transcript_id = 'ENST09000001277',
+                    exon_id = 'ENSE09000001277',
+                    exon_number = '1',
+                    start = '171300000', #
+                    end =  '171363000', #
+                    chrom = '5',
+                    strand = '1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001278',
+                    gene_symbol = 'TLX3_', # TLX3
+                    gene_id = 'ENSG09000002014',
+                    transcript_id = 'ENST09000001278',
+                    exon_id = 'ENSE09000001278',
+                    exon_number = '1',
+                    start = '171300000', #
+                    end =  '171363000', #
+                    chrom = '5',
+                    strand = '-1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001279',
+                    gene_symbol = 'BCL11B', # BCL11B
+                    gene_id = 'ENSG00000127152',
+                    transcript_id = 'ENST09000001279',
+                    exon_id = 'ENSE09000001279',
+                    exon_number = '1',
+                    start = '98730000', #
+                    end =   '99350000', #
+                    chrom = '14',
                     strand = '-1'
                 )
 

@@ -13,7 +13,7 @@ Nov. 2016, http://dx.doi.org/10.1073/pnas.1606220113
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

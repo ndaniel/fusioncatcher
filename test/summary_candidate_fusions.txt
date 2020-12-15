@@ -3,22 +3,22 @@ Very short summary of found candidate fusion genes
 
 Found 17 fusion gene(s), which are as follows:
   * FGFR3--TACC3  (already known fusion)
-  * GOPC--ROS1  (already known fusion)
   * FIP1L1--PDGFRA  (already known fusion)
+  * GOPC--ROS1  (already known fusion; exon-exon fusion junction)
   * IGH@--CRLF2  (already known fusion)
-  * AKAP9--BRAF  (already known fusion)
-  * EWSR1--ATF1  (already known fusion)
-  * HOOK3--RET  (already known fusion)
-  * EWSR1--FLI1  (already known fusion)
+  * HOOK3--RET  (already known fusion; exon-exon fusion junction)
+  * AKAP9--BRAF  (already known fusion; exon-exon fusion junction)
+  * EWSR1--ATF1  (already known fusion; exon-exon fusion junction)
   * TMPRSS2--ETV1  (already known fusion)
-  * ETV6--NTRK3  (already known fusion)
-  * BRD4--NUTM1  (already known fusion)
+  * EWSR1--FLI1  (already known fusion; exon-exon fusion junction)
+  * ETV6--NTRK3  (already known fusion; exon-exon fusion junction)
+  * BRD4--NUTM1  (already known fusion; exon-exon fusion junction)
+  * CD74--ROS1  (already known fusion; exon-exon fusion junction)
   * CIC--DUX4  (already known fusion)
   * DUX4--IGH@  (already known fusion)
   * EML4--ALK  (already known fusion)
-  * CD74--ROS1  (already known fusion)
   * MALT1--IGH@  (already known fusion)
-  * NPM1--ALK  (already known fusion)
+  * NPM1--ALK  (already known fusion; exon-exon fusion junction)
 
 Found 22 fusion transcript(s).
 

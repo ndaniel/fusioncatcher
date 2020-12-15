@@ -8,7 +8,7 @@ It downloads the lastest available gene symbols and synonyms of the gene symbols
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

@@ -8,7 +8,7 @@ It downloads the lastest known fusion genes from the Mitelman Database of Chromo
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -91,7 +91,7 @@ if __name__ == '__main__':
                       action="store",
                       type="string",
                       dest="url",
-                      default = 'https://storage.cloud.google.com/mitelman-data-files/mitelman_db.zip',
+                      default = 'https://storage.cloud.google.com/mitelman-data-files/prod/mitelman_db.zip',
                       help="""The URL for Mitelman database dump file. Default is '%default'.""")
 
     parser.add_option("--output","-o",
@@ -162,7 +162,7 @@ if __name__ == '__main__':
                 print >>sys.stderr, "Warning: File '%s' is not a valid ZIP file! The output file will be empty!" % (url,)
             else:
             
-                d = zf.read('../data/processed/MBCA.TXT').decode('ascii').splitlines()
+                d = zf.read('MBCA.TXT.DATA').decode('ascii').splitlines()
 
                 if d:
                     #h = d.pop(0) # remove header

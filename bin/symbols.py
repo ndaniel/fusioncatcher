@@ -7,7 +7,7 @@ It handles the loci and gene symbols and their synonyms.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -519,7 +519,12 @@ synonym = {
 'RAB5B':'AC034102.1',
 'SIRT6':'AC016586.1',
 'RNF126':'AC004156.1',
-'TINF2':'AL096870.1'
+'TINF2':'AL096870.1',
+'ZNF304':'AC005261.1',
+'ZNF254':'AC092279.1',
+'AF127936.2':'AF127936.1',
+'IRAK4':'AC093012.1',
+'KRT86':'AC021066.1'
 
 }
 

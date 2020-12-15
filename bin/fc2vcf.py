@@ -6,7 +6,7 @@ It converts the FusionCatcher output into VCF format.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -253,7 +253,7 @@ if __name__=='__main__':
 
         xid = gs1+"--"+gs2
         unique = True if xid in ggu else False
-        print xid,unique
+        #print xid,unique
         
         xid5 = xid+"__5"
         xid3 = xid+"__3"

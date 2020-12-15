@@ -7,7 +7,7 @@ It generates the exon-exon junctions from transcripts for a list of genes.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -196,7 +196,7 @@ Length_of_the_exon-exon_juntion = 2 * (length_reads - overlap_read). The joint p
     length_reads=None
     if options.length_reads_filename:
         print "Reading...",options.length_reads_filename
-        length_reads=int(file(options.length_reads_filename,'r').readline().strip())
+        length_reads=int(float(file(options.length_reads_filename,'r').readline().strip()))
     elif options.length_reads:
         length_reads=options.length_reads
 

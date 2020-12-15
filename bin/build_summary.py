@@ -7,7 +7,7 @@ It produces a very short summary of fusion genes and transcripts found.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
         for r in data:
             f1 = "%s--%s" % (r[1],r[0])
             f2 = "%s--%s" % (r[0],r[1])
-            if r[2].lower().find('known') != -1 or r[2].lower().find('tcga') != -1 or r[2].lower().find('cosmic') != -1 or r[2].lower().find('cell_lines') != -1 or r[2].lower().find('prostates') != -1 or r[2].lower().find('pancreases') != -1 or r[2].lower().find('chimerdb') != -1:
+            if r[2].lower().find('known') != -1 or r[2].lower().find('tcga') != -1 or r[2].lower().find('cosmic') != -1 or r[2].lower().find('cell_lines') != -1 or r[2].lower().find('prostates') != -1 or r[2].lower().find('pancreases') != -1 or r[2].lower().find('chimer') != -1 or r[2].lower().find('mitelman') != -1 or r[2].lower().find('cgp') != -1 or r[2].lower().find('pcawg') != -1  or r[2].lower().find('ccle') != -1  or r[2].lower().find('oncokb') != -1 or r[2].lower().find('cacg') != -1 or r[2].lower().find('18cancer') != -1 or r[2].lower().find('metastasis') != -1 or r[2].lower().find('glioma') != -1 or r[2].lower().find('oesophag') != -1:
                 known.add(f1)
                 known.add(f2)
 
@@ -153,7 +153,7 @@ if __name__ == '__main__':
         for r in data:
             f1 = "%s--%s" % (r[1],r[0])
             f2 = "%s--%s" % (r[0],r[1])
-            if r[2].lower().find('healthy') != -1 or r[2].lower().find('conjoing') != -1 or r[2].lower().find('hpa') != -1 or r[2].lower().find('banned') != -1 or r[2].lower().find('paralogs') != -1 or r[2].lower().find('1000genomes') != -1 or r[2].lower().find('cortex') != -1 or r[2].lower().find('repeats') != -1  or r[2].lower().find('known_rt_circ_rna') != -1:
+            if r[2].lower().find('healthy') != -1 or r[2].lower().find('conjoing') != -1 or r[2].lower().find('hpa') != -1 or r[2].lower().find('banned') != -1 or r[2].lower().find('paralogs') != -1 or r[2].lower().find('1000genomes') != -1 or r[2].lower().find('cortex') != -1 or r[2].lower().find('repeat') != -1  or r[2].lower().find('known_rt_circ_rna') != -1   or r[2].lower().find('poly') != -1 or r[2].lower().find('sr1.') != -1 or r[2].lower().find('sr0.') != -1 or r[2].lower().find('gtex') != -1 or r[2].lower().find('tcga-normal') != -1 or r[2].lower().find('pseudogene') != -1 or r[2].lower().find('bodymap') != -1 or r[2].lower().find('ribosomal') != -1 or r[2].lower().find('cortex') != -1:
                 questionable.add(f1)
                 questionable.add(f2)
 
@@ -165,6 +165,15 @@ if __name__ == '__main__':
             if r[2].lower().find('readthrough') != -1:
                 readthrough.add(f1)
                 readthrough.add(f2)
+
+        # exonexon
+        exonexon = set()
+        for r in data:
+            f1 = "%s--%s" % (r[1],r[0])
+            f2 = "%s--%s" % (r[0],r[1])
+            if r[2].lower().find('exon-exon') != -1:
+                exonexon.add(f1)
+                exonexon.add(f2)
 
         # rt-circ-rna
         rtcircrna = set()
@@ -192,41 +201,50 @@ if __name__ == '__main__':
                 bag.add(s)
 
         results = []
-        results.append("Very short summary of found candidate fusion genes\n")
-        results.append("==================================================\n\n")
+        results.append("Very short summary of found candidate somatic fusion genes\n")
+        results.append("======================================================= ====\n\n")
         if top_virus:
             results.append("The input sample contains sequencing reads mapping on: '%s'.\n\n" % (top_virus,))
-        results.append("Found %d fusion gene(s), which are as follows:\n" % (len(fusions_genes),))
+        results.append("Found %d somatic fusion gene(s), which are as follows:\n" % (len(fusions_genes),))
         for line in found:
             label = []
+            novel = True
             if line in reciprocal:
                 label.append('reciprocal fusion')
             if line in known:
                 label.append('already known fusion')
+                novel = False
             if line in questionable:
                 label.append('probably false positive')
+                novel = False
             if line in readthrough:
                 label.append('readthrough')
+                novel = False
             if line in rtcircrna:
                 label.append('rt-circRNA')
+                novel = False
+            if line in exonexon:
+                label.append('exon-exon fusion junction')
+            if novel:
+                label.append('probably novel fusion')
             if label:
                 label = "  ("+'; '.join(label)+")"
             else:
                 label = ''
             results.append("  * %s%s\n" % (line,label))
-        results.append("\nFound %d fusion transcript(s).\n\n" % (len(fusions_transcripts),))
+        results.append("\nFound %d somatic fusion transcript(s).\n\n" % (len(fusions_transcripts),))
 
         results.append("For more detailed information regarding these candidate fusions, see text file 'final-list_candidate-fusion-genes.txt'.\n")
 
         file(options.output_filename,"w").writelines(results)
     else:
         results = []
-        results.append("Very short summary of found candidate fusion genes\n")
-        results.append("==================================================\n\n")
+        results.append("Very short summary of found candidate somatic fusion genes\n")
+        results.append("======================================================= ====\n\n")
         if top_virus:
             results.append("The input sample contains sequencing reads mapping on '%s'.\n\n" % (top_virus,))
-        results.append("No fusion genes found.\n\n")
-        results.append("No fusion transcripts found.\n")
+        results.append("No somatic fusion genes found.\n\n")
+        results.append("No somatic fusion transcripts found.\n")
 
         file(options.output_filename,"w").writelines(results)
 

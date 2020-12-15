@@ -9,7 +9,7 @@ Genome Res. 2012 22: 1154-1162, doi:10.1101/gr.135780.111
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

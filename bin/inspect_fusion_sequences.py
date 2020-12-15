@@ -5,7 +5,7 @@ It takes as input a list of chromosomal coordinates of fusion genes and it label
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -164,6 +164,7 @@ def evaluate_fusion_sequence(
              threshold = 2.0,
              threshold2 = 2.0,
              poly = 15,
+             remove_poly_filename = '',
              verbose = True):
 
     polyA = poly * "A"
@@ -176,6 +177,9 @@ def evaluate_fusion_sequence(
     # read the list of fusion genes and their chromosomal positions
     data = [line.rstrip('\r\n').split('\t') for line in file(input_file,'r').readlines() if line.rstrip('')]
     header = data.pop(0)
+
+    if remove_poly_filename:
+        file(remove_poly_filename,'a').write("\n\n\nCandidate fusions removed due to PolyA/C/G/T and long repeats:\n===============================================\n")
 
 
     if data:
@@ -194,19 +198,32 @@ def evaluate_fusion_sequence(
                     label = label + "," if label else label
                     label = label + 'long_repeats,lr%.2f' % (l2,)
                 #print "l2",s,l2
+            poly_found = False
             if s.find(polyA) != -1:
                 label = label + "," if label else label
                 label = label + 'polyA'
+                poly_found = True
             if s.find(polyC) != -1:
                 label = label + "," if label else label
                 label = label + 'polyC'
+                poly_found = True
             if s.find(polyG) != -1:
                 label = label + "," if label else label
                 label = label + 'polyG'
+                poly_found = True
             if s.find(polyT) != -1:
                 label = label + "," if label else label
                 label = label + 'polyT'
-            res.append(line[0:2]+[label]+line[3:])
+                poly_found = True
+            
+            if remove_poly_filename:
+                if poly_found or label.find("long_repeats") != -1:
+                    uf = line[0:2]+[label]+line[3:]
+                    file(remove_poly_filename,'a').write('\t'.join(uf)+'\n')
+                else:
+                    res.append(line[0:2]+[label]+line[3:])
+            else:
+                res.append(line[0:2]+[label]+line[3:])
 
         if verbose:
             print >>sys.stderr,"Parsing the GTF file..."
@@ -239,7 +256,7 @@ def main():
 
 Author: Daniel Nicorici
 Email: Daniel.Nicorici@gmail.com
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 """
 
@@ -313,6 +330,13 @@ Copyright (c) 2009-2019 Daniel Nicorici
                       help = """Any window which compresses less this threshold is considered to contain a short tandem repeat and the read will be filtered out. Default is %default.""")
 
 
+    parser.add_option("-x","--remove-poly",
+                      action = "store",
+                      type = "string",
+                      dest = "remove_poly_filename",
+                      help = """The fusions that are found to contains polyA/C/G/T will be filtered out and written in this file. Default is %default.""")
+
+
     parser.add_option("-q", "--quiet",
                       action = "store_false",
                       dest = "verbose",
@@ -347,6 +371,7 @@ Copyright (c) 2009-2019 Daniel Nicorici
                     options.codelength_threshold,
                     options.codelength_threshold2,
                     options.poly,
+                    options.remove_poly_filename,
                     options.verbose)
 
 

@@ -9,7 +9,7 @@ FusionCatcher-build downloads and builds the data necessary for FusionCatcher.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -41,7 +41,6 @@ candidate fusion genes!
 This file is executing by default the BLAT aligner.
 """
 
-import sys
 import sys
 if ( sys.version_info>(3,0)):
     print "ERROR: Python 3 or newer detected! Python 2.X is needed! FIX: run '/some/python/2.7/python bootstrap.py"
@@ -127,7 +126,7 @@ if __name__ == '__main__':
     epilog = ("\n" +
              "Author: Daniel Nicorici \n" +
              "Email: Daniel.Nicorici@gmail.com \n" +
-             "Copyright (c) 2009-2019 Daniel Nicorici \n " +
+             "Copyright (c) 2009-2020 Daniel Nicorici \n " +
              "\n")
 
     description = ("FusionCatcher-build downloads data from Ensembl database and "+
@@ -141,7 +140,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 1.20"
+    version = "%prog 1.30"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -1051,6 +1050,12 @@ if __name__ == '__main__':
 #        job.link(outdir('genome3.fa'),outdir('genome.fa'),temp_path='yes')
 
 
+    job.add(_FC_+'generate_banned_seq.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('banned_seq.fa'),kind='output',command_line='no')
+    job.run()
+
     job.add(_FC_+'generate_rrna_unit.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
@@ -1202,10 +1207,31 @@ if __name__ == '__main__':
     job.add('',outdir('gliomas.txt'),kind='output',command_line='no')
     job.run()
 
+    job.add(_FC_+'generate_tcga3.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('--skip-filter-overlap',out_dir,kind='parameter')
+    job.add('',outdir('tcga3.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add(_FC_+'generate_ccle3.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('--skip-filter-overlap',out_dir,kind='parameter')
+    job.add('',outdir('ccle3.txt'),kind='output',command_line='no')
+    job.run()
+
+
     job.add(_FC_+'get_celllines.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('celllines.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add(_FC_+'get_ccle.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('ccle.txt'),kind='output',command_line='no')
     job.run()
 
     job.add(_FC_+'get_prostate_cancer.py',kind='program')
@@ -1763,6 +1789,12 @@ if __name__ == '__main__':
     elif job.run():
         file(outdir('cacg.txt'),'w').write('')
 
+    job.add(_FC_+'get_pcawg.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('pcawg.txt'),kind='output',command_line='no')
+    job.run()
+
     job.add(_FC_+'get_dgd.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
@@ -1773,6 +1805,12 @@ if __name__ == '__main__':
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('mitelman.txt'),kind='output',command_line='no')
+    job.run()
+
+    job.add(_FC_+'generate_metastasis.py',kind='program')
+    job.add('--organism',options.organism,kind='parameter')
+    job.add('--output',out_dir,kind='output',checksum='no')
+    job.add('',outdir('metastasis.txt'),kind='output',command_line='no')
     job.run()
 
     job.add(_FC_+'get_gtex.py',kind='program')

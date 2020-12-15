@@ -7,7 +7,7 @@ It splits a FASTA file into several equally sized FASTA files.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -167,13 +167,13 @@ if __name__ == '__main__':
     if options.seq_per_fasta:
         n = int(math.ceil(float(size) / float(30)))
         if options.seqs_input_fasta_filename:
-            n = int(file(options.seqs_input_fasta_filename,'r').readline().strip())
+            n = int(float(file(options.seqs_input_fasta_filename,'r').readline().strip()))
     else:
         # threshold size
         threshold = options.threshold
 
         if options.size_input_fasta_filename:
-            size = int(file(options.size_input_fasta_filename,"r").readline().strip())
+            size = int(float(file(options.size_input_fasta_filename,"r").readline().strip()))
 
         # compute/estimate the approximate size of the chunk (chunks should be approximately equally)
         n = int(math.ceil(float(size) / float(threshold)))

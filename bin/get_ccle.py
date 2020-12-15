@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 
-It downloads the fusion genes found in non-cancer tissues from article:
-M. Babiceanu et al., Recurrent chimeric fusion RNAs in non-cancer tissues and cells, Nucl. Acids Res. (2016), doi: 10.1093/nar/gkw032 , http://nar.oxfordjournals.org/content/early/2016/02/01/nar.gkw032.full
+It downloads the fusion genes found in CCLE from depmap.org portal (from: https://depmap.org/portal/download/).
 
 
 
@@ -54,15 +53,26 @@ import symbols
 import shutil
 import datetime
 
+
+def fix(g):
+    u = g
+    if g.upper() == "IGL-@":
+        u = "IGL@"
+    elif g.upper() == "IGH-@":
+        u = "IGH@"
+    return u
+
 if __name__ == '__main__':
 
     #command line parsing
 
     usage = "%prog [options]"
-    description = """It downloads the human fusion genes found in prostate cancer patients from article: M. Babiceanu et al., Recurrent chimeric fusion RNAs in non-cancer tissues and cells, Nucl. Acids Res. (2016)."""
+    description = """It downloads the human fusion genes found in 675 cell lines from article: C. Klijn et al., A comprehensive transcriptional portrait of human cancer cell lines, Nature Biotechnology, Dec. 2014, doi:10.1038/nbt.3080"""
     version = "%prog 0.12 beta"
 
-    parser = optparse.OptionParser(usage=usage,description=description,version=version)
+    parser = optparse.OptionParser(usage = usage,
+                                   description = description,
+                                   version = version)
 
     parser.add_option("--organism","-g",
                       action = "store",
@@ -79,11 +89,10 @@ if __name__ == '__main__':
                       help="""The output directory where the known fusion genes are stored. Default is '%default'.""")
 
     parser.add_option("--data",
-                      action="store",
-                      type="string",
-                      dest="data_filename",
-                      help="""The input Excel file containg the data from the article. It should be used when there is no internet connection to the site which hosts the article.""")
-
+                      action = "store",
+                      type = "string",
+                      dest = "data_filename",
+                      help="""The input CSV file containg.""")
 
     parser.add_option("--skip-filter-overlap",
                       action="store_true",
@@ -100,112 +109,48 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
-    try:
-        import openpyxl
-        print "The Python Excel parser OPENPYXL was found!"
-    except:
-        print >> sys.stderr,"WARNING: Python OPENPYXL library was not found!"
-        print >> sys.stderr,"Please, install the Python OpenPYXL library in order to be able to parse the known fusion genes in prostate tumor patients!"
-        sys.exit(0)
-
 
     # timeout in seconds
     timeout = 1800
     socket.setdefaulttimeout(timeout)
 
     # NEW:
-    # http://nar.oxfordjournals.org/content/suppl/2016/02/01/gkw032.DC1/nar-03384-n-2015-File010.xlsx
-
-
-    url = 'http://nar.oxfordjournals.org/content/suppl/2016/02/01/gkw032.DC1/nar-03384-n-2015-File010.xlsx'
-    tmp_file = os.path.join(options.output_directory,'temp_noncancer.xlsx')
-
-    headers = {     'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3',
-    'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
-    'Accept-Language' : 'en-gb,en;q=0.5'
-    }
-
-    file(os.path.join(options.output_directory,'non-cancer_tissues.txt'),'w').write('')
-
-    # save version of
-    today = datetime.date.today()
-    txt = ['Non-cancer tissues and cells (Babiceanu et al. Nucl. Acids Res. 2016) database version: %s\n' % (today.strftime("%Y-%m-%d"),)]
-    file(os.path.join(options.output_directory,'version.txt'),'a').writelines(txt)
-
+    url = 'https://ndownloader.figshare.com/files/25494407'
+    tmp_file = os.path.join(options.output_directory,'temp_ccle.csv')
 
     if options.organism.lower() == 'homo_sapiens':
+        today = datetime.date.today()
         data = []
         sem = True
         if options.data_filename:
-            tmp_file = options.data_filename
             print "Using the local file..."
         else:
-            print "Downloading the known fusion genes from the article..."
+            print "Downloading the known fusion genes from the DEPMAP..."
             try:
-                req = urllib2.Request('%s' % (url,), headers=headers)
-                da = urllib2.urlopen(req)
+                da = urllib2.urlopen('%s' % (url,))
                 file(tmp_file,'w').write(da.read())
             except:
                 print >>sys.stderr, "Warning: Cannot access '%s'! The output file will be empty!" % (url,)
                 sem = False
 
-        data = []
+
+        data = set()
         if sem:
             print "Parsing..."
-            # parse the file with the known fusion genes
-            wb = None
-            data = set()
+            # parsing
+            dudu = [e.rstrip("\r\n").split(",") for e in file(tmp_file,"r").readlines() if e.rstrip("\r\n")]
+            for line in dudu:
+                if line and len(line)>1 and line[1].find("--") != -1:
+                    gg = line[1].upper().split("--")
+                    g1 = fix(gg[0])
+                    g2 = fix(gg[1])
+                    (g1,g2) = (g2,g1) if g2 < g1 else (g1,g2)
+                    data.add((g1,g2))
+            print " - found",len(data)
 
-            try:
-                # new version of openpyxl
-                print "Using the new version of openpyxl..."
-                wb = openpyxl.load_workbook(filename=tmp_file)
-            except Exception, error:
-                print "\nError: Generic exception! Message: ",str(error)
-                print "The new version of openpyxl did not work and now using the old version of openpyxl..."
-                # old version of openpyxl
-                try:
-                    wb = openpyxl.reader.excel.load_workbook(filename=tmp_file)
-                except:
-                    print "WARNING: Not able to use the python openpyxl library!"
-                    if not options.data_filename:
-                        os.remove(tmp_file)
-                    sys.exit(0)
-
-            print "..."
-            # parse the Sheet1 sheet
-            sheet = wb.get_sheet_by_name(name = 'Table S2') #
-
-            for i,row in enumerate(sheet.rows): # sheet.iter_rows()
-                if i == 0 or i == 1 or i == 2: # skip first and second lines
-                    continue
-                f = False
-                try:
-                    g1 = row[1].value.encode('ascii','ignore').upper().strip()
-                    g2 = row[5].value.encode('ascii','ignore').upper().strip()
-                except:
-                    f = True
-                if f:
-                    continue
-                
-                if g1.find('(') != -1:
-                    t = g1.replace(')','').split('(')
-                    g1 = [t[0].strip(),t[1].strip()]
-                else:
-                    g1 = [g1]
-
-                if g2.find('(') != -1:
-                    t = g2.replace(')','').split('(')
-                    g2 = [t[0].strip(),t[1].strip()]
-                else:
-                    g2 = [g2]
-                for gg1 in g1:
-                    for gg2 in g2:
-                        if gg1 and gg2 and gg1 != gg2:
-                            (gg1,gg2) = (gg2,gg1) if gg2 < gg1 else (gg1,gg2)
-                            data.add((gg1,gg2))
-
-            print " - found",len(data),"fusions"
+            # save version of
+            txt = ['DepMap Portal: %s\n' % (today.strftime("%Y-%m-%d"),)]
+            file(os.path.join(options.output_directory,'version.txt'),'a').writelines(txt)
 
     #
             # read the gene symbols
@@ -215,15 +160,16 @@ if __name__ == '__main__':
             genes = symbols.read_genes_symbols(file_symbols)
 
             d = []
-            for (g1,g2) in data:
+            for (g1,g2) in sorted(data):
                 if g1.upper() != g2.upper():
-                    ens1 = symbols.ensembl(g1.upper(),genes,loci)
-                    ens2 = symbols.ensembl(g2.upper(),genes,loci)
-                    if ens1 and ens2:
-                        for e1 in ens1:
-                            for e2 in ens2:
-                                if e1 != e2:
-                                    d.append([e1,e2])
+                    if g1 and g2:
+                        ens1 = symbols.ensembl(g1.upper(),genes,loci)
+                        ens2 = symbols.ensembl(g2.upper(),genes,loci)
+                        if ens1 and ens2:
+                            for e1 in ens1:
+                                for e2 in ens2:
+                                    if e1 != e2:
+                                        d.append([e1,e2])
 
             data = ['\t'.join(sorted(line)) + '\n' for line in d]
             data = sorted(set(data))
@@ -236,17 +182,12 @@ if __name__ == '__main__':
                 d1 = []
                 overlappings = ['ensembl_fully_overlapping_genes.txt',
                                 'ensembl_same_strand_overlapping_genes.txt',
-                                'gencode_fully_overlapping_genes.txt',
-                                'gencode_same_strand_overlapping_genes.txt',
                                 'refseq_fully_overlapping_genes.txt',
                                 'refseq_same_strand_overlapping_genes.txt',
                                 "ucsc_fully_overlapping_genes.txt",
                                 "ucsc_same_strand_overlapping_genes.txt",
                                 'pairs_pseudogenes.txt',
                                 'banned.txt',
-                                'hpa.txt',
-                                'dgd.txt',
-                                'healthy.txt',
                                 'paralogs.txt']
                 ensembls = set(['ensembl_fully_overlapping_genes.txt',
                                 'ensembl_same_strand_overlapping_genes.txt'])
@@ -262,7 +203,7 @@ if __name__ == '__main__':
                         d4 = [line.rstrip('\r\n').split('\t') for line in d4]
                         d4 = [line+[ens2hugo.get(line[0],'')]+[ens2hugo.get(line[1],'')] for line in d4]
                         d4 = ['\t'.join(line)+'\n' for line in d4]
-                        file(os.path.join(options.output_directory,"non-cancer_tissues___%s"%(ov,)),'w').writelines(d4)
+                        file(os.path.join(options.output_directory,"ccle___%s"%(ov,)),'w').writelines(d4)
                     if ov in ensembls:
                         ens.extend(d2)
                     d1.extend(d2)
@@ -274,19 +215,19 @@ if __name__ == '__main__':
                     d.add("%s\t%s\n" % (a,b))
                 ens = set(['\t'.join(line)+'\n' for line in ens])
                 ensembl = [line for line in data if line in ens]
-                file(os.path.join(options.output_directory,'non-cancer_tissues___ensembl.txt'),'w').writelines(sorted(ensembl))
+                file(os.path.join(options.output_directory,'ccle___ensembl.txt'),'w').writelines(sorted(ensembl))
                 skipped = [line for line in data if line in d]
                 data = [line for line in data if line not in d]
-                file(os.path.join(options.output_directory,'non-cancer_tissues___all.txt'),'w').writelines(sorted(skipped))
+                file(os.path.join(options.output_directory,'ccle___all.txt'),'w').writelines(sorted(skipped))
 
                 print "%d known fusion genes left after removing the overlappings" % (len(data),)
 
-        file(os.path.join(options.output_directory,'non-cancer_tissues.txt'),'w').writelines(data)
+        file(os.path.join(options.output_directory,'ccle.txt'),'w').writelines(data)
 
-        if os.path.exists(tmp_file) and (not options.data_filename):
+        if os.path.exists(tmp_file):
             os.remove(tmp_file)
 
     else:
         # write an empty file for other organisms than human
-        file(os.path.join(options.output_directory,'non-cancer_tissues.txt'),'w').write('')
+        file(os.path.join(options.output_directory,'ccle.txt'),'w').write('')
 #

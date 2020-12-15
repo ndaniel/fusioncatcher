@@ -10,7 +10,7 @@ It only needs to have pre-installed:
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2019 Daniel Nicorici
+Copyright (c) 2009-2020 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -188,8 +188,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
     
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.20.zip'
-    FUSIONCATCHER_VERSION = "1.20"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.30.zip'
+    FUSIONCATCHER_VERSION = "1.30"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -1167,7 +1167,7 @@ python-openpyxl
         file(log,"w").write("")
 
     os.system("set +e") # make sure that the shell scripts are still executed if there are errors
-    v = "human_v98"
+    v = "human_v102"
     ############################################################################
     # List all dependencies
     ############################################################################

@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-It downloads the lastest known candidate fusion genes found in silico in 
-The Genotype-Tissue Expression Project (GTEx) 
-<http://commonfund.nih.gov/GTEx> thru FusionAnnotator."
-
+It downloads the lastest known fusion genes from PCWAG project
+<https://dcc.icgc.org/releases/PCAWG/transcriptome/fusion>.
 
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
@@ -49,16 +47,24 @@ import socket
 import optparse
 import shutil
 import urllib2
+import gzip
 import symbols
-import datetime
+
+def check(s):
+    r = ''
+    if isinstance(s, basestring):
+        r = s
+    return r
+        
+
 
 if __name__ == '__main__':
 
     #command line parsing
 
     usage = "%prog [options]"
-    description = """It downloads the lastest known candidate fusion genes found in silico in The Genotype-Tissue Expression Project (GTEx) <http://commonfund.nih.gov/GTEx> thru FusionAnnotator."""
-    version = "%prog 0.20 beta"
+    description = """It downloads the lastest known fusion genes from PCWAG project."""
+    version = "%prog 0.10 beta"
 
     parser = optparse.OptionParser(usage=usage,description=description,version=version)
 
@@ -80,8 +86,8 @@ if __name__ == '__main__':
                       action="store",
                       type="string",
                       dest="server",
-                      default = "http://raw.githubusercontent.com",
-                      help="""The GETx server (thru FusionAnnotator) from where the known fusion genes are downloaded. Default is '%default'.""")
+                      default = "https://dcc.icgc.org",
+                      help="""The ChimerDB 3.0 server from where the known fusion genes are downloaded. Default is '%default'.""")
 
     (options,args) = parser.parse_args()
 
@@ -91,60 +97,58 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
+
+    file(os.path.join(options.output_directory,'pcawg.txt'),'w').write('')
+
+
     # timeout in seconds
     timeout = 1800
     socket.setdefaulttimeout(timeout)
-    tmp_file = 'temp_gtex.txt'
 
-    url1 = '/ndaniel/FusionAnnotator/master/Hg19_CTAT_fusion_annotator_lib/GTEx_v2.txt'
-    url2 = '/ndaniel/FusionAnnotator/master/Hg19_CTAT_fusion_annotator_lib/Stransky2014_GTEx_normals_pairs.txt'
-    url3 = '/ndaniel/FusionAnnotator/master/Hg19_CTAT_fusion_annotator_lib/GTEx_Recurrent_Blacklist_July222016.txt'
+
+    #http://ercsb.ewha.ac.kr/FusionGene/document/PO_down.xls
+    url = '/api/v1/download?fn=/PCAWG/transcriptome/fusion/gene.fusions.V1.tsv.gz'
+
+    headers = { 'User-Agent' : 'Mozilla/5.0' }
 
     if options.organism.lower() == 'homo_sapiens':
-        today = datetime.date.today()
-        file(os.path.join(options.output_directory,'version.txt'),'a').writelines(['GTEx database version (thru FusionAnnotator): %s\n' % (today.strftime("%Y-%m-%d"),)])
 
-        print "Downloading the known fusion genes from GTEx database thru FusionAnnotator!"
+        file(os.path.join(options.output_directory,'version.txt'),'a').writelines(['PCAWG database version: 1.0\n'])
+
+        print "Downloading the known fusion genes from PCAWG database!"
+        data = []
+
+        tmp_file = os.path.join(options.output_directory,'temp_fusions.txt.gz')
         sem = True
         try:
-            d1 = urllib2.urlopen('%s%s' % (options.server,url1))
-            file(tmp_file,'w').write(d1.read())
-            file(tmp_file,'a').write('\n')
-            d2 = urllib2.urlopen('%s%s' % (options.server,url2))
-            file(tmp_file,'a').write(d2.read())
-#            d3 = urllib2.urlopen('%s%s' % (options.server,url3))
-#            file(tmp_file,'a').write(d3.read())
+            req = urllib2.Request('%s%s' % (options.server,url), headers=headers)
+            d = urllib2.urlopen(req)
+            file(tmp_file,'w').write(d.read())
         except:
             sem = False
             print >>sys.stderr, "Warning: Cannot access '%s%s'! The output file will be empty!" % (options.server,url)
 
-        removed = []
         if sem:
-            print "Parsing..."
+            print "Parsing...",tmp_file
+            # parse the ChimerDB file with the known fusion genes
             fusions = set()
-            for line in file(tmp_file,'r').readlines():
-                li = line.rstrip('\r\n').split('\t')
-                if (not li) or li[0].startswith('#'):
-                    continue
-                counts = 0
-                if len(li) > 1:
-                    counts = int(li[1])
-                li = li[0].split('--')
-                if len(li) != 2:
-                    continue
+            fuse = set()
 
-                if counts < 5:
-                    removed.append('%s--%s\t%d\n' % (li[0],li[1],counts))
-                    continue
-                u1 = li[0].upper().split('|')
-                u2 = li[1].upper().split('|')
-                for g1 in u1:
-                    for g2 in u2:
-                        (g1,g2) = (g2,g1) if g2 < g1 else (g1,g2)
-                        if (g2 == "TMPRSS2" and g1 == "ERG") or (g2 == "BCR" and g1 == "ABL1"):
-                            pass
-                        else:
-                            fusions.add((g1,g2))
+            # parse the PubMed sheet
+            fi = [e.rstrip("\r\n").split("\t") for e in gzip.open(tmp_file,"r").readlines() if e.rstrip("\r\n")]
+            fi.pop(0)
+            for row in fi:
+                tg = row[0].split("->")
+                g1 = tg[0]
+                g2 = tg[1]
+                (g1,g2) = (g2,g1) if g2 < g1 else (g1,g2)
+
+                fusions.add((g1,g2))
+
+                fg1 = row[4].partition(".")[0]
+                fg2 = row[5].partition(".")[0]
+                (fg1,fg2) = (fg2,fg1) if fg2 < fg1 else (fg1,fg2)
+                fuse.add((fg1,fg2))
 
             fusions = list(fusions)
             print "%d known gene fusions found!" % (len(fusions),)
@@ -186,19 +190,19 @@ if __name__ == '__main__':
                         for e2 in ens2:
                             if e1 != e2 and ((e1,e2) not in banned) and ((e2,e1) not in banned):
                                 d.append([e1,e2])
-
+            for (ens1,ens2) in fuse:
+                if ens1 and ens2:
+                    if ens1 != ens2 and ((ens1,ens2) not in banned) and ((ens2,ens1) not in banned):
+                        d.append([ens1,ens2])
 
             data = ['\t'.join(sorted(line)) + '\n' for line in d]
             data = sorted(set(data))
 
             print "%d known fusion genes converted succesfully to Ensembl Gene ids!" % (len(data),)
-        else:
-            data = []
-        file(os.path.join(options.output_directory,'gtex.txt'),'w').writelines(data)
-        file(os.path.join(options.output_directory,'gtex_removed.txt'),'w').writelines(removed)
+
+        file(os.path.join(options.output_directory,"pcawg.txt"),'w').writelines(data)
         if os.path.isfile(tmp_file):
             os.remove(tmp_file)
-    else:
-        # write an empty file for other organisms than human
-        file(os.path.join(options.output_directory,'gtex.txt'),'w').write('')
+
+
 #
