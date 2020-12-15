@@ -1141,6 +1141,8 @@ Table 2 - Labels used to describe the found fusion genes (column *Fusion\_ descr
 | **bodymap2**            | fusion gene is on a list of known false positive fusion genes. It has been found in healthy human samples collected from 16 organs from  [Illumina BodyMap2 RNA-seq database](http://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-513/). *A candidate fusion gene having this label has a very high probability of being a false positive.* |
 | **cacg**                | known conjoined genes (that is fusion genes found in samples from healthy patients) from the [CACG](http://cgc.kribb.re.kr/map/) database (please see CACG database for more information). *A candidate fusion gene having this label has a very high probability of being a false positive in case that one looks for fusion genes specific to a disease.*|
 | **cell\_lines**         | known fusion gene from paper: C. Klijn et al., A comprehensive transcriptional portrait of human cancer cell lines, Nature Biotechnology, Dec. 2014, [DOI:10.1038/nbt.3080](http://dx.doi.org/10.1038/nbt.3080) |
+| **ccle**         | known fusion gene found in human cancer cell lines that are in CCLE (Cancer Cell Line Encyclopedia); known fusions from [DepMap portal](https://depmap.org/portal/download/) |
+| **ccle3**         | known fusion gene found in human cancer cell lines that are in CCLE (Cancer Cell Line Encyclopedia); known fusions from from paper: Vellichirammal et al., Pan-Cancer Analysis Reveals the Diverse Landscape of Novel Sense and Antisense Fusion Transcripts,  Mol. Ther. Nucleic Acids, 2020, [DOI:10.1016/j.omtn.2020.01.023](https://doi.org/10.1016/j.omtn.2020.01.023) |
 | **cgp**                 | known fusion gene from the [CGP](http://www.sanger.ac.uk/genetics/CGP/Census/) database |
 | **chimerdb2**           | known fusion gene from the [ChimerDB 2](http://ercsb.ewha.ac.kr/FusionGene/) database|
 | **chimerdb3kb**           | known fusion gene from the [ChimerDB 3 KB (literature curration)](http://ercsb.ewha.ac.kr/FusionGene/) database |
@@ -1198,6 +1200,10 @@ Table 2 - Labels used to describe the found fusion genes (column *Fusion\_ descr
 | **snorna**              | one or both genes is a [snoRNA](http://en.wikipedia.org/wiki/Small_nucleolar_RNA) |
 | **snrna**               | one or both genes is a [snRNA](http://en.wikipedia.org/wiki/Small_nuclear_RNA) |
 | **tcga**                | known fusion gene from the [TCGA](https://tcga-data.nci.nih.gov/tcga/) database (please use Google for more information regarding the fusion gene) |
+| **tcga-normal**                | known fusion gene from healthy samples from [TCGA](https://tcga-data.nci.nih.gov/tcga/) database (please use Google for more information regarding the fusion gene) |
+| **tcga-cancer**                | known fusion gene from tumor samples from [TCGA](https://tcga-data.nci.nih.gov/tcga/) database (please use Google for more information regarding the fusion gene) |
+| **tcga2**                | known fusion gene from the [TCGA](https://tcga-data.nci.nih.gov/tcga/) database (please use Google for more information regarding the fusion gene) |
+| **tcga3**                | known fusion gene from the [TCGA](https://tcga-data.nci.nih.gov/tcga/) database (please use Google for more information regarding the fusion gene) |
 | **ticdb**               | known fusion gene from the [TICdb](http://www.unav.es/genetica/TICdb/) database (please use TICdb database for more information regarding the fusion gene) |
 | **trna**                | one or both genes is a [tRNA](http://en.wikipedia.org/wiki/Transfer_RNA) |
 | **ucsc\_fully\_overlapping** | the genes forming the fusion gene are fully overlapping according to UCSC database. *A candidate fusion gene having this label has a very high probability of being a false positive.* |
