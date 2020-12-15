@@ -1,6 +1,6 @@
 FROM centos:7.6.1810
 
-LABEL Description="This image is used to run FusionCatcher" Version="1.20"
+LABEL Description="This image is used to run FusionCatcher" Version="1.30"
 
 RUN yum install -y epel-release \
     && yum install -y \
@@ -29,7 +29,7 @@ RUN yum install -y epel-release \
     python-biopython \
     && wget --no-check-certificate http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py \
     && python bootstrap.py --help \
-    && python bootstrap.py -t -y -i /opt/fusioncatcher/v1.20/
+    && python bootstrap.py -t -y -i /opt/fusioncatcher/v1.30/
 
 WORKDIR /opt
 
