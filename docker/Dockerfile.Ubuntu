@@ -1,8 +1,8 @@
-FROM ubuntu:14.04
+FROM ubuntu:18.04
 
 MAINTAINER daniel.nicorici@gmail.com
 
-LABEL Description="This image is used to run FusionCatcher" Version="1.20"
+LABEL Description="This image is used to run FusionCatcher" Version="1.30"
 
 RUN apt-get -y clean \
     && apt-get -y update \
@@ -46,6 +46,6 @@ WORKDIR /opt
 ######################
 
 RUN wget --no-check-certificate http://sf.net/projects/fusioncatcher/files/bootstrap.py -O bootstrap.py \
-    && python bootstrap.py -t -y -i /opt/fusioncatcher/v1.20/
+    && python bootstrap.py -t -y -i /opt/fusioncatcher/v1.30/
 
 
