@@ -50,7 +50,7 @@ For running *FusionCatcher* it is needed a computer with:
   * **BioPython** version 1.73 (>=1.50 is fine)
   * **Bowtie** 64-bit version 1.2.3 http://bowtie-bio.sourceforge.net/index.shtml (will be installed by `boostrap.py`)
   * forked **SeqTK** version 1.2-r101c-dirty  http://github.com/ndaniel/seqtk (will be installed by `boostrap.py`)
-  * organism specific  data from [Ensembl](http://www.ensembl.org) database release 98 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed) (will be installed by `boostrap.py`)
+  * organism specific  data from [Ensembl](http://www.ensembl.org) database release 102 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed) (will be installed by `boostrap.py`)
   * **STAR** version 2.7.2b https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases (will be installed by `boostrap.py`)
   * **BOWTIE2** version 2.3.5.1 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml (will be installed by `boostrap.py`)
   * **BBMAP** version 38.44 https://sourceforge.net/projects/bbmap/ (will be installed by `boostrap.py`)
@@ -406,7 +406,7 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
   mkdir -p /apps/fusioncatcher/data
   ```
   
-  * installing **Bowtie** 64-bit version 1.2.0 (required)
+  * installing **Bowtie** 64-bit version 1.2.3 (required)
   ```
   cd /apps/fusioncatcher/tools
   wget https://github.com/BenLangmead/bowtie/releases/download/v1.2.3/bowtie-1.2.3-linux-x86_64.zip
@@ -586,7 +586,7 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    threads = 0
    aligners = blat,star
    [versions]
-   fusioncatcher = 1.20
+   fusioncatcher = 1.30
    ```
    
    * *Choice B*: Add the paths for the needed tools to the `PATH` variable by editing, for example, the `.bashrc` file (type: `nano ~/.bashrc` at command line) and add the following lines at the end:
@@ -626,21 +626,21 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    ```
    mkdir -p /apps/fusioncatcher/data
    cd /apps/fusioncatcher/data
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.aa
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ab
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ac
-   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ad
-   cat human_v98.tar.gz.* | tar xz
-   ln -s human_v98 current
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v102.tar.gz.aa
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v102.tar.gz.ab
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v102.tar.gz.ac
+   wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v102.tar.gz.ad
+   cat human_v102.tar.gz.* | tar xz
+   ln -s human_v102 current
    ```
    
    * Using `fusioncatcher-build` -- It will takes several hours (e.g. 5-10 hours) and it depends highly on the bandwidth of your internet connection. One may find out what Ensembl database version is available at [www.ensembl.org] and what version has been downloaded by looking to the last three lines printed on the screen by `fusioncatcher-build`.
    ```
-   mkdir -p /apps/fusioncatcher/data/human_v98
-   cd /apps/fusioncatcher/data/human_v98
+   mkdir -p /apps/fusioncatcher/data/human_v102
+   cd /apps/fusioncatcher/data/human_v102
    /apps/fusioncatcher/bin/fusioncatcher-build -g homo_sapiens -o .
    cd ..
-   ln -s human_v98 current
+   ln -s human_v102 current
    ```
 
 
@@ -852,17 +852,17 @@ First, it is needed to download data or build the necessary files/indexes for ru
 
 ### 5.2.1 - Direct download of human build data
 
-Here, in this example, the necessary data is downloaded and necessary files/indexes for the **human genome** are downloaded in the directory `/some/human/data/human_v98/` which will be used later.
+Here, in this example, the necessary data is downloaded and necessary files/indexes for the **human genome** are downloaded in the directory `/some/human/data/human_v102/` which will be used later.
 
 ```
 mkdir -p /some/human/data/
 cd /some/human/data/
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.aa
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ab
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ac
-wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v98.tar.gz.ad
-cat human_v98.tar.gz.* | tar xz
-ln -s human_v98 current
+wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v102.tar.gz.aa
+wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v102.tar.gz.ab
+wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v102.tar.gz.ac
+wget http://sourceforge.net/projects/fusioncatcher/files/data/human_v102.tar.gz.ad
+cat human_v102.tar.gz.* | tar xz
+ln -s human_v102 current
 ```
 
 If this works then it is not necessary to start building yourself the build data as shown below (which is **only** needed in case that the direct download for some reason does not work or one wishes to use the build data of another organism which is not available for download).
@@ -906,7 +906,7 @@ For mouse genome, one has
 fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
 ```
 
-**NOTE**: *FusionCatcher* version 1.20 needs a newer **build data** than the previous version (that is 1.10) of 'fusioncatcher-build'.
+**NOTE**: *FusionCatcher* version 1.30 needs a newer **build data** than the previous version (that is 1.10) of 'fusioncatcher-build'.
 
 ---
 
