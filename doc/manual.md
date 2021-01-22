@@ -50,6 +50,7 @@ For running *FusionCatcher* it is needed a computer with:
   * **BioPython** version 1.73 (>=1.50 is fine)
   * **Bowtie** 64-bit version 1.2.3 http://bowtie-bio.sourceforge.net/index.shtml (will be installed by `boostrap.py`)
   * forked **SeqTK** version 1.2-r101c-dirty  http://github.com/ndaniel/seqtk (will be installed by `boostrap.py`)
+  * **fastqtk** version 0.27  http://github.com/ndaniel/fastqtk (will be installed by `boostrap.py`)
   * organism specific  data from [Ensembl](http://www.ensembl.org) database release 102 (all downloading and the necessary building process is handled automatically by the included/provided tool `fusioncatcher-build` and therefore no knowledge of Ensembl database or other databases is needed) (will be installed by `boostrap.py`)
   * **STAR** version 2.7.2b https://github.com/alexdobin/STAR . Executables are available at http://github.com/alexdobin/STAR/releases (will be installed by `boostrap.py`)
   * **BOWTIE2** version 2.3.5.1 http://bowtie-bio.sourceforge.net/bowtie2/index.shtml (will be installed by `boostrap.py`)
@@ -456,6 +457,15 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
   ln -s seqtk-1.0-r82b seqtk
   ```
   
+  * installing **fastqtk** version 0.27 (required)
+  ```
+  wget https://github.com/ndaniel/fastqtk/archive/v0.27.tar.gz -O v0.27.tar.gz --no-check-certificate
+  tar --overwrite -xvzf v0.27.tar.gz -C .
+  make -C fastqtk-0.27
+  chmod +x fastqtk-0.27/fastqtk
+  ln -s fastqtk-0.27 fastqtk
+  ```
+  
   * installing **STAR** version 2.7.2b (required)
   ```
   cd /apps/fusioncatcher/tools
@@ -565,6 +575,7 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    bowtie2 = /apps/fusioncatcher/tools/bowtie2/
    star = /apps/fusioncatcher/tools/star/source/
    seqtk = /apps/fusioncatcher/tools/seqtk/
+   fasttk = /apps/fusioncatcher/tools/fastqtk/
    velvet = /apps/fusioncatcher/tools/velvet/
    fatotwobit = /apps/fusioncatcher/tools/blat/
    liftover = /apps/fusioncatcher/tools/blat/
@@ -572,7 +583,8 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    numpy = /apps/fusioncatcher/tools/numpy/
    biopython = /apps/fusioncatcher/tools/biopython/
    xlrd = /apps/fusioncatcher/tools/xlrd/
-   openpyxl = /apps/fusioncatcher/tools/openpyxl
+   openpyxl = /apps/fusioncatcher/tools/openpyxl/
+   fastqtk = /apps/fusioncatcher/tools/fastqtk/
    lzop = /apps/fusioncatcher/tools/lzop/src/
    coreutils = /apps/fusioncatcher/tools/coreutils/src/
    pigz = /apps/fusioncatcher/tools/pigz/
@@ -586,7 +598,7 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    threads = 0
    aligners = blat,star
    [versions]
-   fusioncatcher = 1.30
+   fusioncatcher = 1.33
    ```
    
    * *Choice B*: Add the paths for the needed tools to the `PATH` variable by editing, for example, the `.bashrc` file (type: `nano ~/.bashrc` at command line) and add the following lines at the end:
@@ -598,6 +610,7 @@ sudo yum install java-1.8.0-openjdk* (or other Java?)
    export PATH=/apps/fusioncatcher/tools/star/source/:$PATH
    export PATH=/apps/fusioncatcher/tools/liftover:$PATH
    export PATH=/apps/fusioncatcher/tools/seqtk:$PATH
+   export PATH=/apps/fusioncatcher/tools/fastqtk:$PATH
    export PATH=/apps/fusioncatcher/tools/sratoolkit/bin:$PATH
    export PATH=/apps/fusioncatcher/tools/velvet/:$PATH
    export PATH=/apps/fusioncatcher/tools/fatotwobit/:$PATH
@@ -906,7 +919,7 @@ For mouse genome, one has
 fusioncatcher-build -g mus_musculus -o /some/mouse/data/directory/
 ```
 
-**NOTE**: *FusionCatcher* version 1.30 needs a newer **build data** than the previous version (that is 1.10) of 'fusioncatcher-build'.
+**NOTE**: *FusionCatcher* version 1.33 needs a newer **build data** than the previous version (that is 1.10) of 'fusioncatcher-build'.
 
 ---
 
