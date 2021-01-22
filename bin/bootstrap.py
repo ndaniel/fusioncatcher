@@ -159,7 +159,9 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     global LIFTOVER_VERSION
     global JAVA_PATH
     global ENSEMBL_VERSION
-
+    global FASTQTK_URL
+    global FASTQTK_PATH
+    global FASTQTK_VERSION
 
 
     # python
@@ -188,8 +190,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
         FUSIONCATCHER_PATH = expand(FUSIONCATCHER_PREFIX,'fusioncatcher')
     
     FUSIONCATCHER_BIN = expand(FUSIONCATCHER_PATH,'bin')
-    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.30.zip'
-    FUSIONCATCHER_VERSION = "1.30"
+    FUSIONCATCHER_URL = 'http://sourceforge.net/projects/fusioncatcher/files/fusioncatcher_v1.33.zip'
+    FUSIONCATCHER_VERSION = "1.33"
     FUSIONCATCHER_DATA = expand(FUSIONCATCHER_PATH,'data')
     FUSIONCATCHER_CURRENT = expand(FUSIONCATCHER_DATA,'current')
     FUSIONCATCHER_ORGANISM = 'homo_sapiens'
@@ -241,6 +243,10 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     BBMAP_PATH = os.path.join(FUSIONCATCHER_TOOLS,'bbmap')
     BBMAP_URL = 'https://sourceforge.net/projects/bbmap/files/BBMap_38.44.tar.gz'
     BBMAP_VERSION = ('38.44',)
+    # FASTQ-LEAVE
+    FASTQTK_PATH = os.path.join(FUSIONCATCHER_TOOLS,'fastqtk')
+    FASTQTK_URL = 'https://github.com/ndaniel/fastqtk/archive/v0.27.tar.gz'
+    FASTQTK_VERSION = ('0.27',)
     # faToTwoBit
     FATOTWOBIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'fatotwobit')
     FATOTWOBIT_URL = 'http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/faToTwoBit'
@@ -248,6 +254,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     SRATOOLKIT_PATH = os.path.join(FUSIONCATCHER_TOOLS,'sratoolkit')
     SRATOOLKIT_URL = 'https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.6/sratoolkit.2.9.6-centos_linux64.tar.gz'
     SRATOOLKIT_VERSION = ('2.3.5-2','2.4.2','2.5.1','2.6.2','2.8.0','2.8.1-3','2.8.2-1','2.9.6')
+    # VELVET
     VELVET_PATH = os.path.join(FUSIONCATCHER_TOOLS,'velvet')
     VELVET_URL = 'http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz'
     VELVET_VERSION = ('1.2.09','1.2.10')
@@ -275,8 +282,8 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     PXZ_VERSION = ('4.999.9beta',)
     # GNU PARALLEL
     PARALLEL_PATH = os.path.join(FUSIONCATCHER_TOOLS,'parallel')
-    PARALLEL_URL = 'http://ftp.gnu.org/gnu/parallel/parallel-20191022.tar.bz2'
-    PARALLEL_VERSION = ('20191022',)
+    PARALLEL_URL = 'http://ftp.gnu.org/gnu/parallel/parallel-20201222.tar.bz2'
+    PARALLEL_VERSION = ('20201222',)
     # samtools
     SAMTOOLS_PATH = os.path.join(FUSIONCATCHER_TOOLS,'samtools')
     SAMTOOLS_URL = 'http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2'
@@ -1188,6 +1195,7 @@ python-openpyxl
         print "STAR [REQUIRED]: ",STAR_URL
         print "BWA [REQUIRED]: ",BWA_URL
         print "SeqTK [REQUIRED]: ",SEQTK_URL
+        print "fastqtk [REQUIRED]: ",FASTQTK_URL
         print "BBMap [REQUIRED]: ",BBMAP_URL
         print "Velvet (de novo assembler) [OPTIONAL]: ",VELVET_URL
         print "Picard (Java-based SAM tools) [OPTIONAL]: ",PICARD_URL
@@ -1305,6 +1313,7 @@ python-openpyxl
             STAR_URL = os.path.join(ol, os.path.basename(STAR_URL))
             BWA_URL = os.path.join(ol, os.path.basename(BWA_URL))
             SEQTK_URL = os.path.join(ol, os.path.basename(SEQTK_URL))
+            FASTQTK_URL = os.path.join(ol, os.path.basename(FASTQTK_URL))
             VELVET_URL = os.path.join(ol, os.path.basename(VELVET_URL))
             PICARD_URL = os.path.join(ol, os.path.basename(PICARD_URL))
             PARALLEL_URL = os.path.join(ol, os.path.basename(PARALLEL_URL))
@@ -1671,6 +1680,25 @@ python-openpyxl
         if r:
             SEQTK_PATH = r
 
+
+        ############################################################################
+        # FASTQ-LEAVE
+        ############################################################################
+        r = tool(name = "FASTQ-LEAVE (lightweight tools for FASTQ files)",
+                 exe = "fastqtk",
+                 param = "",
+                 web = "<http://github.com/ndaniel/fastqtk/>",
+                 versions = FASTQTK_VERSION,
+                 version_word = "Version:",
+                 force = options.force_yes,
+                 url = FASTQTK_URL,
+                 path = FASTQTK_PATH,
+                 install = options.install_all or options.install_all_tools,
+                 log = log
+                 )
+        if r:
+            FASTQTK_PATH = r
+
         ############################################################################
         # STAR
         ############################################################################
@@ -1980,6 +2008,7 @@ python-openpyxl
     data.append("bowtie2 = %s\n"%(BOWTIE2_PATH,))
     data.append("bwa = %s\n"%(BWA_PATH,))
     data.append("blat = %s\n"%(BLAT_PATH,))
+    data.append("fastqtk = %s\n"%(FASTQTK_PATH,))
     data.append("liftover = %s\n"%(LIFTOVER_PATH,))
     data.append("star = %s\n"%(star,))
     data.append("velvet = %s\n"%(VELVET_PATH,))

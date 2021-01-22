@@ -123,21 +123,24 @@ class lines_to_file:
     def __del__(self):
         self.close()
 
-def trim_poly_5_end(r, q, nucleotide, no_repeats = 9,empty=False):
-    n = len(r)
-    start = -1
+def trim_poly(r,q,ix,empty=False):
+    r = r[:ix]
+    q = q[:ix]
     f = False
-    if n > 1 and r[0] == nucleotide and r[1] == nucleotide:
-        start = -1
-        s = r.upper()
-        for i in range(1,n):
-            if s[i] == s[i-1]:
-                start = i
-            else:
-                break
-        if (n - start + 1) >= no_repeats:
-            r = r[start+1:]
-            q = q[start+1:]
+    if (not empty) and (not r):
+        # do not give reads of length zero!
+        r = "A"
+        q = "I"
+    return (r,q,f)
+
+def trim_poly_5_end(r, q, nucleotide, empty=False):
+    n = len(r)
+    f = False
+    if n != 0:
+        r = r.lstrip(nucleotide)
+        m = len(r)
+        if m != n:
+            q = q[n-m:]
             f = True # trimmed
             if (not empty) and (not r):
                 # do not give reads of length zero!
@@ -145,20 +148,14 @@ def trim_poly_5_end(r, q, nucleotide, no_repeats = 9,empty=False):
                 q = "I"
     return (r,q,f)
 
-def trim_poly_3_end(r, q, nucleotide, no_repeats = 9,empty=False):
+def trim_poly_3_end(r, q, nucleotide, empty=False):
     n = len(r)
     f = False
-    if n > 1 and r[-1] == nucleotide and r[-2] == nucleotide:
-        end = n
-        s = r.upper()
-        for i in range(n-2,-1,-1):
-            if s[i] == s[i+1]:
-                end = i
-            else:
-                break
-        if (n - end + 1) >= no_repeats:
-            r = r[:end]
-            q = q[:end]
+    if n != 0:
+        r = r.rstrip(nucleotide)
+        m = len(r)
+        if m != n:
+            q = q[:m-n]
             f = True # trimmed
             if (not empty) and (not r):
                 # do not give reads of length zero!
@@ -230,17 +227,19 @@ if __name__ == '__main__':
     poly['T'] = 'T' * options.repeats
     poly['C'] = 'C' * options.repeats
     poly['G'] = 'G' * options.repeats
-    poly['N'] = 'N' * options.repeats
-    poly['R'] = 'R' * options.repeats
-    poly['Y'] = 'Y' * options.repeats
-    poly['S'] = 'S' * options.repeats
-    poly['W'] = 'W' * options.repeats
-    poly['K'] = 'K' * options.repeats
-    poly['M'] = 'M' * options.repeats
-    poly['B'] = 'B' * options.repeats
-    poly['D'] = 'D' * options.repeats
-    poly['H'] = 'H' * options.repeats
-    poly['V'] = 'V' * options.repeats
+    poly['N'] = 'N'
+#    poly['R'] = 'R' * options.repeats
+#    poly['Y'] = 'Y' * options.repeats
+#    poly['S'] = 'S' * options.repeats
+#    poly['W'] = 'W' * options.repeats
+#    poly['K'] = 'K' * options.repeats
+#    poly['M'] = 'M' * options.repeats
+#    poly['B'] = 'B' * options.repeats
+#    poly['D'] = 'D' * options.repeats
+#    poly['H'] = 'H' * options.repeats
+#    poly['V'] = 'V' * options.repeats
+    poly2A = 'A'*31
+    poly2N = 'N'*3
 
     thr = options.keep_too_short_length
 
@@ -266,6 +265,8 @@ if __name__ == '__main__':
                 h = True
             elif caracter1 and ss.endswith(poly.get(caracter1,'---')):
                 h = True
+            if ss.find(poly2A) != -1 or ss.find(poly2N) != -1:
+                h = True
 #            for k in poly_keys:
 #                if ss.startswith(poly[k]) or ss.endswith(poly[k]):
 #                    h = True
@@ -274,7 +275,7 @@ if __name__ == '__main__':
                 c = c + 1
             else:
                 #data.add_lines([id,ts,'+',tq])
-                data.add_simple_line("%s\n%s\n+\n%s\n" % (id,ts,tq))
+                data.add_simple_line("%s\n%s\n+\n%s\n" % (id,ts.replace("N","A"),tq))
                 j = j + 1
     else:
         for reads in reads_from_fastq_file(options.input_filename):
@@ -288,13 +289,21 @@ if __name__ == '__main__':
             h = False
             h1 = False
             h2 = False
+            h3 = False
             caracter1 = ss[-1:]
             caracter2 = ss[0:1]
             if caracter2 and ss.startswith(poly.get(caracter2,'---')):
-                (ts,tq,h1) = trim_poly_5_end(ts, tq, caracter2, no_repeats = options.repeats)
+                (ts,tq,h1) = trim_poly_5_end(ts, tq, caracter2)
             if caracter1 and ss.endswith(poly.get(caracter1,'---')):
-                (ts,tq,h2) = trim_poly_3_end(ts, tq, caracter1, no_repeats = options.repeats)
-            if h1 or h2:
+                (ts,tq,h2) = trim_poly_3_end(ts, tq, caracter1)
+            y1 = ts.find(poly2A)
+            if y1 != -1:
+                (ts,tq,h3) = trim_poly(ts,tq,y1)
+            else:
+                y2 = ts.find(poly2N)
+                if y2 != -1:
+                    (ts,tq,h3) = trim_poly(ts,tq,y2)
+            if h1 or h2 or h3:
                 h = True
 
 #            for k in poly_keys:
@@ -309,7 +318,7 @@ if __name__ == '__main__':
 #                    break
             if options.keep_too_short or len(ts) >= thr:
                 #data.add_lines([id,ts,'+',tq])
-                data.add_simple_line("%s\n%s\n+\n%s\n" % (id,ts,tq))
+                data.add_simple_line("%s\n%s\n+\n%s\n" % (id,ts.replace("N","A"),tq))
                 j = j + 1
             if h:
                 c = c + 1

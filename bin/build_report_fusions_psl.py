@@ -55,7 +55,8 @@ import gzip
 
 empty_zip_data = 'PK\x05\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
 
-ttable = string.maketrans("ACGTYRSWKMBDHV-","TGCARYSWMKVHDB-")
+ttable = string.maketrans("ACGTN","TGCAA") # global
+#ttable = string.maketrans("ACGTYRSWKMBDHV-","TGCARYSWMKVHDB-")
 
 mapping_solexa2sanger = "".join([chr(0) for ascii in range(0, 59)]
                         + [chr(33 + int(round(Bio.SeqIO.QualityIO.phred_quality_from_solexa(q)))) for q in range(-5, 62 + 1)]

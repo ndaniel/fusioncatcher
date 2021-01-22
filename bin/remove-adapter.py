@@ -57,7 +57,8 @@ import shutil
 import errno
 import gzip
 
-ttable = string.maketrans("ACGTYRSWKMBDHV-.","TGCARYSWMKVHDB-.") # global
+ttable = string.maketrans("ACGT","TGCA") # global
+#ttable = string.maketrans("ACGTYRSWKMBDHV-.","TGCARYSWMKVHDB-.") # global
 empty_read = ['@N123\n','N\n','+\n','I\n'] # global
 
 #

@@ -250,7 +250,7 @@ description = ("FusionCatcher searches for novel and known somatic gene fusions 
                "Illumina HiSeq 2000, Illumina HiSeq X, Illumina NextSeq 500, \n"+
                "Illumina GAIIx, Illumina GAII, Illumina MiSeq, Illumina MiniSeq). \n")
 
-version = "%prog 1.30"
+version = "%prog 1.33"
 
 
 if __name__ == "__main__":
@@ -550,7 +550,19 @@ if __name__ == "__main__":
 #                             "It masks with Ns the low entropy regions in reads."+
                     )
 
+    parser.add_option("--skip-parsort",
+                      action = "store_true",
+                      dest = "skip_parsort",
+                      default = False,
+                      help = "It skips using GNU PARSORT and instead is using classic SORT."
+                    )
 
+    parser.add_option("--skip-fastqtk",
+                      action = "store_true",
+                      dest = "skip_fastqtk",
+                      default = False,
+                      help = "It skips using FASTQTK."
+                    )
 
     mydefault = sorted([
             "paralogs",
@@ -1501,6 +1513,15 @@ if __name__ == "__main__":
                              "This will be passed to Javas '-Xmx' so for more info see '-Xmx' in java." +
                              "Default is '%default'.")
 
+
+    parser.add_option("--reads",
+                      action = "store",
+                      type = "int",
+                      dest = "reads",
+                      default = 0,
+                      help = "Only the first reads from the input FASTQ files will be used. "+
+                             "Default is '%default'.")
+
     parser.add_option("--keep",
                       action = "store_true",
                       dest = "keep_temporary_files",
@@ -1855,7 +1876,7 @@ if __name__ == "__main__":
             options.processes = int(p)
         if not options.processes:
             options.processes = multiprocessing.cpu_count()
-            options.processes = options.processes if options.processes < 32 else 31
+            options.processes = options.processes if options.processes < 17 else 16
             
     config_aligners = confs.get("ALIGNERS","")
     
@@ -1869,6 +1890,7 @@ if __name__ == "__main__":
     _BT_ = confs.get("BLAT").rstrip("/")+"/" if options.force_paths else ''
     _BP_ = confs.get("BBMAP").rstrip("/")+"/" if options.force_paths else ''
     _FC_ = confs.get("SCRIPTS").rstrip("/")+"/" if options.force_paths else ''
+    _FK_ = confs.get("FASTQTK").rstrip("/")+"/" if options.force_paths else ''
     _FT_ = confs.get("FATOTWOBIT").rstrip("/")+"/" if options.force_paths else ''
     _JA_ = confs.get("JAVA").rstrip("/")+"/" if options.force_paths else ''
     _LR_ = confs.get("LIFTOVER").rstrip("/")+"/" if options.force_paths else ''
@@ -2426,6 +2448,16 @@ if __name__ == "__main__":
         job.add('>>',info_file,kind='output')
         job.run()
 
+    parsort = False
+    parsort_buffer_size = ""
+    if options.processes > 3 and (not options.skip_parsort) and (not os.system("which parsort 2>&1 >/dev/null")):
+        #parsort = True # not wort it ; faster by few seconds
+        parsort = False
+        
+        vux = int(float(80) / float(options.processes)) # it is 80 because 80% is my maximum which I want to be used from the RAM
+        if total_memory and float(total_memory) * float(vux)/float(100) > 6000 and sort_parallel:
+            parsort_buffer_size = str(vux)+"%"
+
     job.add('printf',kind='program')
     job.add('"\nSAMTools:\n---------\n"',kind='parameter')
     job.add('>>',info_file,kind='output')
@@ -2491,7 +2523,31 @@ if __name__ == "__main__":
         sys.exit(1)
     os.remove(outdir('seqtk_version.txt'))
 
-
+    job.add('printf',kind='program')
+    job.add('"\nfastqtk:\n---------\n"',kind='parameter')
+    job.add('>>',info_file,kind='output')
+    job.run()
+    job.add(_FK_+'fastqtk',kind='program')
+    job.add('2>&1',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('head','-3',kind='parameter')
+    job.add('|',kind='parameter')
+    job.add('tail','-1',kind='parameter')
+    job.add('>>',info_file,kind='output')
+    job.run()
+    # check version
+    os.system(_SK_+"fastqtk 2>&1 |head -3 |tail -1 > '%s'" % (outdir('fastqtk_version.txt'),))
+    last_line = file(outdir('fastqtk_version.txt'),'r').readline().lower().rstrip("\r\n")
+#    correct_version = ('version: 1.0-r68e-dirty','version: 1.0-r82b-dirty')
+    #correct_version = ('version: 1.0-r82b-dirty','version: 1.2-r101b-dirty','version: 1.2-r101c-dirty')
+    correct_version = ('version: 0.27',)
+    if last_line not in correct_version:
+        job.close()
+        os.system("which fastqtk > '%s'" % (outdir('fastqtk_path.txt'),))
+        fastqtk_path = file(outdir('fastqtk_path.txt'),'r').readline().rstrip("\r\n")
+        print >>sys.stderr,"\n\n\nERROR: Wrong version of fastqtk found ("+fastqtk_path+")! Found '"+last_line+"'. It should be '"+', or'.join(correct_version)+"'. One may specify the path to the correct version in 'fusioncatcher/etc/configuration.cfg'.\n"
+        sys.exit(1)
+    os.remove(outdir('fastqtk_version.txt'))
 
 
     job.add('printf',kind='program')
@@ -2963,7 +3019,6 @@ if __name__ == "__main__":
             options.prefilter == "3"
         else:
 
-            
             new_list_input_files = []
             pairs = [(list_input_files[i-1],list_input_files[i]) for i in xrange(1,len(list_input_files),2)]
 
@@ -2986,7 +3041,7 @@ if __name__ == "__main__":
                     
                     if use_seed:
                     
-                    
+                        # get the reads length!
                         job.add('head',kind='program')
                         job.add('-c','4000',kind='parameter')
                         job.add('',f,kind='input')
@@ -3012,48 +3067,103 @@ if __name__ == "__main__":
                         job.add('>',fastlen,kind='output')
                         job.run()
 
+
                         fast_len_reads = 0
                         if job.run():
                             if os.path.exists(outdir(fastlen)):
                                 fast_len_reads = int(float(file(fastlen,'r').readline().rstrip()))
 
-                        # map reads on transcriptome for fast filtering
-                        job.add(_BE_+'bowtie',kind='program')
-                        job.add('--seed',bowtie_seed,kind='parameter')
-                        job.add('-t',kind='parameter')
-                        job.add('--seedmms','1',kind='parameter') # options.mismatches
-                        job.add('-X','100000',kind='parameter') # The maximum insert size for valid paired-end alignments. 
-                        job.add('-p',options.processes,kind='parameter',checksum='no')
-                        job.add('-k','1',kind='parameter')
-                        job.add('--phred33-quals',kind='parameter')
-                #        job.add('--tryhard',kind='parameter')
-                        job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
-                #        job.add('--best',kind='parameter')
-                        #job.add('--strata',kind='parameter')
-                        if fast_len_reads > 80:
-                            job.add('--trim5','14',kind='parameter') # trim the 10
-                            job.add('--seedlen','60',kind='parameter')
-                        elif fast_len_reads > 74:
-                            job.add('--trim5','10',kind='parameter') # trim the 10
-                            job.add('--seedlen',50,kind='parameter')
-                        elif fast_len_reads > 49:
-                            job.add('--trim5','5',kind='parameter') # trim the 10
-                            job.add('--seedlen',40,kind='parameter')
-                        else:
-                            job.add('--seedlen','60',kind='parameter')
-                        job.add('--un',ft3,kind='output',checksum='no') # unmapped reads
-                        job.add('--un',f3,kind='output',command_line='no') # unmapped reads
-                        job.add('--un',r3,kind='output',command_line='no') # unmapped reads
-                        job.add('--max',"/dev/null",kind='parameter') # if this is missing then these reads are going to '--un'
-                        if os.path.isfile(datadir('transcripts_index','.1.ebwtl')):
-                            job.add('--large-index',kind='parameter')
-                        job.add('',datadir('transcripts_index/'),kind='input')
-                        job.add('-1',f,kind='input',temp_path=temp_flag)
-                        job.add('-2',r,kind='input',temp_path=temp_flag)
-                        job.add('','/dev/null',kind='parameter')
-                        job.add('2>',outdir('log_superfast-prefiltering-transcriptome.stdout.txt'),kind='output',checksum='no')
-                        job.run()
+
+
+                        if options.reads and options.reads > 1:
+                            # map reads on transcriptome for fast filtering
+
+                            job.add(_SK_+'seqtk',kind='program')
+                            job.add('mergepe',kind='parameter')
+                            job.add('',f,kind='input')
+                            job.add('',r,kind='input')
+                            job.add('|',kind='parameter')
+                            job.add('LC_ALL=C',kind='parameter')
+                            job.add('head',kind='parameter')
+                            job.add('-n',4*options.reads,kind='parameter')
+                            job.add('|',kind='parameter')
+                            job.add(_BE_+'bowtie',kind='parameter')
+                            job.add('--seed',bowtie_seed,kind='parameter')
+                            job.add('-t',kind='parameter')
+                            job.add('--seedmms','1',kind='parameter') # options.mismatches
+                            job.add('-X','100000',kind='parameter') # The maximum insert size for valid paired-end alignments. 
+                            job.add('-p',options.processes,kind='parameter',checksum='no')
+                            job.add('-k','1',kind='parameter')
+                            job.add('--phred33-quals',kind='parameter')
+                            job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+                            if fast_len_reads > 80:
+                                job.add('--trim5','10',kind='parameter') # trim the 10
+                                job.add('--seedlen','60',kind='parameter')
+                            elif fast_len_reads > 74:
+                                job.add('--trim5','7',kind='parameter') # trim the 10
+                                job.add('--seedlen',60,kind='parameter')
+                            elif fast_len_reads > 59:
+                                job.add('--trim5','5',kind='parameter') # trim the 10
+                                job.add('--seedlen','53',kind='parameter')
+                            elif fast_len_reads > 49:
+                                job.add('--trim5','5',kind='parameter') # trim the 10
+                                job.add('--seedlen',40,kind='parameter')
+                            else:
+                                job.add('--trim5','2',kind='parameter') # trim the 10
+                                job.add('--seedlen','40',kind='parameter')
+                            job.add('--un',ft3,kind='output',checksum='no') # unmapped reads
+                            job.add('--un',f3,kind='output',command_line='no') # unmapped reads
+                            job.add('--un',r3,kind='output',command_line='no') # unmapped reads
+                            job.add('--max',"/dev/null",kind='parameter') # if this is missing then these reads are going to '--un'
+                            if os.path.isfile(datadir('transcripts_index','.1.ebwtl')):
+                                job.add('--large-index',kind='parameter')
+                            job.add('',datadir('transcripts_index/'),kind='input')
+                            job.add('--interleaved','-',kind='input')
+                            job.add('','/dev/null',kind='parameter')
+                            job.add('2>',outdir('log_superfast-prefiltering-transcriptome.stdout.txt'),kind='output',checksum='no')
+                            job.run()
                         
+                        else:
+                            # map reads on transcriptome for fast filtering
+                            job.add(_BE_+'bowtie',kind='program')
+                            job.add('--seed',bowtie_seed,kind='parameter')
+                            job.add('-t',kind='parameter')
+                            job.add('--seedmms','1',kind='parameter') # options.mismatches
+                            job.add('-X','100000',kind='parameter') # The maximum insert size for valid paired-end alignments. 
+                            job.add('-p',options.processes,kind='parameter',checksum='no')
+                            job.add('-k','1',kind='parameter')
+                            job.add('--phred33-quals',kind='parameter')
+                    #        job.add('--tryhard',kind='parameter')
+                            job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
+                    #        job.add('--best',kind='parameter')
+                            #job.add('--strata',kind='parameter')
+                            if fast_len_reads > 80:
+                                job.add('--trim5','10',kind='parameter') # trim the 10
+                                job.add('--seedlen','60',kind='parameter')
+                            elif fast_len_reads > 74:
+                                job.add('--trim5','7',kind='parameter') # trim the 10
+                                job.add('--seedlen',60,kind='parameter')
+                            elif fast_len_reads > 59:
+                                job.add('--trim5','5',kind='parameter') # trim the 10
+                                job.add('--seedlen','53',kind='parameter')
+                            elif fast_len_reads > 49:
+                                job.add('--trim5','5',kind='parameter') # trim the 10
+                                job.add('--seedlen',40,kind='parameter')
+                            else:
+                                job.add('--trim5','2',kind='parameter') # trim the 10
+                                job.add('--seedlen','40',kind='parameter')
+                            job.add('--un',ft3,kind='output',checksum='no') # unmapped reads
+                            job.add('--un',f3,kind='output',command_line='no') # unmapped reads
+                            job.add('--un',r3,kind='output',command_line='no') # unmapped reads
+                            job.add('--max',"/dev/null",kind='parameter') # if this is missing then these reads are going to '--un'
+                            if os.path.isfile(datadir('transcripts_index','.1.ebwtl')):
+                                job.add('--large-index',kind='parameter')
+                            job.add('',datadir('transcripts_index/'),kind='input')
+                            job.add('-1',f,kind='input')
+                            job.add('-2',r,kind='input')
+                            job.add('','/dev/null',kind='parameter')
+                            job.add('2>',outdir('log_superfast-prefiltering-transcriptome.stdout.txt'),kind='output',checksum='no')
+                            job.run()
                         
 #                        # map reads on transcriptome for fast filtering
 #                        job.add(_BE_+'bowtie',kind='program')
@@ -3234,11 +3344,18 @@ if __name__ == "__main__":
             output_file_1 = outdir('single-1-'+str(i)+'_'+os.path.basename(input_file))
             output_file_2 = outdir('single-2-'+str(i)+'_'+os.path.basename(input_file))
 
-            # compute the read lengths for the input file
-            job.add(_FC_+'lengths_reads.py',kind='program')
-            job.add('--input',input_file,kind='input')
-            job.add('--output',outdir('single','log_lengths_single_reads_%s.txt' % (str(i),)),kind='output')
-            job.run()
+            if options.skip_fastqtk:
+                #compute the read lengths for the input file
+                job.add(_FC_+'lengths_reads.py',kind='program')
+                job.add('--input',input_file,kind='input')
+                job.add('--output',outdir('single','log_lengths_single_reads_%s.txt' % (str(i),)),kind='output')
+                job.run()
+            else:
+                job.add(_FK_+'fastqtk',kind='program')
+                job.add('lengths',kind='parameter')
+                job.add('',input_file,kind='input')
+                job.add('',outdir('single','log_lengths_single_reads_%s.txt' % (str(i),)),kind='output')
+                job.run()
             
             max_len_reads = 0
             if os.path.exists(outdir('single','log_lengths_single_reads_%s.txt' % (str(i),))):
@@ -3423,16 +3540,20 @@ if __name__ == "__main__":
                         job.add('--phred33-quals',kind='parameter')
                         job.add('--chunkmbs',options.chunkmbs,kind='parameter',checksum='no')
                         if fast_len_reads > 80:
-                            job.add('--trim5','14',kind='parameter') # trim the 10
+                            job.add('--trim5','10',kind='parameter') # trim the 10
                             job.add('--seedlen','60',kind='parameter')
                         elif fast_len_reads > 74:
-                            job.add('--trim5','10',kind='parameter') # trim the 10
-                            job.add('--seedlen',50,kind='parameter')
+                            job.add('--trim5','7',kind='parameter') # trim the 10
+                            job.add('--seedlen',60,kind='parameter')
+                        elif fast_len_reads > 59:
+                            job.add('--trim5','5',kind='parameter') # trim the 10
+                            job.add('--seedlen','53',kind='parameter')
                         elif fast_len_reads > 49:
                             job.add('--trim5','5',kind='parameter') # trim the 10
                             job.add('--seedlen',40,kind='parameter')
                         else:
-                            job.add('--seedlen','60',kind='parameter')
+                            job.add('--trim5','2',kind='parameter') # trim the 10
+                            job.add('--seedlen','40',kind='parameter')
                         job.add('--un',tz,kind='output',checksum='no') # unmapped reads
                         job.add('--un',t1z,kind='output',command_line='no') # unmapped reads
                         job.add('--un',t2z,kind='output',command_line='no') # unmapped reads
@@ -3525,15 +3646,29 @@ if __name__ == "__main__":
                     job.clean(outdir('log_overlaps_error__%d.txt' % (i,)),temp_path=temp_flag)
                     job.clean(outdir('log_overlaps__%d.txt' % (i,)),temp_path=temp_flag)
 
-                    job.add(_FC_+'lengths_reads.py',kind='program')
-                    job.add('--input',f,kind='input')
-                    job.add('--output',outdir('log_lengths_original_reads_f_%d.txt' % (i,)),kind='output')
-                    job.run()
+                    if options.skip_fastqtk:
+                        job.add(_FC_+'lengths_reads.py',kind='program')
+                        job.add('--input',f,kind='input')
+                        job.add('--output',outdir('log_lengths_original_reads_f_%d.txt' % (i,)),kind='output')
+                        job.run()
 
-                    job.add(_FC_+'lengths_reads.py',kind='program')
-                    job.add('--input',r,kind='input')
-                    job.add('--output',outdir('log_lengths_original_reads_r_%d.txt' % (i,)),kind='output')
-                    job.run()
+                        job.add(_FC_+'lengths_reads.py',kind='program')
+                        job.add('--input',r,kind='input')
+                        job.add('--output',outdir('log_lengths_original_reads_r_%d.txt' % (i,)),kind='output')
+                        job.run()
+
+                    else:
+                        job.add(_FK_+'fastqtk',kind='program')
+                        job.add('lengths',kind='parameter')
+                        job.add('',f,kind='input')
+                        job.add('',outdir('log_lengths_original_reads_f_%d.txt' % (i,)),kind='output')
+                        job.run()
+
+                        job.add(_FK_+'fastqtk',kind='program')
+                        job.add('lengths',kind='parameter')
+                        job.add('',r,kind='input')
+                        job.add('',outdir('log_lengths_original_reads_r_%d.txt' % (i,)),kind='output')
+                        job.run()
 
                     #job.add('cat',kind='program')
                     #job.add('',outdir('log_lengths_original_reads_f_%d.txt' % (i,)),kind='input',temp_path=temp_flag)
@@ -3742,12 +3877,21 @@ if __name__ == "__main__":
 #            job.add('>',output_file,kind='output')
 #            job.run()
             #awk '{print; getline; print; getline; print; getline; print;  getline < "2.txt"; print;  getline < "2.txt"; print;  getline < "2.txt"; print;  getline < "2.txt"; print}' 1.txt
-            job.add(_SK_+'seqtk',kind='program')
-            job.add('mergepe',kind='parameter')
-            job.add('',in1,kind='input',temp_path=temp_flag)
-            job.add('',in2,kind='input',temp_path=temp_flag)
-            job.add('>',output_file,kind='output')
-            job.run()
+
+            if options.skip_fastqtk:
+                job.add(_SK_+'seqtk',kind='program')
+                job.add('mergepe',kind='parameter')
+                job.add('',in1,kind='input',temp_path=temp_flag)
+                job.add('',in2,kind='input',temp_path=temp_flag)
+                job.add('>',output_file,kind='output')
+                job.run()
+            else:
+                job.add(_FK_+'fastqtk',kind='program')
+                job.add('interleave',kind='parameter')
+                job.add('',in1,kind='input',temp_path=temp_flag)
+                job.add('',in2,kind='input',temp_path=temp_flag)
+                job.add('',output_file,kind='output')
+                job.run()
             shuffled = True
 
             new_list_input_files.append(output_file)
@@ -3779,13 +3923,22 @@ if __name__ == "__main__":
         job.add('>>',info_file,kind='output')
         job.run()
 
-        job.add('LC_ALL=C',kind='program')
-        job.add('cat',kind='parameter')
-        job.add('',input_file,kind='input')
-        job.add('|',kind='parameter')
-        job.add("echo $((`wc -l`/4))",kind='parameter')
-        job.add('>>',info_file,kind='output')
-        job.run()
+        if options.skip_fastqtk:
+            job.add('LC_ALL=C',kind='program')
+            job.add('cat',kind='parameter')
+            job.add('',input_file,kind='input')
+            job.add('|',kind='parameter')
+            job.add("echo $((`wc -l`/4))",kind='parameter')
+            job.add('>>',info_file,kind='output')
+            job.run()
+        else:
+            job.add(_FK_+'fastqtk',kind='program')
+            job.add('count',kind='parameter')
+            job.add('',input_file,kind='input')
+            job.add('-',kind='parameter')
+            job.add('>>',info_file,kind='output')
+            job.run()
+
 
         # convert the read names to Illumina Solexa version 1.5 format (i.e. end in /1 or /2)
         output_file = outdir(os.path.basename(input_file).replace('init-','init-head-'))
@@ -3864,26 +4017,38 @@ if __name__ == "__main__":
         job.add('LC_ALL=C',kind='parameter')
         job.add('paste','- - - - - - - -',kind='parameter')
         job.add('|',kind='parameter')
+        job.add('LC_ALL=C',kind='parameter')
         job.add(_FC_+'pair8removal.py',kind='parameter')
         job.add('-l','30',kind='parameter')
         job.add('-i','-',kind='parameter')
         job.add('-o','-',kind='parameter')
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
-        job.add('sort',kind='parameter')
-        job.add('-k','2,2',kind='parameter')
-        job.add('-k','6,6',kind='parameter')
-        job.add('-u',kind='parameter') # unique
-        job.add('-t',"'\t'",kind='parameter')
-        if sort_buffer:
-            job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
-        if sort_parallel:
+        if parsort:
+            job.add(_PL_+'parsort',kind='parameter')
+            job.add('-k','2,2',kind='parameter')
+            job.add('-k','6,6',kind='parameter')
+            job.add('-u',kind='parameter') # unique
+            job.add('-t',"'\\\t'",kind='parameter')
             job.add('--parallel',options.processes,kind='parameter',checksum='no')
-        if sort_lzop_compress:
-            job.add('--compress-program','lzop',kind='parameter',checksum='no')
-        elif sort_gzip_compress:
-            job.add('--compress-program','gzip',kind='parameter',checksum='no')
-        job.add('-T',tmp_dir,kind='parameter',checksum='no')
+            if parsort_buffer_size:
+                job.add('--buffer-size',parsort_buffer_size,kind='parameter',checksum='no')
+            job.add('-T',tmp_dir,kind='parameter',checksum='no')
+        else:
+            job.add('sort',kind='parameter')
+            job.add('-k','2,2',kind='parameter')
+            job.add('-k','6,6',kind='parameter')
+            job.add('-u',kind='parameter') # unique
+            job.add('-t',"'\t'",kind='parameter')
+            if sort_buffer:
+                job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+            if sort_parallel:
+                job.add('--parallel',options.processes,kind='parameter',checksum='no')
+            if sort_lzop_compress:
+                job.add('--compress-program','lzop',kind='parameter',checksum='no')
+            elif sort_gzip_compress:
+                job.add('--compress-program','gzip',kind='parameter',checksum='no')
+            job.add('-T',tmp_dir,kind='parameter',checksum='no')
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
         job.add('tr',kind='parameter')
@@ -3908,13 +4073,22 @@ if __name__ == "__main__":
 #        job.add('-2',outdir('origi.fq'),kind='input',temp_path=temp_flag)
 #        job.add('>',outdir('ox2.fq'),kind='output')
 #        job.run()
-    
-        job.add(_FC_+'unshuffle.py',kind='program')
-        job.add('-i',outdir('origi.fq'),kind='input',temp_path=temp_flag)
-        job.add('-f',outdir('ox1.fq'),kind='output')
-        job.add('-r',outdir('ox2.fq'),kind='output')
-        job.run()
 
+
+        if options.skip_fastqtk:
+            job.add(_FC_+'unshuffle.py',kind='program')
+            job.add('-i',outdir('origi.fq'),kind='input',temp_path=temp_flag)
+            job.add('-f',outdir('ox1.fq'),kind='output')
+            job.add('-r',outdir('ox2.fq'),kind='output')
+            job.run()
+        else:
+            job.add(_FK_+'fastqtk',kind='program')
+            job.add('deinterleave',kind='parameter')
+            job.add('',outdir('origi.fq'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('ox1.fq'),kind='output')
+            job.add('',outdir('ox2.fq'),kind='output')
+            job.run()
+        
         use_seed = True
         
         if use_seed:
@@ -3924,6 +4098,7 @@ if __name__ == "__main__":
             job.add('-t',kind='parameter')
             job.add('--seedmms','1',kind='parameter') # options.mismatches
             job.add('--seedlen',options.trim_3end_keep,kind='parameter')
+            job.add('--trim5','7',kind='parameter') # trim the 10
             job.add('-X','100000',kind='parameter') # The maximum insert size for valid paired-end alignments. 
             job.add('-p',options.processes,kind='parameter',checksum='no')
             job.add('-k','1',kind='parameter')
@@ -3983,24 +4158,41 @@ if __name__ == "__main__":
              bottom = "\n\n\n",
              temp_path=temp_flag)
 
-
-        job.add(_SK_+'seqtk',kind='program')
-        job.add('mergepe',kind='parameter')
-        job.add('',outdir('ox_1.fq'),kind='input',temp_path=temp_flag)
-        job.add('',outdir('ox_2.fq'),kind='input',temp_path=temp_flag)
-        job.add('>',outdir('origin.fq'),kind='output')
-        job.run()
+        if options.skip_fastqtk:
+            job.add(_SK_+'seqtk',kind='program')
+            job.add('mergepe',kind='parameter')
+            job.add('',outdir('ox_1.fq'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('ox_2.fq'),kind='input',temp_path=temp_flag)
+            job.add('>',outdir('origin.fq'),kind='output')
+            job.run()
+        else:
+            job.add(_FK_+'fastqtk',kind='program')
+            job.add('interleave',kind='parameter')
+            job.add('',outdir('ox_1.fq'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('ox_2.fq'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('origin.fq'),kind='output')
+            job.run()
+        
         
     else:
         job.link(outdir('origi.fq'), outdir('origin.fq'), temp_path=temp_flag)
 
-    # compute the read lengths for the input file
-    job.add(_FC_+'lengths_reads.py',kind='program')
-    job.add('--input',outdir('origin.fq'),kind='input')
-    job.add('--output',outdir('log_lengths_original_reads.txt'),kind='output')
-    job.add('--counts',outdir('log_counts_original_reads.txt'),kind='output')
-    job.run()
-    #cat snu16/reads_acgt.fq | awk '{if(NR%4==2) print length($1)}' | sort -n | uniq
+
+    if options.skip_fastqtk:
+        # compute the read lengths for the input file
+        job.add(_FC_+'lengths_reads.py',kind='program')
+        job.add('--input',outdir('origin.fq'),kind='input')
+        job.add('--output',outdir('log_lengths_original_reads.txt'),kind='output')
+        job.add('--counts',outdir('log_counts_original_reads.txt'),kind='output')
+        job.run()
+        ##cat snu16/reads_acgt.fq | awk '{if(NR%4==2) print length($1)}' | sort -n | uniq
+    else:
+        job.add(_FK_+'fastqtk',kind='program')
+        job.add('count-lengths',kind='parameter')
+        job.add('',outdir('origin.fq'),kind='input')
+        job.add('',outdir('log_counts_original_reads.txt'),kind='output')
+        job.add('',outdir('log_lengths_original_reads.txt'),kind='output')
+        job.run()
 
     max_len_reads = 0
     if os.path.exists(outdir('log_lengths_original_reads.txt')):
@@ -4031,13 +4223,22 @@ if __name__ == "__main__":
          
          
     if shuffled and (not options.skip_compress_ids):
-        # lossy compression of the reads ids
-        job.add(_FC_+'compress-reads-ids.py',kind='program')
-        job.add('--input',outdir('origin.fq'),kind='input',temp_path=temp_flag)
-        job.add('--output',outdir('original.fq'),kind='output')
-        job.add('--count-reads',outdir('log_counts_original_reads.txt'),kind='input')
-        job.add('--lowercase',kind='parameter')
-        job.run()
+        if options.skip_fastqtk:
+            # lossy compression of the reads ids
+            job.add(_FC_+'compress-reads-ids.py',kind='program')
+            job.add('--input',outdir('origin.fq'),kind='input',temp_path=temp_flag)
+            job.add('--output',outdir('original.fq'),kind='output')
+            job.add('--count-reads',outdir('log_counts_original_reads.txt'),kind='input')
+            job.add('--lowercase',kind='parameter')
+            job.run()
+        else:
+            job.add(_FK_+'fastqtk',kind='program')
+            job.add('compress-id',kind='parameter')
+            job.add('/12',kind='parameter')
+            job.add('',outdir('log_counts_original_reads.txt'),kind='input')
+            job.add('',outdir('origin.fq'),kind='input',temp_path=temp_flag)
+            job.add('',outdir('original.fq'),kind='output')
+            job.run()
     else:
         job.link(outdir('origin.fq'), outdir('original.fq'), temp_path=temp_flag)
 
@@ -4122,12 +4323,19 @@ if __name__ == "__main__":
             job.add('-Xmx',options.xmx,kind='parameter',checksum='no',space='no')
             job.run()
 
-            job.add(_FC_+'unshuffle.py',kind='program')
-            job.add('-i',outdir('unmerged.fq'),kind='input',temp_path=temp_flag)
-            job.add('-f',outdir('or1.fq'),kind='output')
-            job.add('-r',outdir('or2.fq'),kind='output')
-            job.run()
-
+            if options.skip_fastqtk:
+                job.add(_FC_+'unshuffle.py',kind='program')
+                job.add('-i',outdir('unmerged.fq'),kind='input',temp_path=temp_flag)
+                job.add('-f',outdir('or1.fq'),kind='output')
+                job.add('-r',outdir('or2.fq'),kind='output')
+                job.run()
+            else:
+                job.add(_FK_+'fastqtk',kind='program')
+                job.add('deinterleave',kind='parameter') 
+                job.add('',outdir('unmerged.fq'),kind='input',temp_path=temp_flag)
+                job.add('',outdir('or1.fq'),kind='output')
+                job.add('',outdir('or2.fq'),kind='output')
+                job.run()
 
         job.add(_FC_+'fragment_fastq.py',kind='program')
         job.add('-1',outdir('or1.fq'),kind='input',temp_path=temp_flag)
@@ -4183,13 +4391,22 @@ if __name__ == "__main__":
 #        job.add('>',outdir('originala.fq'),kind='output')
 #        job.run()
 
-        # compute the read lengths for the input file
-        job.add(_FC_+'lengths_reads.py',kind='program')
-        job.add('--input',outdir('originala.fq'),kind='input')
-        job.add('--output',outdir('log_lengths_original_reads_final.txt'),kind='output')
-        job.add('--counts',outdir('log_counts_original_reads_final.txt'),kind='output')
-        job.run()
-        
+        if options.skip_fastqtk:
+            # compute the read lengths for the input file
+            job.add(_FC_+'lengths_reads.py',kind='program')
+            job.add('--input',outdir('originala.fq'),kind='input')
+            job.add('--output',outdir('log_lengths_original_reads_final.txt'),kind='output')
+            job.add('--counts',outdir('log_counts_original_reads_final.txt'),kind='output')
+            job.run()
+        else:
+            job.add(_FK_+'fastqtk',kind='program')
+            job.add('count-lengths',kind='parameter')
+            job.add('',outdir('originala.fq'),kind='input')
+            job.add('',outdir('log_counts_original_reads_final.txt'),kind='output')
+            job.add('',outdir('log_lengths_original_reads_final.txt'),kind='output')
+            job.run()
+
+
         max_len_reads = 0
         if os.path.exists(outdir('log_lengths_original_reads_final.txt')):
             max_len_reads = int(float(file(outdir('log_lengths_original_reads_final.txt'),'r').readline().rstrip()))
@@ -4279,11 +4496,19 @@ if __name__ == "__main__":
     else:
         job.link(input_file, output_file, temp_path=temp_flag)
 
+    if options.skip_fastqtk:
     # compute the read lengths for the input file
-    job.add(_FC_+'lengths_reads.py',kind='program')
-    job.add('--input',outdir('reads.fq'),kind='input')
-    job.add('--output',outdir('log_lengths_reads.txt'),kind='output')
-    job.run()
+        job.add(_FC_+'lengths_reads.py',kind='program')
+        job.add('--input',outdir('reads.fq'),kind='input')
+        job.add('--output',outdir('log_lengths_reads.txt'),kind='output')
+        job.run()
+    else:
+        job.add(_FK_+'fastqtk',kind='program')
+        job.add('lengths',kind='parameter')
+        job.add('',outdir('reads.fq'),kind='input')
+        job.add('',outdir('log_lengths_reads.txt'),kind='output')
+        job.run()
+
 
     #job.add(kind='program')
     len_reads = 0
@@ -4637,6 +4862,7 @@ if __name__ == "__main__":
     #job.add('-v',options.filter_mismatches,kind='parameter') #options.mismatches
     job.add('--seedmms','1',kind='parameter') # options.mismatches
     job.add('--seedlen',options.trim_3end_keep,kind='parameter')
+    job.add('--trim5','7',kind='parameter') # trim the 10
     #job.add('-v','1',kind='parameter') #options.mismatches
     job.add('-p',options.processes,kind='parameter',checksum='no')
     #job.add('-m','1',kind='parameter')
@@ -4708,17 +4934,25 @@ if __name__ == "__main__":
         job.add('paste','- - - -',kind='parameter')
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
-        job.add('sort',kind='parameter')
-        job.add('-k','1,1',kind='parameter')
-        job.add('-t',"'\t'",kind='parameter')
-        if sort_buffer:
-            job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
-        if sort_parallel:
+        if parsort:
+            job.add(_PL_+'parsort',kind='parameter')
+            job.add('-k','1,1',kind='parameter')
+            job.add('-t',"'\\\t'",kind='parameter')
             job.add('--parallel',options.processes,kind='parameter',checksum='no')
-        if sort_lzop_compress:
-            job.add('--compress-program','lzop',kind='parameter',checksum='no')
-        elif sort_gzip_compress:
-            job.add('--compress-program','gzip',kind='parameter',checksum='no')
+            if parsort_buffer_size:
+                job.add('--buffer-size',parsort_buffer_size,kind='parameter',checksum='no')
+        else:
+            job.add('sort',kind='parameter')
+            job.add('-k','1,1',kind='parameter')
+            job.add('-t',"'\t'",kind='parameter')
+            if sort_buffer:
+                job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+            if sort_parallel:
+                job.add('--parallel',options.processes,kind='parameter',checksum='no')
+            if sort_lzop_compress:
+                job.add('--compress-program','lzop',kind='parameter',checksum='no')
+            elif sort_gzip_compress:
+                job.add('--compress-program','gzip',kind='parameter',checksum='no')
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
         job.add('|',kind='parameter')
         job.add('LC_ALL=C',kind='parameter')
@@ -5815,19 +6049,27 @@ if __name__ == "__main__":
     #job.run()
     job.add('|',kind='parameter')
     job.add('LC_ALL=C',kind='parameter')
-    job.add('sort',kind='parameter')
-    if sort_buffer:
-        job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
-    if sort_parallel:
+    if parsort:
+        job.add(_PL_+'parsort',kind='parameter')
+        job.add('-k','1,1',kind='parameter')
+        job.add('-t',"'\\\t'",kind='parameter')
         job.add('--parallel',options.processes,kind='parameter',checksum='no')
-    if sort_lzop_compress:
-        job.add('--compress-program','lzop',kind='parameter',checksum='no')
-    elif sort_gzip_compress:
-        job.add('--compress-program','gzip',kind='parameter',checksum='no')
+        if parsort_buffer_size:
+            job.add('--buffer-size',parsort_buffer_size,kind='parameter',checksum='no')
+    else:
+        job.add('sort',kind='parameter')
+        if sort_buffer:
+            job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+        if sort_parallel:
+            job.add('--parallel',options.processes,kind='parameter',checksum='no')
+        if sort_lzop_compress:
+            job.add('--compress-program','lzop',kind='parameter',checksum='no')
+        elif sort_gzip_compress:
+            job.add('--compress-program','gzip',kind='parameter',checksum='no')
+        job.add('-t',"'\t'",kind='parameter')
+        job.add('-k','1,1',kind='parameter')
     job.add('-T',tmp_dir,kind='parameter',checksum='no')
     #job.add('-s',kind='parameter') # stable sort
-    job.add('-t',"'\t'",kind='parameter')
-    job.add('-k','1,1',kind='parameter')
     #job.add('',outdir('reads_filtered_transcriptome.map'),kind='input',temp_path = temp_flag)
     job.add('>',outdir('reads_filtered_transcriptome_sorted-read.map'),kind='output')
     job.run()
@@ -5893,19 +6135,27 @@ if __name__ == "__main__":
         #
         
         job.add('LC_ALL=C',kind='program') # XXX
-        job.add('sort',kind='parameter')
-        if sort_buffer:
-            job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
-        if sort_parallel:
+        if parsort:
+            job.add(_PL_+'parsort',kind='parameter')
+            job.add('-k','1,1',kind='parameter')
+            job.add('-t',"'\\\t'",kind='parameter')
             job.add('--parallel',options.processes,kind='parameter',checksum='no')
-        if sort_lzop_compress:
-            job.add('--compress-program','lzop',kind='parameter',checksum='no')
-        elif sort_gzip_compress:
-            job.add('--compress-program','gzip',kind='parameter',checksum='no')
+            if parsort_buffer_size:
+                job.add('--buffer-size',parsort_buffer_size,kind='parameter',checksum='no')
+        else:
+            job.add('sort',kind='parameter')
+            if sort_buffer:
+                job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+            if sort_parallel:
+                job.add('--parallel',options.processes,kind='parameter',checksum='no')
+            if sort_lzop_compress:
+                job.add('--compress-program','lzop',kind='parameter',checksum='no')
+            elif sort_gzip_compress:
+                job.add('--compress-program','gzip',kind='parameter',checksum='no')
+            #job.add('-s',kind='parameter') # stable sort
+            job.add('-t',"'\t'",kind='parameter')
+            job.add('-k','1,1',kind='parameter')
         job.add('-T',tmp_dir,kind='parameter',checksum='no')
-        #job.add('-s',kind='parameter') # stable sort
-        job.add('-t',"'\t'",kind='parameter')
-        job.add('-k','1,1',kind='parameter')
         job.add('',outdir('reads_filtered_all-possible-mappings-transcriptome.map'),kind='input',temp_path=temp_flag) # XXX
         #job.add('>',outdir('reads_filtered_all-possible-mappings-transcriptome_sorted.map'),kind='output')
         #job.run()
@@ -6033,19 +6283,26 @@ if __name__ == "__main__":
             job.run()
 
             job.add('LC_ALL=C',kind='program') # XXX
-            #job.add('LC_ALL=C',kind='parameter')
-            job.add('sort',kind='parameter')
-            if sort_buffer:
-                job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
-            if sort_parallel:
+            if parsort:
+                job.add(_PL_+'parsort',kind='parameter')
+                job.add('-k','1,1',kind='parameter')
+                job.add('-t',"'\\\t'",kind='parameter')
                 job.add('--parallel',options.processes,kind='parameter',checksum='no')
-            if sort_lzop_compress:
-                job.add('--compress-program','lzop',kind='parameter',checksum='no')
-            elif sort_gzip_compress:
-                job.add('--compress-program','gzip',kind='parameter',checksum='no')
+                if parsort_buffer_size:
+                    job.add('--buffer-size',parsort_buffer_size,kind='parameter',checksum='no')
+            else:
+                job.add('sort',kind='parameter')
+                if sort_buffer:
+                    job.add('--buffer-size',sort_buffer,kind='parameter',checksum='no')
+                if sort_parallel:
+                    job.add('--parallel',options.processes,kind='parameter',checksum='no')
+                if sort_lzop_compress:
+                    job.add('--compress-program','lzop',kind='parameter',checksum='no')
+                elif sort_gzip_compress:
+                    job.add('--compress-program','gzip',kind='parameter',checksum='no')
+                job.add('-t',"'\t'",kind='parameter')
+                job.add('-k','1,1',kind='parameter')
             job.add('-T',tmp_dir,kind='parameter',checksum='no')
-            job.add('-t',"'\t'",kind='parameter')
-            job.add('-k','1,1',kind='parameter')
             job.add('',outdir('reads_filtered_all-possible-mappings-transcriptome_multiple.map'),kind='input',temp_path=temp_flag) # XXX
             #job.add('>',outdir('reads_filtered_all-possible-mappings-transcriptome_multiple_sorted.map'),kind='output') # XXX
             #job.run() # XXX
@@ -6597,8 +6854,8 @@ if __name__ == "__main__":
     # label fusion genes -- cell lines
     job.add(_FC_+'label_fusion_genes.py',kind='program')
     job.add('--input',outdir('candidate_fusion-genes_49.txt'),kind='input',temp_path=temp_flag)
-    job.add('--label','cell_lines',kind='parameter')
-    job.add('--filter_gene_pairs',datadir('celllines.txt'),kind='input')
+    job.add('--label','ccle2',kind='parameter')
+    job.add('--filter_gene_pairs',datadir('ccle2.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_50.txt'),kind='output')
     job.run()
     # label fusion genes -- ambiguous (only if the abguous counts > supporting pairs)
@@ -7295,6 +7552,7 @@ if __name__ == "__main__":
                 #job.add('-v','0',kind='parameter')
                 job.add('--seedmms','0',kind='parameter') # options.mismatches
                 job.add('--seedlen',options.trim_3end_keep,kind='parameter')
+                job.add('--trim5','7',kind='parameter') # trim the 10
                 job.add('-p',options.processes,kind='parameter',checksum='no')
                 #job.add('-m','1',kind='parameter')
                 #job.add('-a',kind='parameter')
@@ -7355,6 +7613,7 @@ if __name__ == "__main__":
             #job.add('-v','0',kind='parameter') #options.mismatches
             job.add('--seedmms','0',kind='parameter') # options.mismatches
             job.add('--seedlen',options.trim_3end_keep,kind='parameter')
+            job.add('--trim5','7',kind='parameter') # trim the 10
             job.add('-p',options.processes,kind='parameter',checksum='no')
             #job.add('-m','1',kind='parameter')
             job.add('-k','1',kind='parameter')
@@ -9303,11 +9562,21 @@ if __name__ == "__main__":
                          outdir('reads_gene-gene_no-str.fq'),
                          temp_path = temp_flag)
 
-            job.add(_FC_+'lengths_reads.py',kind='program')
-            job.add('--input',outdir('reads_gene-gene_no-str.fq'),kind='input')
-            job.add('--output',outdir('log_lengths_reads_gene-gene_no-str.txt'),kind='output')
-            job.add('--counts',outdir('log_counts_reads_gene-gene_no-str.txt'),kind='output')
-            job.run()
+            if options.skip_fastqtk:
+                job.add(_FC_+'lengths_reads.py',kind='program')
+                job.add('--input',outdir('reads_gene-gene_no-str.fq'),kind='input')
+                job.add('--output',outdir('log_lengths_reads_gene-gene_no-str.txt'),kind='output')
+                job.add('--counts',outdir('log_counts_reads_gene-gene_no-str.txt'),kind='output')
+                job.run()
+            else:
+                job.add(_FK_+'fastqtk',kind='program')
+                job.add('count-lengths',kind='parameter')
+                job.add('',outdir('reads_gene-gene_no-str.fq'),kind='input')
+                job.add('',outdir('log_counts_reads_gene-gene_no-str.txt'),kind='output')
+                job.add('',outdir('log_lengths_reads_gene-gene_no-str.txt'),kind='output')
+                job.run()
+
+
 
             # save lengths reads
             info(job,
@@ -9889,10 +10158,17 @@ if __name__ == "__main__":
                                 # map using bowtie
                                 # filter out reads not mapping
                                 ms = min(options.mismatches,2)
-                                job.add(_SK_+'seqtk',kind='program')
-                                job.add('mergepe',kind='parameter')
-                                job.add('',outdir('reads-ids_clip_star_psl_r1.fq.')+str(i),kind='input')
-                                job.add('',outdir('reads-ids_clip_star_psl_r2.fq.')+str(i),kind='input')
+                                if options.skip_fastqtk:
+                                    job.add(_SK_+'seqtk',kind='program')
+                                    job.add('mergepe',kind='parameter')
+                                    job.add('',outdir('reads-ids_clip_star_psl_r1.fq.')+str(i),kind='input')
+                                    job.add('',outdir('reads-ids_clip_star_psl_r2.fq.')+str(i),kind='input')
+                                else:
+                                    job.add(_FK_+'fastqtk',kind='program')
+                                    job.add('interleave',kind='parameter')
+                                    job.add('',outdir('reads-ids_clip_star_psl_r1.fq.')+str(i),kind='input')
+                                    job.add('',outdir('reads-ids_clip_star_psl_r2.fq.')+str(i),kind='input')
+                                    job.add('-',kind='parameter')
                                 job.add('|',kind='parameter')
                                 job.add(_FC_+'sliding-read.py',kind='parameter')
                                 job.add('--window','33',kind='parameter')
@@ -10740,10 +11016,17 @@ if __name__ == "__main__":
                             # map using bowtie
                             # filter out reads not mapping
                             ms = min(options.mismatches,2)
-                            job.add(_SK_+'seqtk',kind='program')
-                            job.add('mergepe',kind='parameter')
-                            job.add('',outdir('reads-ids_clip_star_psl_r1.fq'),kind='input')
-                            job.add('',outdir('reads-ids_clip_star_psl_r2.fq'),kind='input')
+                            if options.skip_fastqtk:
+                                job.add(_SK_+'seqtk',kind='program')
+                                job.add('mergepe',kind='parameter')
+                                job.add('',outdir('reads-ids_clip_star_psl_r1.fq'),kind='input')
+                                job.add('',outdir('reads-ids_clip_star_psl_r2.fq'),kind='input')
+                            else:
+                                job.add(_FK_+'fastqtk',kind='program')
+                                job.add('interleave',kind='parameter')
+                                job.add('',outdir('reads-ids_clip_star_psl_r1.fq'),kind='input')
+                                job.add('',outdir('reads-ids_clip_star_psl_r2.fq'),kind='input')
+                                job.add('-',kind='parameter')
                             job.add('|',kind='parameter')
                             job.add(_FC_+'sliding-read.py',kind='parameter')
                             job.add('--window','33',kind='parameter')
@@ -11673,10 +11956,17 @@ if __name__ == "__main__":
                             # map using bowtie
                             # filter out reads not mapping
                             ms = min(options.mismatches,2)
-                            job.add(_SK_+'seqtk',kind='program')
-                            job.add('mergepe',kind='parameter')
-                            job.add('',outdir('reads-ids_clip_bowtie2_psl_r1.fq.')+str(i),kind='input')
-                            job.add('',outdir('reads-ids_clip_bowtie2_psl_r2.fq.')+str(i),kind='input')
+                            if options.skip_fastqtk:
+                                job.add(_SK_+'seqtk',kind='program')
+                                job.add('mergepe',kind='parameter')
+                                job.add('',outdir('reads-ids_clip_bowtie2_psl_r1.fq.')+str(i),kind='input')
+                                job.add('',outdir('reads-ids_clip_bowtie2_psl_r2.fq.')+str(i),kind='input')
+                            else:
+                                job.add(_FK_+'fastqtk',kind='program')
+                                job.add('interleave',kind='parameter')
+                                job.add('',outdir('reads-ids_clip_bowtie2_psl_r1.fq.')+str(i),kind='input')
+                                job.add('',outdir('reads-ids_clip_bowtie2_psl_r2.fq.')+str(i),kind='input')
+                                job.add('-',kind='parameter')
                             job.add('|',kind='parameter')
                             job.add(_FC_+'sliding-read.py',kind='parameter')
                             job.add('--window','33',kind='parameter')
@@ -12145,10 +12435,17 @@ if __name__ == "__main__":
                         # map using bowtie
                         # filter out reads not mapping
                         ms = min(options.mismatches,2)
-                        job.add(_SK_+'seqtk',kind='program')
-                        job.add('mergepe',kind='parameter')
-                        job.add('',outdir('reads-ids_clip_bowtie2_psl_r1.fq'),kind='input')
-                        job.add('',outdir('reads-ids_clip_bowtie2_psl_r2.fq'),kind='input')
+                        if options.skip_fastqtk:
+                            job.add(_SK_+'seqtk',kind='program')
+                            job.add('mergepe',kind='parameter')
+                            job.add('',outdir('reads-ids_clip_bowtie2_psl_r1.fq'),kind='input')
+                            job.add('',outdir('reads-ids_clip_bowtie2_psl_r2.fq'),kind='input')
+                        else:
+                            job.add(_FK_+'fastqtk',kind='program')
+                            job.add('interleave',kind='parameter')
+                            job.add('',outdir('reads-ids_clip_bowtie2_psl_r1.fq'),kind='input')
+                            job.add('',outdir('reads-ids_clip_bowtie2_psl_r2.fq'),kind='input')
+                            job.add('-',kind='parameter')
                         job.add('|',kind='parameter')
                         job.add(_FC_+'sliding-read.py',kind='parameter')
                         job.add('--window','33',kind='parameter')

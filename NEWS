@@ -1,6 +1,14 @@
 Version Release History for FusionCatcher
 =========================================
 
+Version 1.33 -- January 22, 2021
+---------------------------------
+ * increased sensitivity for TLX1, TLX2, and TLX3 fusions
+ * added support for  using only the first N reads in case for very large FASTQ files
+ * added a required dependency to FASTQTK tool: https://github.com/ndaniel/fastqtk
+ * fixed several major/minor bugs
+ * updated manual
+
 Version 1.30 -- December 14, 2020
 ---------------------------------
  * added support for Ensembl version 102

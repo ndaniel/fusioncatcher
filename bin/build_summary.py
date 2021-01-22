@@ -144,7 +144,7 @@ if __name__ == '__main__':
         for r in data:
             f1 = "%s--%s" % (r[1],r[0])
             f2 = "%s--%s" % (r[0],r[1])
-            if r[2].lower().find('known') != -1 or r[2].lower().find('tcga') != -1 or r[2].lower().find('cosmic') != -1 or r[2].lower().find('cell_lines') != -1 or r[2].lower().find('prostates') != -1 or r[2].lower().find('pancreases') != -1 or r[2].lower().find('chimer') != -1 or r[2].lower().find('mitelman') != -1 or r[2].lower().find('cgp') != -1 or r[2].lower().find('pcawg') != -1  or r[2].lower().find('ccle') != -1  or r[2].lower().find('oncokb') != -1 or r[2].lower().find('cacg') != -1 or r[2].lower().find('18cancer') != -1 or r[2].lower().find('metastasis') != -1 or r[2].lower().find('glioma') != -1 or r[2].lower().find('oesophag') != -1:
+            if r[2].lower().find('known') != -1 or r[2].lower().find('tcga') != -1 or r[2].lower().find('cosmic') != -1 or r[2].lower().find('prostates') != -1 or r[2].lower().find('pancreases') != -1 or r[2].lower().find('chimer') != -1 or r[2].lower().find('mitelman') != -1 or r[2].lower().find('cgp') != -1 or r[2].lower().find('pcawg') != -1  or r[2].lower().find('ccle') != -1  or r[2].lower().find('oncokb') != -1 or r[2].lower().find('cacg') != -1 or r[2].lower().find('18cancer') != -1 or r[2].lower().find('metastasis') != -1 or r[2].lower().find('glioma') != -1 or r[2].lower().find('oesophag') != -1:
                 known.add(f1)
                 known.add(f2)
 

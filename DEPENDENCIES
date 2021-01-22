@@ -12,6 +12,7 @@ Required dependencies:
  - STAR version 2.7.2b <http://github.com/alexdobin/STAR/releases>
  - forked SEQTK version 1.2-r101c-dirty  <http://github.com/ndaniel/seqtk>
  - BBMAP version 38.44 <http://sourceforge.net/projects/bbmap/>
+ - FASTQTK version 0.27 <http://github.com/ndaniel/fastqtk>
 
 Optional dependencies:
 - strongly recommended (expected by default to be installed but their use can

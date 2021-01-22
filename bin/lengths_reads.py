@@ -65,7 +65,7 @@ if __name__ == '__main__':
                       action="store",
                       type="string",
                       dest="output_filename",
-                      help="""The output text file containg the unique lengths of the reads found in the input file. The unique lengths are sorted in descending order.""")
+                      help="""The output text file containing the unique lengths of the reads found in the input file. The unique lengths are sorted in descending order.""")
 
     parser.add_option("--counts","-c",
                       action="store",

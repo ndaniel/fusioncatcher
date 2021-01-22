@@ -1665,6 +1665,73 @@ if __name__ == '__main__':
                     strand = '-1'
                 )
 
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001280',
+                    gene_symbol = 'TLX1', # TLX1
+                    gene_id = 'ENSG00000107807',
+                    transcript_id = 'ENST09000001280',
+                    exon_id = 'ENSE09000001280',
+                    exon_number = '1',
+                    start = '101069000', #
+                    end =   '101175000', #
+                    chrom = '10',
+                    strand = '1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001281',
+                    gene_symbol = 'TLX1NB', # TLX1NB
+                    gene_id = 'ENSG00000236311',
+                    transcript_id = 'ENST09000001281',
+                    exon_id = 'ENSE09000001281',
+                    exon_number = '1',
+                    start = '101069000', #
+                    end =  '101175000', #
+                    chrom = '10',
+                    strand = '-1'
+                )
+
+
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001282',
+                    gene_symbol = 'TLX2', # TLX2
+                    gene_id = 'ENSG00000115297',
+                    transcript_id = 'ENST09000001282',
+                    exon_id = 'ENSE09000001282',
+                    exon_number = '1',
+                    start = '74508000', #
+                    end =   '74518000', #
+                    chrom = '2',
+                    strand = '1'
+                )
+
+                add(outdir = options.output_directory,
+                    protein_id = 'ENSP09000001283',
+                    gene_symbol = 'TLX2_', # TLX2
+                    gene_id = 'ENSP09000001283',
+                    transcript_id = 'ENST09000001283',
+                    exon_id = 'ENSE09000001283',
+                    exon_number = '1',
+                    start = '74508000', #
+                    end =   '74518000', #
+                    chrom = '2',
+                    strand = '-1'
+                )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 # transcript 2 - exon 1/4-- IGHM
                 add(outdir = options.output_directory,

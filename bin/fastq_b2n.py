@@ -214,7 +214,7 @@ if __name__=='__main__':
     if options.sanger:
         b = '#'
     c = options.replacement
-    ttable = string.maketrans('URYMKWSBDHVN-.TGCA','TACAGACCAAAAAATGCA')
+    #ttable = string.maketrans('URYMKWSBDHVN-.TGCA','TACAGACCAAAAAATGCA')
     if options.ambiguous:
         if options.find:
             for reads in reads_from_fastq_file(options.input_filename):
@@ -225,9 +225,9 @@ if __name__=='__main__':
                         continue
                     r1 = reads[1][:i]+c*(n-i)
                     r2 = reads[2][:i]+b*(n-i)
-                    data.addline("%s%s\n+\n%s\n" % (reads[0],r1.upper().translate(ttable),r2))
+                    data.addline("%s%s\n+\n%s\n" % (reads[0],r1.upper(),r2))
                 else:
-                    data.addline("%s%s+\n%s" % (reads[0],reads[1].upper().translate(ttable),reads[2]))
+                    data.addline("%s%s+\n%s" % (reads[0],reads[1].upper(),reads[2]))
         else:
             for reads in reads_from_fastq_file(options.input_filename):
                 i = len(reads[2].rstrip('\r\n').rstrip(b)) # only the trailing B's
@@ -237,9 +237,9 @@ if __name__=='__main__':
                         continue
                     r1 = reads[1][:i]+c*(n-i)
                     r2 = reads[2][:i]+b*(n-i)
-                    data.addline("%s%s\n+\n%s\n" % (reads[0],r1.upper().translate(ttable),r2))
+                    data.addline("%s%s\n+\n%s\n" % (reads[0],r1.upper(),r2))
                 else:
-                    data.addline("%s%s+\n%s" % (reads[0],reads[1].upper().translate(ttable),reads[2]))
+                    data.addline("%s%s+\n%s" % (reads[0],reads[1].upper(),reads[2]))
     else:
         if options.find:
             for reads in reads_from_fastq_file(options.input_filename):

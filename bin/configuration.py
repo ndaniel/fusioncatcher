@@ -167,6 +167,7 @@ def manage(configuration_filename, skip_python = []):
         _envpath(CONF,config,"paths","star")
         _envpath(CONF,config,"paths","bowtie")
         _envpath(CONF,config,"paths","seqtk")
+        _envpath(CONF,config,"paths","fastqtk")
         _envpath(CONF,config,"paths","python3")
         
         _path(CONF,config,"paths","data")

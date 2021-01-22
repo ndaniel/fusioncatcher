@@ -50,7 +50,8 @@ import string
 import gzip
 import gc
 
-ttable = string.maketrans("ACGTYRSWKMBDHV-.","TGCARYSWMKVHDB-.")
+#ttable = string.maketrans("ACGTYRSWKMBDHV-.","TGCARYSWMKVHDB-.")
+ttable = string.maketrans("ACGT","TGCA") # global
 
 def dnaReverseComplement(seq):
     #seq = seq.upper()

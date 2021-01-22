@@ -140,7 +140,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 1.30"
+    version = "%prog 1.33"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -1222,10 +1222,10 @@ if __name__ == '__main__':
     job.run()
 
 
-    job.add(_FC_+'get_celllines.py',kind='program')
+    job.add(_FC_+'get_ccle2.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
-    job.add('',outdir('celllines.txt'),kind='output',command_line='no')
+    job.add('',outdir('ccle2.txt'),kind='output',command_line='no')
     job.run()
 
     job.add(_FC_+'get_ccle.py',kind='program')

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #
-# FusionCatcher v1.30
+# FusionCatcher v1.33
 #
 
 
@@ -63,13 +63,29 @@ mv bbmap BBMap_38.44
 ln -s BBMap_38.44 bbmap
 chmod +x bbmap/*.sh
 
+# optional
+wget  https://ftp.gnu.org/gnu/parallel/parallel-20201222.tar.bz2 -O parallel-20201222.tar.bz2 --no-check-certificate
+tar --overwrite -xvjf parallel-20201222.tar.bz2 -C .
+ln -s parallel-20201222 parallel
+cd parallel
+./configure
+make
+cd ..
+
+# required
+wget https://github.com/ndaniel/fastqtk/archive/v0.27.tar.gz -O v0.27.tar.gz --no-check-certificate
+tar --overwrite -xvzf v0.27.tar.gz -C .
+make -C fastqtk-0.27
+chmod +x fastqtk-0.27/fastqtk
+ln -s fastqtk-0.27 fastqtk
+
 # optional (only in case that BAM is given as input instead of FASTQ)
 mkdir picard
 wget https://github.com/broadinstitute/picard/releases/download/2.21.2/picard.jar -O picard/picard.jar --no-check-certificate
 chmod +x picard/picard.jar
 
 # required (it installs biopython; if BioPython is allready installed then this can be skipped safely)
-sudo pip install biopython
+pip install biopython
 
 
 

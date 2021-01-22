@@ -54,7 +54,8 @@ import errno
 import gzip
 import math
 
-ttable = string.maketrans("ACGTYRSWKMBDHV-.","TGCARYSWMKVHDB-N") # global
+#ttable = string.maketrans("ACGTYRSWKMBDHV-.","TGCARYSWMKVHDB-N") # global
+ttable = string.maketrans("ACGTN","TGCAA") # global
 empty_read = ['@N123\n','N\n','+\n','I\n'] # global
 
 #
