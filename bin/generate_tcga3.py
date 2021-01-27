@@ -14,7 +14,7 @@ pp. 1379-1398, March 06, 2020, https://doi.org/10.1016/j.omtn.2020.01.023
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2020 Daniel Nicorici
+Copyright (c) 2009-2021 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

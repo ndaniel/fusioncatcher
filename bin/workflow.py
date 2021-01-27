@@ -12,7 +12,7 @@ external programs using command line.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2020 Daniel Nicorici
+Copyright (c) 2009-2021 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -395,7 +395,7 @@ class pipeline:
     """
     __version__ = '0.98.3 beta'
     __author__  = 'Daniel Nicorici'
-    __copyright__ = "Copyright (c) 2009-2020 Daniel Nicorici"
+    __copyright__ = "Copyright (c) 2009-2021 Daniel Nicorici"
     __credits__ = ["Henrikki Almusa"]
     __license__ = "GPL v3.0"
     __maintainer__ = "Daniel Nicorici"
