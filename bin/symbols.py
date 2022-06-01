@@ -463,7 +463,8 @@ synonym = {
 'BX248273':'RP11-129M6.1',
 'BC041441':'RP5-952N6.1',
 'BX537644':'RP11-18C24.6',
-'EST14':'AL121790.1',
+#'EST14':'AL121790.1',
+'EST14':'ENSG00000258414',
 'RCC17':'ASPSCR1',
 'BF104016':'CCDC26',
 'HCMOGT1':'SPECC1',
@@ -491,13 +492,13 @@ synonym = {
 'AK125726':'KIAA1257',
 'AC138031.1':'RPL23AP45',
 'AL672183.2':'RPL23AP25',
-'AC090627.1':'THRA1/BTR',
+'AC090627.1':'SKAP1-AS2',
 'STBD1':'FAM47E-STBD1',
 'KIAA0660':'G3BP2',
 'MIR143':'CARMN',
 'ERVK3-1':'AC020915.1',
 'HERVK':'AC020915.1',
-'HERVK17':'AC129492.2',
+'HERVK17':'ENSG00000263427',
 'RNF213':'AC124319.1',
 'ALO17':'AC124319.1',
 'KIAA1618':'AC124319.1',
@@ -507,8 +508,8 @@ synonym = {
 'CDR2':'AC092338.1',
 'TCL1A':'AL139020.1',
 'N4BP1':'AC026470.1',
-'MIR3687':'MIR3687-1',
-'MIR3687-1':'FP671120.1',
+'MIR3687':'ENSG00000275664',
+'MIR3687-1':'ENSG00000275664',
 'MRC2':'AC080038.1',
 'EML5':'AL121768.1',
 'SS18':'AC091021.1',
@@ -522,9 +523,45 @@ synonym = {
 'TINF2':'AL096870.1',
 'ZNF304':'AC005261.1',
 'ZNF254':'AC092279.1',
-'AF127936.2':'AF127936.1',
+'AF127936.2':'ENSG00000232884',
+'AF127936.1':'ENSG00000232884',
 'IRAK4':'AC093012.1',
-'KRT86':'AC021066.1'
+'KRT86':'AC021066.1',
+'AC004066.1':'ENSG00000250522',
+'AC004870.4':'ENSG00000232072',
+'AC005262.1':'ENSG00000266944',
+'AC006372.2':'ENSG00000233191',
+'AC011523.1':'ENSG00000267968',
+'AC011997.1':'ENSG00000222017',
+'AC012314.2':'ENSG00000274041',
+'AC012354.6':'ENSG00000276670',
+'AC015849.2':'ENSG00000270829',
+'AC016582.1':'ENSG00000225868',
+'AC019197.1':'ENSG00000236283',
+'AC025048.2':'ENSG00000267248',
+'AC027612.3':'ENSG00000286698',
+'AC079780.1':'ENSG00000236654',
+'AC083837.1':'ENSG00000285744',
+'AC090987.1':'ENSG00000253656',
+'AC091132.4':'ENSG00000267198',
+'AC099850.1':'ENSG00000224738',
+'AC117386.2':'ENSG00000243944',
+'AC141586.5':'ENSG00000279162',
+'AC243829.2':'ENSG00000276241',
+'AC245884.1':'ENSG00000227407',
+'AF127577.4':'ENSG00000235609',
+'AF127936.2':'ENSG00000232884',
+'AF186192.5':'ENSG00000282524',
+'AL034550.1':'ENSG00000236772',
+'AL035685.1':'ENSG00000283529',
+'AL121790.1':'ENSG00000258414',
+'AL135923.2':'ENSG00000231902',
+'AL445647.1':'ENSG00000272046',
+'AP001931.2':'ENSG00000288534',
+'CR848007.2':'ENSG00000273900',
+'FO393400.1':'ENSG00000285382',
+'FP236383.1':'ENSG00000274868'
+
 
 }
 
@@ -797,6 +834,9 @@ def ensembl(g,genes):
             # I let it pass if it is and Ensembl id
             if (not ens) and g.upper().startswith('ENS'):
                 ens = [g.upper()]
+            oxu = synonym.get(g.upper(),None)
+            if (not ens) and oxu and oxu.startswith('ENS'):
+                ens = [oxu.upper()]
     if not ens:
         print >>sys.stderr,"Warning: Could not find Ensembl gene id for gene '%s' [synonym: %s]!" % (g,synonym.get(g,None))
     else:
@@ -817,6 +857,9 @@ def ensembl(g,genes,loci):
             # I let it pass if it is and Ensembl id
             if (not ens) and g.upper().startswith('ENS'):
                 ens = [g.upper()]
+            oxu = synonym.get(g.upper(),None)
+            if (not ens) and oxu and oxu.startswith('ENS'):
+                ens = [oxu.upper()]
     if not ens:
         print >>sys.stderr,"Warning: Could not find Ensembl gene id for gene '%s' [synonym: %s]." % (g,synonym.get(g,None))
     else:

@@ -128,8 +128,8 @@ if __name__ == '__main__':
 #    elif options.organism.lower() == 'rattus_norvegicus':
 #        org = 'rn6'
     elif options.organism.lower() == 'mus_musculus':
-        org = 'mm10'
-    elif options.organism.lower() == 'canis_familiaris':
+        org = 'mm39'
+    elif options.organism.lower() == 'canis_lupus_familiaris':
         org = 'canFam3'
 
     if org:

@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
     fusions['mus_musculus'] = []
 
-    fusions['canis_familiaris'] = []
+    fusions['canis_lupus_familiaris'] = []
 
     fusions['homo_sapiens'] = [
         ['2-COP','PBX1'],

@@ -314,7 +314,7 @@ if __name__ == '__main__':
         ['CNRIP1','PPP3R1']
     ]
 
-    fusions['canis_familiaris'] = [
+    fusions['canis_lupus_familiaris'] = [
         ['ENSCAFG00000011681','ENSCAFG00000040733'],
         ['ENSCAFG00000028546','ENSCAFG00000000193'],
         ['ENSCAFG00000028546','ENSCAFG00000000193'],
@@ -12792,7 +12792,8 @@ if __name__ == '__main__':
         ['TMSB15B','TMSB15B'],
         ['TRPM2','ZNF511'],
         ['UBC','YWHAZ'],
-        ['ZNF285','ZNF806']
+        ['ZNF285','ZNF806'],
+        ['TMEM256','PLSCR3']
 
         ]
     # up is human

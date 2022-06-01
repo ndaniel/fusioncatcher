@@ -317,7 +317,7 @@ if __name__ == '__main__':
         pass
     elif options.organism.lower() == 'rattus_norvegicus':
         pass
-    elif options.organism.lower() == 'canis_familiaris':
+    elif options.organism.lower() == 'canis_lupus_familiaris':
         pass
     elif options.organism.lower() == 'homo_sapiens':
 
@@ -1709,7 +1709,7 @@ if __name__ == '__main__':
                 add(outdir = options.output_directory,
                     protein_id = 'ENSP09000001283',
                     gene_symbol = 'TLX2_', # TLX2
-                    gene_id = 'ENSP09000001283',
+                    gene_id = 'ENSG09000002015',
                     transcript_id = 'ENST09000001283',
                     exon_id = 'ENSE09000001283',
                     exon_number = '1',

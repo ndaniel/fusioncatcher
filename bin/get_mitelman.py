@@ -91,7 +91,8 @@ if __name__ == '__main__':
                       action="store",
                       type="string",
                       dest="url",
-                      default = 'https://storage.cloud.google.com/mitelman-data-files/prod/mitelman_db.zip',
+                      #default = 'https://storage.cloud.google.com/mitelman-data-files/prod/mitelman_db.zip',
+                      default = 'https://storage.googleapis.com/mitelman-data-files/prod/mitelman_db.zip',
                       help="""The URL for Mitelman database dump file. Default is '%default'.""")
 
     parser.add_option("--output","-o",
@@ -162,7 +163,7 @@ if __name__ == '__main__':
                 print >>sys.stderr, "Warning: File '%s' is not a valid ZIP file! The output file will be empty!" % (url,)
             else:
             
-                d = zf.read('MBCA.TXT.DATA').decode('ascii').splitlines()
+                d = zf.read('mitelman_db/MBCA.TXT.DATA').decode('ascii').splitlines()
 
                 if d:
                     #h = d.pop(0) # remove header
@@ -172,8 +173,8 @@ if __name__ == '__main__':
                     for e in f:
                         x = e.split(",")
                         for z in x:
-                            if z and z.find("/") != -1:
-                                uf = tuple(z.upper().replace("+","").split("/"))
+                            if z and z.find("::") != -1:
+                                uf = tuple(z.upper().replace("+","").split("::"))
                                 if uf and len(uf) == 2:
                                     fusions.add(uf)
                                 elif len(uf) == 3:

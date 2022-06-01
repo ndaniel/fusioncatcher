@@ -250,7 +250,7 @@ description = ("FusionCatcher searches for novel and known somatic gene fusions 
                "Illumina HiSeq 2000, Illumina HiSeq X, Illumina NextSeq 500, \n"+
                "Illumina GAIIx, Illumina GAII, Illumina MiSeq, Illumina MiniSeq). \n")
 
-version = "%prog 1.33"
+version = "%prog 1.35"
 
 
 if __name__ == "__main__":
@@ -602,6 +602,7 @@ if __name__ == "__main__":
 #            "non_tumor_cells",
             "multi",
             "fragments",
+            "znf",
             "removed"])
     all_choices = sorted([
             'paralogs',
@@ -670,7 +671,8 @@ if __name__ == "__main__":
             'tcga',
             'tcga2',
             'tcga-normal',
-            'tcga-cancer'])
+            'tcga-cancer',
+            "znf"])
     parser.add_option("--filter-fusion","-b",
                       action = "store",
                       type = "string",
@@ -3990,6 +3992,7 @@ if __name__ == "__main__":
         #bbduk.sh in=reads.fq out=clean.fq ftm=5
         job.add(_BP_+'bbduk.sh',kind='program')
         job.add('forcetrimmod=','5',kind='parameter',space='no')
+        job.add('qin=','33',kind='parameter',space='no')
         job.add('in=',outdir('orig__.fq'),kind='input',space='no', temp_path=temp_flag)
         job.add('out=',outdir('orig__x.fq'),kind='output',space='no')
         job.run()
@@ -7101,9 +7104,15 @@ if __name__ == "__main__":
     job.add('--filter_gene_pairs',datadir('tcga3.txt'),kind='input')
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_84.txt'),kind='output')
     job.run()
+    # label fusion genes -- ZNF mosaic
+    job.add(_FC_+'label_fusion_genes_znf.py',kind='program')
+    job.add('--input',outdir('candidate_fusion-genes_84.txt'),kind='input',temp_path=temp_flag)
+    job.add('--label','znf',kind='parameter')
+    job.add('--output_fusion_genes',outdir('candidate_fusion-genes_85.txt'),kind='output')
+    job.run()
     # label fusions with smaller reads in supporting pair-reads
     job.add(_FC_+'label_fusion_genes_trim2.py',kind='program') # trim2
-    job.add('--input',outdir('candidate_fusion-genes_84.txt'),kind='input',temp_path=temp_flag)
+    job.add('--input',outdir('candidate_fusion-genes_85.txt'),kind='input',temp_path=temp_flag)
     job.add('--fusions_pairs',outdir('candidate_fusion-genes_supporting_paired-reads.txt'),kind='input')
     job.add('--smaller_pairs',outdir('reads_not-mapped_trim2_ids.txt'),kind='input',temp_path=temp_flag)
     job.add('--output_fusion_genes',outdir('candidate_fusion-genes_1000.txt'),kind='output')
@@ -13364,6 +13373,7 @@ if __name__ == "__main__":
     job.add('--threshold','2.0',kind='parameter')
     job.add('--threshold2','1.5',kind='parameter')
     job.add('--remove-poly',info_file,kind='output')
+    job.add('--remove-short',info_file,kind='output')
     job.run()
 
     # inspect fusion sequences for banned sequences

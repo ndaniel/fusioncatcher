@@ -93,8 +93,8 @@ if __name__ == '__main__':
     #
     #
     #
-    ense=options.organism.lower().split('_',1)
-    ensembl_organism=ense[0][0]+ense[1]+'_gene_ensembl'
+    ense = options.organism.lower().split('_')
+    ensembl_organism = ense[0][0] + ense[1] + '_gene_ensembl' if len(ense) == 2 else ense[0][0] + ense[1][0] + ense[2] + '_gene_ensembl'
 
     CHUNK_SIZE=65536 # 2**20 1 MB
     
@@ -110,7 +110,8 @@ if __name__ == '__main__':
     </Query>""".replace('%%%organism%%%',ensembl_organism).replace("\n"," ").strip()
     
     attribute2 = ("cdna","gene_exon_intron")
-    rna_types = ("Mt_tRNA","Mt_tRNA_pseudogene","tRNA_pseudogene")
+    #rna_types = ("Mt_tRNA","Mt_tRNA_pseudogene","tRNA_pseudogene")
+    rna_types = ("Mt_tRNA",)
     if options.organism.lower() == "saccharomyces_cerevisiae":
         rna_types = ("tRNA",)
     

@@ -94,8 +94,8 @@ if __name__ == '__main__':
     #
     #
     #
-    ense = options.organism.lower().split('_',1)
-    ensembl_organism = ense[0][0]+ense[1]+'_gene_ensembl'
+    ense = options.organism.lower().split('_')
+    ensembl_organism = ense[0][0] + ense[1] + '_gene_ensembl' if len(ense) == 2 else ense[0][0] + ense[1][0] + ense[2] + '_gene_ensembl'
 
     hla2_filename = os.path.join(options.output_directory,'hla2.fa')
 

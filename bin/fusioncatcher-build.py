@@ -140,7 +140,7 @@ if __name__ == '__main__':
                    "version, genome version, and organism name used here."
                   )
 
-    version = "%prog 1.33"
+    version = "%prog 1.35"
 
     parser = MyOptionParser(
                 usage       = usage,
@@ -165,7 +165,7 @@ if __name__ == '__main__':
                       default = 'homo_sapiens',
                       help = "Organism for which the data is downloaded from Ensembl "+
                              "database and built, for example: 'homo_sapiens', "+
-                             "'mus_musculus', 'rattus_norvegicus', 'canis_familiaris', " +
+                             "'mus_musculus', 'rattus_norvegicus', 'canis_lupus_familiaris', " +
                              "etc. "+
                              "Default is '%default'.")
 
@@ -519,7 +519,13 @@ if __name__ == '__main__':
     job.add('',outdir('synonyms.txt'),kind='output',command_line='no')
     job.run()
 
-    job.add(_FC_+'generate_genes_symbols.py',kind='program')
+#    job.add(_FC_+'generate_genes_symbols.py',kind='program')
+#    job.add('--organism',options.organism,kind='parameter')
+#    job.add('--output',out_dir,kind='output',checksum='no')
+#    job.add('',outdir('genes_symbols.txt'),kind='output',command_line='no')
+#    job.run()
+
+    job.add(_FC_+'get_genes_symbols.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('genes_symbols.txt'),kind='output',command_line='no')

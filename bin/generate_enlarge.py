@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
     enlarge['mus_musculus'] = []
 
-    enlarge['canis_familiaris'] = []
+    enlarge['canis_lupus_familiaris'] = []
 
     enlarge['homo_sapiens'] = [
         'ADRBK1',

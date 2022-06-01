@@ -115,7 +115,8 @@ if __name__ == '__main__':
     socket.setdefaulttimeout(timeout)
 
     # NEW:
-    url = 'https://ndownloader.figshare.com/files/25494407'
+    #url = 'https://ndownloader.figshare.com/files/25494407'
+    url = 'https://ndownloader.figshare.com/files/27902109' # 5-2021
     tmp_file = os.path.join(options.output_directory,'temp_ccle.csv')
 
     if options.organism.lower() == 'homo_sapiens':

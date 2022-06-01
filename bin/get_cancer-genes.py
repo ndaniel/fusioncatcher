@@ -91,7 +91,8 @@ if __name__ == '__main__':
 
 
 
-    url = 'http://www.bushmanlab.org/assets/doc/allOnco_Feb2017.tsv'
+    #url = 'http://www.bushmanlab.org/assets/doc/allOnco_Feb2017.tsv'
+    url = 'http://www.bushmanlab.org/assets/doc/allOnco_May2018.tsv'
     tmp_file = os.path.join(options.output_directory,'temp_cancer.tsv')
 
     headers = {     'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3',

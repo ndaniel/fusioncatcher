@@ -419,7 +419,7 @@ if __name__ == '__main__':
         ['MYL9','COL1A1']
     ]
 
-    fusions['canis_familiaris'] = [
+    fusions['canis_lupus_familiaris'] = [
 
 
     ]

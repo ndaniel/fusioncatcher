@@ -165,6 +165,7 @@ def evaluate_fusion_sequence(
              threshold2 = 2.0,
              poly = 15,
              remove_poly_filename = '',
+             remove_short_filename = '',
              verbose = True):
 
     polyA = poly * "A"
@@ -178,9 +179,10 @@ def evaluate_fusion_sequence(
     data = [line.rstrip('\r\n').split('\t') for line in file(input_file,'r').readlines() if line.rstrip('')]
     header = data.pop(0)
 
-    if remove_poly_filename:
-        file(remove_poly_filename,'a').write("\n\n\nCandidate fusions removed due to PolyA/C/G/T and long repeats:\n===============================================\n")
 
+    remove_poly = ["\n\n\nCandidate fusions removed due to PolyA/C/G/T and long repeats:\n===============================================\n"]
+
+    remove_short = ["\n\n\nCandidate fusions removed due to short repeats:\n===============================================\n"]
 
     if data:
         res = []
@@ -216,20 +218,32 @@ def evaluate_fusion_sequence(
                 label = label + 'polyT'
                 poly_found = True
             
-            if remove_poly_filename:
-                if poly_found or label.find("long_repeats") != -1:
-                    uf = line[0:2]+[label]+line[3:]
-                    file(remove_poly_filename,'a').write('\t'.join(uf)+'\n')
-                else:
-                    res.append(line[0:2]+[label]+line[3:])
-            else:
-                res.append(line[0:2]+[label]+line[3:])
+            if remove_poly_filename and poly_found or label.find("long_repeats") != -1:
+                uf = line[0:2]+[label]+line[3:]
+                remove_poly.append('\t'.join(uf)+'\n')
+                continue
+
+            if remove_short_filename and label.find("short_repeats") != -1:
+                uf = line[0:2]+[label]+line[3:]
+                remove_short.write('\t'.join(uf)+'\n')
+                continue
+
+
+            res.append(line[0:2]+[label]+line[3:])
 
         if verbose:
             print >>sys.stderr,"Parsing the GTF file..."
 
         res.insert(0,header)
         file(output_file,'w').writelines(['\t'.join(line)+'\n' for line in res])
+        
+        if remove_poly_filename:
+            file(remove_poly_filename,"a").writelines(remove_poly)
+
+        if remove_short_filename:
+            file(remove_short_filename,"a").writelines(remove_short)
+
+
     else:
         file(output_file,'w').write('\t'.join(header)+'\n')
 
@@ -336,6 +350,11 @@ Copyright (c) 2009-2021 Daniel Nicorici
                       dest = "remove_poly_filename",
                       help = """The fusions that are found to contains polyA/C/G/T will be filtered out and written in this file. Default is %default.""")
 
+    parser.add_option("-z","--remove-short",
+                      action = "store",
+                      type = "string",
+                      dest = "remove_short_filename",
+                      help = """The fusions that are found to contains short_repeats will be filtered out and written in this file. Default is %default.""")
 
     parser.add_option("-q", "--quiet",
                       action = "store_false",
@@ -372,6 +391,7 @@ Copyright (c) 2009-2021 Daniel Nicorici
                     options.codelength_threshold2,
                     options.poly,
                     options.remove_poly_filename,
+                    options.remove_short_filename,
                     options.verbose)
 
 
