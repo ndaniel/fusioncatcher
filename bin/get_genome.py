@@ -128,8 +128,8 @@ if __name__ == '__main__':
         list_files = ftp.nlst()
 
         fasta_name = '.dna.primary_assembly.fa'
-        if options.organism.lower() != 'homo_sapiens':
-            fasta_name = '.dna.toplevel.fa'
+        #if options.organism.lower() != 'homo_sapiens':
+        #    fasta_name = '.dna.toplevel.fa'
 
         list_files = [el for el in list_files if el.lower().startswith(options.organism.lower()) and (el.lower().find('.dna.chromosome.mt.fa.gz')>-1 or el.lower().endswith('.dna.chromosome.mito.fa.gz') or el.lower().find('%s.gz' %(fasta_name,))>-1)]
 
