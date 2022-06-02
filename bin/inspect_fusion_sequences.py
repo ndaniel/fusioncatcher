@@ -5,7 +5,7 @@ It takes as input a list of chromosomal coordinates of fusion genes and it label
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2021 Daniel Nicorici
+Copyright (c) 2009-2022 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -225,7 +225,7 @@ def evaluate_fusion_sequence(
 
             if remove_short_filename and label.find("short_repeats") != -1:
                 uf = line[0:2]+[label]+line[3:]
-                remove_short.write('\t'.join(uf)+'\n')
+                remove_short.append('\t'.join(uf)+'\n')
                 continue
 
 
@@ -270,7 +270,7 @@ def main():
 
 Author: Daniel Nicorici
 Email: Daniel.Nicorici@gmail.com
-Copyright (c) 2009-2021 Daniel Nicorici
+Copyright (c) 2009-2022 Daniel Nicorici
 
 """
 

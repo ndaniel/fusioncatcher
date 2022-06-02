@@ -7,7 +7,7 @@ It writes into a text files the lengths (sorted in descending order) of the read
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2021 Daniel Nicorici
+Copyright (c) 2009-2022 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

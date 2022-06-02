@@ -8,7 +8,7 @@ inhere and it is manually curated from publications.
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2021 Daniel Nicorici
+Copyright (c) 2009-2022 Daniel Nicorici
 
 This file is part of FusionCatcher.
 
@@ -3684,6 +3684,7 @@ if __name__ == '__main__':
         ['CPT1C','JAZF1'],
         ['CPTP','PVT1'],
         ['CR848007.2','LEFTY2'],
+        ['RARG','HNRNPM'],
         ['CRABP2','RNF146'],
         ['CRABP2','TCEANC2'],
         ['CRADD','ERBB3'],

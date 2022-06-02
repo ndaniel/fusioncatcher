@@ -8,7 +8,7 @@ It downloads the lastest known conjoined genes from the CACG database
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2021 Daniel Nicorici
+Copyright (c) 2009-2022 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

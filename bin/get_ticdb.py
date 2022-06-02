@@ -9,7 +9,7 @@ from the file: "http://www.unav.es/genetica/allseqs_TICdb.txt".
 
 Author: Daniel Nicorici, Daniel.Nicorici@gmail.com
 
-Copyright (c) 2009-2021 Daniel Nicorici
+Copyright (c) 2009-2022 Daniel Nicorici
 
 This file is part of FusionCatcher.
 

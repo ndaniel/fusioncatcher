@@ -1,6 +1,11 @@
 Version Release History for FusionCatcher
 =========================================
 
+Version 1.35 -- 30 June 2022
+----------------------------
+* add support for Ensembl version 106
+* fixed minor bugs
+
 Version 1.33 -- January 22, 2021
 ---------------------------------
  * increased sensitivity for TLX1, TLX2, and TLX3 fusions
