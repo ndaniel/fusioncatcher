@@ -85,7 +85,7 @@ wget https://github.com/broadinstitute/picard/releases/download/2.21.2/picard.ja
 chmod +x picard/picard.jar
 
 # required (it installs biopython; if BioPython is allready installed then this can be skipped safely)
-pip install biopython
+pip install biopython=1.73
 
 
 
