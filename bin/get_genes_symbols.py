@@ -171,7 +171,7 @@ if __name__ == '__main__':
     data = [line.rstrip('\r\n').split('\t') for line in file(symbols_filename,'r').readlines() if line.rstrip('\r\n')]
     data = [line[0:3] for line in data if line[0].lower().startswith('ens') and line[3].upper() in chromosomes]
     data = [(line[0],line[1] if line[1] else line[2]) for line in data]
-    data = [(line[0],line[1] if line[1] else '.') for line in data]
+    data = [(line[0],line[1] if line[1] else line[0]) for line in data]
     data = ['\t'.join(line)+'\n' for line in data]
     data = sorted(list(set(data)))
     file(symbols_filename,'w').writelines(data)
