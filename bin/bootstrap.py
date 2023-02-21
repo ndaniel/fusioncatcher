@@ -256,7 +256,7 @@ def PATHS(exe = None, prefix = None, installdir = None, internet = True):
     SRATOOLKIT_VERSION = ('2.3.5-2','2.4.2','2.5.1','2.6.2','2.8.0','2.8.1-3','2.8.2-1','2.9.6')
     # VELVET
     VELVET_PATH = os.path.join(FUSIONCATCHER_TOOLS,'velvet')
-    VELVET_URL = 'http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz'
+    VELVET_URL = 'https://github.com/dzerbino/velvet/archive/refs/tags/v1.2.10.tar.gz'
     VELVET_VERSION = ('1.2.09','1.2.10')
     # ENSEMBL version
     ENSEMBL_VERSION = ensembl_version(internet = internet)
