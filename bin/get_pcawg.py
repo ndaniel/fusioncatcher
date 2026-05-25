@@ -86,8 +86,8 @@ if __name__ == '__main__':
                       action="store",
                       type="string",
                       dest="server",
-                      default = "https://dcc.icgc.org",
-                      help="""The ChimerDB 3.0 server from where the known fusion genes are downloaded. Default is '%default'.""")
+                      default = "https://object.genomeinformatics.org",
+                      help="""The ICGC ARGO open-access object store from where the PCAWG fusion table is downloaded. The legacy ICGC DCC portal (dcc.icgc.org) was decommissioned in 2024; the PCAWG transcriptome fusion file was migrated to the icgc25k-open S3-compatible bucket. Default is '%default'.""")
 
     (options,args) = parser.parse_args()
 
@@ -106,8 +106,10 @@ if __name__ == '__main__':
     socket.setdefaulttimeout(timeout)
 
 
-    #http://ercsb.ewha.ac.kr/FusionGene/document/PO_down.xls
-    url = '/api/v1/download?fn=/PCAWG/transcriptome/fusion/gene.fusions.V1.tsv.gz'
+    # Legacy URL (dcc.icgc.org decommissioned 2024):
+    #   /api/v1/download?fn=/PCAWG/transcriptome/fusion/gene.fusions.V1.tsv.gz
+    # New URL on object.genomeinformatics.org (ICGC ARGO icgc25k-open bucket):
+    url = '/icgc25k-open/PCAWG/transcriptome/fusion/gene.fusions.V1.tsv.gz'
 
     headers = { 'User-Agent' : 'Mozilla/5.0' }
 
@@ -135,8 +137,12 @@ if __name__ == '__main__':
             fuse = set()
 
             # parse the PubMed sheet
-            fi = [e.rstrip("\r\n").split("\t") for e in gzip.open(tmp_file,"r").readlines() if e.rstrip("\r\n")]
-            fi.pop(0)
+            try:
+                fi = [e.rstrip("\r\n").split("\t") for e in gzip.open(tmp_file,"r").readlines() if e.rstrip("\r\n")]
+                fi.pop(0)
+            except (IOError, Exception), e:
+                print >>sys.stderr, "Warning: Cannot process PCAWG download (not a valid gzip): %s" % str(e)
+                fi = []
             for row in fi:
                 tg = row[0].split("->")
                 g1 = tg[0]
