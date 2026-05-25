@@ -182,72 +182,64 @@ if __name__ == '__main__':
     s = ""
     ns = 0
     server = "http://%s/biomart/martservice" % (options.server,)
-    try:
-        req = urllib2.Request(server,mydata1,headers)
-        page = urllib2.urlopen(req, timeout = 30)
+    MAX_RETRIES_Q1 = 5
+    for attempt in xrange(MAX_RETRIES_Q1):
+        try:
+            req = urllib2.Request(server,mydata1,headers)
+            page = urllib2.urlopen(req, timeout = 60)
 
-
-        fid=open(temp_exons_filename1,'w')
-        size=0
-        while True:
-            part=page.read(CHUNK_SIZE)
-            if not part:
-                break
-            size=size+len(part)
-            fid.write(part)
-            amount=size/float(1024*1024)
-            sys.stdout.write("\b"*ns)
-            sys.stdout.flush()
-            s = "Downloaded: %9.2f MB" % amount
-            ns = len(s)
-            sys.stdout.write(s)
-            sys.stdout.flush()
-        fid.close()
-        print "\nFINISHED downloading: %9.2f MB\n" % amount
-    except urllib2.HTTPError, error:
-        print '\nHTTPError = ' + str(error)
-        sys.exit(1)
-    except urllib2.URLError, error:
-        print '\nURLError = ' + str(error)
-        sys.exit(1)
-    except IOError, error:
-        print '\nIOError = ' + str(error)
-        sys.exit(1)
-    except Exception, error:
-        print "\nError: Generic exception!",str(error)
-        sys.exit(1)
+            fid=open(temp_exons_filename1,'w')
+            size=0
+            while True:
+                part=page.read(CHUNK_SIZE)
+                if not part:
+                    break
+                size=size+len(part)
+                fid.write(part)
+                amount=size/float(1024*1024)
+                sys.stdout.write("\b"*ns)
+                sys.stdout.flush()
+                s = "Downloaded: %9.2f MB" % amount
+                ns = len(s)
+                sys.stdout.write(s)
+                sys.stdout.flush()
+            fid.close()
+            print "\nFINISHED downloading: %9.2f MB\n" % amount
+            break
+        except (urllib2.HTTPError, urllib2.URLError, IOError), error:
+            print '\nWarning: chromosome list attempt %d/%d failed: %s' % (attempt+1, MAX_RETRIES_Q1, str(error))
+            if attempt < MAX_RETRIES_Q1 - 1:
+                time.sleep(60 * (attempt + 1))
+            else:
+                print '\nError: chromosome list failed after %d attempts, aborting' % (MAX_RETRIES_Q1,)
+                sys.exit(1)
+        except Exception, error:
+            print "\nError: Generic exception!",str(error)
+            sys.exit(1)
 
     # extract chromosomes
     chroms = sorted(set([line.rstrip('\r\n').split('\t')[-1] for line in file(temp_exons_filename1,'r').readlines() if line.rstrip("\r\n")]))
     chroms = [l for l in chroms if l in chromosomes]
 
-    again = 0
-    while True:
-        again = again + 1
-        if again > 3:
-            sys.exit(1)
-
-        file(temp_exons_filename2,'w').write('')
-        
-        try:
-            v = 0
-            for crs in chroms:
-                v = v + 1
-                if v % 10 == 0:
-                    time.sleep(300)
-                time.sleep(10)
-                print "chromosome =",crs
-                mydata2=urllib.urlencode( {"query" : query2.replace("%%%chromosome%%%",crs)} )
-                headers = {
-                'User-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
-                'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
-                'Accept-Language' : 'en-gb,en;q=0.5'
-                }
-            
+    MAX_RETRIES = 5
+    file(temp_exons_filename2,'w').write('')
+    v = 0
+    for crs in chroms:
+        v = v + 1
+        if v % 10 == 0:
+            time.sleep(300)
+        time.sleep(10)
+        print "chromosome =",crs
+        for attempt in xrange(MAX_RETRIES):
+            mydata2=urllib.urlencode( {"query" : query2.replace("%%%chromosome%%%",crs)} )
+            headers = {
+            'User-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
+            'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
+            'Accept-Language' : 'en-gb,en;q=0.5'
+            }
+            try:
                 req = urllib2.Request(server,mydata2,headers)
-                page = urllib2.urlopen(req, timeout = 30)
-
-
+                page = urllib2.urlopen(req, timeout = 120)
                 fid=open(temp_exons_filename2,'a')
                 size=0
                 while True:
@@ -265,21 +257,17 @@ if __name__ == '__main__':
                     sys.stdout.flush()
                 fid.close()
                 print "\nFINISHED downloading: %9.2f MB\n" % amount
-
-        except urllib2.HTTPError, error:
-            print '\nHTTPError = ' + str(error)
-            continue
-        except urllib2.URLError, error:
-            print '\nURLError = ' + str(error)
-            continue
-        except IOError, error:
-            print '\nIOError = ' + str(error)
-            continue
-        except Exception, error:
-            print "\nError: Generic exception!",str(error)
-            continue
-            
-        break
+                break
+            except (urllib2.HTTPError, urllib2.URLError, IOError), error:
+                print '\nWarning: chromosome %s attempt %d/%d failed: %s' % (crs, attempt+1, MAX_RETRIES, str(error))
+                if attempt < MAX_RETRIES - 1:
+                    time.sleep(60 * (attempt + 1))
+                else:
+                    print 'Error: chromosome %s failed after %d attempts, aborting' % (crs, MAX_RETRIES)
+                    sys.exit(1)
+            except Exception, error:
+                print '\nError: chromosome %s unexpected error: %s' % (crs, str(error))
+                sys.exit(1)
 
 
 
