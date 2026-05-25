@@ -51,6 +51,7 @@ import optparse
 #import concatenate
 import shutil
 import StringIO
+import time
 
 
 if __name__ == '__main__':
@@ -87,6 +88,13 @@ if __name__ == '__main__':
                       default = "ftp.ebi.ac.uk",
                       help="""The Gencode server from where the gene annotations are downloaded. Default is '%default'.""")
 
+    parser.add_option("--release",
+                      action="store",
+                      type="int",
+                      dest="release",
+                      default = 0,
+                      help="""Pin to a specific GENCODE release number (e.g. 48). Default 0 = use latest available.""")
+
     (options,args) = parser.parse_args()
 
     # validate options
@@ -114,66 +122,91 @@ if __name__ == '__main__':
 
     if org:
 
-        url = 'pub/databases/gencode/%s/' % (org,)
+        base_url = 'pub/databases/gencode/%s/' % (org,)
         print "Downloading the GTF file of organism '%s' from Gencode!" % (options.organism.lower(),)
         version = ''
         nf = None
         filename= None
-        try:
-            ftp = ftplib.FTP(options.server)
-            print ftp.login()
-            ftp.cwd(url)
+        MAX_RETRIES = 5
+        for attempt in xrange(MAX_RETRIES):
+            url = base_url
+            try:
+                ftp = ftplib.FTP(options.server)
+                print ftp.login()
+                ftp.cwd(url)
 
-            list_files = ftp.nlst()
+                if options.release:
+                    version = str(options.release)
+                    if options.organism.lower() == 'mus_musculus':
+                        last = "release_M"+version
+                        filename = "gencode.vM%s.annotation.gtf.gz" % (version,)
+                    else:
+                        last = "release_"+version
+                        filename = "gencode.v%s.annotation.gtf.gz" % (version,)
+                else:
+                    list_files = ftp.nlst()
+                    list_files = [el.replace("release_M","").replace("release_","") for el in list_files if el.lower().startswith('release_')]
+                    if options.organism.lower() == 'homo_sapiens':
+                        list_files = sorted([int(el) for el in list_files if el.isdigit() ]) # and el != '24' new "and el!='24'" because is something wrong with release_24
+                        version = str(list_files[-1])
+                        last = "release_"+version
+                        filename = "gencode.v%s.annotation.gtf.gz" % (version,)
+                    elif options.organism.lower() == 'mus_musculus':
+                        list_files = sorted([int(el) for el in list_files if el.isdigit() ])
+                        version = str(list_files[-1])
+                        last = "release_M"+version
+                        filename = "gencode.vM%s.annotation.gtf.gz" % (version,)
+                    else:
+                        list_files = sorted(list_files)
+                        version = str(list_files[-1])
+                        last = "release_"+version
+                        filename = "gencode.v%s.annotation.gtf.gz" % (version,)
+                url = "%s%s" % (url,last)
+                ftp.cwd(last)
+                print "cd ",last
+                print "Downloading: %s/%s/%s" % (options.server,url,filename)
+                nf = os.path.join(options.output_directory,filename)
+                fid = open(nf,'wb')
+                ftp.retrbinary("RETR " + filename, fid.write)
+                fid.close()
 
-            list_files = [el.replace("release_M","").replace("release_","") for el in list_files if el.lower().startswith('release_')]
-            if options.organism.lower() == 'homo_sapiens':
-                list_files = sorted([int(el) for el in list_files if el.isdigit() ]) # and el != '24' new "and el!='24'" because is something wrong with release_24
-                version = str(list_files[-1])
-                last = "release_"+version
-                filename = "gencode.v%s.annotation.gtf.gz" % (version,)
-            elif options.organism.lower() == 'mus_musculus':
-                list_files = sorted([int(el) for el in list_files if el.isdigit() ]) 
-                version = str(list_files[-1])
-                last = "release_M"+version
-                filename = "gencode.vM%s.annotation.gtf.gz" % (version,)
-            else:
-                list_files = sorted(list_files)
-                version = str(list_files[-1])
-                last = "release_"+version
-                filename = "gencode.v%s.annotation.gtf.gz" % (version,)
-            url = "%s%s" % (url,last)
-            ftp.cwd(last)
-            print "cd ",last
-            print "Downloading: %s/%s/%s" % (options.server,url,filename)
-            nf = os.path.join(options.output_directory,filename)
-            fid = open(nf,'wb')
-            ftp.retrbinary("RETR " + filename, fid.write)
-            fid.close()
-
-            ftp.close()
-        except ftplib.all_errors, e:
-            print 'FTP Error = ' + str(e)
-            sys.exit(1)
-        except Exception, e:
-            print "Error: Generic exception!",str(e)
-            sys.exit(1)
+                ftp.close()
+                break
+            except ftplib.all_errors, e:
+                print '\nWarning: FTP attempt %d/%d failed: %s' % (attempt+1, MAX_RETRIES, str(e))
+                try:
+                    ftp.close()
+                except Exception:
+                    pass
+                if attempt < MAX_RETRIES - 1:
+                    time.sleep(60 * (attempt + 1))
+                else:
+                    print '\nError: FTP failed after %d attempts, aborting' % (MAX_RETRIES,)
+                    sys.exit(1)
+            except Exception, e:
+                print "Error: Generic exception!",str(e)
+                sys.exit(1)
 
         print "Decompressing files ..."
         if filename.endswith('.gz'):
-            f = gzip.open(nf, 'rb')
-            file_content = f.read()
-            f.close()
-            f = nf[:-3]
-            fod = open(f,'wb')
-            fod.write(file_content)
-            fod.close()
+            f_in = gzip.open(nf, 'rb')
+            nf_decompressed = nf[:-3]
+            f_out = open(nf_decompressed, 'wb')
+            shutil.copyfileobj(f_in, f_out)
+            f_in.close()
+            f_out.close()
             os.remove(nf)
-            nf = f
+            nf = nf_decompressed
 
         print "Parsing the GTF file..."
-        d = [line.split("\t") for line in file(nf,'r').readlines() if (not line.startswith("#")) and line]
-        d = [(line[0],line[3],line[4],line[6],line[8].partition('gene_name "')[2].partition('"')[0]) for line in d if line[2] == 'gene']
+        d = []
+        with open(nf, 'r') as _fparse:
+            for _line in _fparse:
+                if _line.startswith("#") or not _line.strip():
+                    continue
+                _parts = _line.split("\t")
+                if len(_parts) >= 9 and _parts[2] == 'gene':
+                    d.append((_parts[0],_parts[3],_parts[4],_parts[6],_parts[8].partition('gene_name "')[2].partition('"')[0]))
         print "%d genes found!" % (len(d),)
 
         data = []
