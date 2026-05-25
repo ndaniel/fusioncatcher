@@ -617,6 +617,14 @@ if __name__ == '__main__':
     job.add(_FC_+'get_gencode.py',kind='program')
     job.add('--organism',options.organism,kind='parameter')
 #    job.add('--server',options.ftp_ucsc,kind='parameter')
+    if options.ftp_ensembl_path:
+        try:
+            _ensembl_ver = int(options.ftp_ensembl_path.rstrip('/').split('-')[-1])
+            _gencode_ver = _ensembl_ver - 66
+            if _gencode_ver > 0:
+                job.add('--release',str(_gencode_ver),kind='parameter')
+        except (ValueError, IndexError):
+            pass
     job.add('--output',out_dir,kind='output',checksum='no')
     job.add('',outdir('gencode_genes.txt'),kind='output',command_line='no')
     job.run()

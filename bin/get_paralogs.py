@@ -159,63 +159,13 @@ if __name__ == '__main__':
     s = ""
     ns = 0
     server = "http://%s/biomart/martservice" % (options.server,)
-    try:
-        req=urllib2.Request(server,mydata1,headers)
-        page=urllib2.urlopen(req, timeout = 30)
+    MAX_RETRIES_Q1 = 5
+    for attempt in xrange(MAX_RETRIES_Q1):
+        try:
+            req=urllib2.Request(server,mydata1,headers)
+            page=urllib2.urlopen(req, timeout = 60)
 
-        fid=open(temp_paralogs_filename1,'w')
-        size=0
-        while True:
-            part=page.read(CHUNK_SIZE)
-            if not part:
-                break
-            size=size+len(part)
-            fid.write(part)
-            amount=size/float(1024*1024)
-            sys.stdout.write("\b"*ns)
-            sys.stdout.flush()
-            s = "Downloaded: %9.2f MB" % amount
-            ns = len(s)
-            sys.stdout.write(s)
-            sys.stdout.flush()
-        fid.close()
-        print "\nFinished downloading: %9.2f MB\n" % amount
-    except urllib2.HTTPError, error:
-        print '\nHTTPError = ' + str(error)
-        sys.exit(1)
-    except urllib2.URLError, error:
-        print '\nURLError = ' + str(error)
-        sys.exit(1)
-    except IOError, error:
-        print '\nIOError = ' + str(error)
-        sys.exit(1)
-    except Exception, error:
-        print "\nError: Generic exception!",str(error)
-        sys.exit(1)
-
-    # extract chromosomes
-    chroms = sorted(set([line.rstrip('\r\n').split('\t')[-1] for line in file(temp_paralogs_filename1,'r').readlines() if line.rstrip("\r\n")]))
-    chroms = [l for l in chroms if l in chromosomes]
-    file(temp_paralogs_filename2,'w').write('')
-
-    try:
-        v = 0
-        for crs in chroms:
-            v = v + 1
-            if v % 10 == 0:
-                time.sleep(180)
-            time.sleep(10)
-            print "chromosome =",crs
-            mydata2=urllib.urlencode( {"query" : query2.replace("%%%chromosome%%%",crs)} )
-            headers = {
-            'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3',
-            'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
-            'Accept-Language' : 'en-gb,en;q=0.5'
-            }
-            req=urllib2.Request(server,mydata2,headers)
-            page=urllib2.urlopen(req, timeout = 30)
-
-            fid=open(temp_paralogs_filename2,'a')
+            fid=open(temp_paralogs_filename1,'w')
             size=0
             while True:
                 part=page.read(CHUNK_SIZE)
@@ -232,18 +182,71 @@ if __name__ == '__main__':
                 sys.stdout.flush()
             fid.close()
             print "\nFinished downloading: %9.2f MB\n" % amount
-    except urllib2.HTTPError, error:
-        print '\nHTTPError = ' + str(error)
-        sys.exit(1)
-    except urllib2.URLError, error:
-        print '\nURLError = ' + str(error)
-        sys.exit(1)
-    except IOError, error:
-        print '\nIOError = ' + str(error)
-        sys.exit(1)
-    except Exception, error:
-        print "\nError: Generic exception!",str(error)
-        sys.exit(1)
+            break
+        except (urllib2.HTTPError, urllib2.URLError, IOError), error:
+            print '\nWarning: chromosome list attempt %d/%d failed: %s' % (attempt+1, MAX_RETRIES_Q1, str(error))
+            if attempt < MAX_RETRIES_Q1 - 1:
+                time.sleep(60 * (attempt + 1))
+            else:
+                print '\nError: chromosome list failed after %d attempts, aborting' % (MAX_RETRIES_Q1,)
+                sys.exit(1)
+        except Exception, error:
+            print "\nError: Generic exception!",str(error)
+            sys.exit(1)
+
+    # extract chromosomes
+    chroms = sorted(set([line.rstrip('\r\n').split('\t')[-1] for line in file(temp_paralogs_filename1,'r').readlines() if line.rstrip("\r\n")]))
+    chroms = [l for l in chroms if l in chromosomes]
+    file(temp_paralogs_filename2,'w').write('')
+
+    MAX_RETRIES = 5
+    v = 0
+    for crs in chroms:
+        v = v + 1
+        if v % 10 == 0:
+            time.sleep(180)
+        time.sleep(10)
+        print "chromosome =",crs
+        mydata2=urllib.urlencode( {"query" : query2.replace("%%%chromosome%%%",crs)} )
+        headers = {
+        'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3',
+        'Accept' : 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5',
+        'Accept-Language' : 'en-gb,en;q=0.5'
+        }
+        for attempt in xrange(MAX_RETRIES):
+            try:
+                req=urllib2.Request(server,mydata2,headers)
+                page=urllib2.urlopen(req, timeout = 120)
+                fid=open(temp_paralogs_filename2,'a')
+                size=0
+                while True:
+                    part=page.read(CHUNK_SIZE)
+                    if not part:
+                        break
+                    size=size+len(part)
+                    fid.write(part)
+                    amount=size/float(1024*1024)
+                    sys.stdout.write("\b"*ns)
+                    sys.stdout.flush()
+                    s = "Downloaded: %9.2f MB" % amount
+                    ns = len(s)
+                    sys.stdout.write(s)
+                    sys.stdout.flush()
+                fid.close()
+                print "\nFinished downloading: %9.2f MB\n" % amount
+                break
+            except (urllib2.HTTPError, urllib2.URLError, IOError), error:
+                print '\nWarning: chromosome %s attempt %d/%d failed: %s' % (crs, attempt+1, MAX_RETRIES, str(error))
+                if attempt < MAX_RETRIES - 1:
+                    time.sleep(60 * (attempt + 1))
+                else:
+                    # A missing chromosome would silently produce an incomplete
+                    # paralogs.txt and non-deterministic downstream filtering.
+                    print '\nError: chromosome %s failed after %d attempts, aborting (paralogs.txt must be complete)' % (crs, MAX_RETRIES)
+                    sys.exit(1)
+            except Exception, error:
+                print '\nError: chromosome %s unexpected error: %s -- aborting' % (crs, str(error))
+                sys.exit(1)
 
 
     # continue as usual

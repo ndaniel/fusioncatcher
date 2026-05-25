@@ -91,8 +91,11 @@ if __name__ == '__main__':
 
 
 
-    #url = 'http://www.bushmanlab.org/assets/doc/allOnco_Feb2017.tsv'
-    url = 'http://www.bushmanlab.org/assets/doc/allOnco_May2018.tsv'
+    # Legacy URLs (Bushman Lab moved their resources path in 2020-2021):
+    #   http://www.bushmanlab.org/assets/doc/allOnco_Feb2017.tsv  (dead)
+    #   http://www.bushmanlab.org/assets/doc/allOnco_May2018.tsv  (dead)
+    # New location and the latest version we found (June 2021):
+    url = 'https://bushmanlab.org/export/geneLists/allOnco_June2021.tsv'
     tmp_file = os.path.join(options.output_directory,'temp_cancer.tsv')
 
     headers = {     'User-agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3',
@@ -127,8 +130,12 @@ if __name__ == '__main__':
             # parse the file with the known fusion genes
             data = set()
     
-            d = [line.upper().rstrip("\r\n").split("\t")[0] for line in file(tmp_file,"r")]
-            d.pop(0) # remove the header
+            # Format change with the June 2021 file: columns are quoted TSV
+            # with a header row, and the gene symbol moved from column 0 to
+            # column 1 (column 0 is now a row index "n"). Strip surrounding
+            # double-quotes that R's write.table(..., quote=TRUE) adds.
+            d = [line.upper().rstrip("\r\n").split("\t")[1].strip('"') for line in file(tmp_file,"r")]
+            d.pop(0) # remove the header ('"SYMBOL"' after strip)
             data = set(d)
 
             print "%d known genes found (using gene symbols)" % (len(data),)

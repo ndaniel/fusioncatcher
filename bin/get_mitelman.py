@@ -162,8 +162,23 @@ if __name__ == '__main__':
             if ret:
                 print >>sys.stderr, "Warning: File '%s' is not a valid ZIP file! The output file will be empty!" % (url,)
             else:
-            
-                d = zf.read('mitelman_db/MBCA.TXT.DATA').decode('ascii').splitlines()
+
+                # The Mitelman dataset moved its files from the `mitelman_db/`
+                # subdirectory to the archive root at some point (observed 2026-05).
+                # Look up the data file in whichever layout the archive uses.
+                mbca_path = None
+                for candidate in ('MBCA.TXT.DATA', 'mitelman_db/MBCA.TXT.DATA'):
+                    try:
+                        zf.getinfo(candidate)
+                        mbca_path = candidate
+                        break
+                    except KeyError:
+                        continue
+                if mbca_path is None:
+                    print >>sys.stderr, "Warning: ZIP from '%s' does not contain MBCA.TXT.DATA (tried root and mitelman_db/ prefix). The output file will be empty!" % (url,)
+                    d = []
+                else:
+                    d = zf.read(mbca_path).decode('ascii').splitlines()
 
                 if d:
                     #h = d.pop(0) # remove header

@@ -86,7 +86,7 @@ PubMed as source) from ChimerDB 4.0 database."""
                       action="store",
                       type="string",
                       dest="server",
-                      default = "http://www.kobic.re.kr",
+                      default = "https://www.kobic.re.kr",
                       help="""The ChimerDB 4.0 server from where the known fusion genes are downloaded. Default is '%default'.""")
 
     (options,args) = parser.parse_args()
@@ -115,9 +115,11 @@ PubMed as source) from ChimerDB 4.0 database."""
 
 
     #http://ercsb.ewha.ac.kr/FusionGene/document/PO_down.xls
-    urls = [('/chimerdb_mirror/downloads?name=ChimerKB4.xlsx', 'chimerdb4kb.txt'),
-           ('/chimerdb_mirror/downloads?name=ChimerPub4.xlsx', 'chimerdb4pub.txt'),
-           ('/chimerdb_mirror/downloads?name=ChimerSeq4.xlsx','chimerdb4seq.txt')]
+    # KOBIC consolidated its site and dropped the `_mirror` path segment.
+    # The live download endpoint is /chimerdb/downloads (verified 2026-05).
+    urls = [('/chimerdb/downloads?name=ChimerKB4.xlsx', 'chimerdb4kb.txt'),
+           ('/chimerdb/downloads?name=ChimerPub4.xlsx', 'chimerdb4pub.txt'),
+           ('/chimerdb/downloads?name=ChimerSeq4.xlsx','chimerdb4seq.txt')]
 
     headers = { 'User-Agent' : 'Mozilla/5.0' }
 
