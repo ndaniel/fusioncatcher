@@ -49,6 +49,7 @@ socket.setdefaulttimeout(timeout)
 import urllib
 import urllib2
 import optparse
+import time
 
 
 if __name__ == '__main__':
@@ -135,6 +136,7 @@ if __name__ == '__main__':
     tmp2 = os.path.join(options.output_directory,'refseq_ids_tmp2.txt')
 
     i = 0
+    MAX_RETRIES = 5
     for (query,tmp) in [(query1,tmp1),(query2,tmp2)]:
         mydata = urllib.urlencode( {"query" : query} )
         headers = {
@@ -147,40 +149,39 @@ if __name__ == '__main__':
         s = ""
         ns = 0
         server = "http://%s/biomart/martservice" % (options.server,)
-        try:
-            req = urllib2.Request(server,mydata,headers)
-            page = urllib2.urlopen(req)
+        for attempt in xrange(MAX_RETRIES):
+            try:
+                req = urllib2.Request(server,mydata,headers)
+                page = urllib2.urlopen(req, timeout=60)
 
-
-            fid = open(tmp,'w')
-            size = 0
-            while True:
-                part = page.read(CHUNK_SIZE)
-                if not part:
-                    break
-                size=size+len(part)
-                fid.write(part)
-                amount=size/float(1024*1024)
-                sys.stdout.write("\b"*ns)
-                sys.stdout.flush()
-                s = "Downloaded: %9.2f MB" % amount
-                ns = len(s)
-                sys.stdout.write(s)
-                sys.stdout.flush()
-            fid.close()
-            print "\nDownloaded: %9.2f MB\n" % amount
-        except urllib2.HTTPError, error:
-            print '\nHTTPError = ' + str(error)
-            sys.exit(1)
-        except urllib2.URLError, error:
-            print '\nURLError = ' + str(error)
-            sys.exit(1)
-        except IOError, error:
-            print '\nIOError = ' + str(error)
-            sys.exit(1)
-        except Exception, error:
-            print "\nError: Generic exception!",str(error)
-            sys.exit(1)
+                fid = open(tmp,'w')
+                size = 0
+                while True:
+                    part = page.read(CHUNK_SIZE)
+                    if not part:
+                        break
+                    size=size+len(part)
+                    fid.write(part)
+                    amount=size/float(1024*1024)
+                    sys.stdout.write("\b"*ns)
+                    sys.stdout.flush()
+                    s = "Downloaded: %9.2f MB" % amount
+                    ns = len(s)
+                    sys.stdout.write(s)
+                    sys.stdout.flush()
+                fid.close()
+                print "\nDownloaded: %9.2f MB\n" % amount
+                break
+            except (urllib2.HTTPError, urllib2.URLError, IOError), error:
+                print '\nWarning: query %d attempt %d/%d failed: %s' % (i, attempt+1, MAX_RETRIES, str(error))
+                if attempt < MAX_RETRIES - 1:
+                    time.sleep(60 * (attempt + 1))
+                else:
+                    print '\nError: query %d failed after %d attempts, aborting' % (i, MAX_RETRIES)
+                    sys.exit(1)
+            except Exception, error:
+                print "\nError: Generic exception!",str(error)
+                sys.exit(1)
 
     d1 = [line.rstrip('\r\n').split('\t') for line in file(tmp1,'r').readlines() if line.rstrip("\r\n")]
     d2 = [line.rstrip('\r\n').split('\t') for line in file(tmp2,'r').readlines() if line.rstrip("\r\n")]
